@@ -1,0 +1,127 @@
+# Go -> Ruby. The last phase, and a SINGLE pass: every match is computed from
+# one parse of still-valid Go, then the fixes are applied together. Nothing
+# here may be looped, because the first `#` comment or dropped package clause
+# stops the file parsing as Go and every later rule would silently match
+# nothing.
+#
+# Layout is not this file's business. rubocop -A runs after it and owns all
+# line spacing and indentation.
+
+# `package main` has no Ruby counterpart.
+id: e-package
+language: go
+severity: hint
+rule: { kind: package_clause }
+fix: ""
+---
+# Imports go. The doc-link comments on an import_spec are children of the
+# declaration, so they go with it; the prose comments above it are siblings at
+# source_file level and survive.
+id: e-import
+language: go
+severity: hint
+rule: { kind: import_declaration }
+fix: ""
+---
+# `// text` -> `# text`, on the comment NODE, so a `//` inside a string
+# literal cannot be hit.
+id: e-comment
+language: go
+severity: hint
+rule:
+  kind: comment
+  pattern: $C
+  regex: '^//'
+transform:
+  RC:
+    replace: { source: $C, replace: '^//\s?', by: '# ' }
+fix: "$RC"
+---
+# A func with no parameters. The body is lifted out of its braces by taking
+# the block's statement_list.
+id: e-func-noargs
+language: go
+severity: hint
+rule:
+  kind: function_declaration
+  all:
+    - has: { field: name, pattern: $FN }
+    - has: { field: parameters, kind: parameter_list, not: { has: { kind: parameter_declaration } } }
+    - has:
+        field: body
+        kind: block
+        has: { kind: statement_list, pattern: $FB }
+fix: |-
+  def $FN
+    $FB
+  end
+---
+# An empty-bodied func still needs its `end`.
+id: e-func-noargs-empty
+language: go
+severity: hint
+rule:
+  kind: function_declaration
+  all:
+    - has: { field: name, pattern: $EFN }
+    - has: { field: parameters, kind: parameter_list, not: { has: { kind: parameter_declaration } } }
+    - has:
+        field: body
+        kind: block
+        not: { has: { kind: statement_list, pattern: $ANYB } }
+fix: |-
+  def $EFN
+  end
+---
+# A func WITH parameters. Each parameter_declaration carries `name Type`; the
+# rewriter drops the type, and joinBy re-commas what is left.
+id: e-func-args
+language: go
+severity: hint
+rewriters:
+  - id: r-param-name
+    rule:
+      kind: parameter_declaration
+      has: { field: name, pattern: $PN }
+    fix: "$PN"
+rule:
+  kind: function_declaration
+  all:
+    - has: { field: name, pattern: $AFN }
+    - has:
+        field: parameters
+        kind: parameter_list
+        pattern: $PL
+        has: { kind: parameter_declaration }
+    - has:
+        field: body
+        kind: block
+        has: { kind: statement_list, pattern: $AFB }
+transform:
+  PARAMS:
+    rewrite:
+      rewriters: [r-param-name]
+      source: $PL
+      joinBy: ", "
+fix: |-
+  def $AFN($PARAMS)
+    $AFB
+  end
+---
+# `var x = v` -> `x = v`. 01_strip has already taken the type off.
+id: e-var-keyword
+language: go
+severity: hint
+rule:
+  kind: var_declaration
+  has: { kind: var_spec, pattern: $VS }
+fix: "$VS"
+---
+# `const x = v` -> `x = v`.
+id: e-const-keyword
+language: go
+severity: hint
+rule:
+  kind: const_declaration
+  has: { kind: const_spec, pattern: $CS }
+fix: "$CS"

@@ -1,0 +1,4 @@
+# ast-grep project config for gob. Rules run over a working copy of the Go in
+# refs/, never over refs/ itself.
+ruleDirs:
+  - rules

@@ -1,0 +1,101 @@
+# Go -> Go. Collapses typed declarations toward bare assignment. Every fix here
+# leaves VALID Go, so the file still parses and the later rules still match --
+# run to a fixpoint.
+#
+# Nothing that breaks the parse belongs in this file. Deleting the
+# `package_clause` does, which is why it waits for 02_emit.yml: a Go file
+# without one no longer parses, and every rule after it silently stops
+# matching.
+
+# A var's type is carried by the value in Ruby, so drop it once there IS a
+# value. `var name string = "Nathan"` -> `var name = "Nathan"`, still Go.
+id: s-var-type
+language: go
+severity: hint
+rule:
+  kind: var_spec
+  all:
+    - has: { field: type, pattern: $VT }
+    - has: { field: value, pattern: $VV }
+    - has: { field: name, pattern: $VN }
+fix: "$VN = $VV"
+---
+# A var with no value takes its type's zero value, which Ruby must spell out.
+# One rule per zero, because a fix template cannot look a type up in a table.
+id: s-var-zero-numeric
+language: go
+severity: hint
+rule:
+  kind: var_spec
+  all:
+    - has: { field: name, pattern: $ZN }
+    - has:
+        field: type
+        regex: '^(u?int(8|16|32|64)?|byte|rune)$'
+    - not: { has: { field: value, pattern: $ANYV } }
+fix: "$ZN = 0"
+---
+id: s-var-zero-float
+language: go
+severity: hint
+rule:
+  kind: var_spec
+  all:
+    - has: { field: name, pattern: $FN }
+    - has: { field: type, regex: '^float(32|64)$' }
+    - not: { has: { field: value, pattern: $ANYV } }
+fix: "$FN = 0.0"
+---
+id: s-var-zero-string
+language: go
+severity: hint
+rule:
+  kind: var_spec
+  all:
+    - has: { field: name, pattern: $SN }
+    - has: { field: type, regex: '^string$' }
+    - not: { has: { field: value, pattern: $ANYV } }
+fix: '$SN = ""'
+---
+id: s-var-zero-bool
+language: go
+severity: hint
+rule:
+  kind: var_spec
+  all:
+    - has: { field: name, pattern: $BN }
+    - has: { field: type, regex: '^bool$' }
+    - not: { has: { field: value, pattern: $ANYV } }
+fix: "$BN = false"
+---
+# Anything else zero-valued is a reference type: nil either way.
+#
+# The scalar types are excluded by name rather than left to rule order. Two
+# rules fixing one node is a race -- `var b string` came out `nil` here while
+# int, bool and float64 came out right -- so each var_spec is made to match
+# exactly one of these rules.
+id: s-var-zero-other
+language: go
+severity: hint
+rule:
+  kind: var_spec
+  all:
+    - has: { field: name, pattern: $NN }
+    - has:
+        field: type
+        pattern: $NT
+        not:
+          regex: '^(u?int(8|16|32|64)?|byte|rune|float(32|64)|string|bool)$'
+    - not: { has: { field: value, pattern: $ANYV } }
+fix: "$NN = nil"
+---
+# `x := v` and `x = v` are the same statement in Ruby.
+id: s-short-var
+language: go
+severity: hint
+rule:
+  kind: short_var_declaration
+  all:
+    - has: { field: left, pattern: $LHS }
+    - has: { field: right, pattern: $RHS }
+fix: "$LHS = $RHS"

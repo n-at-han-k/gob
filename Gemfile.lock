@@ -1,0 +1,117 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ast (2.4.3)
+    ast-crispr (7.1.17)
+      ast-merge (= 7.1.17)
+      service_actor (~> 3.9)
+      version_gem (~> 1.1, >= 1.1.16)
+    ast-crispr-ruby-prism (7.1.17)
+      ast-crispr (= 7.1.17)
+      prism-merge (= 7.1.17)
+      tree_haver (= 7.1.17)
+      version_gem (~> 1.1, >= 1.1.16)
+    ast-merge (7.1.17)
+      benchmark
+      token-resolver (~> 2.0, >= 2.0.4)
+      tree_haver (= 7.1.17)
+      version_gem (~> 1.1, >= 1.1.16)
+    benchmark (0.5.0)
+    citrus (3.0.2)
+    decode (0.30.0)
+      prism
+      rbs (~> 4.0)
+    diff-lcs (2.0.0)
+    json (3.1.0)
+    language_server-protocol (3.17.0.6)
+    lint_roller (1.1.0)
+    logger (1.7.0)
+    parallel (2.3.0)
+    parser (3.3.14.0)
+      ast (~> 2.4.1)
+      racc
+    parslet (2.0.0)
+    prettier_print (1.2.1)
+    prism (1.9.0)
+    prism-merge (7.1.17)
+      ast-merge (= 7.1.17)
+      prism (~> 1.6)
+      ruby-merge (= 7.1.17)
+      tree_haver (= 7.1.17)
+      version_gem (~> 1.1, >= 1.1.16)
+    racc (1.8.1)
+    rainbow (3.1.1)
+    rbs (4.2.0)
+      logger
+      prism (>= 1.6.0)
+      tsort
+    regexp_parser (2.13.4)
+    rubocop (1.92.3)
+      json (>= 2.3)
+      language_server-protocol (~> 3.17.0.2)
+      lint_roller (~> 1.1.0)
+      parallel (>= 1.10)
+      parser (>= 3.3.0.2)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 2.11.3, < 3.0)
+      rubocop-ast (>= 1.49.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 4.0)
+    rubocop-ast (1.53.0)
+      ast (~> 2.4)
+      parser (>= 3.3.7.2)
+      prism (>= 1.7)
+      racc
+    rubocop-disable_syntax (0.2.0)
+      lint_roller
+      rubocop (>= 1.72.0)
+    rubocop-nathank (2.1.0)
+      decode
+      lint_roller
+      prism
+      rubocop (>= 1.72)
+    ruby-merge (7.1.17)
+      ast-merge (= 7.1.17)
+      tree_haver (= 7.1.17)
+      version_gem (~> 1.1, >= 1.1.16)
+    ruby-progressbar (1.13.0)
+    service_actor (3.9.4)
+      zeitwerk (>= 1.0)
+    sorbet-runtime (0.6.13715)
+    syntax_tree (6.3.0)
+      prettier_print (>= 1.2.0)
+    token-resolver (2.0.16)
+      parslet (~> 2.0)
+      version_gem (~> 1.1, >= 1.1.17)
+    tree_haver (7.1.17)
+      citrus (~> 3.0)
+      parslet (~> 2.0)
+      tree_sitter_language_pack (>= 1.17.0, < 2.0)
+      version_gem (~> 1.1, >= 1.1.16)
+    tree_sitter_language_pack (1.25.0-x86_64-linux)
+      sorbet-runtime (~> 0.6)
+    tsort (0.2.0)
+    unicode-display_width (3.3.0)
+      unicode-emoji (~> 4.3)
+    unicode-emoji (4.3.0)
+    unparser (0.9.0)
+      diff-lcs (>= 1.6, < 3)
+      parser (>= 3.3.0)
+      prism (>= 1.5.1)
+    version_gem (1.1.17)
+    zeitwerk (2.8.3)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  ast-crispr
+  ast-crispr-ruby-prism
+  rubocop
+  rubocop-disable_syntax
+  rubocop-nathank
+  syntax_tree
+  unparser
+
+BUNDLED WITH
+   2.7.2

@@ -1,0 +1,3 @@
+[submodule "refs/go-standard-lib-examples"]
+	path = refs/go-standard-lib-examples
+	url = https://git.kremlin.email/n-at-han-k/go-standard-lib-examples
