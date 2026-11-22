@@ -627,7 +627,14 @@ module Gob
       return nil unless text(field(cond, "left")) == name && text(field(cond, "operator")) == "<"
       return nil unless text(named(update).first) == name
 
-      { name: local_for(name), range: RangeNode(visit(start.first), Op("..."), visit(field(cond, "right"))) }
+      # Parenthesised, because a range is a looser binding than the `.each`
+      # that follows it: `0...n.each do |i|` parses as `0...(n.each { })`, so
+      # the loop silently became a range whose end was the block's value. It
+      # parsed and rubocop passed it -- only emitting Go back out showed it.
+      range = Paren(LParen("("),
+                    RangeNode(visit(start.first), Op("..."), visit(field(cond, "right"))))
+
+      { name: local_for(name), range: range }
     end
 
     def condition_loop(node, body)

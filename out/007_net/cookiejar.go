@@ -1,0 +1,26 @@
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"net/http/cookiejar"
+	"net/url"
+)
+
+func runCookieJar() {
+	jar, _ := cookiejar.New(nil)
+	u, _ := url.Parse("https://example.com/")
+	jar.SetCookies(u, []any{map[any]any{Name: "session", Value: "abc123"}, map[any]any{Name: "theme", Value: "dark"}})
+	for _, c := range jar.Cookies(u) {
+		fmt.Printf("  %s=%s\n", c.Name, c.Value)
+	}
+	fmt.Println("cookies for sibling site:", jar.Cookies(mustURL("https://other.example.org/")))
+}
+
+func mustURL(s any) {
+	u, err := url.Parse(s)
+	if err != nil {
+		panic(err)
+	}
+	return u
+}

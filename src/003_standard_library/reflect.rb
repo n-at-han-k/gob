@@ -17,7 +17,7 @@ module Main
       fmt.Println("kind:", v.Kind(), "type:", t.Name())
 
       # Iterate fields, reading tags and values.
-      0...t.NumField().each do |i|
+      (0...t.NumField()).each do |i|
         f = t.Field(i)
         fmt.Printf("  %s (%s) = %v  json=%q\n", f.Name, f.Type, v.Field(i).Interface(), f.Tag.Get("json"))
       end

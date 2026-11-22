@@ -1,0 +1,23 @@
+package main
+
+import (
+	"fmt"
+	"go/importer"
+	"log"
+)
+
+func runImporter() {
+	pkg, err := importer.Default().Import("fmt")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("package:", pkg.Path())
+	fmt.Println("name:   ", pkg.Name())
+	fmt.Println("first 5 exported names:")
+	for i, name := range pkg.Scope().Names() {
+		if i == 5 {
+			break
+		}
+		fmt.Println("  ", name)
+	}
+}

@@ -1,0 +1,19 @@
+package main
+
+import (
+	"encoding/base32"
+	"fmt"
+	"log"
+)
+
+func runBase32() {
+	src := "hello base32".bytes
+	encoded := base32.StdEncoding.EncodeToString(src)
+	fmt.Println("std:  ", encoded)
+	decoded, err := base32.StdEncoding.DecodeString(encoded)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("decoded: %s\n", decoded)
+	fmt.Println("hex:  ", base32.HexEncoding.EncodeToString(src))
+}

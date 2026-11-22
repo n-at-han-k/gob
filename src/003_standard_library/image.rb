@@ -52,8 +52,8 @@ module Main
     def self.makeGradient(size)
       img = image.NewRGBA(image.Rect(0, 0, size, size))
 
-      0...size.each do |y|
-        0...size.each do |x|
+      (0...size).each do |y|
+        (0...size).each do |x|
           img.Set(
             x,
             y,

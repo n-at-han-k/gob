@@ -1,0 +1,42 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"runtime/trace"
+	"sync"
+	"time"
+)
+
+func runTrace() {
+	f, _ := os.CreateTemp("", "trace-*.out")
+	defer func() {
+		os.Remove(f.Name())
+	}()
+	defer func() {
+		f.Close()
+	}()
+	err := trace.Start(f)
+	if err != nil {
+		fmt.Println("start:", err)
+		return
+	}
+	wg := nil
+	for i := range 3 {
+		wg.Add(1)
+		go func() {
+			defer func() {
+				wg.Done()
+			}()
+			trace.WithRegion(context.Background(), fmt.Sprintf("worker-%d", id), func() {
+				time.Sleep(5 * time.Millisecond)
+			})
+		}().call(i)
+	}
+	wg.Wait()
+	trace.Stop()
+	info, _ := f.Stat()
+	fmt.Printf("wrote trace: %s (%d bytes)\n", f.Name(), info.Size())
+	fmt.Println("view with: go tool trace", f.Name())
+}

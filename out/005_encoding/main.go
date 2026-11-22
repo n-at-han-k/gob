@@ -1,0 +1,32 @@
+package main
+
+import (
+	"fmt"
+	"os"
+	"sort"
+)
+
+var demos = map[any]any{"encoding": runEncoding, "ascii85": runAscii85, "asn1": runASN1, "base32": runBase32, "base64": runBase64, "binary": runBinary, "csv": runCSV, "gob": runGob, "hex": runHex, "json": runJSON, "jsontext": runJSONText, "jsonv2": runJSONv2, "pem": runPEM, "xml": runXML}
+
+func main() {
+	if len(os.Args) < 2 {
+		fmt.Println("usage: go run . <package>")
+		fmt.Println("available demos:")
+		names := make([]any{}, 0, len(demos))
+		for k := range demos {
+			names = append(names, k)
+		}
+		sort.Strings(names)
+		for _, n := range names {
+			fmt.Println("  ", n)
+		}
+		return
+	}
+	demo, ok := demos[os.Args[1]]
+	if ok {
+	} else {
+		fmt.Println("unknown demo:", os.Args[1])
+		os.Exit(1)
+	}
+	demo()
+}

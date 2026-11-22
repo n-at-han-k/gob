@@ -1,0 +1,25 @@
+package main
+
+import (
+	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"net/http/pprof"
+)
+
+func runPProf() {
+	srv := httptest.NewServer(http.DefaultServeMux)
+	defer func() {
+		srv.Close()
+	}()
+	resp, _ := http.Get(srv.URL + "/debug/pprof/")
+	body, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	fmt.Println("status:", resp.Status)
+	snippet := string(body)
+	if len(snippet) > 400 {
+		snippet = snippet[nil:400]
+	}
+	fmt.Println(snippet)
+}

@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+
+# Ruby in src/ -> Go in out/, mirroring the directory layout.
+$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
+require "fileutils"
+require "gob/go"
+
+sources = ARGV.empty? ? Dir.glob("src/**/*.rb").sort : ARGV
+gaps = Hash.new(0)
+ok = 0
+
+sources.each do |path|
+  out = path.sub(%r{\Asrc/}, "out/").sub(/\.rb\z/, ".go")
+  FileUtils.mkdir_p(File.dirname(out))
+  File.write(out, Gob::Go.new(File.read(path), path).emit)
+  ok += 1
+rescue Gob::Go::Unsupported => e
+  gaps[e.message[/`(.+?)`/, 1] || e.message] += 1
+rescue StandardError => e
+  gaps["#{e.class}: #{e.message.lines.first.to_s.strip[0, 60]}"] += 1
+end
+
+warn "emitted #{ok} / #{sources.size}"
+gaps.sort_by { -_2 }.each { |kind, n| warn format("  %-52s %d", kind, n) }

@@ -13,7 +13,7 @@ module Main
       mu = nil
       counter = 0
 
-      0...100.each do |i|
+      (0...100).each do |i|
         wg.Add(1)
 
         go do
@@ -30,7 +30,7 @@ module Main
       atomicCounter = nil
       wg2 = nil
 
-      0...100.each do |i|
+      (0...100).each do |i|
         wg2.Add(1)
 
         go do
@@ -43,6 +43,6 @@ module Main
       fmt.Println("atomic counter:", atomicCounter.Load())
       # Once guarantees init code runs exactly once.
       once = nil
-      0...3.each { |i| once.Do(lambda { fmt.Println("initialised") }) }
+      (0...3).each { |i| once.Do(lambda { fmt.Println("initialised") }) }
     end
 end

@@ -60,7 +60,7 @@ module Main
       # container/ring is a circular list where Next() past the end wraps.
       r = ring.New(5)
 
-      0...r.Len().each do |i|
+      (0...r.Len()).each do |i|
         r.Value = i
         r = r.Next()
       end

@@ -1,0 +1,24 @@
+package main
+
+import (
+	"fmt"
+	"io"
+	"log"
+	"net/mail"
+	"strings"
+)
+
+func runMail() {
+	raw := "From: Alice <alice@example.com>\r\n" + "To: Bob <bob@example.org>, carol@example.net\r\n" + "Subject: hi\r\n" + "Date: Mon, 01 Jan 2024 09:00:00 +0000\r\n" + "\r\n" + "hello there\r\n"
+	msg, err := mail.ReadMessage(strings.NewReader(raw))
+	if err != nil {
+		log.Fatal(err)
+	}
+	from, _ := mail.ParseAddress(msg.Header.Get("From"))
+	to, _ := mail.ParseAddressList(msg.Header.Get("To"))
+	fmt.Println("from:   ", from)
+	fmt.Println("to:     ", to)
+	fmt.Println("subject:", msg.Header.Get("Subject"))
+	body, _ := io.ReadAll(msg.Body)
+	fmt.Print("body:   ", string(body))
+}

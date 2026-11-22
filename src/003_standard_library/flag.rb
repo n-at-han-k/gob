@@ -21,7 +21,7 @@ module Main
         greeting = "!"
       end
 
-      0...count.each { |i| fmt.Println(greeting) }
+      (0...count).each { |i| fmt.Println(greeting) }
       fmt.Println("positional:", fs.Args())
     end
 end

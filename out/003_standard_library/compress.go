@@ -1,0 +1,91 @@
+package main
+
+import (
+	"bytes"
+	"compress/bzip2"
+	"compress/flate"
+	"compress/gzip"
+	"compress/lzw"
+	"compress/zlib"
+	"encoding/base64"
+	"fmt"
+	"io"
+	"log"
+)
+
+func runCompress() {
+	sample := "compress me compress me compress me compress me".bytes
+	gzipDemo(sample)
+	flateDemo(sample)
+	zlibDemo(sample)
+	lzwDemo(sample)
+	bzip2Demo()
+}
+
+func gzipDemo(in_ any) {
+	buf := nil
+	gw := gzip.NewWriter(buf)
+	_, err := gw.Write(in_)
+	if err != nil {
+		log.Fatal(err)
+	}
+	gw.Close()
+	compressedLen := buf.Len()
+	gr, err := gzip.NewReader(buf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	out, _ := io.ReadAll(gr)
+	gr.Close()
+	fmt.Printf("gzip:  %d -> %d bytes, roundtrip=%q\n", len(in_), compressedLen, out)
+}
+
+func flateDemo(in_ any) {
+	buf := nil
+	fw, _ := flate.NewWriter(buf, flate.DefaultCompression)
+	fw.Write(in_)
+	fw.Close()
+	fr := flate.NewReader(buf)
+	out, _ := io.ReadAll(fr)
+	fr.Close()
+	fmt.Printf("flate: roundtrip=%q\n", out)
+}
+
+func zlibDemo(in_ any) {
+	buf := nil
+	zw := zlib.NewWriter(buf)
+	zw.Write(in_)
+	zw.Close()
+	zr, err := zlib.NewReader(buf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	out, _ := io.ReadAll(zr)
+	zr.Close()
+	fmt.Printf("zlib:  roundtrip=%q\n", out)
+}
+
+func lzwDemo(in_ any) {
+	buf := nil
+	lw := lzw.NewWriter(buf, lzw.LSB, 8)
+	lw.Write(in_)
+	lw.Close()
+	lr := lzw.NewReader(buf, lzw.LSB, 8)
+	out, _ := io.ReadAll(lr)
+	lr.Close()
+	fmt.Printf("lzw:   roundtrip=%q\n", out)
+}
+
+func bzip2Demo() {
+	b64 := "QlpoOTFBWSZTWatrofEAAALZgAAQQAAQABJkwBAgADEA000EAB6j705RogeLuSKcKEhVtdD4gA=="
+	compressed, err := base64.StdEncoding.DecodeString(b64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	r := bzip2.NewReader(bytes.NewReader(compressed))
+	out, err := io.ReadAll(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("bzip2: decoded=%q\n", out)
+}
