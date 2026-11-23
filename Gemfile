@@ -8,3 +8,4 @@ gem "ast-crispr-ruby-prism"
 
 gem "unparser"
 gem "syntax_tree"
+gem "ffi"

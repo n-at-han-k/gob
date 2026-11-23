@@ -22,6 +22,7 @@ GEM
       prism
       rbs (~> 4.0)
     diff-lcs (2.0.0)
+    ffi (1.17.4-x86_64-linux-gnu)
     json (3.1.0)
     language_server-protocol (3.17.0.6)
     lint_roller (1.1.0)
@@ -107,6 +108,7 @@ PLATFORMS
 DEPENDENCIES
   ast-crispr
   ast-crispr-ruby-prism
+  ffi
   rubocop
   rubocop-disable_syntax
   rubocop-nathank

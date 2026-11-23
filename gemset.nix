@@ -83,6 +83,16 @@
     };
     version = "2.0.0";
   };
+  ffi = {
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0bbmph141hwnn3m4k8hx8nhy1imfjpz87h595ww4n1xf5r6b2gcx";
+      type = "gem";
+    };
+    version = "1.17.4";
+  };
   json = {
     groups = ["default"];
     platforms = [];
