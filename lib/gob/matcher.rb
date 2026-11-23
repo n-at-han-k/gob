@@ -2,6 +2,9 @@
 
 module Gob
   class Matcher
+    MISS = :__gob_miss__
+    DROP = :__gob_drop__
+
     Rule = Struct.new(:name, :block)
 
     def initialize
@@ -16,11 +19,14 @@ module Gob
     def match(node, context)
       @rules.each do |rule|
         result = context.instance_exec(node, &rule.block)
-        return result unless result.nil?
+        next if result == MISS
+
+        return nil if result == DROP
+        return result
       rescue NoMatchingPatternError
         next
       end
-      nil
+      MISS
     end
 
     attr_reader :rules

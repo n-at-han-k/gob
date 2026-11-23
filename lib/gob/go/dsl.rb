@@ -57,7 +57,8 @@ module Gob
       end
 
       def str_lit(value)
-        basic_lit(kind: "STRING", value: value.inspect)
+        # value is raw string content (as in source), not interpreted
+        basic_lit(kind: "STRING", value: "\"#{value}\"")
       end
 
       def int_lit(value)
