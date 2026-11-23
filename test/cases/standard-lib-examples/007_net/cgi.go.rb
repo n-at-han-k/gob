@@ -1,27 +1,17 @@
-# https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
 require "fmt"
-# https://pkg.go.dev/net/http — Package http provides HTTP client and server implementations.
 require "net/http"
-# https://pkg.go.dev/net/http/cgi — Package cgi implements CGI (Common Gateway Interface) as specified in RFC 3875.
 require "net/http/cgi"
-# https://pkg.go.dev/net/http/httptest — Package httptest provides utilities for HTTP testing.
 require "net/http/httptest"
-# https://pkg.go.dev/os — Package os provides a platform-independent interface to operating system functionality.
 require "os"
 module Main
   private
 
-    # CGI has two sides: cgi.Handler wraps an external CGI binary as an
-    # http.Handler, and cgi.Serve runs the *current* process as a CGI
-    # child. We demo the second: pretend the web server invoked us.
     def self.runCGI
-      # Fake the environment a real web server would set.
       os.Setenv("REQUEST_METHOD", "GET")
       os.Setenv("SERVER_PROTOCOL", "HTTP/1.1")
       os.Setenv("HTTP_HOST", "example.local")
       os.Setenv("PATH_INFO", "/hello")
       os.Setenv("QUERY_STRING", "who=world")
-      # httptest.NewRecorder captures the response so we can print it.
       rec = httptest.NewRecorder()
 
       handler =

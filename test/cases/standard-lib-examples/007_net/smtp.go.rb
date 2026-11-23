@@ -1,13 +1,8 @@
-# https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
 require "fmt"
-# https://pkg.go.dev/net/smtp — Package smtp implements the Simple Mail Transfer Protocol as defined in RFC 5321.
 require "net/smtp"
 module Main
   private
 
-    # smtp is the SMTP client — it dials a real mail server and speaks the
-    # protocol. We don't do that here (no server, no auth), so we just
-    # build the objects and print what smtp.SendMail would use.
     def self.runSMTP
       auth =
         smtp.PlainAuth("", "alice@example.com", "hunter2", "smtp.example.com")

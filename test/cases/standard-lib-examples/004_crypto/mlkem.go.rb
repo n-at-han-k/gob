@@ -1,17 +1,10 @@
-# https://pkg.go.dev/bytes — Package bytes implements functions for the manipulation of byte slices.
 require "bytes"
-# https://pkg.go.dev/crypto/mlkem — Package mlkem implements the quantum-resistant key encapsulation method ML-KEM (formerly Kyber), NIST FIPS 203.
 require "crypto/mlkem"
-# https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
 require "fmt"
-# https://pkg.go.dev/log — Package log implements a simple logging package.
 require "log"
 module Main
   private
 
-    # ML-KEM is the post-quantum key encapsulation mechanism NIST standardised
-    # as FIPS 203. Use the encapsulation key to derive a shared secret and a
-    # ciphertext; the holder of the decapsulation key recovers the same secret.
     def self.runMLKEM
       dk, err = mlkem.GenerateKey768()
 

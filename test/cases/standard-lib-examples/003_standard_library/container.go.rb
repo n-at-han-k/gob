@@ -1,15 +1,9 @@
-# https://pkg.go.dev/container/heap — Package heap provides heap operations for any type that implements heap.Interface.
 require "container/heap"
-# https://pkg.go.dev/container/list — Package list implements a doubly linked list.
 require "container/list"
-# https://pkg.go.dev/container/ring — Package ring implements operations on circular lists.
 require "container/ring"
-# https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
 require "fmt"
 module Main
-  # intHeap is a min-heap of ints; implements heap.Interface.
   class IntHeap
-    # type intHeap []int
     def Len
       return len(this)
     end
@@ -39,7 +33,6 @@ module Main
   private
 
     def self.runContainer
-      # container/list is a doubly linked list.
       l = list.New()
       l.PushBack("b")
       l.PushFront("a")
@@ -52,12 +45,10 @@ module Main
       end
 
       fmt.Println()
-      # container/heap turns any heap.Interface into a priority queue.
       h = IntHeap.new(5, 1, 4, 2, 3)
       heap.Init(h)
       fmt.Print(heap.Pop(h), " ") while h.Len() > 0
       fmt.Println()
-      # container/ring is a circular list where Next() past the end wraps.
       r = ring.New(5)
 
       (0...r.Len()).each do |i|

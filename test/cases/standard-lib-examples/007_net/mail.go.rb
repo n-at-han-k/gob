@@ -1,18 +1,11 @@
-# https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
 require "fmt"
-# https://pkg.go.dev/io — Package io provides basic interfaces to I/O primitives.
 require "io"
-# https://pkg.go.dev/log — Package log implements a simple logging package.
 require "log"
-# https://pkg.go.dev/net/mail — Package mail implements parsing of mail messages.
 require "net/mail"
-# https://pkg.go.dev/strings — Package strings implements simple functions to manipulate UTF-8 encoded strings.
 require "strings"
 module Main
   private
 
-    # net/mail parses RFC 5322 messages and addresses. It doesn't send —
-    # see net/smtp for that.
     def self.runMail
       raw =
         "From: Alice <alice@example.com>\r\n" +

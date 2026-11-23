@@ -1,22 +1,12 @@
-# https://pkg.go.dev/bytes — Package bytes implements functions for the manipulation of byte slices.
 require "bytes"
-# https://pkg.go.dev/compress/bzip2 — Package bzip2 implements bzip2 decompression.
 require "compress/bzip2"
-# https://pkg.go.dev/compress/flate — Package flate implements the DEFLATE compressed data format (RFC 1951).
 require "compress/flate"
-# https://pkg.go.dev/compress/gzip — Package gzip implements reading and writing of gzip format compressed files (RFC 1952).
 require "compress/gzip"
-# https://pkg.go.dev/compress/lzw — Package lzw implements the Lempel-Ziv-Welch compressed data format.
 require "compress/lzw"
-# https://pkg.go.dev/compress/zlib — Package zlib implements reading and writing of zlib format compressed data (RFC 1950).
 require "compress/zlib"
-# https://pkg.go.dev/encoding/base64 — Package base64 implements base64 encoding as specified by RFC 4648.
 require "encoding/base64"
-# https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
 require "fmt"
-# https://pkg.go.dev/io — Package io provides basic interfaces to I/O primitives.
 require "io"
-# https://pkg.go.dev/log — Package log implements a simple logging package.
 require "log"
 module Main
   private
@@ -28,7 +18,6 @@ module Main
       zlibDemo(sample)
       lzwDemo(sample)
       bzip2Demo()
-      # decompression-only, so uses a pre-made payload
     end
 
     def self.gzipDemo(in_)
@@ -92,8 +81,6 @@ module Main
     end
 
     def self.bzip2Demo
-      # The stdlib only decompresses bzip2, so we ship a pre-compressed
-      # payload (base64-encoded bzip2 of "hello bzip2\n") to decode.
       b64 =
         "QlpoOTFBWSZTWatrofEAAALZgAAQQAAQABJkwBAgADEA000EAB6j705RogeLuSKcKEhVtdD4gA=="
 

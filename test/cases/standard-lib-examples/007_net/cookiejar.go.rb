@@ -1,16 +1,10 @@
-# https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
 require "fmt"
-# https://pkg.go.dev/net/http — Package http provides HTTP client and server implementations.
 require "net/http"
-# https://pkg.go.dev/net/http/cookiejar — Package cookiejar implements an in-memory RFC 6265-compliant http.CookieJar.
 require "net/http/cookiejar"
-# https://pkg.go.dev/net/url — Package url parses URLs and implements query escaping.
 require "net/url"
 module Main
   private
 
-    # cookiejar is the Set-Cookie/Cookie plumbing behind http.Client: give
-    # the client a jar and it will remember cookies across requests.
     def self.runCookieJar
       jar, _ = cookiejar.New(nil)
       u, _ = url.Parse("https://example.com/")

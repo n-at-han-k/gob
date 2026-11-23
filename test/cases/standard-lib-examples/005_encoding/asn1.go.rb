@@ -1,12 +1,7 @@
-# https://pkg.go.dev/encoding/asn1 — Package asn1 implements parsing of DER-encoded ASN.1 data structures (ITU-T Rec X.690).
 require "encoding/asn1"
-# https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
 require "fmt"
-# https://pkg.go.dev/log — Package log implements a simple logging package.
 require "log"
 module Main
-  # ASN.1 encodes structured data as a compact binary format used by
-  # X.509 certificates, LDAP, SNMP, and other protocols.
   class Person
     attr_accessor :Name
     attr_accessor :Age

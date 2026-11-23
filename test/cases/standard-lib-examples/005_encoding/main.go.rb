@@ -1,16 +1,7 @@
-# https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
 require "fmt"
-# https://pkg.go.dev/os — Package os provides a platform-independent interface to operating system functionality.
 require "os"
-# https://pkg.go.dev/sort — Package sort provides primitives for sorting slices and user-defined collections.
 require "sort"
 module Main
-  # Each *.go file in this directory demonstrates one encoding/* subpackage.
-  # Run one demo at a time, e.g.:
-  #
-  # go run . json
-  #
-  # or list what's available with `go run .`.
   demos = {
     "encoding" => runEncoding,
     "ascii85" => runAscii85,
