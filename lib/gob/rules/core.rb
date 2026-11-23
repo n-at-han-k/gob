@@ -4,6 +4,14 @@ module Gob
   module Rules
     module_function
 
+    def const_go_name(name)
+      s = name.to_s
+      return s unless s.match?(/\A[A-Z0-9_]+\z/)
+      parts = s.split("_").reject(&:empty?)
+      return s.downcase if parts.length <= 1
+      parts.first.downcase + parts.drop(1).map { |p| p.capitalize }.join
+    end
+
     def register(matcher)
       matcher.rule(:program) do |node|
         next Matcher::MISS unless node.is_a?(SyntaxTree::Program)
@@ -72,6 +80,16 @@ module Gob
         Matcher::DROP
       end
 
+      matcher.rule(:begin_block) do |node|
+        next Matcher::MISS unless node.is_a?(SyntaxTree::Begin)
+        bs = node.bodystmt
+        if bs.is_a?(SyntaxTree::BodyStmt)
+          next Matcher::MISS if bs.rescue_clause || bs.else_clause || bs.ensure_clause
+        end
+        stmts = visit_all(stmt_body(bs)).map { |s| stmtify(s) }
+        SyntaxTree::Go::BlockStmt.new(lbrace: nil, list: stmts, rbrace: nil)
+      end
+
       matcher.rule(:require) do |node|
         next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
         next Matcher::MISS unless node.message.is_a?(SyntaxTree::Ident) && node.message.value == "require"
@@ -88,9 +106,142 @@ module Gob
 
         name = node.message.is_a?(SyntaxTree::Ident) ? node.message.value : node.message.to_s
         next Matcher::DROP if %w[private public protected module_function].include?(name)
+        next Matcher::MISS if %w[define_const define_var].include?(name)
 
         args = visit_args(node.arguments)
         call_expr(fun: ident(name), args: args)
+      end
+
+      matcher.rule(:define_const) do |node|
+        next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
+        next Matcher::MISS unless node.message.is_a?(SyntaxTree::Ident) && node.message.value == "define_const"
+
+        parts = node.arguments.is_a?(SyntaxTree::Args) ? node.arguments.parts : Array(node.arguments)
+        name_node = parts[0]
+        value_node = parts[1]
+        next Matcher::MISS unless name_node && value_node
+
+        name = case name_node
+               when SyntaxTree::SymbolLiteral then name_node.value.value.to_s
+               when SyntaxTree::Ident then name_node.value
+               when SyntaxTree::StringLiteral then string_value(name_node)
+               else name_node.to_s
+               end
+        go_name = Gob::Rules.const_go_name(name)
+        val = visit(value_node)
+        decl = SyntaxTree::Go::GenDecl.new(
+          doc: nil, tok_pos: nil, tok: "const", lparen: nil,
+          specs: [SyntaxTree::Go::ValueSpec.new(doc: nil, names: [ident(go_name)], type: nil, values: [val], comment: nil)],
+          rparen: nil
+        )
+        decl.instance_variable_set(:@location, node.location) rescue nil
+        decl
+      end
+
+      matcher.rule(:define_var) do |node|
+        next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
+        next Matcher::MISS unless node.message.is_a?(SyntaxTree::Ident) && node.message.value == "define_var"
+
+        parts = node.arguments.is_a?(SyntaxTree::Args) ? node.arguments.parts : Array(node.arguments)
+        name_node = parts[0]
+        type_node = parts[1]
+        value_node = parts[2]
+        next Matcher::MISS unless name_node && type_node
+
+        name = case name_node
+               when SyntaxTree::SymbolLiteral then name_node.value.value.to_s
+               when SyntaxTree::Ident then name_node.value
+               when SyntaxTree::StringLiteral then string_value(name_node)
+               else name_node.to_s
+               end
+        type_name = case type_node
+                    when SyntaxTree::SymbolLiteral then type_node.value.value.to_s
+                    when SyntaxTree::Ident then type_node.value
+                    when SyntaxTree::StringLiteral then string_value(type_node)
+                    else type_node.to_s
+                    end
+        val = value_node ? visit(value_node) : nil
+        spec = SyntaxTree::Go::ValueSpec.new(
+          doc: nil, names: [ident(name)], type: ident(type_name), values: val ? [val] : [], comment: nil
+        )
+        decl = SyntaxTree::Go::GenDecl.new(doc: nil, tok_pos: nil, tok: "var", lparen: nil, specs: [spec], rparen: nil)
+        decl.instance_variable_set(:@location, node.location) rescue nil
+        decl
+      end
+
+      matcher.rule(:define_const_call) do |node|
+        next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+        next Matcher::MISS unless node.receiver.nil?
+        msg = node.message
+        name_str = msg.is_a?(SyntaxTree::Ident) ? msg.value : msg.to_s
+        next Matcher::MISS unless name_str == "define_const"
+
+        parts = if node.arguments.is_a?(SyntaxTree::ArgParen)
+                  node.arguments.arguments.is_a?(SyntaxTree::Args) ? node.arguments.arguments.parts : Array(node.arguments.arguments)
+                elsif node.arguments.is_a?(SyntaxTree::Args)
+                  node.arguments.parts
+                else
+                  Array(node.arguments)
+                end
+        name_node = parts[0]
+        value_node = parts[1]
+        next Matcher::MISS unless name_node && value_node
+
+        name = case name_node
+               when SyntaxTree::SymbolLiteral then name_node.value.value.to_s
+               when SyntaxTree::Ident then name_node.value
+               when SyntaxTree::StringLiteral then string_value(name_node)
+               else name_node.to_s
+               end
+        go_name = Gob::Rules.const_go_name(name)
+        val = visit(value_node)
+        decl = SyntaxTree::Go::GenDecl.new(
+          doc: nil, tok_pos: nil, tok: "const", lparen: nil,
+          specs: [SyntaxTree::Go::ValueSpec.new(doc: nil, names: [ident(go_name)], type: nil, values: [val], comment: nil)],
+          rparen: nil
+        )
+        decl.instance_variable_set(:@location, node.location) rescue nil
+        decl
+      end
+
+      matcher.rule(:define_var_call) do |node|
+        next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+        next Matcher::MISS unless node.receiver.nil?
+        msg = node.message
+        name_str = msg.is_a?(SyntaxTree::Ident) ? msg.value : msg.to_s
+        next Matcher::MISS unless name_str == "define_var"
+
+        parts = if node.arguments.is_a?(SyntaxTree::ArgParen)
+                  node.arguments.arguments.is_a?(SyntaxTree::Args) ? node.arguments.arguments.parts : Array(node.arguments.arguments)
+                elsif node.arguments.is_a?(SyntaxTree::Args)
+                  node.arguments.parts
+                else
+                  Array(node.arguments)
+                end
+        name_node = parts[0]
+        type_node = parts[1]
+        value_node = parts[2]
+        next Matcher::MISS unless name_node && type_node
+
+        name = case name_node
+               when SyntaxTree::SymbolLiteral then name_node.value.value.to_s
+               when SyntaxTree::Ident then name_node.value
+               when SyntaxTree::StringLiteral then string_value(name_node)
+               else name_node.to_s
+               end
+        type_name = case type_node
+                    when SyntaxTree::SymbolLiteral then type_node.value.value.to_s
+                    when SyntaxTree::Ident then type_node.value
+                    when SyntaxTree::StringLiteral then string_value(type_node)
+                    else type_node.to_s
+                    end
+        val = value_node ? visit(value_node) : nil
+        spec = SyntaxTree::Go::ValueSpec.new(
+          doc: nil, names: [ident(name)], type: ident(type_name), values: val ? [val] : [], comment: nil
+        )
+        decl = SyntaxTree::Go::GenDecl.new(doc: nil, tok_pos: nil, tok: "var", lparen: nil, specs: [spec], rparen: nil)
+        decl.instance_variable_set(:@location, node.location) rescue nil
+        decl
       end
 
       matcher.rule(:module_main) do |node|
@@ -125,12 +276,24 @@ module Gob
 
         name = node.name.value
         param_names = param_name_list(node.params)
+        sig = signature_for_def(node)
+
         body_stmts = scoped(param_names) do
           visit_all(stmt_body(node.bodystmt)).map { |s| stmtify(s) }
         end
-        params = param_names.map { |n| SyntaxTree::Go::Field.new(names: [ident(n)], type: nil) }
 
-        func_decl(name: name, params: params, body: body_stmts)
+        params = param_names.each_with_index.map do |n, i|
+          t = sig && sig[:params][i] ? parse_go_type(sig[:params][i]) : nil
+          SyntaxTree::Go::Field.new(names: [ident(n)], type: t)
+        end
+
+        results = if sig && sig[:returns] && !sig[:returns].empty?
+                    field_list(list: sig[:returns].map { |r| SyntaxTree::Go::Field.new(names: [], type: parse_go_type(r)) })
+                  else
+                    nil
+                  end
+
+        func_decl(name: name, params: params, body: body_stmts, results: results)
       end
 
       matcher.rule(:call_node) do |node|
@@ -139,6 +302,7 @@ module Gob
         receiver = visit(node.receiver)
         msg = node.message
         msg_name = msg.is_a?(SyntaxTree::Const) ? msg.value : msg.value
+        next Matcher::MISS if receiver.nil? && %w[define_const define_var].include?(msg_name.to_s)
 
         # No-arg, no-parens call is a selector/property access in Go golden
         if node.arguments.nil?
@@ -215,6 +379,20 @@ module Gob
       matcher.rule(:assign) do |node|
         next Matcher::MISS unless node.is_a?(SyntaxTree::Assign)
 
+        t = node.target
+        if (t.is_a?(SyntaxTree::VarField) && t.value.is_a?(SyntaxTree::Const)) ||
+           t.is_a?(SyntaxTree::ConstRef)
+          name = assign_target_name(t, self)
+          val = visit(node.value)
+          decl = SyntaxTree::Go::GenDecl.new(
+            doc: nil, tok_pos: nil, tok: "const", lparen: nil,
+            specs: [SyntaxTree::Go::ValueSpec.new(doc: nil, names: [ident(Gob::Rules.const_go_name(name.to_s))], type: nil, values: [val], comment: nil)],
+            rparen: nil
+          )
+          decl.instance_variable_set(:@location, node.location) rescue nil
+          next decl
+        end
+
         targets = assign_targets(node.target, self)
         value = visit(node.value)
         build_assign(targets, [value], self)
@@ -281,7 +459,7 @@ module Gob
       matcher.rule(:const_ref) do |node|
         next Matcher::MISS unless node.is_a?(SyntaxTree::ConstRef)
 
-        ident(node.constant.value)
+        ident(Gob::Rules.const_go_name(node.constant.value))
       end
 
       matcher.rule(:class_declaration) do |node|
@@ -398,7 +576,7 @@ module Gob
         next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
         next Matcher::MISS unless node.value.is_a?(SyntaxTree::Const)
 
-        ident(node.value.value)
+        ident(Gob::Rules.const_go_name(node.value.value))
       end
 
       matcher.rule(:unary) do |node|

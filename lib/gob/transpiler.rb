@@ -159,11 +159,127 @@ module Gob
       end
     end
 
+    def signature_for_def(node)
+      sig = nil
+      # inline comments attached anywhere on the def node
+      collect_comments(node).each do |c|
+        s = parse_signature_comment(c.value)
+        sig = s if s
+      end
+      # above-line comment
+      if !sig && node.location && @source
+        prev_line = node.location.start_line - 2
+        if prev_line >= 0
+          line = @source.lines[prev_line].to_s
+          s = parse_signature_comment(line)
+          sig = s if s
+        end
+      end
+      sig
+    end
+
+    def collect_comments(node, out = [])
+      return out unless node
+      if node.respond_to?(:comments) && node.comments
+        out.concat(node.comments)
+      end
+      if node.respond_to?(:deconstruct_keys)
+        node.deconstruct_keys(nil).each_value do |v|
+          case v
+          when SyntaxTree::Node then collect_comments(v, out)
+          when Array then v.each { |x| collect_comments(x, out) if x.is_a?(SyntaxTree::Node) }
+          end
+        end
+      end
+      out
+    end
+
+    def parse_signature_comment(text)
+      t = text.to_s.strip
+      t = t.sub(/^#\s*/, "")
+      # match (params) -> returns
+      m = t.match(/^\(([^)]*)\)\s*->\s*(.+)$/)
+      return nil unless m
+      params = m[1].strip
+      ret = m[2].strip
+      param_types = params.empty? ? [] : split_type_list(params)
+      return_types = parse_return_types(ret)
+      { params: param_types, returns: return_types }
+    end
+
+    def split_type_list(s)
+      # split on commas, but respect nested parens/brackets/braces
+      parts = []
+      depth = 0
+      cur = +""
+      s.each_char do |ch|
+        case ch
+        when "(", "[", "{", "<" then depth += 1; cur << ch
+        when ")", "]", "}", ">" then depth -= 1; cur << ch
+        when ","
+          if depth == 0
+            parts << cur.strip; cur = +""
+          else
+            cur << ch
+          end
+        else
+          cur << ch
+        end
+      end
+      parts << cur.strip unless cur.strip.empty?
+      parts
+    end
+
+    def parse_return_types(s)
+      t = s.strip
+      if t.start_with?("(") && t.end_with?(")")
+        split_type_list(t[1..-2])
+      else
+        [t]
+      end
+    end
+
+    def parse_go_type(str)
+      s = str.to_s.strip
+      return ident("any") if s.empty? || s == "any"
+      if s.start_with?("*")
+        return SyntaxTree::Go::StarExpr.new(star: nil, x: parse_go_type(s[1..].strip))
+      end
+      if s.start_with?("[]")
+        return SyntaxTree::Go::ArrayType.new(lbrack: nil, len: nil, elt: parse_go_type(s[2..].strip))
+      end
+      if s.start_with?("map[")
+        # find matching ]
+        depth = 0
+        i = 4
+        while i < s.length
+          ch = s[i]
+          depth += 1 if ch == "["
+          depth -= 1 if ch == "]"
+          break if ch == "]" && depth == 0
+          i += 1
+        end
+        key = s[4...i]
+        val = s[(i+1)..].to_s.strip
+        return SyntaxTree::Go::MapType.new(map: nil, key: parse_go_type(key), value: parse_go_type(val))
+      end
+      if s.start_with?("func(")
+        # simple func type: func(...) ...
+        return ident(s) # fallback - rare in our corpus
+      end
+      # selector type like pkg.Type
+      if s.include?(".") && !s.include?(" ")
+        parts = s.split(".", 2)
+        return selector_expr(x: ident(parts[0]), sel: parts[1])
+      end
+      ident(s)
+    end
+
     def assign_target_name(node, _ctx = self)
       case node
       when SyntaxTree::VarField
         name = node.value
-        name = name.value if name.is_a?(SyntaxTree::Ident)
+        name = name.value if name.is_a?(SyntaxTree::Ident) || name.is_a?(SyntaxTree::Const)
         name.to_s
       when SyntaxTree::Ident
         node.value

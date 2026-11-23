@@ -1,14 +1,14 @@
 require "fmt"
 module Main
-  pi = 3.14159
-  statusActive = "active"
-  statusInactive = "inactive"
+  PI = 3.14159
+  STATUS_ACTIVE = "active"
+  STATUS_INACTIVE = "inactive"
   packageLevel = "I live at package scope"
   def main
-    a = 0
-    b = ""
-    c = false
-    d = 0.0
+    define_var :a, :int
+    define_var :b, :string
+    define_var :c, :bool
+    define_var :d, :float64
     fmt.Println("zero values:", a, b, c, d)
     name = "Nathan"
     age = 30
@@ -24,15 +24,17 @@ module Main
     port = 8080
     enabled = true
     fmt.Println(host, port, enabled)
-    count = 100
+    define_var :count, :int32, 100
     big = int64(count) * 1000
     fmt.Println(big)
-    greeting = "hi"
-    fmt.Println(greeting, pi, statusActive, statusInactive)
+    define_const :greeting, "hi"
+    fmt.Println(greeting, PI, STATUS_ACTIVE, STATUS_INACTIVE)
     fmt.Println(packageLevel)
     shadow = "outer"
-    shadow = "inner"
-    fmt.Println(shadow)
+    begin
+      shadow = "inner"
+      fmt.Println(shadow)
+    end
     fmt.Println(shadow)
     swap1, swap2 = "first", "second"
     swap1, swap2 = swap2, swap1
@@ -43,7 +45,7 @@ module Main
 
   private
 
-    def self.ignoreOne
+    def self.ignoreOne # () -> (string, string)
       return "discarded", "kept"
     end
 end
