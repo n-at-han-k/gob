@@ -2,20 +2,6 @@ require "tree_haver"
 require "ast/dsl"
 
 module Gob
-  # Walks a tree-sitter Go tree and builds a SyntaxTree AST with the lib/ast
-  # DSL, which SyntaxTree then prints as Ruby.
-  #
-  # The walk owns STRUCTURE -- def/end, bodies, nesting -- because an ast-grep
-  # fix cannot: rewriting a function_declaration overlaps every fix inside it,
-  # so one scan converts one level of nesting and the rest comes through as raw
-  # Go. All layout belongs to rubocop.
-  #
-  # Reads refs/ directly. Nothing is written back there, and there is no
-  # working copy: a Go construct with no Ruby counterpart is resolved here
-  # rather than by rewriting the source first.
-  #
-  # An unhandled node raises rather than being skipped, so a gap shows up as a
-  # failure naming the kind instead of silently missing code.
   class Emitter
     include Ast::DSL
 
@@ -35,11 +21,6 @@ module Gob
 
     LITERAL_STRINGS = %w[interpreted_string_literal raw_string_literal].freeze
 
-    # A Go name that is a Ruby keyword cannot be emitted as-is. The corpus has
-    # `in`, `self` and `yield` as parameter and variable names, each of which
-    # is a syntax error in Ruby. One trailing underscore is the smallest change
-    # that keeps the Go name readable, and it is applied at EVERY identifier so
-    # a declaration and its uses stay spelled the same.
     RUBY_KEYWORDS = %w[
       alias and begin break case class def defined? do else elsif end ensure
       false for if in module next nil not or redo rescue retry return self
@@ -52,8 +33,11 @@ module Gob
     def self.register_backend!
       @registered ||= begin
         TreeHaver::BackendRegistry.register(TreeHaver::KREUZBERG_LANGUAGE_PACK_BACKEND)
-        finder = TreeHaver::GrammarFinder.new(:go)
-        finder.register! if finder.available?
+        TreeHaver::GrammarFinder.new(:go).new do |finder|
+          if finder.available?
+            finder.register!
+          end
+        end
         true
       end
     end
@@ -65,35 +49,27 @@ module Gob
     def emit
       self.class.register_backend!
       root = TreeHaver.parser_for(:go, backend_type: :tree_sitter).parse(@source).root_node
-      raise Unsupported, "Go source does not parse" if root.has_error?
+
+      if root.has_error?
+        raise Unsupported, "Go source does not parse"
+      end
 
       SyntaxTree::Formatter.format("", Program(StatementList(file(root))))
     end
 
-    # A Go file is a package clause, its imports, then declarations. The
-    # package becomes a module around the declarations, the imports become
-    # requires above it, and the comments written before the package clause
-    # are the file's own header and stay outside both.
     def file(root)
       nodes = root.children.select(&:named?)
       at = nodes.find_index { _1.type == "package_clause" }
       header = (at ? nodes.first(at) : []).select { _1.type == "comment" }
       rest = at ? nodes.drop(at + 1) : nodes
 
-      # Split at the LAST import rather than partitioning by type: a comment
-      # before or between the imports documents them and belongs up top, while
-      # one after them documents the declaration it sits above and has to stay
-      # with it, inside the module.
       last = rest.rindex { _1.type == "import_declaration" }
-      # A single-line import carries its doc as the NEXT sibling, past the
-      # split, so the preamble has to reach one further to pick it up.
-      last += 1 if last && same_line_comment?(rest[last], rest[last + 1])
+      if last && same_line_comment?(rest[last], rest[last + 1])
+        last += 1
+      end
       preamble = last ? rest.first(last + 1) : []
       tail = last ? rest.drop(last + 1) : rest
 
-      # A Go method is declared beside its type, not inside it. Collect them by
-      # receiver first so each type_spec can take its own and emit them in the
-      # class body -- a class without its methods is not the type.
       @methods = tail.select { _1.type == "method_declaration" }.group_by { receiver_type(_1) }
       body = tail.reject { _1.type == "method_declaration" }.flat_map { Array(visit(_1)) }
       body += orphan_classes
