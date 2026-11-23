@@ -1,0 +1,1455 @@
+[
+  {
+    "name": "Comment",
+    "category": "node",
+    "fields": [
+      {
+        "name": "Slash",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Text",
+        "type": "string",
+        "role": "string"
+      }
+    ]
+  },
+  {
+    "name": "CommentGroup",
+    "category": "node",
+    "fields": [
+      {
+        "name": "List",
+        "type": "[]*Comment",
+        "role": "children",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "Field",
+    "category": "node",
+    "fields": [
+      {
+        "name": "Doc",
+        "type": "*CommentGroup",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Names",
+        "type": "[]*Ident",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Type",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Tag",
+        "type": "*BasicLit",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Comment",
+        "type": "*CommentGroup",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "FieldList",
+    "category": "node",
+    "fields": [
+      {
+        "name": "Opening",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "List",
+        "type": "[]*Field",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Closing",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "BadExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "From",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "To",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "Ident",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "NamePos",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Name",
+        "type": "string",
+        "role": "string"
+      },
+      {
+        "name": "Obj",
+        "type": "*Object",
+        "role": "semantic",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "Ellipsis",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Ellipsis",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Elt",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "BasicLit",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "ValuePos",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "ValueEnd",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Kind",
+        "type": "token.Token",
+        "role": "token"
+      },
+      {
+        "name": "Value",
+        "type": "string",
+        "role": "string"
+      }
+    ]
+  },
+  {
+    "name": "FuncLit",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Type",
+        "type": "*FuncType",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Body",
+        "type": "*BlockStmt",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "CompositeLit",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Type",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Lbrace",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Elts",
+        "type": "[]Expr",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Rbrace",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Incomplete",
+        "type": "bool",
+        "role": "bool"
+      }
+    ]
+  },
+  {
+    "name": "ParenExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Lparen",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Rparen",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "SelectorExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Sel",
+        "type": "*Ident",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "IndexExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Lbrack",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Index",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Rbrack",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "IndexListExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Lbrack",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Indices",
+        "type": "[]Expr",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Rbrack",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "SliceExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Lbrack",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Low",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "High",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Max",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Slice3",
+        "type": "bool",
+        "role": "bool"
+      },
+      {
+        "name": "Rbrack",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "TypeAssertExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Lparen",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Type",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Rparen",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "CallExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Fun",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Lparen",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Args",
+        "type": "[]Expr",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Ellipsis",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Rparen",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "StarExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Star",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "UnaryExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "OpPos",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Op",
+        "type": "token.Token",
+        "role": "token"
+      },
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "BinaryExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "OpPos",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Op",
+        "type": "token.Token",
+        "role": "token"
+      },
+      {
+        "name": "Y",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "KeyValueExpr",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Key",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Colon",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Value",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "ArrayType",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Lbrack",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Len",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Elt",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "StructType",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Struct",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Fields",
+        "type": "*FieldList",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Incomplete",
+        "type": "bool",
+        "role": "bool"
+      }
+    ]
+  },
+  {
+    "name": "FuncType",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Func",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "TypeParams",
+        "type": "*FieldList",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Params",
+        "type": "*FieldList",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Results",
+        "type": "*FieldList",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "InterfaceType",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Interface",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Methods",
+        "type": "*FieldList",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Incomplete",
+        "type": "bool",
+        "role": "bool"
+      }
+    ]
+  },
+  {
+    "name": "MapType",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Map",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Key",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Value",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "ChanType",
+    "category": "expr",
+    "fields": [
+      {
+        "name": "Begin",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Arrow",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Dir",
+        "type": "ChanDir",
+        "role": "scalar"
+      },
+      {
+        "name": "Value",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "BadStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "From",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "To",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "DeclStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Decl",
+        "type": "Decl",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "EmptyStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Semicolon",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Implicit",
+        "type": "bool",
+        "role": "bool"
+      }
+    ]
+  },
+  {
+    "name": "LabeledStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Label",
+        "type": "*Ident",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Colon",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Stmt",
+        "type": "Stmt",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "ExprStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "SendStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Chan",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Arrow",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Value",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "IncDecStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "TokPos",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Tok",
+        "type": "token.Token",
+        "role": "token"
+      }
+    ]
+  },
+  {
+    "name": "AssignStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Lhs",
+        "type": "[]Expr",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "TokPos",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Tok",
+        "type": "token.Token",
+        "role": "token"
+      },
+      {
+        "name": "Rhs",
+        "type": "[]Expr",
+        "role": "children",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "GoStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Go",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Call",
+        "type": "*CallExpr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "DeferStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Defer",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Call",
+        "type": "*CallExpr",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "ReturnStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Return",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Results",
+        "type": "[]Expr",
+        "role": "children",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "BranchStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "TokPos",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Tok",
+        "type": "token.Token",
+        "role": "token"
+      },
+      {
+        "name": "Label",
+        "type": "*Ident",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "BlockStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Lbrace",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "List",
+        "type": "[]Stmt",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Rbrace",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "IfStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "If",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Init",
+        "type": "Stmt",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Cond",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Body",
+        "type": "*BlockStmt",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Else",
+        "type": "Stmt",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "CaseClause",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Case",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "List",
+        "type": "[]Expr",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Colon",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Body",
+        "type": "[]Stmt",
+        "role": "children",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "SwitchStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Switch",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Init",
+        "type": "Stmt",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Tag",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Body",
+        "type": "*BlockStmt",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "TypeSwitchStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Switch",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Init",
+        "type": "Stmt",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Assign",
+        "type": "Stmt",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Body",
+        "type": "*BlockStmt",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "CommClause",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Case",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Comm",
+        "type": "Stmt",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Colon",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Body",
+        "type": "[]Stmt",
+        "role": "children",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "SelectStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "Select",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Body",
+        "type": "*BlockStmt",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "ForStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "For",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Init",
+        "type": "Stmt",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Cond",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Post",
+        "type": "Stmt",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Body",
+        "type": "*BlockStmt",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "RangeStmt",
+    "category": "stmt",
+    "fields": [
+      {
+        "name": "For",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Key",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Value",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "TokPos",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Tok",
+        "type": "token.Token",
+        "role": "token"
+      },
+      {
+        "name": "Range",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "X",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Body",
+        "type": "*BlockStmt",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "ImportSpec",
+    "category": "spec",
+    "fields": [
+      {
+        "name": "Doc",
+        "type": "*CommentGroup",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Name",
+        "type": "*Ident",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Path",
+        "type": "*BasicLit",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Comment",
+        "type": "*CommentGroup",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "EndPos",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "ValueSpec",
+    "category": "spec",
+    "fields": [
+      {
+        "name": "Doc",
+        "type": "*CommentGroup",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Names",
+        "type": "[]*Ident",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Type",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Values",
+        "type": "[]Expr",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Comment",
+        "type": "*CommentGroup",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "TypeSpec",
+    "category": "spec",
+    "fields": [
+      {
+        "name": "Doc",
+        "type": "*CommentGroup",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Name",
+        "type": "*Ident",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "TypeParams",
+        "type": "*FieldList",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Assign",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Type",
+        "type": "Expr",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Comment",
+        "type": "*CommentGroup",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "BadDecl",
+    "category": "decl",
+    "fields": [
+      {
+        "name": "From",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "To",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "GenDecl",
+    "category": "decl",
+    "fields": [
+      {
+        "name": "Doc",
+        "type": "*CommentGroup",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "TokPos",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Tok",
+        "type": "token.Token",
+        "role": "token"
+      },
+      {
+        "name": "Lparen",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Specs",
+        "type": "[]Spec",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Rparen",
+        "type": "token.Pos",
+        "role": "pos"
+      }
+    ]
+  },
+  {
+    "name": "FuncDecl",
+    "category": "decl",
+    "fields": [
+      {
+        "name": "Doc",
+        "type": "*CommentGroup",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Recv",
+        "type": "*FieldList",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Name",
+        "type": "*Ident",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Type",
+        "type": "*FuncType",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Body",
+        "type": "*BlockStmt",
+        "role": "child",
+        "optional": true
+      }
+    ]
+  },
+  {
+    "name": "File",
+    "category": "node",
+    "fields": [
+      {
+        "name": "Doc",
+        "type": "*CommentGroup",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Package",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Name",
+        "type": "*Ident",
+        "role": "child",
+        "optional": true
+      },
+      {
+        "name": "Decls",
+        "type": "[]Decl",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "FileStart",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "FileEnd",
+        "type": "token.Pos",
+        "role": "pos"
+      },
+      {
+        "name": "Scope",
+        "type": "*Scope",
+        "role": "semantic",
+        "optional": true
+      },
+      {
+        "name": "Imports",
+        "type": "[]*ImportSpec",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Unresolved",
+        "type": "[]*Ident",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "Comments",
+        "type": "[]*CommentGroup",
+        "role": "children",
+        "optional": true
+      },
+      {
+        "name": "GoVersion",
+        "type": "string",
+        "role": "string"
+      }
+    ]
+  },
+  {
+    "name": "Package",
+    "category": "node",
+    "fields": [
+      {
+        "name": "Name",
+        "type": "string",
+        "role": "string"
+      },
+      {
+        "name": "Scope",
+        "type": "*Scope",
+        "role": "semantic",
+        "optional": true
+      },
+      {
+        "name": "Imports",
+        "type": "map[string]*Object",
+        "role": "map",
+        "optional": true
+      },
+      {
+        "name": "Files",
+        "type": "map[string]*File",
+        "role": "map",
+        "optional": true
+      }
+    ]
+  }
+]

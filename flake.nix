@@ -89,6 +89,7 @@
           shellHook = /* bash */ ''
             export BUNDLE_GEMFILE="$PWD/Gemfile"
             export BUNDLE_FROZEN=false
+            export RUBYLIB="$PWD/lib''${RUBYLIB:+:$RUBYLIB}"
 
             # Services run this shell too, sometimes as a user who cannot write
             # the checkout; skip the regen rather than dump a backtrace.

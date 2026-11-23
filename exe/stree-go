@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export RUBYLIB="$ROOT/lib${RUBYLIB:+:$RUBYLIB}"
+
+if [ $# -eq 0 ]; then
+  exec bundle exec stree --plugins=go
+fi
+
+cmd="$1"
+shift
+exec bundle exec stree "$cmd" --plugins=go "$@"

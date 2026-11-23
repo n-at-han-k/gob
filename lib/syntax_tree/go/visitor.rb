@@ -1,5 +1,16 @@
 module SyntaxTree::Go
   class Visitor < SyntaxTree::BasicVisitor
+    def visit(node)
+      case node
+      when Array
+        node.map { |child| visit(child) }
+      when nil
+        nil
+      else
+        node.accept(self)
+      end
+    end
+
     alias visit_comment visit_child_nodes
     alias visit_comment_group visit_child_nodes
     alias visit_field visit_child_nodes
