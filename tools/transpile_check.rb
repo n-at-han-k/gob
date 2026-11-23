@@ -38,10 +38,27 @@ def normalize(node)
       next if key == :go_version
       next if key.to_s.end_with?("_pos")
       next if key.to_s.end_with?("_end")
-      next if %i[opening closing lparen rparen lbrace rbrace lbrack rbrack colon semicolon arrow ellipsis tok_pos begin_ end_ pos func return_ case_ for_ if_ else_].include?(key)
+      next if %i[opening closing lparen rparen lbrace rbrace lbrack rbrack colon semicolon arrow ellipsis tok_pos begin_ end_ pos func return_ case_ for_ if_ else_ defer go select range struct interface map chan switch].include?(key)
       next if pos_hash?(value)
 
       hash[key.to_s] = normalize(value)
+    end
+    # Canonicalize numeric literal formatting
+    if hash["type"] == "BasicLit" && hash["kind"] == "INT" && hash["value"].is_a?(String)
+      v = hash["value"].delete("_")
+      begin
+        hash["value"] = Integer(v).to_s
+      rescue ArgumentError
+        hash["value"] = v
+      end
+    end
+    if hash["type"] == "BasicLit" && hash["kind"] == "FLOAT" && hash["value"].is_a?(String)
+      v = hash["value"].delete("_")
+      begin
+        hash["value"] = Float(v).to_s
+      rescue ArgumentError
+        hash["value"] = v
+      end
     end
     hash
   when Array

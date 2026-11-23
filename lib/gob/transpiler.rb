@@ -53,7 +53,7 @@ module Gob
     end
 
     def visit_params(node)
-      param_name_list(node).map { |name| SyntaxTree::Go::Field.new(names: [ident(name)], type: nil) }
+      param_name_list(node).map { |name| SyntaxTree::Go::Field.new(names: [ident(name)], type: ident("any")) }
     end
 
     def visit_args(node)
@@ -62,7 +62,22 @@ module Gob
       args_node = node
       args_node = args_node.arguments if args_node.is_a?(SyntaxTree::ArgParen)
       parts = args_node.is_a?(SyntaxTree::Args) ? args_node.parts : Array(args_node)
-      visit_all(parts)
+      visited = visit_all(parts)
+
+      # Collapse trailing keyword args into a single map[any]any{} literal
+      if visited.any? { |v| v.is_a?(SyntaxTree::Go::KeyValueExpr) }
+        kwargs = []
+        while visited.last.is_a?(SyntaxTree::Go::KeyValueExpr)
+          kwargs.unshift(visited.pop)
+        end
+        if !kwargs.empty?
+          visited << SyntaxTree::Go::CompositeLit.new(
+            type: SyntaxTree::Go::MapType.new(map: nil, key: ident("any"), value: ident("any")),
+            lbrace: nil, elts: kwargs, rbrace: nil, incomplete: false
+          )
+        end
+      end
+      visited
     end
 
     def stmt_body(node)
@@ -156,6 +171,8 @@ module Gob
         node.constant.value
       when SyntaxTree::VarRef
         node.value.is_a?(SyntaxTree::Ident) ? node.value.value : node.value.to_s
+      when SyntaxTree::ARefField, SyntaxTree::Field, SyntaxTree::ConstPathField
+        node
       else
         node.to_s
       end
@@ -163,7 +180,7 @@ module Gob
 
     def assign_targets(node, _ctx = self)
       case node
-      when SyntaxTree::VarField, SyntaxTree::Ident, SyntaxTree::ConstRef
+      when SyntaxTree::VarField, SyntaxTree::Ident, SyntaxTree::ConstRef, SyntaxTree::ARefField, SyntaxTree::Field, SyntaxTree::ConstPathField
         [assign_target_name(node)]
       when SyntaxTree::MLHS
         node.parts.map { |p| assign_target_name(p) }
@@ -173,45 +190,58 @@ module Gob
     end
 
     def build_assign(targets, values, ctx = self)
-      names = targets.map { |t| t.to_s }
+      simple = targets.all? { |t| t.is_a?(String) || t.is_a?(Symbol) }
+      names = targets.map { |t| t.is_a?(String) || t.is_a?(Symbol) ? t.to_s : nil }
+
       # Package scope: var decl
       if package_scope?
         value = values.length == 1 ? values.first : array_composite(values)
-        specs = names.map.with_index do |name, i|
-          v = values.length == names.length ? values[i] : (i == 0 ? value : nil)
-          SyntaxTree::Go::ValueSpec.new(
-            doc: nil, names: [ident(name)], type: nil,
-            values: v ? [v] : [], comment: nil
-          )
+        if simple
+          if names.length > 1 && values.length != names.length
+            spec = SyntaxTree::Go::ValueSpec.new(
+              doc: nil, names: names.map { |n| ident(n) }, type: nil,
+              values: [value], comment: nil
+            )
+            return SyntaxTree::Go::GenDecl.new(doc: nil, tok_pos: nil, tok: "var", lparen: nil, specs: [spec], rparen: nil)
+          end
+          specs = names.map.with_index do |name, i|
+            v = values.length == names.length ? values[i] : (i == 0 ? value : nil)
+            SyntaxTree::Go::ValueSpec.new(doc: nil, names: [ident(name)], type: nil, values: v ? [v] : [], comment: nil)
+          end
+          return SyntaxTree::Go::GenDecl.new(doc: nil, tok_pos: nil, tok: "var", lparen: nil, specs: specs, rparen: nil)
         end
-        # If single multi-value RHS assigned to multiple names, use one spec
-        if names.length > 1 && values.length != names.length
-          spec = SyntaxTree::Go::ValueSpec.new(
-            doc: nil, names: names.map { |n| ident(n) }, type: nil,
-            values: [value], comment: nil
-          )
-          return SyntaxTree::Go::GenDecl.new(doc: nil, tok_pos: nil, tok: "var", lparen: nil, specs: [spec], rparen: nil)
-        end
-        return SyntaxTree::Go::GenDecl.new(doc: nil, tok_pos: nil, tok: "var", lparen: nil, specs: specs, rparen: nil)
+        # fallback
+        lhs = targets.map { |t| t.is_a?(String) ? ident(t) : visit(t) }
+        return SyntaxTree::Go::AssignStmt.new(lhs: lhs, tok_pos: nil, tok: "=", rhs: values.length == 1 ? values : [array_composite(values)])
       end
 
       # Function scope
-      fresh = names.any? { |n| n.match?(/\A[\w]+\z/) && !declared?(n) }
-      names.each { |n| declare(n) }
-      tok = fresh ? ":=" : "="
+      if simple
+        fresh = names.any? { |n| n.match?(/\A[\w]+\z/) && !declared?(n) }
+        names.each { |n| declare(n) }
+        tok = fresh ? ":=" : "="
+        lhs = names.map { |n| ident(n) }
+      else
+        lhs = targets.map { |t| t.is_a?(String) ? ident(t) : visit(t) }
+        lhs.each { |n| declare(n.name) if n.is_a?(SyntaxTree::Go::Ident) }
+        tok = "="
+      end
 
       rhs = if values.length == 1
-              values
+              v = values.first
+              if lhs.length == 1 && lhs.first.is_a?(SyntaxTree::Go::SelectorExpr)
+                if v.is_a?(SyntaxTree::Go::CallExpr) && v.fun.is_a?(SyntaxTree::Go::SelectorExpr) && v.fun.x.is_a?(SyntaxTree::Go::CallExpr)
+                  v = SyntaxTree::Go::ParenExpr.new(lparen: nil, x: v, rparen: nil)
+                elsif v.is_a?(SyntaxTree::Go::Ident)
+                  v = SyntaxTree::Go::ParenExpr.new(lparen: nil, x: v, rparen: nil)
+                end
+              end
+              [v]
             else
               [array_composite(values)]
             end
 
-      SyntaxTree::Go::AssignStmt.new(
-        lhs: names.map { |n| ident(n) },
-        tok_pos: nil,
-        tok: tok,
-        rhs: rhs
-      )
+      SyntaxTree::Go::AssignStmt.new(lhs: lhs, tok_pos: nil, tok: tok, rhs: rhs)
     end
 
     def array_composite(values)
@@ -226,6 +256,66 @@ module Gob
       when SyntaxTree::Args then contents.parts
       when Array then contents
       else [contents]
+      end
+    end
+
+    def is_range_node?(node)
+      return true if defined?(SyntaxTree::RangeNode) && node.is_a?(SyntaxTree::RangeNode)
+      return true if defined?(SyntaxTree::Dot2) && node.is_a?(SyntaxTree::Dot2)
+      return true if defined?(SyntaxTree::Dot3) && node.is_a?(SyntaxTree::Dot3)
+      false
+    end
+
+    def unwrap(node)
+      node = node.contents if node.is_a?(SyntaxTree::Paren)
+      if node.is_a?(SyntaxTree::Statements) && node.body.length == 1
+        node = node.body.first
+      end
+      node
+    end
+
+    def zero_node?(node)
+      node.is_a?(SyntaxTree::Int) && node.value.to_s == "0"
+    end
+
+    def wrap_chain_call(node)
+      return node if node.is_a?(SyntaxTree::Go::ParenExpr)
+      if node.is_a?(SyntaxTree::Go::CallExpr) &&
+         node.fun.is_a?(SyntaxTree::Go::SelectorExpr) &&
+         node.fun.x.is_a?(SyntaxTree::Go::CallExpr)
+        return SyntaxTree::Go::ParenExpr.new(lparen: nil, x: node, rparen: nil)
+      end
+      node
+    end
+
+    def fix_receiver_assigns(node, names = ["this", "self"])
+      case node
+      when SyntaxTree::Go::AssignStmt
+        if node.tok == ":=" && node.lhs.any? { |l| l.is_a?(SyntaxTree::Go::Ident) && names.include?(l.name) }
+          return SyntaxTree::Go::AssignStmt.new(lhs: node.lhs, tok_pos: node.tok_pos, tok: "=", rhs: node.rhs)
+        end
+        node
+      when SyntaxTree::Go::BlockStmt
+        SyntaxTree::Go::BlockStmt.new(lbrace: node.lbrace, list: node.list.map { |s| fix_receiver_assigns(s, names) }, rbrace: node.rbrace)
+      when SyntaxTree::Go::IfStmt
+        SyntaxTree::Go::IfStmt.new(if_: node.if_, init: node.init, cond: node.cond,
+          body: fix_receiver_assigns(node.body, names), else_: node.else_ ? fix_receiver_assigns(node.else_, names) : nil)
+      when SyntaxTree::Go::ForStmt
+        SyntaxTree::Go::ForStmt.new(for_: node.for_, init: node.init, cond: node.cond, post: node.post, body: fix_receiver_assigns(node.body, names))
+      when SyntaxTree::Go::RangeStmt
+        SyntaxTree::Go::RangeStmt.new(for_: node.for_, key: node.key, value: node.value, tok_pos: node.tok_pos, tok: node.tok, range: node.range, x: node.x, body: fix_receiver_assigns(node.body, names))
+      when SyntaxTree::Go::SwitchStmt
+        SyntaxTree::Go::SwitchStmt.new(switch: node.switch, init: node.init, tag: node.tag, body: fix_receiver_assigns(node.body, names))
+      when SyntaxTree::Go::TypeSwitchStmt
+        SyntaxTree::Go::TypeSwitchStmt.new(switch: node.switch, init: node.init, assign: node.assign, body: fix_receiver_assigns(node.body, names))
+      when SyntaxTree::Go::SelectStmt
+        SyntaxTree::Go::SelectStmt.new(select: node.select, body: fix_receiver_assigns(node.body, names))
+      when SyntaxTree::Go::CaseClause
+        SyntaxTree::Go::CaseClause.new(case_: node.case_, list: node.list, colon: node.colon, body: node.body.map { |s| fix_receiver_assigns(s, names) })
+      when SyntaxTree::Go::CommClause
+        SyntaxTree::Go::CommClause.new(case_: node.case_, comm: node.comm, colon: node.colon, body: node.body.map { |s| fix_receiver_assigns(s, names) })
+      else
+        node
       end
     end
 
@@ -244,39 +334,39 @@ module Gob
       call = node.call
       block = node.block
       params = block_params(block)
-      receiver = visit(call.receiver)
+      raw_recv = unwrap(call.receiver)
+      body = block_stmt(list: scoped(params) { visit_all(stmt_body(block.bodystmt)).map { |s| stmtify(s) } })
 
-      body_stmts = scoped(params) { visit_all(stmt_body(block.bodystmt)).map { |s| stmtify(s) } }
-      body = block_stmt(list: body_stmts)
+      # (0...n).each or (0..n).each
+      if is_range_node?(raw_recv)
+        key = params[0] || "_"
+        declare(key) unless key == "_"
+        left = raw_recv.left ? visit(raw_recv.left) : ident("0")
+        right = raw_recv.right ? visit(raw_recv.right) : nil
+        if zero_node?(raw_recv.left) && right
+          return SyntaxTree::Go::RangeStmt.new(key: ident(key), value: nil, tok_pos: nil, tok: ":=", range: nil, x: right, body: body, for_: nil)
+        end
+        return SyntaxTree::Go::RangeStmt.new(key: ident(key), value: nil, tok_pos: nil, tok: ":=", range: nil, x: right || left, body: body, for_: nil)
+      end
+
+      receiver = visit(call.receiver)
 
       if call.message.value == "times"
         key = params.first || "_"
         declare(key) unless key == "_"
-        return SyntaxTree::Go::RangeStmt.new(
-          key: ident(key), value: nil, tok_pos: nil, tok: ":=", range: nil, x: receiver, body: body, for_: nil
-        )
+        return SyntaxTree::Go::RangeStmt.new(key: ident(key), value: nil, tok_pos: nil, tok: ":=", range: nil, x: receiver, body: body, for_: nil)
       end
 
-      # .each
-      if receiver.is_a?(SyntaxTree::Go::CompositeLit) && receiver.type.is_a?(SyntaxTree::Go::MapType)
-        # map each? uncommon
-      end
-
-      # range over receiver
       key = params[0] || "_"
       val = params[1]
       if val
         declare(key) unless key == "_"
         declare(val) unless val == "_"
-        return SyntaxTree::Go::RangeStmt.new(
-          key: ident(key), value: ident(val), tok_pos: nil, tok: ":=", range: nil, x: receiver, body: body, for_: nil
-        )
+        return SyntaxTree::Go::RangeStmt.new(key: ident(key), value: ident(val), tok_pos: nil, tok: ":=", range: nil, x: receiver, body: body, for_: nil)
       end
 
       declare(key) unless key == "_"
-      SyntaxTree::Go::RangeStmt.new(
-        key: ident(key), value: nil, tok_pos: nil, tok: ":=", range: nil, x: receiver, body: body, for_: nil
-      )
+      SyntaxTree::Go::RangeStmt.new(key: ident(key), value: nil, tok_pos: nil, tok: ":=", range: nil, x: receiver, body: body, for_: nil)
     end
 
     def build_select(node, ctx)

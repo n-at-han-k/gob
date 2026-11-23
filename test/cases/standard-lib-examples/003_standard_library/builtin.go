@@ -1,0 +1,40 @@
+package main
+
+import "fmt" // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
+
+// The builtin package is documentation-only; it lists predeclared
+// identifiers like len, cap, make, new, append, copy, delete, panic,
+// recover, print, min, max. This file demonstrates them.
+func runBuiltin() {
+	// make creates slices, maps, and channels with initial capacity.
+	s := make([]int, 0, 4)
+	// append grows a slice, returning the possibly-new backing array.
+	s = append(s, 1, 2, 3)
+	fmt.Println("len/cap:", len(s), cap(s))
+
+	// copy duplicates slice contents.
+	dst := make([]int, 3)
+	copy(dst, s)
+	fmt.Println("copied:", dst)
+
+	// new returns a pointer to a zero-valued T.
+	p := new(int)
+	*p = 42
+	fmt.Println("new int:", *p)
+
+	// delete removes a key from a map.
+	m := map[string]int{"a": 1, "b": 2}
+	delete(m, "a")
+	fmt.Println("map:", m)
+
+	// min/max work on any ordered type (Go 1.21+).
+	fmt.Println("min/max:", min(3, 1, 2), max(3, 1, 2))
+
+	// recover turns a panic into a normal error value.
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("recovered:", r)
+		}
+	}()
+	panic("boom")
+}

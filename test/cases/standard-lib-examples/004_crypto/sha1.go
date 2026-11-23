@@ -1,0 +1,13 @@
+package main
+
+import (
+	"crypto/sha1" // https://pkg.go.dev/crypto/sha1 — Package sha1 implements the SHA-1 hash algorithm as defined in RFC 3174.
+	"fmt"         // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
+)
+
+// SHA-1 is broken for collision resistance; use SHA-256 or SHA-3 for
+// anything new. It survives in Git object IDs and some legacy protocols.
+func runSHA1() {
+	sum := sha1.Sum([]byte("hello"))
+	fmt.Printf("sha1: %x\n", sum)
+}
