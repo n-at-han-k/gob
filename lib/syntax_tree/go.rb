@@ -3,14 +3,6 @@
 require "prettier_print"
 require "syntax_tree"
 
-#require_relative "go/nodes"
-#require_relative "go/parser"
-#require_relative "go/visitor"
-#
-#require_relative "go/evaluate"
-#require_relative "go/format"
-#require_relative "go/pretty_print"
-
 module SyntaxTree
   module Go
     def self.format(source, maxwidth = 80)
