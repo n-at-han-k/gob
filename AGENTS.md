@@ -151,3 +151,21 @@ outputs:
   "comments": []
 }
 ```
+
+## References
+
+**DO NOT DARE** write anything using the syntax tree without first having read and understand the references below.
+
+**Whenever you have a task** to complete you must first understand the existing references instead of making shit up.
+
+### Go specification
+
+Located at `./docs/official-go-spec-v1.27.md`, converted from the official `https://go.dev/ref/spec` site.
+
+The go source contains a real `ast` in the `go/ast` package. Located at `./refs/go/src/go/ast`.
+
+### Syntrax Tree
+
+There are several `syntax_tree` gem implementations in `./refs/syntax_tree-*`. Each of them will undoubtedly reveal something different about implementing languages.
+
+The official `go/ast` source should give you an easy reference to work off when building the `./lib/syntax_tree/go` package.
