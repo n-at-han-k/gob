@@ -1,1 +1,17 @@
 <img src="./res/gobby-the-vole.jpg" alt="Gobby the vole" style="width: 100%;">
+
+## Etymology: *gobber*
+
+**gobber** /ˈɡɒb.ə/ *noun* — regional slang (Northern England, Yorkshire & the North Midlands; also Irish English)
+
+1. a mouthy one; a talker, a loudmouth — from *gob*, "mouth"
+2. a familiar form of address between mates: *ey up, gobbah!*
+
+> "Ey up gobbah! What's cookin'?"
+> "Nowt, mate — just clanging pans."
+
+*(Translation for southerners: "Hello, mouthy. What's happening?" / "Nothing, mate — just making a racket.")*
+
+*gobber* is *gob* + *-er*, literally "one who gobs". *Gob* has meant "mouth" in Scottish, northern English and Irish English since the 16th century, probably from Irish and Scottish Gaelic *gob*, "beak, bill" — a bird's mouth. *Gobber* is someone who is all mouth, and by the usual alchemy of northern banter the insult wears down into a term of endearment, the way *bugger* and *daft ha'porth* do. *Ey up* and *nowt* ("nothing") belong to the same dialect layer.
+
+For this project the pun is deliberate: a **gobber** is one who *gobs* — takes Ruby and emits Go. The mascot, [Gobby the vole](./res/gobby-the-vole.jpg), is named from the same root: *gobby*, "mouthy, opinionated".
