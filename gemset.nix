@@ -1,4 +1,15 @@
 {
+  ansi = {
+    dependencies = ["logger"];
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "1aam7qgkvri5bj75jv2bp5frxm4zzz0vpmwn618mz8bmlcqahr84";
+      type = "gem";
+    };
+    version = "1.6.1";
+  };
   ast = {
     groups = ["default"];
     platforms = [];
@@ -51,6 +62,16 @@
       type = "gem";
     };
     version = "0.5.0";
+  };
+  builder = {
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0pw3r2lyagsxkm71bf44v5b74f7l9r7di22brbyji9fwz791hya9";
+      type = "gem";
+    };
+    version = "3.3.0";
   };
   citrus = {
     groups = ["default"];
@@ -153,6 +174,17 @@
       type = "gem";
     };
     version = "6.1.0";
+  };
+  minitest-reporters = {
+    dependencies = ["ansi" "builder" "minitest" "ruby-progressbar"];
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "11531cvklpc1j7m8il5i70dqrwmnd7qlsi95wn51glrsnw7jircc";
+      type = "gem";
+    };
+    version = "1.8.0";
   };
   parallel = {
     groups = ["default"];

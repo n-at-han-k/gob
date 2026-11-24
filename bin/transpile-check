@@ -1,3 +1,8 @@
 #!/usr/bin/env bash
 
-exec bundle exec ruby tools/transpile_check.rb "$@"
+if [ "$#" -eq 0 ]; then
+  set -- test/cases/standard-lib-examples
+fi
+
+export GOB_CASE_PATHS="$(printf '%s\n' "$@")"
+exec bundle exec minitest test/transpile_check_test.rb

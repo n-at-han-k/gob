@@ -1,6 +1,8 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    ansi (1.6.1)
+      logger
     ast (2.4.3)
     ast-crispr (7.1.17)
       ast-merge (= 7.1.17)
@@ -17,6 +19,7 @@ GEM
       tree_haver (= 7.1.17)
       version_gem (~> 1.1, >= 1.1.16)
     benchmark (0.5.0)
+    builder (3.3.0)
     citrus (3.0.2)
     decode (0.30.0)
       prism
@@ -31,6 +34,11 @@ GEM
     minitest (6.1.0)
       drb (~> 2.0)
       prism (>= 1.5, < 3)
+    minitest-reporters (1.8.0)
+      ansi
+      builder
+      minitest (>= 5.0, < 7)
+      ruby-progressbar
     parallel (2.3.0)
     parser (3.3.14.0)
       ast (~> 2.4.1)
@@ -112,8 +120,10 @@ PLATFORMS
 DEPENDENCIES
   ast-crispr
   ast-crispr-ruby-prism
+  diff-lcs
   ffi
   minitest
+  minitest-reporters
   rubocop
   rubocop-disable_syntax
   rubocop-nathank
