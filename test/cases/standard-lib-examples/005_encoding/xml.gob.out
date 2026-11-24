@@ -1,0 +1,29 @@
+package main
+
+import (
+	"encoding/xml"
+	"fmt"
+	"log"
+)
+
+type Book struct {
+	XMLName
+	Title
+	Author
+	Tags
+}
+
+func runXML() {
+	b := Book.new(map[any]any{Title: "Learning Go", Author: "Nathan", Tags: []any{"go", "stdlib"}})
+	data, err := xml.MarshalIndent(b, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(xml.Header + string(data))
+	back := nil
+	err = xml.Unmarshal(data, back)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("parsed: %+v\n", back)
+}

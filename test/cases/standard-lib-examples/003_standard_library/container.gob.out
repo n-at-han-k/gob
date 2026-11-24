@@ -1,0 +1,62 @@
+package main
+
+import (
+	"container/heap"
+	"container/list"
+	"container/ring"
+	"fmt"
+)
+
+type IntHeap struct {}
+
+func (self *IntHeap) Len() (int) {
+	return len(this)
+}
+
+func (self *IntHeap) Less(i int, j int) (bool) {
+	return this[i] < this[j]
+}
+
+func (self *IntHeap) Swap(i int, j int) {
+	this[i], this[j] = this[j], this[i]
+}
+
+func (self *IntHeap) Push(x any) {
+	this := append(this, x)
+}
+
+func (self *IntHeap) Pop() (any) {
+	old := this
+	n := len(old)
+	x := old[n - 1]
+	this := old[[]int{nil, n - 1}]
+	return x
+}
+
+func runContainer() {
+	l := list.New()
+	l.PushBack("b")
+	l.PushFront("a")
+	l.PushBack("c")
+	e := l.Front()
+	for e != nil {
+		fmt.Print(e.Value, " ")
+		e = e.Next()
+	}
+	fmt.Println()
+	h := IntHeap.new(5, 1, 4, 2, 3)
+	heap.Init(h)
+	for h.Len() > 0 {
+		fmt.Print(heap.Pop(h), " ")
+	}
+	fmt.Println()
+	r := ring.New(5)
+	for i := range r.Len() {
+		r.#<SyntaxTree::Const:0x00007fff673a63a8> = (i)
+		r = r.Next()
+	}
+	r.Do(func(v) {
+	fmt.Print(v, " ")
+})
+	fmt.Println()
+}

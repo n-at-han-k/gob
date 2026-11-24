@@ -1,0 +1,30 @@
+package main
+
+import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"fmt"
+	"log"
+	"math/big"
+	"time"
+)
+
+func runX509() {
+	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		log.Fatal(err)
+	}
+	tmpl := Certificate.new(map[any]any{SerialNumber: big.NewInt(1), Subject: Name.new(map[any]any{CommonName: "example.local", Organization: []any{"Learning Go"}}), NotBefore: time.Now(), NotAfter: time.Now().Add(24 * time.Hour), KeyUsage: x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign, IsCA: true})
+	der, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, priv.PublicKey, priv)
+	if err != nil {
+		log.Fatal(err)
+	}
+	cert, _ := x509.ParseCertificate(der)
+	fmt.Println("subject:  ", cert.Subject)
+	fmt.Println("issuer:   ", cert.Issuer)
+	fmt.Println("not after:", cert.NotAfter.Format(time.RFC3339))
+	fmt.Println("is CA:    ", cert.IsCA)
+}

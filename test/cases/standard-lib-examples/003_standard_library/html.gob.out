@@ -1,0 +1,15 @@
+package main
+
+import (
+	"fmt"
+	"html"
+	"html/template"
+	"os"
+)
+
+func runHTML() {
+	raw := "<script>alert(\"xss\")</script>"
+	fmt.Println(html.EscapeString(raw))
+	tmpl := template.Must(template.New("t").Parse("<p>Hello {{.Name}}! Comment: {{.Body}}</p>" + "\n"))
+	tmpl.Execute(os.Stdout, map[any]any{"Name": "Nathan", "Body": raw})
+}

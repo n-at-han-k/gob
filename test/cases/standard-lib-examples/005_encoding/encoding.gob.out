@@ -1,0 +1,31 @@
+package main
+
+import (
+	"encoding"
+	"fmt"
+)
+
+type Colour struct {
+	R
+	G
+	B
+}
+
+func (self *Colour) MarshalText() ([]byte, error) {
+	return fmt.Appendf(nil, "#%02x%02x%02x", this.R, this.G, this.B), nil
+}
+
+func (self *Colour) UnmarshalText(text []byte) (error) {
+	_, err := fmt.Sscanf(string(text), "#%02x%02x%02x", this.R, this.G, this.B)
+	return err
+}
+
+func runEncoding() {
+	m := Colour.new(255, 128, 0)
+	txt, _ := m.MarshalText()
+	fmt.Printf("marshalled: %s\n", txt)
+	back := nil
+	u := back
+	_ = u.UnmarshalText("#0080ff".bytes)
+	fmt.Printf("parsed:     %+v\n", back)
+}
