@@ -124,6 +124,27 @@
     };
     version = "1.17.4";
   };
+  gem_kit = {
+    groups = ["default" "development"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0dx9w041lqzr4jd0m9as0v5v6n3fj2hcg74p2gyswr2y2a6zc5v9";
+      type = "gem";
+    };
+    version = "0.2.0";
+  };
+  gem_kit-release = {
+    dependencies = ["gem_kit" "thor"];
+    groups = ["development"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "03j729pb5a2i3is4am4mzikwbr89vjxkcsijjj5abplia3z2n6y9";
+      type = "gem";
+    };
+    version = "0.4.0";
+  };
   json = {
     groups = ["default"];
     platforms = [];

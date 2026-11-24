@@ -90,10 +90,7 @@
             export BUNDLE_GEMFILE="$PWD/Gemfile"
             export BUNDLE_FROZEN=false
             export RUBYLIB="$PWD/lib''${RUBYLIB:+:$RUBYLIB}"
-
-            if [ -d ext/goformatter ] && [ -w ext/goformatter ]; then
-              (cd ext/goformatter && go build -buildmode=c-shared -o libgoformatter.so .)
-            fi
+            export PATH="$PWD/exe''${PATH:+:$PATH}"
 
             # Services run this shell too, sometimes as a user who cannot write
             # the checkout; skip the regen rather than dump a backtrace.
