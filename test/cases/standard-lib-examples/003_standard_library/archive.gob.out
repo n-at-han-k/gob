@@ -17,8 +17,7 @@ func runArchive() {
 }
 
 func zipDemo() {
-	f, err := os.Create("example.zip")
-	if err != nil {
+	if f, err := os.Create("example.zip"); err != nil {
 		log.Fatal(err)
 	}
 	zw := zip.NewWriter(f)
@@ -26,8 +25,7 @@ func zipDemo() {
 	io.Copy(w, strings.NewReader("hello from inside a zip"))
 	zw.Close()
 	f.Close()
-	zr, err := zip.OpenReader("example.zip")
-	if err != nil {
+	if zr, err := zip.OpenReader("example.zip"); err != nil {
 		log.Fatal(err)
 	}
 	defer func() {
@@ -43,17 +41,15 @@ func zipDemo() {
 }
 
 func tarDemo() {
-	buf := nil
+		var buf bytes.Buffer
 	tw := tar.NewWriter(buf)
 	files := map[any]any{"greeting.txt": "hello from inside a tar", "nested/x.txt": "another entry"}
 	for name, body := range files {
-		hdr := Header.new(map[any]any{Name: name, Mode: 0644, Size: int64(len(body))})
-		err := tw.WriteHeader(hdr)
-		if err != nil {
+		hdr := Header{Name: name, Mode: 0644, Size: int64(len(body))}
+		if err := tw.WriteHeader(hdr); err != nil {
 			log.Fatal(err)
 		}
-		_, err := tw.Write(body.bytes)
-		if err != nil {
+		if _, err := tw.Write(body.bytes); err != nil {
 			log.Fatal(err)
 		}
 	}
@@ -61,8 +57,7 @@ func tarDemo() {
 	tr := tar.NewReader(buf)
 	fmt.Println("--- tar ---")
 	for {
-		hdr, err := tr.Next()
-		if err == io.EOF {
+		if hdr, err := tr.Next(); err == io.EOF {
 			break
 		}
 		if err != nil {

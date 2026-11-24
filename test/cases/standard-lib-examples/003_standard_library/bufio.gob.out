@@ -17,8 +17,8 @@ func runBufio() {
 	for sc.Scan() {
 		fmt.Println("word:", sc.Text())
 	}
-	sb := nil
-	bw := bufio.NewWriter(sb)
+		var sb strings.Builder
+	bw := bufio.NewWriter(&sb)
 	bw.WriteString("buffered ")
 	bw.WriteString("write")
 	bw.Flush()

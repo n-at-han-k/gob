@@ -11,7 +11,7 @@ type Big struct {
 }
 
 func runWeak() {
-	strong := Big.new()
+	strong := Big{}
 	w := weak.Make(strong)
 	fmt.Println("before GC:", w.Value() != nil)
 	strong = nil

@@ -13,8 +13,7 @@ func runOS() {
 	fmt.Println("MY_VAR:", os.Getenv("MY_VAR"))
 	wd, _ := os.Getwd()
 	fmt.Println("cwd:", wd)
-	f, err := os.CreateTemp("", "example-*.txt")
-	if err != nil {
+	if f, err := os.CreateTemp("", "example-*.txt"); err != nil {
 		log.Fatal(err)
 	}
 	defer func() {

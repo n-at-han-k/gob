@@ -9,7 +9,7 @@ import (
 
 type IntHeap struct {}
 
-func (self *IntHeap) Len() (int) {
+func (self *IntHeap) Len() {
 	return len(this)
 }
 
@@ -44,7 +44,7 @@ func runContainer() {
 		e = e.Next()
 	}
 	fmt.Println()
-	h := IntHeap.new(5, 1, 4, 2, 3)
+	h := IntHeap{5, 1, 4, 2, 3}
 	heap.Init(h)
 	for h.Len() > 0 {
 		fmt.Print(heap.Pop(h), " ")
@@ -52,8 +52,8 @@ func runContainer() {
 	fmt.Println()
 	r := ring.New(5)
 	for i := range r.Len() {
-		r.#<SyntaxTree::Const:0x00007fff771c6a00> = (i)
-		r = r.Next()
+		r.#<SyntaxTree::Const:0x000075b564671d28> = (i)
+		r := r.Next()
 	}
 	r.Do(func(v) {
 	fmt.Print(v, " ")

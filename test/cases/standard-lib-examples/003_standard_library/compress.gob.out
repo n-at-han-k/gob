@@ -14,7 +14,7 @@ import (
 )
 
 func runCompress() {
-	sample := "compress me compress me compress me compress me".bytes
+	sample := []byte("compress me compress me compress me compress me")
 	gzipDemo(sample)
 	flateDemo(sample)
 	zlibDemo(sample)
@@ -23,16 +23,14 @@ func runCompress() {
 }
 
 func gzipDemo(in_ []byte) {
-	buf := nil
+		var buf bytes.Buffer
 	gw := gzip.NewWriter(buf)
-	_, err := gw.Write(in_)
-	if err != nil {
+	if _, err := gw.Write(in_); err != nil {
 		log.Fatal(err)
 	}
 	gw.Close()
 	compressedLen := buf.Len()
-	gr, err := gzip.NewReader(buf)
-	if err != nil {
+	if gr, err := gzip.NewReader(buf); err != nil {
 		log.Fatal(err)
 	}
 	out, _ := io.ReadAll(gr)
@@ -41,7 +39,7 @@ func gzipDemo(in_ []byte) {
 }
 
 func flateDemo(in_ []byte) {
-	buf := nil
+		var buf bytes.Buffer
 	fw, _ := flate.NewWriter(buf, flate.DefaultCompression)
 	fw.Write(in_)
 	fw.Close()
@@ -52,12 +50,11 @@ func flateDemo(in_ []byte) {
 }
 
 func zlibDemo(in_ []byte) {
-	buf := nil
+		var buf bytes.Buffer
 	zw := zlib.NewWriter(buf)
 	zw.Write(in_)
 	zw.Close()
-	zr, err := zlib.NewReader(buf)
-	if err != nil {
+	if zr, err := zlib.NewReader(buf); err != nil {
 		log.Fatal(err)
 	}
 	out, _ := io.ReadAll(zr)
@@ -66,7 +63,7 @@ func zlibDemo(in_ []byte) {
 }
 
 func lzwDemo(in_ []byte) {
-	buf := nil
+		var buf bytes.Buffer
 	lw := lzw.NewWriter(buf, lzw.LSB, 8)
 	lw.Write(in_)
 	lw.Close()
@@ -78,13 +75,11 @@ func lzwDemo(in_ []byte) {
 
 func bzip2Demo() {
 	b64 := "QlpoOTFBWSZTWatrofEAAALZgAAQQAAQABJkwBAgADEA000EAB6j705RogeLuSKcKEhVtdD4gA=="
-	compressed, err := base64.StdEncoding.DecodeString(b64)
-	if err != nil {
+	if compressed, err := base64.StdEncoding.DecodeString(b64); err != nil {
 		log.Fatal(err)
 	}
 	r := bzip2.NewReader(bytes.NewReader(compressed))
-	out, err := io.ReadAll(r)
-	if err != nil {
+	if out, err := io.ReadAll(r); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("bzip2: decoded=%q\n", out)

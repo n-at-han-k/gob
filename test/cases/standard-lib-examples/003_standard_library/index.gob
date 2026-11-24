@@ -5,9 +5,9 @@ module Main
 
     # ()
     def runIndex
-      text = "the quick brown fox jumps over the lazy dog".bytes
+      text = Array[byte].new("the quick brown fox jumps over the lazy dog")
       idx = suffixarray.New(text)
-      fmt.Println("'the' offsets:", idx.Lookup("the".bytes, -1))
-      fmt.Println("'o'   offsets:", idx.Lookup("o".bytes, -1))
+      fmt.Println("'the' offsets:", idx.Lookup(Array[byte].new("the"), -1))
+      fmt.Println("'o'   offsets:", idx.Lookup(Array[byte].new("o"), -1))
     end
 end

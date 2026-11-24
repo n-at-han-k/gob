@@ -9,18 +9,18 @@ import (
 
 func runBinary() {
 		var buf bytes.Buffer
-	binary.Write(buf, binary.BigEndian, uint32(0xdeadbeef))
-	binary.Write(buf, binary.LittleEndian, uint16(0x1234))
+	binary.Write(&buf, binary.BigEndian, uint32(0xdeadbeef))
+	binary.Write(&buf, binary.LittleEndian, uint16(0x1234))
 	fmt.Printf("bytes: %x\n", buf.Bytes())
 		var a uint32
 		var b uint16
-	if err := binary.Read(buf, binary.BigEndian, a); err != nil {
+	if err := binary.Read(buf, binary.BigEndian, a) {
 		log.Fatal(err)
 	}
 	binary.Read(buf, binary.LittleEndian, b)
 	fmt.Printf("a=%#x b=%#x\n", a, b)
-	vbuf := nil
-	n := binary.PutVarint(vbuf, -12_345)
+		var vbuf [binary.MaxVarintLen64]byte
+	n := binary.PutVarint(vbuf[nil], -12_345)
 	fmt.Printf("varint(-12345) = %x (%d bytes)\n", vbuf[[]int{nil, n}], n)
 	v, _ := binary.Varint(vbuf[[]int{nil, n}])
 	fmt.Println("decoded:", v)

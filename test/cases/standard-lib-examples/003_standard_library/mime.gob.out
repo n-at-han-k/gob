@@ -9,8 +9,7 @@ import (
 func runMime() {
 	fmt.Println(".html:", mime.TypeByExtension(".html"))
 	fmt.Println(".json:", mime.TypeByExtension(".json"))
-	mt, params, err := mime.ParseMediaType("text/plain; charset=\"utf-8\"")
-	if err != nil {
+	if mt, params, err := mime.ParseMediaType("text/plain; charset=\"utf-8\""); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("type:", mt, "params:", params)

@@ -7,11 +7,11 @@ import (
 
 func runAscii85() {
 	src := []byte("hello ascii85")
-	dst := make(#<SyntaxTree::ArrayLiteral:0x00007fff791fb410>, ascii85.MaxEncodedLen(len(src)))
+	dst := make([]byte, ascii85.MaxEncodedLen(len(src)))
 	n := ascii85.Encode(dst, src)
 	dst = dst[[]int{nil, n}]
 	fmt.Printf("encoded: %s\n", dst)
-	back := make(#<SyntaxTree::ArrayLiteral:0x00007fff791f9390>, len(src))
+	back := make([]byte, len(src))
 	if ndst, _, err := ascii85.Decode(back, dst, true); err != nil {
 		fmt.Println("decode err:", err)
 		return

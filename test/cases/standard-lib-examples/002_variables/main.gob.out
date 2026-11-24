@@ -49,6 +49,6 @@ func main() {
 	fmt.Println(kept)
 }
 
-func ignoreOne() (string, string) {
+func ignoreOne() {
 	return "discarded", "kept"
 }

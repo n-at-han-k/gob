@@ -11,10 +11,10 @@ type Header struct {
 }
 
 func runUnsafe() {
-	fmt.Println("Sizeof header:  ", unsafe.Sizeof(Header.new()))
-	fmt.Println("Alignof header: ", unsafe.Alignof(Header.new()))
-	fmt.Println("Offsetof Len:   ", unsafe.Offsetof(Header.new().Len))
-	b := "hello".bytes
+	fmt.Println("Sizeof header:  ", unsafe.Sizeof(Header{}))
+	fmt.Println("Alignof header: ", unsafe.Alignof(Header{}))
+	fmt.Println("Offsetof Len:   ", unsafe.Offsetof(Header{}.Len))
+	b := []byte("hello")
 	s := unsafe.String(b[0], len(b))
 	fmt.Println("string view:", s)
 	bytes := unsafe.Slice(unsafe.StringData("world"), 5)

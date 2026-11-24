@@ -8,85 +8,72 @@ require "os"
 require "strings"
 
 module Main
+  def runArchive
+    zipDemo()
+    tarDemo()
+  end
 
-    # ()
-    def runArchive
-      zipDemo()
-      tarDemo()
+  def zipDemo
+    f, err = os.Create("example.zip")
+    if err != nil
+      log.Fatal(err)
     end
 
-    # ()
-    def zipDemo
-      f, err = os.Create("example.zip")
+    zw = zip.NewWriter(f)
+    w, _ = zw.Create("hello.txt")
+    io.Copy(w, strings.NewReader("hello from inside a zip"))
+    zw.Close()
+    f.Close()
 
-      if err != nil
+    zr, err = zip.OpenReader("example.zip")
+    if err != nil
+      log.Fatal(err)
+    end
+    defer zr.Close()
+    fmt.Println("--- zip ---")
+    zr.File.each do |_, entry|
+      rc, _ = entry.Open()
+      body, _ = io.ReadAll(rc)
+      rc.Close()
+      fmt.Printf("%s: %s\n", entry.Name, body)
+    end
+  end
+
+  def tarDemo
+    var :buf, bytes.Buffer
+    tw = tar.NewWriter(buf)
+    files = Hash[string, string].new(
+      "greeting.txt" => "hello from inside a tar",
+      "nested/x.txt" => "another entry"
+    )
+    files.each do |name, body|
+      hdr = @tar.Header.new(
+        Name: name,
+        Mode: 0644,
+        Size: int64(len(body))
+      )
+      if err = tw.WriteHeader(hdr)
         log.Fatal(err)
       end
 
-      zw = zip.NewWriter(f)
-      w, _ = zw.Create("hello.txt")
-      io.Copy(w, strings.NewReader("hello from inside a zip"))
-      zw.Close()
-      f.Close()
-      zr, err = zip.OpenReader("example.zip")
+      if _, err = tw.Write(Array[byte].new(body))
+        log.Fatal(err)
+      end
+    end
+    tw.Close()
 
+    tr = tar.NewReader(@buf)
+    fmt.Println("--- tar ---")
+    loop do
+      hdr, err = tr.Next()
+      if err == io.EOF
+        break
+      end
       if err != nil
         log.Fatal(err)
       end
-
-      defer { zr.Close() }
-      fmt.Println("--- zip ---")
-
-      zr.File.each do |_, entry|
-        rc, _ = entry.Open()
-        body, _ = io.ReadAll(rc)
-        rc.Close()
-        fmt.Printf("%s: %s\n", entry.Name, body)
-      end
+      body, _ = io.ReadAll(tr)
+      fmt.Printf("%s (%d bytes): %s\n", hdr.Name, hdr.Size, body)
     end
-
-    # ()
-    def tarDemo
-      buf = nil
-      tw = tar.NewWriter(buf)
-
-      files = {
-        "greeting.txt" => "hello from inside a tar",
-        "nested/x.txt" => "another entry"
-      }
-
-      files.each do |name, body|
-        hdr = Header.new(Name: name, Mode: 0644, Size: int64(len(body)))
-        err = tw.WriteHeader(hdr)
-
-        if err != nil
-          log.Fatal(err)
-        end
-
-        _, err = tw.Write(body.bytes)
-
-        if err != nil
-          log.Fatal(err)
-        end
-      end
-
-      tw.Close()
-      tr = tar.NewReader(buf)
-      fmt.Println("--- tar ---")
-
-      loop do
-        hdr, err = tr.Next()
-
-        if err == io.EOF
-          break
-        end
-
-        if err != nil
-          log.Fatal(err)
-        end
-
-        body, _ = io.ReadAll(tr)
-        fmt.Printf("%s (%d bytes): %s\n", hdr.Name, hdr.Size, body)
-      end
-    end
+  end
 end

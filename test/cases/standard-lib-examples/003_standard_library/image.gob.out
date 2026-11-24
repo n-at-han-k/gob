@@ -17,18 +17,17 @@ import (
 func runImage() {
 	size := 100
 	img := makeGradient(size)
-	tint := image.NewUniform(rgba.new(200, 0, 0, 128))
+	tint := image.NewUniform(rgba{200, 0, 0, 128})
 	quadrant := image.Rect(size / 2, size / 2, size, size)
-	draw.Draw(img, quadrant, tint, Point.new(), draw.Over)
+	draw.Draw(img, quadrant, tint, Point{}, draw.Over)
 	writeFile("gradient.png", func(w) {
 	return png.Encode(w, img)
 })
 	writeFile("gradient.jpg", func(w) {
-	return jpeg.Encode(w, img, Options.new(map[any]any{Quality: 90}))
+	return jpeg.Encode(w, img, Options{Quality: 90})
 })
 	writeGIF("gradient.gif", img)
-	decoded, format, err := image.Decode(bytes.NewReader(pngBytes(img)))
-	if err != nil {
+	if decoded, format, err := image.Decode(bytes.NewReader(pngBytes(img))); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("decoded format=%s bounds=%v\n", format, decoded.Bounds())
@@ -40,22 +39,20 @@ func makeGradient(size int) (*image.RGBA) {
 	img := image.NewRGBA(image.Rect(0, 0, size, size))
 	for y := range size {
 		for x := range size {
-			img.Set(x, y, rgba.new(map[any]any{R: uint8(x * 255 / size), G: uint8(y * 255 / size), B: 128, A: 255}))
+			img.Set(x, y, rgba{R: uint8(x * 255 / size), G: uint8(y * 255 / size), B: 128, A: 255})
 		}
 	}
 	return img
 }
 
 func writeFile(name string, enc (*os.File) (error)) {
-	f, err := os.Create(name)
-	if err != nil {
+	if f, err := os.Create(name); err != nil {
 		log.Fatal(err)
 	}
 	defer func() {
 	f.Close()
 }()
-	err = enc(f)
-	if err != nil {
+	if err = enc(f); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("wrote", name)
@@ -63,14 +60,14 @@ func writeFile(name string, enc (*os.File) (error)) {
 
 func writeGIF(name string, src image.Image) {
 	paletted := image.NewPaletted(src.Bounds(), palette.Plan9)
-	draw.FloydSteinberg.Draw(paletted, src.Bounds(), src, Point.new())
+	draw.FloydSteinberg.Draw(paletted, src.Bounds(), src, Point{})
 	writeFile(name, func(w) {
 	return gif.Encode(w, paletted, nil)
 })
 }
 
 func pngBytes(img image.Image) ([]byte) {
-	buf := nil
+		var buf bytes.Buffer
 	png.Encode(buf, img)
 	return buf.Bytes()
 }

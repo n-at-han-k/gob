@@ -1,9 +1,8 @@
 package main
 
-import "fmt" 
+import "fmt"
 
 func runBuiltin() {
-
 	s := make([]int, 0, 4)
 
 	s = append(s, 1, 2, 3)
@@ -24,9 +23,10 @@ func runBuiltin() {
 	fmt.Println("min/max:", min(3, 1, 2), max(3, 1, 2))
 
 	defer func() {
-		if r := recover(); r != nil {
-			fmt.Println("recovered:", r)
+		if err := recover(); err != nil {
+			fmt.Println("recovered:", err)
 		}
 	}()
+
 	panic("boom")
 }

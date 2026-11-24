@@ -10,7 +10,7 @@ module Main
 
     # ()
     def runHash
-      data = "hello".bytes
+      data = Array[byte].new("hello")
 
       hashes = [
         ["adler32", adler32.New()],

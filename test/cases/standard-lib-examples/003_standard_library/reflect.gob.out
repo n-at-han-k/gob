@@ -11,7 +11,7 @@ type ReflectUser struct {
 }
 
 func runReflect() {
-	u := ReflectUser.new(map[any]any{Name: "Nathan", Age: 30})
+	u := ReflectUser{Name: "Nathan", Age: 30}
 	v := reflect.ValueOf(u)
 	t := reflect.TypeOf(u)
 	fmt.Println("kind:", v.Kind(), "type:", t.Name())
@@ -19,7 +19,7 @@ func runReflect() {
 		f := t.Field(i)
 		fmt.Printf("  %s (%s) = %v  json=%q\n", f.Name, f.Type, v.Field(i).Interface(), f.Tag.Get("json"))
 	}
-	up := ReflectUser.new()
+	up := ReflectUser{}
 	reflect.ValueOf(up).Elem().FieldByName("Name").SetString("Reflected")
 	fmt.Printf("mutated: %+v\n", up)
 }

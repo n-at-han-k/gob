@@ -11,27 +11,21 @@ import (
 
 func runTrace() {
 	f, _ := os.CreateTemp("", "trace-*.out")
-	defer func() {
-	os.Remove(f.Name())
-}()
-	defer func() {
-	f.Close()
-}()
-	if err := trace.Start(f); err != nil {
+	defer(os.Remove(f.Name()))
+	defer(f.Close())
+	if err := trace.Start(f) {
 		fmt.Println("start:", err)
 		return
 	}
 		var wg sync.WaitGroup
 	for i := range 3 {
 		wg.Add(1)
-		go func() {
-	defer func() {
-	wg.Done()
-}()
+		go(func(id) {
+	defer(wg.Done())
 	trace.WithRegion(context.Background(), fmt.Sprintf("worker-%d", id), func() {
 	time.Sleep(5 * time.Millisecond)
 })
-}().call(i)
+}.call(i))
 	}
 	wg.Wait()
 	trace.Stop()

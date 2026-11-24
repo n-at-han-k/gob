@@ -17,7 +17,7 @@ func runURL() {
 	fmt.Println("fragment:", u.Fragment)
 	q := u.Query()
 	fmt.Println("tags:    ", q["tag"])
-	built := url{Scheme: "https", Host: "example.com", Path: "/search"}
-	built.#<SyntaxTree::Const:0x00007fff791154d8> = Values{"q": []any{"go & rust"}}.Encode()
+	built := &url.URL{Scheme: "https", Host: "example.com", Path: "/search"}
+	built.#<SyntaxTree::Const:0x00007d67bc22a6b8> = url.Values{"q": []any{"go & rust"}}.Encode()
 	fmt.Println("built:   ", built)
 }

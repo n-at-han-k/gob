@@ -1,16 +1,16 @@
 package main
 
 import (
-	"bytes"           
-	"compress/bzip2"  
-	"compress/flate"  
-	"compress/gzip"   
-	"compress/lzw"    
-	"compress/zlib"   
-	"encoding/base64" 
-	"fmt"             
-	"io"              
-	"log"             
+	"bytes"
+	"compress/bzip2"
+	"compress/flate"
+	"compress/gzip"
+	"compress/lzw"
+	"compress/zlib"
+	"encoding/base64"
+	"fmt"
+	"io"
+	"log"
 )
 
 func runCompress() {
@@ -20,7 +20,7 @@ func runCompress() {
 	flateDemo(sample)
 	zlibDemo(sample)
 	lzwDemo(sample)
-	bzip2Demo() 
+	bzip2Demo()
 }
 
 func gzipDemo(in []byte) {
@@ -81,7 +81,6 @@ func lzwDemo(in []byte) {
 }
 
 func bzip2Demo() {
-
 	const b64 = "QlpoOTFBWSZTWatrofEAAALZgAAQQAAQABJkwBAgADEA000EAB6j705RogeLuSKcKEhVtdD4gA=="
 	compressed, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {

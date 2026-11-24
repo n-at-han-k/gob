@@ -8,15 +8,15 @@ import (
 )
 
 func runCipher() {
-	key := make(#<SyntaxTree::ArrayLiteral:0x00007fff792d4cb0>, 16)
+	key := make([]byte, 16)
 	rand.Read(key)
 	block, _ := aes.NewCipher(key)
-	iv := make(#<SyntaxTree::ArrayLiteral:0x00007fff792d3950>, block.BlockSize())
+	iv := make([]byte, block.BlockSize())
 	rand.Read(iv)
 	plaintext := []byte("streaming plaintext")
-	ct := make(#<SyntaxTree::ArrayLiteral:0x00007fff792d2140>, len(plaintext))
+	ct := make([]byte, len(plaintext))
 	cipher.NewCTR(block, iv).XORKeyStream(ct, plaintext)
-	pt := make(#<SyntaxTree::ArrayLiteral:0x00007fff792d0e80>, len(ct))
+	pt := make([]byte, len(ct))
 	cipher.NewCTR(block, iv).XORKeyStream(pt, ct)
 	fmt.Printf("ct: %x\npt: %s\n", ct, pt)
 }

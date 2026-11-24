@@ -11,10 +11,8 @@ func runHTTPTrace() {
 	srv := httptest.NewServer(http.HandlerFunc(func(w, r) {
 	fmt.Fprintln(w, "hello")
 }))
-	defer func() {
-	srv.Close()
-}()
-	trace := ClientTrace{GetConn: func(host) {
+	defer(srv.Close())
+	trace := &httptrace.ClientTrace{GetConn: func(host) {
 	fmt.Println("GetConn:", host)
 }, GotConn: func(info) {
 	fmt.Println("GotConn: reused=", info.Reused)

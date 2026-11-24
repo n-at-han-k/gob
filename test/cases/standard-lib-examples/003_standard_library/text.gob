@@ -21,7 +21,7 @@ module Main
       tw = tabwriter.NewWriter(os.Stdout, 0, 0, 2, " ", 0)
 
       _, err =
-        tw.Write("Name\tAge\tRole\napple\t3\tfruit\nblue\t42\tcolour\n".bytes)
+        tw.Write(Array[byte].new("Name\tAge\tRole\napple\t3\tfruit\nblue\t42\tcolour\n"))
 
       if err != nil
         log.Fatal(err)

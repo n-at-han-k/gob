@@ -12,7 +12,7 @@ func runRuntime() {
 	fmt.Println("NumGoroutine:", runtime.NumGoroutine())
 	pc, file, line, _ := runtime.Caller(0)
 	fmt.Printf("this line: %s:%d (%s)\n", file, line, runtime.FuncForPC(pc).Name())
-	m := nil
+		var m runtime.MemStats
 	runtime.ReadMemStats(m)
 	fmt.Printf("heap alloc: %d KiB, sys: %d KiB\n", m.HeapAlloc / 1024, m.Sys / 1024)
 }

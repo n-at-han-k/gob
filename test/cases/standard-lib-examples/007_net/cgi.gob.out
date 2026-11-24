@@ -18,7 +18,7 @@ func runCGI() {
 	handler := http.HandlerFunc(func(w, r) {
 	fmt.Fprintf(w, "CGI script saw %s with %s=%s\n", r.URL.Path, "who", r.URL.Query().Get("who"))
 })
-	req, _ := cgi.RequestFromMap(map[any]any{"REQUEST_METHOD": os.Getenv("REQUEST_METHOD"), "SERVER_PROTOCOL": os.Getenv("SERVER_PROTOCOL"), "HTTP_HOST": os.Getenv("HTTP_HOST"), "REQUEST_URI": os.Getenv("PATH_INFO") + "?" + os.Getenv("QUERY_STRING"), "CONTENT_LENGTH": "0"})
+	req, _ := cgi.RequestFromMap(map[string]string{"REQUEST_METHOD": os.Getenv("REQUEST_METHOD"), "SERVER_PROTOCOL": os.Getenv("SERVER_PROTOCOL"), "HTTP_HOST": os.Getenv("HTTP_HOST"), "REQUEST_URI": os.Getenv("PATH_INFO") + "?" + os.Getenv("QUERY_STRING"), "CONTENT_LENGTH": "0"})
 	handler.ServeHTTP(rec, req)
 	fmt.Print(rec.Body.String())
 }

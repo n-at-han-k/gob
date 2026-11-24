@@ -82,7 +82,7 @@ module Main
 
     # (image.Image) -> []byte
     def pngBytes(img)
-      buf = nil
+      define_var :buf, bytes.Buffer
       png.Encode(buf, img)
 
       return buf.Bytes()

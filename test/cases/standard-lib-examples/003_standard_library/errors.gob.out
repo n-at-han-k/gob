@@ -7,15 +7,15 @@ import (
 )
 
 type NotFoundError struct {
-	key
+	key string
 }
 
 func (self *NotFoundError) Error() (string) {
-	return fmt.Sprintf("key %q not found", this.key)
+	return fmt.Sprintf("key %q not found", self.key)
 }
 
 func lookup(k string) (error) {
-	return NotFoundError.new(map[any]any{key: k})
+	return &NotFoundError{key: k}
 }
 
 func runErrors() {
@@ -25,8 +25,8 @@ func runErrors() {
 	fmt.Println(wrapped)
 	fmt.Println("Is sentinel:", errors.Is(wrapped, sentinel))
 	err := lookup("missing")
-	nf := nil
-	if errors.As(err, nf) {
+		var nf *NotFoundError
+	if errors.As(err, &nf) {
 		fmt.Println("typed error, key:", nf.key)
 	}
 	_, err := os.Open("/definitely/not/there")

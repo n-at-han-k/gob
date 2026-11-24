@@ -10,17 +10,17 @@ import (
 
 func runDSA() {
 		var params dsa.Parameters
-	if err := dsa.GenerateParameters(params, rand.Reader, dsa.L1024N160); err != nil {
+	if err := dsa.GenerateParameters(params, rand.Reader, dsa.L1024N160) {
 		log.Fatal(err)
 	}
 	priv := &dsa.PrivateKey{PublicKey: dsa.PublicKey{Parameters: params}}
-	if err = dsa.GenerateKey(priv, rand.Reader); err != nil {
+	if err = dsa.GenerateKey(priv, rand.Reader) {
 		log.Fatal(err)
 	}
 	digest := sha256.Sum256([]byte("hello"))
-	if r, s, err := dsa.Sign(rand.Reader, priv, /* unsupported: SyntaxTree::Go::SliceExpr */); err != nil {
+	if r, s, err := dsa.Sign(rand.Reader, priv, digest[nil]); err != nil {
 		log.Fatal(err)
 	}
-	ok := dsa.Verify(&priv.PublicKey, /* unsupported: SyntaxTree::Go::SliceExpr */, r, s)
+	ok := dsa.Verify(&priv.PublicKey, digest[nil], r, s)
 	fmt.Println("signature valid:", ok)
 }

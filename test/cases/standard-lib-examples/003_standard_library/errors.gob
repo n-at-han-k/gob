@@ -4,18 +4,18 @@ require "os"
 
 module Main
   class NotFoundError
-    attr_accessor :key
+    attr_accessor :key, string
 
     # () -> string
     def Error
-      return fmt.Sprintf("key %q not found", this.key)
+      return fmt.Sprintf("key %q not found", self.key)
     end
   end
 
 
     # (string) -> error
     def lookup(k)
-      return NotFoundError.new(key: k)
+      return @NotFoundError.new(key: k)
     end
 
     # ()
@@ -26,9 +26,9 @@ module Main
       fmt.Println(wrapped)
       fmt.Println("Is sentinel:", errors.Is(wrapped, sentinel))
       err = lookup("missing")
-      nf = nil
+      var :nf, ptr(NotFoundError)
 
-      if errors.As(err, nf)
+      if errors.As(err, @nf)
         fmt.Println("typed error, key:", nf.key)
       end
 

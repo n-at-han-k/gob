@@ -6,7 +6,7 @@ import (
 )
 
 func runMetrics() {
-	samples := []any{map[any]any{Name: "/memory/classes/heap/objects:bytes"}, map[any]any{Name: "/sched/goroutines:goroutines"}, map[any]any{Name: "/gc/cycles/total:gc-cycles"}}
+	samples := []metrics.Sample{map[any]any{Name: "/memory/classes/heap/objects:bytes"}, map[any]any{Name: "/sched/goroutines:goroutines"}, map[any]any{Name: "/gc/cycles/total:gc-cycles"}}
 	metrics.Read(samples)
 	for _, s := range samples {
 		switch s.Value.Kind() {

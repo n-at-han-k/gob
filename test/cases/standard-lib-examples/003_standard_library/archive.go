@@ -1,14 +1,14 @@
 package main
 
 import (
-	"archive/tar" 
-	"archive/zip" 
-	"bytes"       
-	"fmt"         
-	"io"          
-	"log"         
-	"os"          
-	"strings"     
+	"archive/tar"
+	"archive/zip"
+	"bytes"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"strings"
 )
 
 func runArchive() {
@@ -17,11 +17,11 @@ func runArchive() {
 }
 
 func zipDemo() {
-
 	f, err := os.Create("example.zip")
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	zw := zip.NewWriter(f)
 	w, _ := zw.Create("hello.txt")
 	io.Copy(w, strings.NewReader("hello from inside a zip"))
@@ -43,7 +43,6 @@ func zipDemo() {
 }
 
 func tarDemo() {
-
 	var buf bytes.Buffer
 	tw := tar.NewWriter(&buf)
 	files := map[string]string{

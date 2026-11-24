@@ -16,8 +16,7 @@ func runContext() {
 	defer func() {
 	cancel()
 }()
-	err := work(ctx)
-	if errors.Is(err, context.DeadlineExceeded) {
+	if err := work(ctx); errors.Is(err, context.DeadlineExceeded) {
 		fmt.Println("timed out as expected")
 	}
 	ctx2 := context.WithValue(context.Background(), key("user"), "nathan")

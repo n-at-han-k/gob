@@ -14,8 +14,7 @@ import (
 )
 
 func runDebug() {
-	self_, err := os.Executable()
-	if err != nil {
+	if self_, err := os.Executable(); err != nil {
 		log.Fatal(err)
 	}
 	debugBuildinfo(self_)
@@ -26,8 +25,7 @@ func runDebug() {
 }
 
 func debugBuildinfo(path string) {
-	bi, err := buildinfo.ReadFile(path)
-	if err != nil {
+	if bi, err := buildinfo.ReadFile(path); err != nil {
 		fmt.Println("buildinfo err:", err)
 		return
 	}
@@ -38,29 +36,25 @@ func debugBuildinfo(path string) {
 
 func debugFormats(path string) {
 	fmt.Println("\n=== format detection ===")
-	f, err := elf.Open(path)
-	if err == nil {
+	if f, err := elf.Open(path); err == nil {
 		fmt.Printf("elf:      %s %s, %d sections\n", f.Class, f.Machine, len(f.Sections))
 		f.Close()
 	} else {
 		fmt.Println("elf:      not an ELF file")
 	}
-	f, err = macho.Open(path)
-	if err == nil {
+	if f, err = macho.Open(path); err == nil {
 		fmt.Printf("macho:    cpu=%s, %d sections\n", f.Cpu, len(f.Sections))
 		f.Close()
 	} else {
 		fmt.Println("macho:    not a Mach-O file")
 	}
-	f, err = pe.Open(path)
-	if err == nil {
+	if f, err = pe.Open(path); err == nil {
 		fmt.Printf("pe:       machine=0x%x, %d sections\n", f.Machine, len(f.Sections))
 		f.Close()
 	} else {
 		fmt.Println("pe:       not a PE file")
 	}
-	f, err = plan9obj.Open(path)
-	if err == nil {
+	if f, err = plan9obj.Open(path); err == nil {
 		fmt.Printf("plan9obj: magic=%d, %d sections\n", f.Magic, len(f.Sections))
 		f.Close()
 	} else {
@@ -69,8 +63,7 @@ func debugFormats(path string) {
 }
 
 func debugElfSections(path string) {
-	f, err := elf.Open(path)
-	if err != nil {
+	if f, err := elf.Open(path); err != nil {
 		return
 	}
 	defer func() {
@@ -86,15 +79,13 @@ func debugElfSections(path string) {
 }
 
 func debugDwarf(path string) {
-	f, err := elf.Open(path)
-	if err != nil {
+	if f, err := elf.Open(path); err != nil {
 		return
 	}
 	defer func() {
 	f.Close()
 }()
-	d, err := f.DWARF()
-	if err != nil {
+	if d, err := f.DWARF(); err != nil {
 		fmt.Println("\n=== dwarf ===\n  not available:", err)
 		return
 	}
@@ -102,8 +93,7 @@ func debugDwarf(path string) {
 	r := d.Reader()
 	shown := 0
 	for shown < 3 {
-		e, err := r.Next()
-		if err != nil || e == nil {
+		if e, err := r.Next(); err != nil || e == nil {
 			break
 		}
 		if e.Tag == dwarf.TagCompileUnit {
@@ -116,8 +106,7 @@ func debugDwarf(path string) {
 }
 
 func debugGosym(path string) {
-	f, err := elf.Open(path)
-	if err != nil {
+	if f, err := elf.Open(path); err != nil {
 		return
 	}
 	defer func() {
@@ -129,12 +118,10 @@ func debugGosym(path string) {
 		fmt.Println("\n=== gosym ===\n  .text or .gopclntab missing")
 		return
 	}
-	data, err := pclntab.Data()
-	if err != nil {
+	if data, err := pclntab.Data(); err != nil {
 		return
 	}
-	tab, err := gosym.NewTable(nil, gosym.NewLineTable(data, text.Addr))
-	if err != nil {
+	if tab, err := gosym.NewTable(nil, gosym.NewLineTable(data, text.Addr)); err != nil {
 		fmt.Println("\n=== gosym ===\n  err:", err)
 		return
 	}
