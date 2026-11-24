@@ -19,7 +19,7 @@ module Main
     fmt.Printf("encoded %d bytes\n", buf.Len())
 
     var :back, message
-    if err = gob.NewDecoder(buf).Decode(back)
+    if err = gob.NewDecoder(@buf).Decode(@back)
       log.Fatal(err)
     end
     fmt.Printf("decoded: %+v\n", back)

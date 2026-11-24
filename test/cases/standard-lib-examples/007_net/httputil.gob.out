@@ -9,7 +9,7 @@ import (
 )
 
 func runHTTPUtil() {
-	upstream := httptest.NewServer(http.HandlerFunc(func(w any, r any) {
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "upstream got %s\n", r.URL.Path)
 	}))
 	defer upstream.Close()

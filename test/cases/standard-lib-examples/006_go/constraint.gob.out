@@ -9,6 +9,14 @@ import (
 func runConstraint() {
 	line := "//go:build linux && (amd64 || arm64)"
 	expr, err := constraint.Parse(line)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("expr:", expr)
 	envs := []map[string]bool{nil, nil, nil}
+	for _, env := range envs {
+		fmt.Printf("matches %v: %v\n", env, expr.Eval(func(tag any) {
+			return env[tag]
+		}))
+	}
 }

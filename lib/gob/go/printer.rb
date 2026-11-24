@@ -89,6 +89,8 @@ module Gob
           emit_range_stmt(node, out, indent: indent)
         when SyntaxTree::Go::SwitchStmt
           emit_switch_stmt(node, out, indent: indent)
+        when SyntaxTree::Go::TypeSwitchStmt
+          emit_type_switch_stmt(node, out, indent: indent)
         when SyntaxTree::Go::CaseClause
           emit_case_clause(node, out, indent: indent)
         when SyntaxTree::Go::BranchStmt
@@ -455,6 +457,15 @@ module Gob
           emit(node.tag, out)
           out << " "
         end
+        emit(node.body, out, indent: indent)
+      end
+
+      def emit_type_switch_stmt(node, out, indent: 0)
+        out << "switch "
+        emit(node.init, out) if node.init
+        out << "; " if node.init
+        emit(node.assign, out)
+        out << " "
         emit(node.body, out, indent: indent)
       end
 

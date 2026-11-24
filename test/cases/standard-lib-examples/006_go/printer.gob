@@ -14,7 +14,7 @@ module Main
       log.Fatal(err)
     end
 
-    cfg = Config.new(Mode: printer.UseSpaces | printer.TabIndent, Tabwidth: 4)
+    cfg = printer.Config.new(Mode: printer.UseSpaces | printer.TabIndent, Tabwidth: 4)
     if err = cfg.Fprint(os.Stdout, fset, file)
       log.Fatal(err)
     end

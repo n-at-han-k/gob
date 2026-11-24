@@ -11,6 +11,9 @@ import (
 func runECDH() {
 	curve := ecdh.P256()
 	alice, err := curve.GenerateKey(rand.Reader)
+	if err != nil {
+		log.Fatal(err)
+	}
 	bob, _ := curve.GenerateKey(rand.Reader)
 	shareA, _ := alice.ECDH(bob.PublicKey())
 	shareB, _ := bob.ECDH(alice.PublicKey())

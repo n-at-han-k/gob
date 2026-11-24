@@ -14,7 +14,10 @@ func runBinary() {
 	fmt.Printf("bytes: %x\n", buf.Bytes())
 	var a uint32
 	var b uint16
-	binary.Read(buf, binary.LittleEndian, b)
+	if err := binary.Read(&buf, binary.BigEndian, &a); err != nil {
+		log.Fatal(err)
+	}
+	binary.Read(&buf, binary.LittleEndian, &b)
 	fmt.Printf("a=%#x b=%#x\n", a, b)
 	var vbuf [binary.MaxVarintLen64]byte
 	n := binary.PutVarint(vbuf[:], -12_345)

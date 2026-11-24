@@ -7,14 +7,20 @@ import (
 )
 
 type v2article struct {
-	Title string
+	Title string `json:"title"`
 	Tags  []string
 }
 
 func runJSONv2() {
 	a := v2article{Title: "Learning Go", Tags: []string{"go", "v2"}}
 	data, err := json.Marshal(a)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("marshalled:", string(data))
 	var back v2article
+	if err := json.Unmarshal(data, &back); err != nil {
+		log.Fatal(err)
+	}
 	fmt.Printf("parsed: %+v\n", back)
 }

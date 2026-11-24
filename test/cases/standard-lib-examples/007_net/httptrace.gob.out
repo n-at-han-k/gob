@@ -8,19 +8,24 @@ import (
 )
 
 func runHTTPTrace() {
-	srv := httptest.NewServer(http.HandlerFunc(func(w any, r any) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "hello")
 	}))
 	defer srv.Close()
-	trace := &httptrace.ClientTrace{GetConn: func(host any) {
-		fmt.Println("GetConn:", host)
-	}, GotConn: func(info any) {
-		fmt.Println("GotConn: reused=", info.Reused)
-	}, WroteHeaders: func() {
-		fmt.Println("WroteHeaders")
-	}, GotFirstResponseByte: func() {
-		fmt.Println("GotFirstResponseByte")
-	}}
+	trace := &httptrace.ClientTrace{
+		GetConn: func(host string) {
+			fmt.Println("GetConn:", host)
+		},
+		GotConn: func(info httptrace.GotConnInfo) {
+			fmt.Println("GotConn: reused=", info.Reused)
+		},
+		WroteHeaders: func() {
+			fmt.Println("WroteHeaders")
+		},
+		GotFirstResponseByte: func() {
+			fmt.Println("GotFirstResponseByte")
+		},
+	}
 	req, _ := http.NewRequest("GET", srv.URL, nil)
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	resp, _ := http.DefaultTransport.RoundTrip(req)

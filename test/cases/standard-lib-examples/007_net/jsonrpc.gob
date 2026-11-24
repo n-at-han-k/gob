@@ -9,7 +9,8 @@ module Main
     srv = rpc.NewServer()
     srv.Register(Arith.new())
 
-    if (l, err = net.Listen("tcp", "127.0.0.1:0"))
+    l, err = net.Listen("tcp", "127.0.0.1:0")
+    if err
       log.Fatal(err)
     end
     defer l.Close()

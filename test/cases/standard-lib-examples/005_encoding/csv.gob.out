@@ -15,4 +15,10 @@ func runCSV() {
 	input := "id,label\n1,apple\n2,orange\n3,pear\n"
 	r := csv.NewReader(strings.NewReader(input))
 	records, err := r.ReadAll()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, rec := range records {
+		fmt.Println("row:", rec)
+	}
 }

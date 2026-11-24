@@ -15,7 +15,7 @@ func runCGI() {
 	os.Setenv("PATH_INFO", "/hello")
 	os.Setenv("QUERY_STRING", "who=world")
 	rec := httptest.NewRecorder()
-	handler := http.HandlerFunc(func(w any, r any) {
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "CGI script saw %s with %s=%s\n", r.URL.Path, "who", r.URL.Query().Get("who"))
 	})
 	req, _ := cgi.RequestFromMap()

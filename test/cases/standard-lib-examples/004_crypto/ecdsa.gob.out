@@ -11,6 +11,9 @@ import (
 
 func runECDSA() {
 	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		log.Fatal(err)
+	}
 	digest := sha256.Sum256([]byte("attack at dawn"))
 	sig, _ := ecdsa.SignASN1(rand.Reader, priv, digest[:])
 	ok := ecdsa.VerifyASN1(priv.PublicKey, digest[:], sig)

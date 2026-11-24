@@ -209,8 +209,8 @@ module SyntaxTree
               .visit_all(body)
               .map { |statement| context.stmtify(statement) }
           end
-        key = names[0] == "_" ? nil : Ident(names[0])
-        value = names[1] == "_" ? nil : Ident(names[1])
+        key = names[0] ? Ident(names[0]) : nil
+        value = names[1] && names[1] != "_" ? Ident(names[1]) : nil
 
         RangeStmt(
           context.visit(receiver),
@@ -384,6 +384,17 @@ module SyntaxTree
         Array(parameters).map do |parameter|
           case parameter
           in SyntaxTree::Ident[value: name]
+            name
+          end
+        end
+      end
+
+      def AssignmentNames(targets)
+        Array(targets).map do |target|
+          case target
+          in SyntaxTree::VarField[
+            value: SyntaxTree::Ident[value: name]
+          ]
             name
           end
         end
@@ -961,6 +972,214 @@ module SyntaxTree
           cond: cond,
           body: body,
           else_: else_
+        )
+      end
+
+      def CaseClause(list, body)
+        SyntaxTree::Go::CaseClause.new(
+          case_: nil,
+          list: Array(list),
+          colon: nil,
+          body: Array(body)
+        )
+      end
+
+      def SwitchStmt(tag, body, init: nil)
+        SyntaxTree::Go::SwitchStmt.new(
+          switch: nil,
+          init: init,
+          tag: tag,
+          body: body
+        )
+      end
+
+      def TypeSwitchStmt(assign, body, init: nil)
+        SyntaxTree::Go::TypeSwitchStmt.new(
+          switch: nil,
+          init: init,
+          assign: assign,
+          body: body
+        )
+      end
+
+      def TypeAssertExpr(x, type = nil)
+        SyntaxTree::Go::TypeAssertExpr.new(
+          x: x,
+          lparen: nil,
+          type: type,
+          rparen: nil
+        )
+      end
+
+      def ControlBody(body, context:)
+        BlockStmt(
+          context
+            .visit_all(BodyStatements(body))
+            .map { |statement| context.stmtify(statement) }
+        )
+      end
+
+      def Consequent(consequent, context:)
+        case consequent
+        in SyntaxTree::Else[statements: SyntaxTree::Statements[body: body]]
+          ControlBody(body, context: context)
+        in SyntaxTree::Elsif
+          context.visit(consequent)
+        else
+          nil
+        end
+      end
+
+      def IfCondition(predicate, body, consequent, context:)
+        IfStmt(
+          context.visit(predicate),
+          body: ControlBody(body, context: context),
+          else_: Consequent(consequent, context: context)
+        )
+      end
+
+      def IfErrorAssignment(names, value, body, consequent, context:)
+        IfStmt(
+          BinaryExpr(Ident("err"), :!=, Ident("nil")),
+          init:
+            AssignStmt(
+              names.map { |name| Ident(name) },
+              ":=",
+              [context.visit(value)]
+            ),
+          body: ControlBody(body, context: context),
+          else_: Consequent(consequent, context: context)
+        )
+      end
+
+      def IfBooleanAssignment(
+        names,
+        condition_name,
+        value,
+        body,
+        consequent,
+        context:
+      )
+        IfStmt(
+          Ident(condition_name),
+          init:
+            AssignStmt(
+              names.map { |name| Ident(name) },
+              ":=",
+              [context.visit(value)]
+            ),
+          body: ControlBody(body, context: context),
+          else_: Consequent(consequent, context: context)
+        )
+      end
+
+      def UnlessCondition(predicate, body, consequent, context:)
+        IfStmt(
+          UnaryExpr(:!, context.visit(predicate)),
+          body: ControlBody(body, context: context),
+          else_: Consequent(consequent, context: context)
+        )
+      end
+
+      def WhileLoop(predicate, body, context:)
+        ForStmt(
+          context.visit(predicate),
+          body: ControlBody(body, context: context)
+        )
+      end
+
+      def UntilLoop(predicate, body, context:)
+        ForStmt(
+          UnaryExpr(:!, context.visit(predicate)),
+          body: ControlBody(body, context: context)
+        )
+      end
+
+      def LoopBlock(body, context:)
+        ForStmt(nil, body: ControlBody(body, context: context))
+      end
+
+      def Times(count, params, body, context:)
+        names = ParameterNames(params)
+        key = names.empty? ? nil : Ident(names.first)
+        tok = names.empty? ? :ILLEGAL : ":="
+
+        RangeStmt(
+          context.visit(count),
+          key: key,
+          tok: tok,
+          body:
+            BlockStmt(
+              context.scoped(names) do
+                context
+                  .visit_all(BodyStatements(body))
+                  .map { |statement| context.stmtify(statement) }
+              end
+            )
+        )
+      end
+
+      def WhenClause(arguments, body, context:, types: false)
+        CaseClause(
+          if types
+            arguments.map { |argument| PointerType(argument, context: context) }
+          else
+            context.visit_all(arguments)
+          end,
+          context
+            .visit_all(BodyStatements(body))
+            .map { |statement| context.stmtify(statement) }
+        )
+      end
+
+      def SwitchClauses(consequent, context:, types: false)
+        clauses = []
+        current = consequent
+
+        while current
+          case current
+          in SyntaxTree::When[
+               arguments: SyntaxTree::Args[parts: arguments],
+               statements: SyntaxTree::Statements[body: body]
+             ]
+            clauses << WhenClause(
+              arguments,
+              body,
+              context: context,
+              types: types
+            )
+            current = current.consequent
+          in SyntaxTree::Else[statements: SyntaxTree::Statements[body: body]]
+            clauses << CaseClause(
+              [],
+              context
+                .visit_all(body)
+                .map { |statement| context.stmtify(statement) }
+            )
+            current = nil
+          else
+            current = nil
+          end
+        end
+
+        clauses
+      end
+
+      def CaseExpression(value, consequent, context:)
+        SwitchStmt(
+          value ? context.visit(value) : nil,
+          BlockStmt(SwitchClauses(consequent, context: context))
+        )
+      end
+
+      def TypeSwitch(name, receiver, consequent, context:)
+        TypeSwitchStmt(
+          AssignStmt(
+            [Ident(name)],
+            ":=",
+            [TypeAssertExpr(context.visit(receiver))]
+          ),
+          BlockStmt(SwitchClauses(consequent, context: context, types: true))
         )
       end
 

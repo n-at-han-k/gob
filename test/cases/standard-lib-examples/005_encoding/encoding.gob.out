@@ -5,12 +5,21 @@ import (
 	"fmt"
 )
 
-type color struct {
-	R, G, B any
+type colour struct {
+	R, G, B byte
+}
+
+func (self colour) MarshalText() ([]byte, error) {
+	return fmt.Appendf(nil, "#%02x%02x%02x", self.R, self.G, self.B), nil
+}
+
+func (self *colour) UnmarshalText(text []byte) error {
+	_, err := fmt.Sscanf(string(text), "#%02x%02x%02x", &self.R, &self.G, &self.B)
+	return err
 }
 
 func runEncoding() {
-	var m encoding.TextMarshaler = Colour{255, 128, 0}
+	var m encoding.TextMarshaler = colour{255, 128, 0}
 	txt, _ := m.MarshalText()
 	fmt.Printf("marshalled: %s\n", txt)
 	var back colour

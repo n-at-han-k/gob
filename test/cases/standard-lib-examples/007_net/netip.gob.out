@@ -8,6 +8,9 @@ import (
 
 func runNetip() {
 	addr, err := netip.ParseAddr("2001:db8::1")
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("addr:      ", addr)
 	fmt.Println("is v6?     ", addr.Is6())
 	fmt.Println("is private?", addr.IsPrivate())

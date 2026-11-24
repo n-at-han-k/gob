@@ -13,5 +13,9 @@ func runAscii85() {
 	fmt.Printf("encoded: %s\n", dst)
 	back := make([]byte, len(src))
 	ndst, _, err := ascii85.Decode(back, dst, true)
+	if err != nil {
+		fmt.Println("decode err:", err)
+		return
+	}
 	fmt.Printf("decoded: %s\n", back[:ndst])
 }

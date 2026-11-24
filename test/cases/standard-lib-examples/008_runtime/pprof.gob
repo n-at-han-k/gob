@@ -13,7 +13,7 @@ module Main
 
 
     f, err = os.CreateTemp("", "heap-*.prof")
-    unless err
+    if err
       fmt.Println("temp:", err)
       return
     end

@@ -65,6 +65,19 @@ module Gob
             SelectorExpr(visit(receiver), name)
           end
 
+          matcher.rule(:selector_property_ident) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
+            node => SyntaxTree::CallNode[
+              receiver: receiver,
+              operator: SyntaxTree::Period[value: "."],
+              message: SyntaxTree::Ident[value: name],
+              arguments: nil
+            ]
+
+            SelectorExpr(visit(receiver), name)
+          end
+
           matcher.rule(:selector_call) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
 

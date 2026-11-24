@@ -8,6 +8,9 @@ import (
 
 func runRC4() {
 	c, err := rc4.NewCipher([]byte("weakkey"))
+	if err != nil {
+		log.Fatal(err)
+	}
 	pt := []byte("legacy data")
 	ct := make([]byte, len(pt))
 	c.XORKeyStream(ct, pt)
