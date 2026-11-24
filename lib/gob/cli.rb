@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "thor"
+require "thor/help_header"
 
 module Gob
   class CLI < Thor
@@ -41,12 +42,6 @@ module Gob
     subcommand "version", Commands::Version
 
     def self.run(argv = ARGV)
-      help_arguments = argv.take_while { |argument| argument != "--" }
-
-      if help_arguments.include?("help") || help_arguments.any? { |argument| argument == "--help" || argument == "-h" }
-        puts "Gob::GOBBY"
-      end
-
       start(argv)
       0
     rescue StandardError => error
