@@ -24,6 +24,24 @@ module Gob
             GenDecl(:import, [ImportSpec(path)])
           end
 
+          matcher.rule(:var_inferred_type) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
+
+            node => SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "var" | "define_var"],
+              arguments: SyntaxTree::Args[
+                parts: [
+                  SyntaxTree::Command[
+                    message: SyntaxTree::Ident[value: name],
+                    arguments: SyntaxTree::Args[parts: [type]]
+                  ]
+                ]
+              ]
+            ]
+
+            VarDeclaration(name, GoType(type, context: self), [], context: self)
+          end
+
           matcher.rule(:var_declaration) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
 
@@ -252,6 +270,10 @@ module Gob
               message: SyntaxTree::Ident[value: name],
               arguments: SyntaxTree::Args[parts: parts]
             ]
+
+            if %w[var const define_var define_const].include?(name)
+              next Matcher::MISS
+            end
 
             CallExpr(Ident(name), visit_all(parts))
           end

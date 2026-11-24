@@ -20,6 +20,12 @@ func runTrace() {
 	var wg sync.WaitGroup
 	for i := range 3 {
 		wg.Add(1)
+		go func(id int) int {
+			defer wg.Done()
+			trace.WithRegion(context.Background(), fmt.Sprintf("worker-%d", id), func() {
+				time.Sleep(5 * time.Millisecond)
+			})
+		}(i)
 	}
 	wg.Wait()
 	trace.Stop()

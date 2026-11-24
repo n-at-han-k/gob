@@ -66,7 +66,7 @@ module SyntaxTree
         in SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Proc"]]
           FuncType([], nil)
         in SyntaxTree::VarRef[value: SyntaxTree::Const[value: name]]
-          Ident(Gob::Transpilation::Rules.const_go_name(name))
+          Ident(name)
         in SyntaxTree::CallNode[
              receiver: nil,
              operator: nil,
@@ -117,6 +117,17 @@ module SyntaxTree
           Ident(value.delete_prefix("@@"))
         else
           context.visit(node)
+        end
+      end
+
+      def StructElement(part, type, context:)
+        case part
+        in SyntaxTree::HashLiteral[assocs: assocs]
+          CompositeLit(nil, context.visit_all(assocs))
+        in SyntaxTree::ArrayLiteral[contents: SyntaxTree::Args[parts: parts]]
+          CompositeLit(nil, context.visit_all(parts))
+        else
+          context.visit(part)
         end
       end
 
@@ -171,10 +182,32 @@ module SyntaxTree
                       Ident(label.chomp(":"))
                     end
                   KeyValueExpr(key, context.visit(value))
+                in SyntaxTree::Assoc[
+                     key: SyntaxTree::DynaSymbol[
+                       parts: [SyntaxTree::TStringContent[value: label]]
+                     ],
+                     value: value
+                   ]
+                  key =
+                    if type.is_a?(SyntaxTree::Go::MapType) ||
+                         (
+                           type.is_a?(SyntaxTree::Go::SelectorExpr) &&
+                             type.sel.name == "Values"
+                         )
+                      StringLiteral(label)
+                    else
+                      Ident(label)
+                    end
+                  KeyValueExpr(
+                    key,
+                    StructElement(value, type, context: context)
+                  )
+                in SyntaxTree::Assoc[key: key, value: value]
+                  KeyValueExpr(context.visit(key), context.visit(value))
                 end
               end
             else
-              context.visit(part)
+              StructElement(part, type, context: context)
             end
           end
         if type.is_a?(SyntaxTree::Go::ArrayType) &&
@@ -185,13 +218,17 @@ module SyntaxTree
           return CallExpr(type, elements)
         end
 
-        literal = CompositeLit(type, elements)
-        if parts.any? { |part|
-             part.is_a?(SyntaxTree::BareAssocHash) &&
-               part.location.start_line != part.location.end_line
-           }
-          literal.instance_variable_set(:@multiline, true)
-        end
+        literal =
+          CompositeLit(
+            type,
+            elements,
+            multiline:
+              arguments&.location&.start_line !=
+                arguments&.location&.end_line ||
+                parts.any? do |part|
+                  part.location.start_line != part.location.end_line
+                end
+          )
         pointer ? UnaryExpr(:&, literal) : literal
       end
 
@@ -204,7 +241,7 @@ module SyntaxTree
             end
           end
         statements =
-          context.scoped(names) do
+          context.scoped(names + context.current_scope.to_a) do
             context
               .visit_all(body)
               .map { |statement| context.stmtify(statement) }
@@ -284,6 +321,40 @@ module SyntaxTree
           tok_pos: nil,
           tok: tok,
           rhs: Array(rhs)
+        )
+      end
+
+      def MapAssignment(name, assocs, context:)
+        entries = context.visit_all(assocs)
+        key_type =
+          if entries.all? { |entry|
+               entry.is_a?(SyntaxTree::Go::KeyValueExpr) &&
+                 entry.key.is_a?(SyntaxTree::Go::BasicLit) &&
+                 entry.key.kind.to_s == "STRING"
+             }
+            Ident("string")
+          else
+            Ident("any")
+          end
+        value_type =
+          if entries.all? { |entry|
+               entry.is_a?(SyntaxTree::Go::KeyValueExpr) &&
+                 entry.value.is_a?(SyntaxTree::Go::Ident) &&
+                 entry.value.name.start_with?("run")
+             }
+            FuncType([], nil)
+          else
+            Ident("any")
+          end
+
+        GenDecl(
+          :var,
+          [
+            ValueSpec(
+              [name],
+              values: [CompositeLit(MapType(key_type, value_type), entries)]
+            )
+          ]
         )
       end
 
@@ -523,12 +594,15 @@ module SyntaxTree
         end
       end
 
+      def ReceiverName(context:)
+        context.current_class&.[](0)&.downcase || "self"
+      end
+
       def MethodReceiver(context:, pointer:, named:)
-        type =
-          Ident(Gob::Transpilation::Rules.const_go_name(context.current_class))
+        type = Ident(context.current_class)
         type = StarExpr(type) if pointer
 
-        FieldList([Field(named ? ["self"] : [], type)])
+        FieldList([Field(named ? [ReceiverName(context: context)] : [], type)])
       end
 
       def Method(name_node, params, signature_text, body, context:)
@@ -586,12 +660,11 @@ module SyntaxTree
         end
       end
 
-      def Lambda(block_var, body, context:)
+      def Lambda(block_var, body, comments, context:)
         params = BlockParameters(block_var)
         parameter_names = ParameterNames(ParameterNodes(params))
         signature_text =
-          context
-            .collect_comments(block_var)
+          (context.collect_comments(block_var) + Array(comments))
             .map(&:value)
             .find { |comment| context.parse_signature_comment(comment) }
         signature =
@@ -628,8 +701,10 @@ module SyntaxTree
       end
 
       def StructTag(assoc, type)
-        comment =
-          assoc.comments.map(&:value).find { |value| value.match?(/`[^`]+`/) }
+        comments =
+          assoc.comments +
+            (assoc.value.respond_to?(:comments) ? assoc.value.comments : [])
+        comment = comments.map(&:value).find { |value| value.match?(/`[^`]+`/) }
         return nil unless comment
 
         tag = comment[/`([^`]+)`/, 1]
@@ -790,18 +865,7 @@ module SyntaxTree
           end
         end
 
-        [
-          GenDecl(
-            :type,
-            [
-              TypeSpec(
-                Gob::Transpilation::Rules.const_go_name(name),
-                Struct(fields)
-              )
-            ]
-          ),
-          *methods
-        ]
+        [GenDecl(:type, [TypeSpec(name, Struct(fields))]), *methods]
       end
 
       def BlockStmt(statements = [])
@@ -926,26 +990,47 @@ module SyntaxTree
         SyntaxTree::Go::ParenExpr.new(lparen: nil, x: x, rparen: nil)
       end
 
-      def ArrayLiteral(elements)
-        CompositeLit(ArrayType(Ident("any")), elements)
+      def ArrayLiteral(elements, multiline: false)
+        CompositeLit(ArrayType(Ident("any")), elements, multiline: multiline)
       end
 
-      def HashLiteral(entries)
-        CompositeLit(MapType(Ident("any"), Ident("any")), entries)
+      def HashEntries(assocs, context:)
+        assocs.map do |assoc|
+          case assoc
+          in SyntaxTree::Assoc[
+               key: SyntaxTree::VarRef[value: SyntaxTree::Const[value: name]],
+               value: value
+             ]
+            KeyValueExpr(Ident(name), context.visit(value))
+          else
+            context.visit(assoc)
+          end
+        end
+      end
+
+      def HashLiteral(entries, multiline: false)
+        CompositeLit(
+          MapType(Ident("any"), Ident("any")),
+          entries,
+          multiline: multiline
+        )
       end
 
       def KeyValueExpr(key, value)
         SyntaxTree::Go::KeyValueExpr.new(key: key, colon: nil, value: value)
       end
 
-      def CompositeLit(type = nil, elts = [])
-        SyntaxTree::Go::CompositeLit.new(
-          type: type,
-          lbrace: nil,
-          elts: Array(elts),
-          rbrace: nil,
-          incomplete: false
-        )
+      def CompositeLit(type = nil, elts = [], multiline: false)
+        node =
+          SyntaxTree::Go::CompositeLit.new(
+            type: type,
+            lbrace: nil,
+            elts: Array(elts),
+            rbrace: nil,
+            incomplete: false
+          )
+        node.instance_variable_set(:@multiline, true) if multiline
+        node
       end
 
       def ForStmt(cond = nil, body:, init: nil, post: nil)
@@ -1036,6 +1121,14 @@ module SyntaxTree
         end
       end
 
+      def IfErrorCondition(body, consequent, context:)
+        IfStmt(
+          BinaryExpr(Ident("err"), :!=, Ident("nil")),
+          body: ControlBody(body, context: context),
+          else_: Consequent(consequent, context: context)
+        )
+      end
+
       def IfCondition(predicate, body, consequent, context:)
         IfStmt(
           context.visit(predicate),
@@ -1087,6 +1180,14 @@ module SyntaxTree
         )
       end
 
+      def UnlessError(body, consequent, context:)
+        IfStmt(
+          BinaryExpr(Ident("err"), :==, Ident("nil")),
+          body: ControlBody(body, context: context),
+          else_: Consequent(consequent, context: context)
+        )
+      end
+
       def WhileLoop(predicate, body, context:)
         ForStmt(
           context.visit(predicate),
@@ -1102,7 +1203,17 @@ module SyntaxTree
       end
 
       def LoopBlock(body, context:)
-        ForStmt(nil, body: ControlBody(body, context: context))
+        ForStmt(
+          nil,
+          body:
+            BlockStmt(
+              context.scoped(context.current_scope.to_a) do
+                context
+                  .visit_all(BodyStatements(body))
+                  .map { |statement| context.stmtify(statement) }
+              end
+            )
+        )
       end
 
       def Times(count, params, body, context:)
@@ -1116,7 +1227,7 @@ module SyntaxTree
           tok: tok,
           body:
             BlockStmt(
-              context.scoped(names) do
+              context.scoped(names + context.current_scope.to_a) do
                 context
                   .visit_all(BodyStatements(body))
                   .map { |statement| context.stmtify(statement) }
@@ -1201,6 +1312,34 @@ module SyntaxTree
         SyntaxTree::Go::BranchStmt.new(tok_pos: nil, tok: tok, label: label)
       end
 
+      def PackageUsed?(package_name, node)
+        case node
+        when SyntaxTree::Go::Ident
+          node.name == package_name
+        when SyntaxTree::Go::Node
+          node.child_nodes.any? { |child| PackageUsed?(package_name, child) }
+        when Array
+          node.any? { |child| PackageUsed?(package_name, child) }
+        else
+          false
+        end
+      end
+
+      def BlankUnusedImports(imports, declarations)
+        imports.each do |spec|
+          next if spec.name
+
+          path = spec.path.value.to_s.delete_prefix('"').delete_suffix('"')
+          segments = path.split("/")
+          package_name = segments.last == "v2" ? segments[-2] : segments.last
+          if package_name != segments.last
+            spec.instance_variable_set(:@name, Ident(package_name))
+          elsif !PackageUsed?(package_name, declarations)
+            spec.instance_variable_set(:@name, Ident("_"))
+          end
+        end
+      end
+
       def PackageFile(name, nodes)
         imports = []
         declarations = []
@@ -1255,6 +1394,7 @@ module SyntaxTree
             end
             .map(&:first)
         declarations.unshift(GenDecl(:import, imports)) unless imports.empty?
+        BlankUnusedImports(imports, declarations)
 
         File(name, declarations, imports: imports)
       end

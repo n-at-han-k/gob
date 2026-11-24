@@ -113,11 +113,11 @@ module Gob
                 message: SyntaxTree::Ident[value: "lambda"]
               ],
               block: SyntaxTree::BlockNode[
-                block_var: block_var, bodystmt: bodystmt
+                block_var: block_var, bodystmt: bodystmt, comments: comments
               ]
             ]
 
-            Lambda(block_var, BodyStatements(bodystmt), context: self)
+            Lambda(block_var, BodyStatements(bodystmt), comments, context: self)
           end
         end
       end

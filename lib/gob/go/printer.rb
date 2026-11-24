@@ -49,7 +49,7 @@ module Gob
         when SyntaxTree::Go::DeclStmt
           emit(node.decl, out, indent: indent)
         when SyntaxTree::Go::CallExpr
-          emit_call_expr(node, out)
+          emit_call_expr(node, out, indent: indent)
         when SyntaxTree::Go::SelectorExpr
           emit_selector_expr(node, out)
         when SyntaxTree::Go::Ident
@@ -288,12 +288,12 @@ module Gob
         end
       end
 
-      def emit_call_expr(node, out)
+      def emit_call_expr(node, out, indent: 0)
         emit(node.fun, out)
         out << "("
         node.args.each_with_index do |arg, i|
           out << ", " if i > 0
-          emit(arg, out)
+          emit(arg, out, indent: indent)
         end
         out << "..." if node.ellipsis
         out << ")"

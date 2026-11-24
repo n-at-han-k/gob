@@ -15,10 +15,14 @@ module Gob
                 receiver: nil,
                 operator: nil,
                 message: SyntaxTree::Ident[value: "defer"]
-              ]
+              ],
+              block: SyntaxTree::BlockNode[bodystmt: bodystmt]
             ]
 
-            Matcher::DROP
+            call = visit(BodyStatements(bodystmt).first)
+            next Matcher::DROP unless call.is_a?(SyntaxTree::Go::CallExpr)
+
+            DeferStmt(call)
           end
 
           matcher.rule(:defer) do |node|

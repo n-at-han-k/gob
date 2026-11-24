@@ -7,7 +7,7 @@ module Main
 	  XMLName: xml.Name,     # `xml:"book"`
 	  Title:   string,       # `xml:"title"`
 	  Author:  string,       # `xml:"author,attr"`
-	  Tags:    Array[string] # `xml:"tags>tag"`
+	  Tags:    Array[string], # `xml:"tags>tag"`
   )
 
   def runXML
@@ -20,7 +20,7 @@ module Main
     fmt.Println(xml.Header + string(data))
 
     var :back, book
-    if err = xml.Unmarshal(data, back)
+    if err = xml.Unmarshal(data, @back)
       log.Fatal(err)
     end
     fmt.Printf("parsed: %+v\n", back)

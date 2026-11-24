@@ -18,7 +18,7 @@ module Gob
             in SyntaxTree::VCall[value: SyntaxTree::Ident[value: name]]
               Ident(name)
             in SyntaxTree::VarRef[value: SyntaxTree::Const[value: name]]
-              Ident(Gob::Transpilation::Rules.const_go_name(name))
+              Ident(name)
             in SyntaxTree::SymbolLiteral[value: SyntaxTree::Ident[value: name]]
               Ident(name)
             else
@@ -98,7 +98,10 @@ module Gob
               index: SyntaxTree::Args[parts: [key, value]]
             ]
 
-            MapType(GoType(key, context: self), GoType(value, context: self))
+            MapType(
+              PointerType(key, context: self),
+              PointerType(value, context: self)
+            )
           end
         end
       end

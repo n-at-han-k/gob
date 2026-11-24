@@ -8,7 +8,7 @@ import (
 )
 
 func runJSONText() {
-	src := "{\"name\":\"Nathan\",\"tags\":[\"go\",\"stdlib\"],\"count\":3}"
+	src := `{"name":"Nathan","tags":["go","stdlib"],"count":3}`
 	dec := jsontext.NewDecoder(strings.NewReader(src))
 	for {
 		tok, err := dec.ReadToken()

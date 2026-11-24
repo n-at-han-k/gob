@@ -21,6 +21,8 @@ func runConstraint() {
 		{"darwin": true, "arm64": true},
 	}
 	for _, env := range envs {
-		fmt.Printf("matches %v: %v\n", env, expr.Eval(func(tag string) bool { return env[tag] }))
+		fmt.Printf("matches %v: %v\n", env, expr.Eval(func(tag string) bool {
+			return env[tag]
+		}))
 	}
 }

@@ -5,7 +5,7 @@ require "log"
 module Main
   var v2article = Struct.new(
     Title: string,        # `json:"title"`
-    Tags:  Array[string] # `json:"tags,omitzero"`
+    Tags:  Array[string], # `json:"tags,omitzero"`
   )
 
   def runJSONv2

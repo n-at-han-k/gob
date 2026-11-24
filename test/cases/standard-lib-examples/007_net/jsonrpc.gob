@@ -31,7 +31,7 @@ module Main
     defer client.Close()
 
     var :result, int
-    if err = client.Call("Arith.Multiply", Args.new(9, 9), result)
+    if err = client.Call("Arith.Multiply", Args.new(9, 9), @result)
       log.Fatal(err)
     end
     fmt.Println("9 * 9 =", result)

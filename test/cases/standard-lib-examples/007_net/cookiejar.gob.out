@@ -10,7 +10,10 @@ import (
 func runCookieJar() {
 	jar, _ := cookiejar.New(nil)
 	u, _ := url.Parse("https://example.com/")
-	jar.SetCookies(u, []*http.Cookie{nil, nil})
+	jar.SetCookies(u, []*http.Cookie{
+		{name: "session", value: "abc123"},
+		{name: "theme", value: "dark"},
+	})
 	for _, c := range jar.Cookies(u) {
 		fmt.Printf("  %s=%s\n", c.Name, c.Value)
 	}

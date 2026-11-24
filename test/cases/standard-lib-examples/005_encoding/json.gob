@@ -6,13 +6,13 @@ require "strings"
 module Main
   var article = Struct.new(
     Title:    string,        # `json:"title"`
-    Views:    int,           # `json:"views,omitempty"`
-    Tags:     Array[string], # `json:"tags"`
+    Views:    int,           # `json:"views"`
+    Tags:     Array[string], # `json:"tags,omitempty"`
     internal: string
   )
 
   def runJSON
-    a = Article.new(Title: "Learning Go", Views: 12, Tags: Array[string].new("go", "stdlib"))
+    a = article.new(Title: "Learning Go", Views: 12, Tags: Array[string].new("go", "stdlib"))
 
     data, err = json.Marshal(a)
     if err != nil
@@ -23,7 +23,7 @@ module Main
     pretty, _ = json.MarshalIndent(a, "", "  ")
     fmt.Println(string(pretty))
 
-    var :back, Article
+    var :back, article
     json.Unmarshal(data, @back)
     fmt.Printf("parsed: %+v\n", back)
 

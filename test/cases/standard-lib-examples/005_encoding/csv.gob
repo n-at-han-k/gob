@@ -9,7 +9,7 @@ module Main
 
     w = csv.NewWriter(os.Stdout)
     w.WriteAll(Array[Array[string]].new(
-      ["name" "city" "notes"],
+      ["name", "city", "notes"],
       ["Nathan", "Wellington", "hello, world"],
       ["Ada", "London", `she said "hi"`]
     ))

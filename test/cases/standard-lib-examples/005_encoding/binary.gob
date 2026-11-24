@@ -20,7 +20,7 @@ module Main
     fmt.Printf("a=%#x b=%#x\n", a, b)
 
     var :vbuf, Array[byte, binary.MaxVarintLen64]
-    n = binary.PutVarint(vbuf[], -12_345)
+    n = binary.PutVarint(vbuf[], -12345)
     fmt.Printf("varint(-12345) = %x (%d bytes)\n", vbuf[...n], n)
     v, _ = binary.Varint(vbuf[...n])
     fmt.Println("decoded:", v)

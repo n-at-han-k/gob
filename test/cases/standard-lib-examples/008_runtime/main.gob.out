@@ -24,7 +24,7 @@ func main() {
 		fmt.Println("available demos:")
 		names := make([]string, 0, len(demos))
 		for k := range demos {
-			names := append(names, k)
+			names = append(names, k)
 		}
 		sort.Strings(names)
 		for _, n := range names {

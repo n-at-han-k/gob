@@ -31,12 +31,27 @@ module Gob
             Ident(Gob::Transpilation::Rules.const_go_name(name))
           end
 
+          matcher.rule(:self_reference) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
+
+            node => SyntaxTree::VarRef[value: SyntaxTree::Kw[value: "self"]]
+
+            Ident(current_class ? current_class[0].downcase : "self")
+          end
+
           matcher.rule(:instance_variable) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
 
             node => SyntaxTree::VarRef[value: SyntaxTree::IVar[value: name]]
 
-            UnaryExpr(:&, Ident(name.delete_prefix("@")))
+            name =
+              if name == "@self" && current_class
+                current_class[0].downcase
+              else
+                name.delete_prefix("@")
+              end
+
+            UnaryExpr(:&, Ident(name))
           end
 
           matcher.rule(:class_variable) do |node|

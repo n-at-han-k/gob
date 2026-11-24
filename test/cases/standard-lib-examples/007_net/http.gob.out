@@ -14,7 +14,7 @@ func runHTTP() {
 	}))
 	defer srv.Close()
 	resp, err := http.Get(srv.URL + "/greet")
-	if err {
+	if err != nil {
 		log.Fatal(err)
 	}
 	defer resp.Body.Close()

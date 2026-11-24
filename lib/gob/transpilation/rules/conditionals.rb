@@ -123,6 +123,20 @@ module Gob
             )
           end
 
+          matcher.rule(:if_error_condition) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::IfNode)
+
+            node => SyntaxTree::IfNode[
+              predicate: SyntaxTree::VarRef[
+                value: SyntaxTree::Ident[value: "err"]
+              ],
+              statements: SyntaxTree::Statements[body: body],
+              consequent: consequent
+            ]
+
+            IfErrorCondition(body, consequent, context: self)
+          end
+
           matcher.rule(:if_condition) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::IfNode)
 
@@ -159,6 +173,20 @@ module Gob
             ]
 
             IfCondition(predicate, body, consequent, context: self)
+          end
+
+          matcher.rule(:unless_error) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::UnlessNode)
+
+            node => SyntaxTree::UnlessNode[
+              predicate: SyntaxTree::VarRef[
+                value: SyntaxTree::Ident[value: "err"]
+              ],
+              statements: SyntaxTree::Statements[body: body],
+              consequent: consequent
+            ]
+
+            UnlessError(body, consequent, context: self)
           end
 
           matcher.rule(:unless) do |node|

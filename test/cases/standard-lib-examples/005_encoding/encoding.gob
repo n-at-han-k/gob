@@ -19,7 +19,7 @@ module Main
 
   def runEncoding
 
-    var :m, encoding.TextMarshaler, Colour.new(255, 128, 0)
+    var :m, encoding.TextMarshaler, colour.new(255, 128, 0)
     txt, _ = m.MarshalText()
     fmt.Printf("marshalled: %s\n", txt)
 

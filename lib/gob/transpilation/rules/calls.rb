@@ -52,6 +52,75 @@ module Gob
             StructLiteral(receiver, arguments, context: self)
           end
 
+          matcher.rule(:type_assertion) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
+            node => SyntaxTree::CallNode[
+              receiver: receiver,
+              operator: SyntaxTree::Period[value: "."],
+              message: :call,
+              arguments: SyntaxTree::ArgParen[
+                arguments: SyntaxTree::Args[
+                  parts: [
+                    SyntaxTree::VCall[value: SyntaxTree::Ident[value: "type"]]
+                  ]
+                ]
+              ]
+            ]
+
+            TypeAssertExpr(visit(receiver))
+          end
+
+          matcher.rule(:lambda_call) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
+            node => SyntaxTree::CallNode[
+              receiver: SyntaxTree::MethodAddBlock,
+              operator: SyntaxTree::Period[value: "."],
+              message: :call,
+              arguments: arguments
+            ]
+
+            CallExpr(visit(node.receiver), visit_args(arguments))
+          end
+
+          matcher.rule(:conversion_assertion) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
+            node => SyntaxTree::CallNode[
+              receiver: receiver,
+              operator: SyntaxTree::Period[value: "."],
+              message: :call,
+              arguments: SyntaxTree::ArgParen[
+                arguments: SyntaxTree::Args[parts: [type]]
+              ]
+            ]
+
+            TypeAssertExpr(visit(receiver), GoType(type, context: self))
+          end
+
+          matcher.rule(:pointer_property) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
+            node => SyntaxTree::CallNode[
+              receiver: SyntaxTree::VarRef[
+                value: SyntaxTree::IVar[value: receiver_name]
+              ],
+              operator: SyntaxTree::Period[value: "."],
+              message: SyntaxTree::Const[value: name],
+              arguments: nil
+            ]
+
+            receiver_name =
+              if receiver_name == "@self" && current_class
+                current_class[0].downcase
+              else
+                receiver_name.delete_prefix("@")
+              end
+
+            UnaryExpr(:&, SelectorExpr(Ident(receiver_name), name))
+          end
+
           matcher.rule(:selector_property) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
 

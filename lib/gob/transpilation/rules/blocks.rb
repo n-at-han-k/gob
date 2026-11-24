@@ -34,7 +34,10 @@ module Gob
 
             node => SyntaxTree::BareAssocHash[assocs: assocs]
 
-            HashLiteral(visit_all(assocs))
+            HashLiteral(
+              HashEntries(assocs, context: self),
+              multiline: node.location.start_line != node.location.end_line
+            )
           end
 
           matcher.rule(:hash_literal) do |node|
@@ -42,7 +45,10 @@ module Gob
 
             node => SyntaxTree::HashLiteral[assocs: assocs]
 
-            HashLiteral(visit_all(assocs))
+            HashLiteral(
+              HashEntries(assocs, context: self),
+              multiline: node.location.start_line != node.location.end_line
+            )
           end
 
           matcher.rule(:array_literal) do |node|
@@ -58,7 +64,10 @@ module Gob
                 Array(contents)
               end
 
-            ArrayLiteral(visit_all(elements))
+            ArrayLiteral(
+              visit_all(elements),
+              multiline: node.location.start_line != node.location.end_line
+            )
           end
 
           matcher.rule(:block_arguments) do |node|
