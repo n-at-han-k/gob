@@ -74,7 +74,7 @@ module Gob
 
             node => SyntaxTree::VarRef[value: SyntaxTree::Kw[value: value]]
 
-            next Matcher::MISS unless %w[true false nil].include?(value)
+            next Matcher::MISS unless %w[true false nil self].include?(value)
 
             Ident(value)
           end

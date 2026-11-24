@@ -7,8 +7,8 @@ import (
 )
 
 type v2article struct {
-	Title string `json:"title"`
-	Tags  []string
+	Title string   `json:"title"`
+	Tags  []string `json:"tags,omitzero,omitempty"`
 }
 
 func runJSONv2() {

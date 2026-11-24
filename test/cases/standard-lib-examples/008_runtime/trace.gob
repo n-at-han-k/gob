@@ -19,7 +19,7 @@ module Main
     var :wg, sync.WaitGroup
     3.times do |i|
       wg.Add(1)
-      go lambda { |id| # (int) -> int
+      go lambda { |id| # (int)
         defer wg.Done()
 
         trace.WithRegion(context.Background(), fmt.Sprintf("worker-%d", id), lambda {

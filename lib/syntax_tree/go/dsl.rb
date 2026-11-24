@@ -123,7 +123,7 @@ module SyntaxTree
       def StructElement(part, type, context:)
         case part
         in SyntaxTree::HashLiteral[assocs: assocs]
-          CompositeLit(nil, context.visit_all(assocs))
+          CompositeLit(nil, HashEntries(assocs, context: context))
         in SyntaxTree::ArrayLiteral[contents: SyntaxTree::Args[parts: parts]]
           CompositeLit(nil, context.visit_all(parts))
         else
@@ -578,27 +578,11 @@ module SyntaxTree
         end
       end
 
-      def UsesSelf?(node)
-        case node
-        when Array
-          node.any? { |child| UsesSelf?(child) }
-        when SyntaxTree::IVar
-          node.value == "@self"
-        when SyntaxTree::VarRef
-          (node.value.is_a?(SyntaxTree::Kw) && node.value.value == "self") ||
-            UsesSelf?(node.value)
-        when SyntaxTree::Node
-          node.child_nodes.any? { |child| UsesSelf?(child) }
-        else
-          false
-        end
-      end
-
-      def MethodReceiver(context:, pointer:, named:)
+      def MethodReceiver(context:, pointer:)
         type = Ident(context.current_class)
         type = StarExpr(type) if pointer
 
-        FieldList([Field(named ? ["self"] : [], type)])
+        FieldList([Field(["self"], type)])
       end
 
       def Method(name_node, params, signature_text, body, context:)
@@ -609,11 +593,7 @@ module SyntaxTree
           body,
           context: context,
           recv:
-            MethodReceiver(
-              context: context,
-              pointer: PointerReceiver?(body),
-              named: UsesSelf?(body)
-            )
+            MethodReceiver(context: context, pointer: PointerReceiver?(body))
         )
       end
 
@@ -627,11 +607,7 @@ module SyntaxTree
           return_types: signature[:returns],
           body: body,
           recv:
-            MethodReceiver(
-              context: context,
-              pointer: PointerReceiver?(body),
-              named: UsesSelf?(body)
-            ),
+            MethodReceiver(context: context, pointer: PointerReceiver?(body)),
           context: context
         )
       end
@@ -696,9 +672,9 @@ module SyntaxTree
         )
       end
 
-      def StructTag(assoc, type)
+      def StructTag(assoc, type, comments: [])
         comments =
-          assoc.comments +
+          Array(comments) + assoc.comments +
             (assoc.value.respond_to?(:comments) ? assoc.value.comments : [])
         comment = comments.map(&:value).find { |value| value.match?(/`[^`]+`/) }
         return nil unless comment
@@ -721,15 +697,20 @@ module SyntaxTree
         BasicLit(:STRING, "`#{name}:\"#{values.join(",")}\"`")
       end
 
-      def StructNew(name, assocs, context:)
+      def StructNew(name, assocs, context:, comments: [])
         fields =
-          assocs.map do |assoc|
+          assocs.each_with_index.map do |assoc, index|
             case assoc
             in SyntaxTree::Assoc[
                  key: SyntaxTree::Label[value: label], value: type
                ]
               type = GoType(type, context: context)
-              [label.chomp(":"), type, StructTag(assoc, type)]
+              trailing_comments = index == assocs.length - 1 ? comments : []
+              [
+                label.chomp(":"),
+                type,
+                StructTag(assoc, type, comments: trailing_comments)
+              ]
             end
           end
 
@@ -744,17 +725,22 @@ module SyntaxTree
         )
       end
 
-      def StructNewWithBlock(name, arguments, body, context:)
+      def StructNewWithBlock(name, arguments, body, context:, comments: [])
         fields =
           case arguments.first
           in SyntaxTree::BareAssocHash[assocs: assocs]
-            assocs.map do |assoc|
+            assocs.each_with_index.map do |assoc, index|
               case assoc
               in SyntaxTree::Assoc[
                    key: SyntaxTree::Label[value: label], value: type
                  ]
                 type = GoType(type, context: context)
-                [label.chomp(":"), type, StructTag(assoc, type)]
+                trailing_comments = index == assocs.length - 1 ? comments : []
+                [
+                  label.chomp(":"),
+                  type,
+                  StructTag(assoc, type, comments: trailing_comments)
+                ]
               end
             end
           else

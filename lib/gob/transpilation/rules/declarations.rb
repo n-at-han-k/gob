@@ -154,7 +154,9 @@ module Gob
                       operator: SyntaxTree::Period[value: "."],
                       message: SyntaxTree::Ident[value: "new"],
                       arguments: SyntaxTree::ArgParen[
-                        arguments: SyntaxTree::Args[parts: arguments]
+                        arguments: SyntaxTree::Args[
+                          parts: arguments, comments: comments
+                        ]
                       ]
                     ]
                   ]
@@ -167,7 +169,13 @@ module Gob
               ]
             ]
 
-            StructNewWithBlock(name, arguments, body, context: self)
+            StructNewWithBlock(
+              name,
+              arguments,
+              body,
+              comments: comments,
+              context: self
+            )
           end
 
           matcher.rule(:struct_new) do |node|
@@ -188,7 +196,9 @@ module Gob
                       operator: SyntaxTree::Period[value: "."],
                       message: SyntaxTree::Ident[value: "new"],
                       arguments: SyntaxTree::ArgParen[
-                        arguments: SyntaxTree::Args[parts: arguments]
+                        arguments: SyntaxTree::Args[
+                          parts: arguments, comments: comments
+                        ]
                       ]
                     ]
                   ]
@@ -198,7 +208,7 @@ module Gob
 
             case arguments.first
             in SyntaxTree::BareAssocHash[assocs: assocs]
-              StructNew(name, assocs, context: self)
+              StructNew(name, assocs, comments: comments, context: self)
             else
               names =
                 arguments.filter_map do |argument|

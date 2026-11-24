@@ -111,14 +111,10 @@ module Gob
               arguments: nil
             ]
 
-            receiver_name =
-              if receiver_name == "@self" && current_class
-                current_class[0].downcase
-              else
-                receiver_name.delete_prefix("@")
-              end
-
-            UnaryExpr(:&, SelectorExpr(Ident(receiver_name), name))
+            UnaryExpr(
+              :&,
+              SelectorExpr(Ident(receiver_name.delete_prefix("@")), name)
+            )
           end
 
           matcher.rule(:selector_property) do |node|
