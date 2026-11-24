@@ -1,15 +1,10 @@
-# The golden harness's rubocop config, self-contained.
-#
-# `rubocop -A` is the pipeline's last pass and the SAME pass runs over
-# discovery.cpp.rb, so both sides come out laid out identically and the diff
-# shows substance only.
-
 plugins:
   - rubocop-nathank
   - rubocop-disable_syntax
 
 require:
   - ./cops/multiline_struct_new.rb
+
   - ./cops/multiline_condition.rb
   - ./cops/blank_line_between_statements.rb
   - ./cops/single_line_arguments.rb
@@ -32,30 +27,47 @@ AllCops:
     - 'data/**/*'
     - 'bin/**/*'
 
-Layout/AccessModifierIndentation:
-  Enabled: true
-  EnforcedStyle: indent
+Style/DisableSyntax:
+  DisableSyntax:
+    - ternary
 
-Layout/IndentationConsistency:
+Style/IfInsideElse:
   Enabled: true
-  EnforcedStyle: indented_internal_methods
+Style/NegatedIf:
+  Enabled: true
+  EnforcedStyle: both
+Style/FrozenStringLiteralComment:
+  Enabled: false
 
-Layout/IndentationWidth:
+Transpile/MultilineStructNew:
   Enabled: true
-  Width: 2
+Transpile/MultilineCondition:
+  Enabled: true
+Transpile/BlankLineBetweenStatements:
+  Enabled: true
+Transpile/SingleLineArguments:
+  Enabled: true
+Transpile/SingleLineBlock:
+  Enabled: true
+Transpile/ArrayBrackets:
+  Enabled: true
+Transpile/InfixOperator:
+  Enabled: true
+Transpile/MacroParentheses:
+  Enabled: true
+Transpile/MultilineString:
+  Enabled: true
+Transpile/BlockDelimiters:
+  Enabled: true
+Transpile/NoBlankLineBeforeBranch:
+  Enabled: true
+Transpile/VisibilitySections:
+  Enabled: true
+Transpile/ConstantsFirst:
+  Enabled: true
 
 Layout/ClassStructure:
   Enabled: true
-  # Its corrector was suspected of writing `end    def parse_checksum_header`,
-  # which does not parse -- and a Lint/Syntax error stops every cop after it in
-  # the run, so one bad line costs a whole file its layout. It turned out to be
-  # the INPUT: checksums.cpp also emitted `def (other)` for its member
-  # `operator==`, and a corrector moving nodes around an already-unparsable
-  # file is the artefact, not the cause. With the operator named, the
-  # correction is clean -- verified on that file in the shape that broke.
-  #
-  # `GoldenHarness::Emitter#order_members` emits the order anyway, so this
-  # normally has nothing to do and stands as the check that it got it right.
   ExpectedOrder:
     - module_inclusion
     - constants
@@ -101,43 +113,15 @@ Layout/ClassStructure:
     private_delegate:
       - delegate
 
-# OFF for this harness.
-#
-# The comment cops judge comments someone wrote -- unwrapped paragraphs, a
-# summary no longer than the code earns, annotations on a documented
-# interface. Every comment in the output is the C++ author's, carried across
-# verbatim by transform.yml's r-comment, so there is nothing here for the cop
-# to be right about and an autocorrect would rewrite the source's words.
 Nathank/CommentStructure:
   Enabled: false
-
-# OFF for this harness.
-#
-# The cop bans `return` on the grounds that a method's last expression is its
-# return value and guards are structural. That is a judgement about code
-# someone wrote; this is a transliteration, where a C++ `return x;` is a fact
-# about the source and an early return in the middle of a method has no
-# last-expression equivalent. discovery.cpp returns early 40-odd times.
-#
-# Autocorrecting them away would change which statements run.
 Nathank/NoReturn:
   Enabled: false
 
-# Bans the ternary. The pipeline must therefore not EMIT one: this cop only
-# reports, it does not autocorrect, so the expansion into if/else lives in
-# scripts/rules/03_03_simplify.yml (s-ternary-decl, s-ternary-assign, s-ternary-arg).
-Style/DisableSyntax:
-  DisableSyntax:
-    - ternary
-
 Layout/LineLength:
-  Enabled: false
-
-Style/FrozenStringLiteralComment:
   Enabled: false
 Layout/EmptyLineAfterMagicComment:
   Enabled: false
-
 Layout/EmptyLines:
   Enabled: true
 Layout/TrailingEmptyLines:
@@ -226,105 +210,12 @@ Layout/EmptyComment:
   Enabled: true
 Layout/MultilineBlockLayout:
   Enabled: true
-
-Style/IfInsideElse:
+Layout/AccessModifierIndentation:
   Enabled: true
-
-# Go writes `if !ok`, which transliterates to `if not ok`. The negated form is
-# styling, so it is corrected here rather than in the emitter.
-Style/NegatedIf:
+  EnforcedStyle: indent
+Layout/IndentationConsistency:
   Enabled: true
-  EnforcedStyle: both
-
-Transpile/MultilineStructNew:
+  EnforcedStyle: indented_internal_methods
+Layout/IndentationWidth:
   Enabled: true
-  Description: Lay out Struct.new with one member per line, as the golden does.
-
-Transpile/MultilineCondition:
-  Enabled: true
-  Description: >-
-    Wrap a long boolean condition in parentheses, one operand per line. The
-    built-in Layout cops re-indent existing breaks but never introduce them, so
-    a long transliterated condition would otherwise stay on one line.
-
-Transpile/BlankLineBetweenStatements:
-  Enabled: true
-  Description: >-
-    Separate a multi-line statement from the next with a blank line. Confirmed
-    against `rubocop --show-cops` that no built-in covers this: the
-    EmptyLinesAround*Body family handles the inside of a body,
-    EmptyLineAfterMultilineCondition the condition/body gap, and
-    EmptyLineAfterGuardClause only guard clauses.
-
-Transpile/SingleLineArguments:
-  Enabled: true
-  Description: >-
-    Join a wrapped argument list onto one line. The break is an artefact of the
-    C++ source. No built-in does this: Layout/LineLength is the only cop that
-    moves code between lines and it only splits, and it is disabled here
-    because it would wrap transliterated expressions arbitrarily.
-
-Transpile/SingleLineBlock:
-  Enabled: true
-  Description: >-
-    Join a value-producing block onto one line. Unparser lays every block out
-    across lines; the golden keeps a log-message block inline.
-
-Transpile/ArrayBrackets:
-  Enabled: true
-  Description: >-
-    Bracket an assigned array. Unparser emits the bare form for a
-    multi-element array and brackets a single-element one; the golden brackets
-    both.
-
-Transpile/InfixOperator:
-  Enabled: true
-  Description: >-
-    Write an arithmetic operator infix when it sits inside a comparison.
-    Unparser emits the dot form for a nested binary send; inside a comparison
-    the arithmetic binds tighter and the grouping cannot change.
-
-Transpile/MacroParentheses:
-  Enabled: true
-  Description: >-
-    Drop the parentheses from an include/extend/require call. Unparser
-    parenthesises every call with an argument; these read as declarations, and
-    ClassStructure treats module_inclusion as its own category.
-
-Transpile/MultilineString:
-  Enabled: true
-  Description: >-
-    Put each adjacent string literal on its own line, joined by a backslash.
-    The grouping is the C++ author's line breaks inside a `<<` chain; unparser
-    writes them on one line.
-
-Transpile/BlockDelimiters:
-  Enabled: true
-  Description: >-
-    Use `do ... end` for a multi-line block, braces for one inside a condition.
-    Style/BlockDelimiters cannot do it: its line_count_based style rewrites the
-    condition case too, and the golden keeps braces there.
-
-Transpile/NoBlankLineBeforeBranch:
-  Enabled: true
-  Description: >-
-    Remove a blank line left at the end of a body, immediately before the
-    `else`, `elsif` or `end` that closes it. The EmptyLinesAround* family each
-    handle one specific kind of body and none of them reaches the branches of
-    an `if` or a `case`.
-
-
-Transpile/VisibilitySections:
-  Enabled: true
-  Description: >-
-    Group definitions by visibility under a single `private`. The emitter marks
-    every definition inline -- `private def self.run` -- because it sees one Go
-    function at a time; having both markers present is what lets this reorder
-    the body and collapse them.
-
-Transpile/ConstantsFirst:
-  Enabled: true
-  Description: >-
-    Move a constant assignment above the first method in its class.
-    Layout/ClassStructure states the order and reports the violation but does
-    not correct this one, so the offence had nothing able to fix it.
+  Width: 2
