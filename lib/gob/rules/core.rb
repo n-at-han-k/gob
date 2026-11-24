@@ -244,6 +244,137 @@ module Gob
         decl
       end
 
+      matcher.rule(:class_decl) do |node|
+        next Matcher::MISS unless node.is_a?(SyntaxTree::ClassDeclaration)
+
+        class_name = const_name(node.constant)
+        body = stmt_body(node.bodystmt)
+        fields = []
+        decls = []
+
+        body.each do |stmt|
+          # attr_accessor :Name, :type # `tag`
+          if stmt.is_a?(SyntaxTree::Command) && stmt.message.is_a?(SyntaxTree::Ident) && stmt.message.value == "attr_accessor"
+            parts = stmt.arguments.is_a?(SyntaxTree::Args) ? stmt.arguments.parts : Array(stmt.arguments)
+            name_node = parts[0]
+            type_node = parts[1]
+            next unless name_node
+
+            field_name = case name_node
+                         when SyntaxTree::SymbolLiteral then name_node.value.value.to_s
+                         when SyntaxTree::Ident then name_node.value
+                         when SyntaxTree::StringLiteral then string_value(name_node)
+                         else name_node.to_s
+                         end
+
+            # tag from trailing comment
+            tag = nil
+            if stmt.respond_to?(:comments)
+              stmt.comments.each do |c|
+                t = c.value.to_s.strip.sub(/^#\s*/, "")
+                tag = t if t.start_with?("`") && t.end_with?("`")
+              end
+            end
+            # also check inline comments on parts
+            if !tag
+              Array(parts).each do |p|
+                next unless p.respond_to?(:comments)
+                p.comments.each do |c|
+                  t = c.value.to_s.strip.sub(/^#\s*/, "")
+                  tag = t if t.start_with?("`") && t.end_with?("`")
+                end
+              end
+            end
+
+            if type_node.nil?
+              # embedding: attr_accessor :User
+              fields << SyntaxTree::Go::Field.new(
+                doc: nil, names: [], type: ident(field_name), tag: tag ? SyntaxTree::Go::BasicLit.new(kind: "STRING", value: tag) : nil, comment: nil
+              )
+            else
+              type_name = case type_node
+                          when SyntaxTree::SymbolLiteral then type_node.value.value.to_s
+                          when SyntaxTree::Ident then type_node.value
+                          when SyntaxTree::StringLiteral then string_value(type_node)
+                          else type_node.to_s
+                          end
+              tag_lit = tag ? SyntaxTree::Go::BasicLit.new(kind: "STRING", value: tag) : nil
+              fields << SyntaxTree::Go::Field.new(
+                doc: nil, names: [ident(field_name)], type: parse_go_type(type_name), tag: tag_lit, comment: nil
+              )
+            end
+            next
+          end
+
+          if stmt.is_a?(SyntaxTree::DefNode)
+            method_name = stmt.name.value
+            param_names = param_name_list(stmt.params)
+            sig = signature_for_def(stmt)
+
+            if method_name == "initialize"
+              # constructor: func NewClassName(...) *ClassName
+              body_stmts = with_class_self(class_name) do
+                scoped(param_names) do
+                  visit_all(stmt_body(stmt.bodystmt)).map { |s| stmtify(s) }
+                end
+              end
+              # replace self = &ClassName{}? We'll build it: self := &ClassName{} at start, return self at end
+              init_self = SyntaxTree::Go::AssignStmt.new(
+                lhs: [ident("self")], tok: ":=", rhs: [
+                  SyntaxTree::Go::UnaryExpr.new(op: "&", x: SyntaxTree::Go::CompositeLit.new(
+                    type: ident(class_name), lbrace: nil, elts: [], rbrace: nil, incomplete: false
+                  ))
+                ]
+              )
+              ret_self = SyntaxTree::Go::ReturnStmt.new(return_: nil, results: [ident("self")])
+              ctor_body = [init_self] + body_stmts + [ret_self]
+              params = param_names.each_with_index.map do |n, i|
+                t = sig && sig[:params][i] ? parse_go_type(sig[:params][i]) : nil
+                SyntaxTree::Go::Field.new(names: [ident(n)], type: t)
+              end
+              decls << func_decl(
+                name: "New#{class_name}",
+                params: params,
+                body: ctor_body,
+                results: field_list(list: [SyntaxTree::Go::Field.new(names: [], type: SyntaxTree::Go::StarExpr.new(star: nil, x: ident(class_name)))])
+              )
+              next
+            end
+
+            body_stmts = with_class_self(class_name) do
+              scoped(param_names) do
+                visit_all(stmt_body(stmt.bodystmt)).map { |s| stmtify(s) }
+              end
+            end
+            params = param_names.each_with_index.map do |n, i|
+              t = sig && sig[:params][i] ? parse_go_type(sig[:params][i]) : nil
+              SyntaxTree::Go::Field.new(names: [ident(n)], type: t)
+            end
+            results = if sig && sig[:returns] && !sig[:returns].empty?
+                        field_list(list: sig[:returns].map { |r| SyntaxTree::Go::Field.new(names: [], type: parse_go_type(r)) })
+                      else
+                        nil
+                      end
+            recv = field_list(list: [SyntaxTree::Go::Field.new(names: [ident("self")], type: SyntaxTree::Go::StarExpr.new(star: nil, x: ident(class_name)))])
+            decls << func_decl(name: method_name, params: params, body: body_stmts, results: results, recv: recv)
+            next
+          end
+
+          # other statements: define_const/define_var handled by normal rules if visited
+          visited = visit(stmt)
+          next if visited.nil?
+          Array(visited).each do |v|
+            decls << v if v
+          end
+        end
+
+        struct_type = SyntaxTree::Go::StructType.new(struct: nil, fields: field_list(list: fields), incomplete: false)
+        type_spec = SyntaxTree::Go::TypeSpec.new(doc: nil, name: ident(class_name), type_params: nil, assign: nil, type: struct_type, comment: nil)
+        type_decl = SyntaxTree::Go::GenDecl.new(doc: nil, tok_pos: nil, tok: "type", lparen: nil, specs: [type_spec], rparen: nil)
+
+        [type_decl] + decls
+      end
+
       matcher.rule(:module_main) do |node|
         next Matcher::MISS unless node.is_a?(SyntaxTree::ModuleDeclaration)
 
@@ -337,6 +468,27 @@ module Gob
         next Matcher::MISS unless node.value.is_a?(SyntaxTree::Ident)
 
         ident(node.value.value)
+      end
+
+      matcher.rule(:var_ref_ivar) do |node|
+        next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
+        next Matcher::MISS unless node.value.is_a?(SyntaxTree::IVar)
+
+        selector_expr(x: ident("self"), sel: node.value.value.delete_prefix("@"))
+      end
+
+      matcher.rule(:ivar) do |node|
+        next Matcher::MISS unless node.is_a?(SyntaxTree::IVar)
+
+        selector_expr(x: ident("self"), sel: node.value.delete_prefix("@"))
+      end
+
+      matcher.rule(:field_node) do |node|
+        next Matcher::MISS unless node.is_a?(SyntaxTree::Field)
+
+        receiver = visit(node.parent)
+        name = node.name.is_a?(SyntaxTree::Ident) ? node.name.value : node.name.to_s
+        selector_expr(x: receiver, sel: name)
       end
 
       matcher.rule(:string_literal) do |node|

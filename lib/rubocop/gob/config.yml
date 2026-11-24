@@ -1,0 +1,22 @@
+require:
+  - ./module_rules
+  - ./class_rules
+  - ./function_rules
+  - ./program_rules
+
+AllCops:
+  DisabledByDefault: true
+  TargetRubyVersion: 3.4
+  NewCops: disable
+
+Gob/ModuleRules:
+  Enabled: true
+
+Gob/ClassRules:
+  Enabled: true
+
+Gob/FunctionRules:
+  Enabled: true
+
+Gob/ProgramRules:
+  Enabled: true

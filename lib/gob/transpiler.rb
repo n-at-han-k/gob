@@ -14,10 +14,24 @@ module Gob
       @matcher = matcher || Gob.default_matcher
       @scopes = [Set.new]
       @package_depth = 0
+      @class_stack = []
+    end
+
+    def with_class_self(class_name)
+      @class_stack.push(class_name)
+      yield
+    ensure
+      @class_stack.pop
+    end
+
+    def current_class
+      @class_stack.last
     end
 
     def transpile(source)
       @source = source
+      @scopes = [Set.new]
+      @class_stack = []
       program = SyntaxTree.parse(source)
       visit(program)
     end
@@ -199,12 +213,19 @@ module Gob
       t = t.sub(/^#\s*/, "")
       # match (params) -> returns
       m = t.match(/^\(([^)]*)\)\s*->\s*(.+)$/)
+      if m
+        params = m[1].strip
+        ret = m[2].strip
+        param_types = params.empty? ? [] : split_type_list(params)
+        return_types = parse_return_types(ret)
+        return { params: param_types, returns: return_types }
+      end
+      # match (params) only
+      m = t.match(/^\(([^)]*)\)\s*$/)
       return nil unless m
       params = m[1].strip
-      ret = m[2].strip
       param_types = params.empty? ? [] : split_type_list(params)
-      return_types = parse_return_types(ret)
-      { params: param_types, returns: return_types }
+      { params: param_types, returns: [] }
     end
 
     def split_type_list(s)
@@ -238,6 +259,7 @@ module Gob
         [t]
       end
     end
+
 
     def parse_go_type(str)
       s = str.to_s.strip
@@ -279,13 +301,21 @@ module Gob
       case node
       when SyntaxTree::VarField
         name = node.value
+        if name.is_a?(SyntaxTree::IVar)
+          return SyntaxTree::Go::SelectorExpr.new(x: SyntaxTree::Go::Ident.new(name: "self", location: nil, comments: []), sel: SyntaxTree::Go::Ident.new(name: name.value.delete_prefix("@"), location: nil, comments: []))
+        end
         name = name.value if name.is_a?(SyntaxTree::Ident) || name.is_a?(SyntaxTree::Const)
         name.to_s
       when SyntaxTree::Ident
         node.value
+      when SyntaxTree::IVar
+        SyntaxTree::Go::SelectorExpr.new(x: SyntaxTree::Go::Ident.new(name: "self", location: nil, comments: []), sel: SyntaxTree::Go::Ident.new(name: node.value.delete_prefix("@"), location: nil, comments: []))
       when SyntaxTree::ConstRef
         node.constant.value
       when SyntaxTree::VarRef
+        if node.value.is_a?(SyntaxTree::IVar)
+          return SyntaxTree::Go::SelectorExpr.new(x: SyntaxTree::Go::Ident.new(name: "self", location: nil, comments: []), sel: SyntaxTree::Go::Ident.new(name: node.value.value.delete_prefix("@"), location: nil, comments: []))
+        end
         node.value.is_a?(SyntaxTree::Ident) ? node.value.value : node.value.to_s
       when SyntaxTree::ARefField, SyntaxTree::Field, SyntaxTree::ConstPathField
         node
@@ -327,7 +357,7 @@ module Gob
           return SyntaxTree::Go::GenDecl.new(doc: nil, tok_pos: nil, tok: "var", lparen: nil, specs: specs, rparen: nil)
         end
         # fallback
-        lhs = targets.map { |t| t.is_a?(String) ? ident(t) : visit(t) }
+        lhs = targets.map { |t| t.is_a?(String) ? ident(t) : (t.is_a?(SyntaxTree::Go::Node) ? t : visit(t)) }
         return SyntaxTree::Go::AssignStmt.new(lhs: lhs, tok_pos: nil, tok: "=", rhs: values.length == 1 ? values : [array_composite(values)])
       end
 
@@ -338,7 +368,7 @@ module Gob
         tok = fresh ? ":=" : "="
         lhs = names.map { |n| ident(n) }
       else
-        lhs = targets.map { |t| t.is_a?(String) ? ident(t) : visit(t) }
+        lhs = targets.map { |t| t.is_a?(String) ? ident(t) : (t.is_a?(SyntaxTree::Go::Node) ? t : visit(t)) }
         lhs.each { |n| declare(n.name) if n.is_a?(SyntaxTree::Go::Ident) }
         tok = "="
       end

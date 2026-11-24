@@ -25,6 +25,8 @@ module Gob
         when SyntaxTree::Go::FuncType then emit_func_type(node, out)
         when SyntaxTree::Go::FieldList then emit_field_list(node, out)
         when SyntaxTree::Go::Field then emit_field(node, out)
+        when SyntaxTree::Go::TypeSpec then emit_type_spec(node, out, indent: indent)
+        when SyntaxTree::Go::StructType then emit_struct_type(node, out, indent: indent)
         when SyntaxTree::Go::BlockStmt then emit_block_stmt(node, out, indent: indent)
         when SyntaxTree::Go::ExprStmt then emit(node.x, out, indent: indent)
         when SyntaxTree::Go::ReturnStmt then emit_return_stmt(node, out, indent: indent)
@@ -105,6 +107,28 @@ module Gob
         emit(node.path, out)
       end
 
+      def emit_type_spec(node, out, indent: 0)
+        emit(node.name, out)
+        out << " "
+        emit(node.type, out, indent: indent)
+      end
+
+      def emit_struct_type(node, out, indent: 0)
+        out << "struct {"
+        fields = node.fields&.list || []
+        if fields.empty?
+          out << "}"
+          return
+        end
+        out << "\n"
+        fields.each do |f|
+          out << tabs(indent + 1)
+          emit_field(f, out)
+          out << "\n"
+        end
+        out << tabs(indent) << "}"
+      end
+
       def emit_func_decl(node, out, indent: 0)
         out << tabs(indent) << "func "
         if node.recv
@@ -150,6 +174,10 @@ module Gob
           out << " " if node.type
         end
         emit(node.type, out) if node.type
+        if node.tag
+          out << " "
+          emit(node.tag, out)
+        end
       end
 
       def emit_block_stmt(node, out, indent: 0)
