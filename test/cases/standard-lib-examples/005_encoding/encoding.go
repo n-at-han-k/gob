@@ -7,12 +7,12 @@ import (
 
 type colour struct{ R, G, B byte }
 
-func (c colour) MarshalText() ([]byte, error) {
-	return fmt.Appendf(nil, "#%02x%02x%02x", c.R, c.G, c.B), nil
+func (self colour) MarshalText() ([]byte, error) {
+	return fmt.Appendf(nil, "#%02x%02x%02x", self.R, self.G, self.B), nil
 }
 
-func (c *colour) UnmarshalText(text []byte) error {
-	_, err := fmt.Sscanf(string(text), "#%02x%02x%02x", &c.R, &c.G, &c.B)
+func (self *colour) UnmarshalText(text []byte) error {
+	_, err := fmt.Sscanf(string(text), "#%02x%02x%02x", &self.R, &self.G, &self.B)
 	return err
 }
 

@@ -594,15 +594,11 @@ module SyntaxTree
         end
       end
 
-      def ReceiverName(context:)
-        context.current_class&.[](0)&.downcase || "self"
-      end
-
       def MethodReceiver(context:, pointer:, named:)
         type = Ident(context.current_class)
         type = StarExpr(type) if pointer
 
-        FieldList([Field(named ? [ReceiverName(context: context)] : [], type)])
+        FieldList([Field(named ? ["self"] : [], type)])
       end
 
       def Method(name_node, params, signature_text, body, context:)
