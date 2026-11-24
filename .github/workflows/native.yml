@@ -38,10 +38,10 @@ jobs:
               export CGO_ENABLED=1
 
               cd ext/gipper
-              go build -buildmode=c-shared -trimpath -ldflags="-s -w" -o libgipper.so gipper.go
+              go build -buildmode=c-shared -buildvcs=false -trimpath -ldflags="-s -w" -o libgipper.so gipper.go
 
               cd ../goformatter
-              go build -buildmode=c-shared -trimpath -ldflags="-s -w" -o libgoformatter.so .
+              go build -buildmode=c-shared -buildvcs=false -trimpath -ldflags="-s -w" -o libgoformatter.so .
             '
 
       - uses: ruby/setup-ruby@v1
