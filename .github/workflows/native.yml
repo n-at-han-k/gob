@@ -16,24 +16,53 @@ permissions:
 
 env:
   GO_VERSION: "1.27.3"
-  GOB_NATIVE_PLATFORM: "x86_64-linux"
 
 jobs:
-  manylinux-x86_64:
-    name: Build manylinux2014 x86_64 gem
-    runs-on: ubuntu-latest
+  native-gem:
+    name: Build ${{ matrix.platform }} gem
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: x86_64-linux
+            runner: ubuntu-latest
+            image: quay.io/pypa/manylinux2014_x86_64
+            goarch: amd64
+            extension: so
+          - platform: aarch64-linux
+            runner: ubuntu-24.04-arm
+            image: quay.io/pypa/manylinux2014_aarch64
+            goarch: arm64
+            extension: so
+          - platform: x86_64-darwin
+            runner: macos-15-intel
+            goarch: amd64
+            extension: dylib
+          - platform: arm64-darwin
+            runner: macos-15
+            goarch: arm64
+            extension: dylib
+          - platform: x64-mingw-ucrt
+            runner: windows-latest
+            goarch: amd64
+            extension: dll
+    env:
+      GOB_NATIVE_PLATFORM: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Build Go shared libraries in manylinux2014
+        if: runner.os == 'Linux'
         run: |
           docker run --rm \
             -v "$GITHUB_WORKSPACE:/src" \
             -w /src \
             -e GO_VERSION \
-            quay.io/pypa/manylinux2014_x86_64 \
+            -e GOARCH=${{ matrix.goarch }} \
+            ${{ matrix.image }} \
             bash -euxc '
-              curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" | tar -C /opt -xz
+              curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-${GOARCH}.tar.gz" | tar -C /opt -xz
               export PATH="/opt/go/bin:$PATH"
               export CGO_ENABLED=1
 
@@ -44,6 +73,24 @@ jobs:
               go build -buildmode=c-shared -buildvcs=false -trimpath -ldflags="-s -w" -o libgoformatter.so .
             '
 
+      - uses: actions/setup-go@v5
+        if: runner.os != 'Linux'
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: Build Go shared libraries
+        if: runner.os != 'Linux'
+        shell: bash
+        run: |
+          export CGO_ENABLED=1
+
+          cd ext/gipper
+          go build -buildmode=c-shared -buildvcs=false -trimpath -ldflags="-s -w" -o "libgipper.${{ matrix.extension }}" gipper.go
+
+          cd ../goformatter
+          go build -buildmode=c-shared -buildvcs=false -trimpath -ldflags="-s -w" -o "libgoformatter.${{ matrix.extension }}" .
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.4"
@@ -52,14 +99,13 @@ jobs:
         run: gem build gob.gemspec
 
       - name: Verify native gem contents
+        shell: bash
         run: |
-          gem specification gob-*-x86_64-linux.gem files | grep -q 'ext/gipper/libgipper.so'
-          gem specification gob-*-x86_64-linux.gem files | grep -q 'ext/goformatter/libgoformatter.so'
-          ldd ext/gipper/libgipper.so
-          ldd ext/goformatter/libgoformatter.so
+          gem specification gob-*-${{ matrix.platform }}.gem files | grep -Fq 'ext/gipper/libgipper.${{ matrix.extension }}'
+          gem specification gob-*-${{ matrix.platform }}.gem files | grep -Fq 'ext/goformatter/libgoformatter.${{ matrix.extension }}'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: native-gem-x86_64-linux
-          path: gob-*-x86_64-linux.gem
+          name: native-gem-${{ matrix.platform }}
+          path: gob-*-${{ matrix.platform }}.gem
           if-no-files-found: error
