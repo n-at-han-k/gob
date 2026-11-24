@@ -7,7 +7,6 @@ module Gob
     module Commands
       class Vet < Base
         default_command :vet
-
         desc "vet FILE...", "Validate Gob source"
 
         def vet(*files)

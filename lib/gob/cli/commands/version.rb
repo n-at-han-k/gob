@@ -8,7 +8,6 @@ module Gob
     module Commands
       class Version < Base
         default_command :version
-
         desc "version", "Print Gob version"
 
         def version

@@ -7,7 +7,6 @@ module Gob
     module Commands
       class Fmt < Base
         default_command :fmt
-
         desc "fmt FILE...", "Format Gob source"
         method_option :write, aliases: "-w", type: :boolean, default: false, desc: "Write formatted source back to FILE"
 
@@ -20,7 +19,6 @@ module Gob
 
             if options[:write]
               raise Thor::Error, "Cannot use --write with stdin" if file == "-"
-
               File.write(file, formatted)
             else
               $stdout.write(formatted)

@@ -1,0 +1,65 @@
+name: Native gem
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ext/**"
+      - "gob.gemspec"
+      - "Rakefile"
+      - ".github/workflows/native.yml"
+      - "lib/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GO_VERSION: "1.27.3"
+  GOB_NATIVE_PLATFORM: "x86_64-linux"
+
+jobs:
+  manylinux-x86_64:
+    name: Build manylinux2014 x86_64 gem
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Go shared libraries in manylinux2014
+        run: |
+          docker run --rm \
+            -v "$GITHUB_WORKSPACE:/src" \
+            -w /src \
+            -e GO_VERSION \
+            quay.io/pypa/manylinux2014_x86_64 \
+            bash -euxc '
+              curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-amd64.tar.gz" | tar -C /opt -xz
+              export PATH="/opt/go/bin:$PATH"
+              export CGO_ENABLED=1
+
+              cd ext/gipper
+              go build -buildmode=c-shared -trimpath -ldflags="-s -w" -o libgipper.so gipper.go
+
+              cd ../goformatter
+              go build -buildmode=c-shared -trimpath -ldflags="-s -w" -o libgoformatter.so .
+            '
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+
+      - name: Build platform gem
+        run: gem build gob.gemspec
+
+      - name: Verify native gem contents
+        run: |
+          gem specification gob-*-x86_64-linux.gem files | grep -q 'ext/gipper/libgipper.so'
+          gem specification gob-*-x86_64-linux.gem files | grep -q 'ext/goformatter/libgoformatter.so'
+          ldd ext/gipper/libgipper.so
+          ldd ext/goformatter/libgoformatter.so
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-gem-x86_64-linux
+          path: gob-*-x86_64-linux.gem
+          if-no-files-found: error

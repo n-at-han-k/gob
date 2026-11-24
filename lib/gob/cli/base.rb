@@ -7,6 +7,10 @@ require "go_formatter"
 module Gob
   class CLI
     class Base < Thor
+      def self.exit_on_failure?
+        true
+      end
+
       no_commands do
         def read_source(path)
           if path == "-"

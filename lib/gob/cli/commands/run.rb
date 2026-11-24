@@ -8,7 +8,6 @@ module Gob
     module Commands
       class Run < Base
         default_command :execute
-
         desc "run FILE [ARGS...]", "Transpile and run a Gob program"
 
         def execute(file, *args)

@@ -7,7 +7,6 @@ module Gob
     module Commands
       class Transpile < Base
         default_command :transpile
-
         desc "transpile FILE", "Transpile Gob source to Go"
         method_option :output, aliases: "-o", type: :string, desc: "Write Go source to FILE"
 

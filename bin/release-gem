@@ -1,0 +1,92 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+# rubocop:disable all
+
+require_relative "../lib/gob/version"
+require "fileutils"
+require "open3"
+
+local_version = Gob::VERSION
+gem_name = "gob"
+gemspec = "gob.gemspec"
+workflow = "native.yml"
+pkg_dir = "pkg"
+
+puts "Local version: #{local_version}"
+
+remote_output = `gem specification #{gem_name} version --remote 2>&1`
+
+if $?.success?
+  remote_version = remote_output[/version: (.+)/, 1]&.strip
+  puts "Remote version: #{remote_version}"
+
+  if Gem::Version.new(local_version) <= Gem::Version.new(remote_version)
+    abort "ERROR: Local version (#{local_version}) has not been incremented past remote (#{remote_version})"
+  end
+else
+  puts "Gem not yet published remotely, proceeding with first release"
+end
+
+unless system("gh", "--version", out: File::NULL, err: File::NULL)
+  abort "ERROR: the GitHub CLI (gh) is required to fetch native gems: https://cli.github.com"
+end
+
+puts "\nBuilding source gem from #{gemspec}..."
+system("gem", "build", gemspec) || abort("ERROR: gem build failed")
+
+source_gem = "#{gem_name}-#{local_version}.gem"
+
+FileUtils.rm_rf(pkg_dir)
+FileUtils.mkdir_p(pkg_dir)
+
+puts "\nLocating latest successful #{workflow} run..."
+run_id = `gh run list --workflow=#{workflow} --status success --limit 1 --json databaseId --jq '.[0].databaseId'`.strip
+
+if run_id.empty?
+  abort "ERROR: no successful #{workflow} run found. Push to main and let CI build the native gems first."
+end
+
+puts "Downloading native gems from run #{run_id}..."
+system("gh", "run", "download", run_id, "--dir", pkg_dir, "--pattern", "native-gem-*") ||
+  abort("ERROR: failed to download artifacts from run #{run_id}")
+
+platform_gems = Dir["#{pkg_dir}/**/#{gem_name}-#{local_version}-*.gem"].sort
+
+if platform_gems.empty?
+  built = Dir["#{pkg_dir}/**/*.gem"].map { |path| File.basename(path) }
+
+  if built.empty?
+    abort "ERROR: run #{run_id} produced no gems."
+  else
+    abort "ERROR: the latest CI run built #{built.join(", ")}, not version #{local_version}.\n" \
+          "Push #{local_version} to main, wait for native.yml to finish, then re-run."
+  end
+end
+
+puts "Native platform gems for #{local_version}:"
+platform_gems.each { |path| puts "  #{File.basename(path)}" }
+
+all_gems = [source_gem] + platform_gems
+
+all_gems.each do |gem_file|
+  puts "\nPushing #{File.basename(gem_file)}..."
+  output, status = Open3.capture2e("gem", "push", gem_file)
+  print output
+
+  next if status.success?
+
+  if output.include?("has already been pushed")
+    puts "  (already published — skipping)"
+    next
+  end
+
+  abort "ERROR: gem push failed for #{gem_file}"
+end
+
+puts "\nReleased #{gem_name} #{local_version} " \
+     "(1 source + #{platform_gems.size} native platform gems)"
+
+tag = "v#{local_version}"
+system("git", "tag", "-a", tag, "-m", "Release #{local_version}") ||
+  abort("ERROR: failed to create tag #{tag}")
+system("git", "push", "origin", tag) || abort("ERROR: failed to push tag #{tag}")
