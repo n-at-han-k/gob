@@ -1,10 +1,11 @@
 require "fmt"
 require "go/format"
 require "log"
-module Main
-  private
 
-    def self.runFormat
+module Main
+
+    # ()
+    def runFormat
       src = "package p\nfunc   Add(a,b int)int{return a+b}\n".bytes
       pretty, err = format.Source(src)
 

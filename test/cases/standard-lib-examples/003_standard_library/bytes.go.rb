@@ -1,9 +1,10 @@
 require "bytes"
 require "fmt"
-module Main
-  private
 
-    def self.runBytes
+module Main
+
+    # ()
+    def runBytes
       a = "hello world".bytes
       b = "world".bytes
       fmt.Println("Contains:", bytes.Contains(a, b))

@@ -2,10 +2,11 @@ require "fmt"
 require "io"
 require "os"
 require "strings"
-module Main
-  private
 
-    def self.runIO
+module Main
+
+    # ()
+    def runIO
       src = strings.NewReader("streamed to stdout\n")
       io.Copy(os.Stdout, src)
       all, _ = io.ReadAll(strings.NewReader("read all at once"))

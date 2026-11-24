@@ -1,10 +1,11 @@
 require "encoding/base64"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runBase64
+module Main
+
+    # ()
+    def runBase64
       src = "hello base64+/=?".bytes
       std = base64.StdEncoding.EncodeToString(src)
       fmt.Println("std:", std)

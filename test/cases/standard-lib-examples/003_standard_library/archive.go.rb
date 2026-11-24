@@ -6,15 +6,17 @@ require "io"
 require "log"
 require "os"
 require "strings"
-module Main
-  private
 
-    def self.runArchive
+module Main
+
+    # ()
+    def runArchive
       zipDemo()
       tarDemo()
     end
 
-    def self.zipDemo
+    # ()
+    def zipDemo
       f, err = os.Create("example.zip")
 
       if err != nil
@@ -43,7 +45,8 @@ module Main
       end
     end
 
-    def self.tarDemo
+    # ()
+    def tarDemo
       buf = nil
       tw = tar.NewWriter(buf)
 

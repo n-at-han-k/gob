@@ -1,10 +1,11 @@
 require "fmt"
 require "os"
 require "runtime/coverage"
-module Main
-  private
 
-    def self.runCoverage
+module Main
+
+    # ()
+    def runCoverage
       dir, _ = os.MkdirTemp("", "cover-")
       defer { os.RemoveAll(dir) }
       err = coverage.WriteMetaDir(dir)

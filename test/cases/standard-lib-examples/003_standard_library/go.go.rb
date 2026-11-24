@@ -3,10 +3,11 @@ require "go/ast"
 require "go/parser"
 require "go/token"
 require "log"
-module Main
-  private
 
-    def self.runGoTools
+module Main
+
+    # ()
+    def runGoTools
       src =
         "package p\nfunc Add(a, b int) int { return a + b }\nfunc Sub(a, b int) int { return a - b }\n"
 

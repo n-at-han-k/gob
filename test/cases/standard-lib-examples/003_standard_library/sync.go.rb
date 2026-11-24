@@ -1,10 +1,11 @@
 require "fmt"
 require "sync"
 require "sync/atomic"
-module Main
-  private
 
-    def self.runSync
+module Main
+
+    # ()
+    def runSync
       wg = nil
       mu = nil
       counter = 0

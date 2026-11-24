@@ -2,10 +2,11 @@ require "bytes"
 require "crypto/mlkem"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runMLKEM
+module Main
+
+    # ()
+    def runMLKEM
       dk, err = mlkem.GenerateKey768()
 
       if err != nil

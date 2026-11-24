@@ -1,8 +1,9 @@
 require "fmt"
-module Main
-  private
 
-    def self.runBuiltin
+module Main
+
+    # ()
+    def runBuiltin
       s = make([], 0, 4)
       s = append(s, 1, 2, 3)
       fmt.Println("len/cap:", len(s), cap(s))

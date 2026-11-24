@@ -3,10 +3,11 @@ require "go/printer"
 require "go/token"
 require "log"
 require "os"
-module Main
-  private
 
-    def self.runPrinter
+module Main
+
+    # ()
+    def runPrinter
       src = "package p; func Hi(){println(\"hi\")}"
       fset = token.NewFileSet()
       file, err = parser.ParseFile(fset, "p.go", src, 0)

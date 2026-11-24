@@ -9,10 +9,11 @@ require "image/jpeg"
 require "image/png"
 require "log"
 require "os"
-module Main
-  private
 
-    def self.runImage
+module Main
+
+    # ()
+    def runImage
       size = 100
       img = makeGradient(size)
       tint = image.NewUniform(RGBA.new(200, 0, 0, 128))
@@ -32,7 +33,8 @@ module Main
       fmt.Printf("WebSafe palette: %d colours\n", len(palette.WebSafe))
     end
 
-    def self.makeGradient(size)
+    # (int) -> *image.RGBA
+    def makeGradient(size)
       img = image.NewRGBA(image.Rect(0, 0, size, size))
 
       (0...size).each do |y|
@@ -53,7 +55,8 @@ module Main
       return img
     end
 
-    def self.writeFile(name, enc)
+    # (string, (*os.File) -> error)
+    def writeFile(name, enc)
       f, err = os.Create(name)
 
       if err != nil
@@ -70,13 +73,15 @@ module Main
       fmt.Println("wrote", name)
     end
 
-    def self.writeGIF(name, src)
+    # (string, image.Image)
+    def writeGIF(name, src)
       paletted = image.NewPaletted(src.Bounds(), palette.Plan9)
       draw.FloydSteinberg.Draw(paletted, src.Bounds(), src, Point.new())
       writeFile(name, lambda { |w| return gif.Encode(w, paletted, nil) })
     end
 
-    def self.pngBytes(img)
+    # (image.Image) -> []byte
+    def pngBytes(img)
       buf = nil
       png.Encode(buf, img)
 

@@ -4,10 +4,11 @@ require "os"
 require "runtime/trace"
 require "sync"
 require "time"
-module Main
-  private
 
-    def self.runTrace
+module Main
+
+    # ()
+    def runTrace
       f, _ = os.CreateTemp("", "trace-*.out")
       defer { os.Remove(f.Name()) }
       defer { f.Close() }

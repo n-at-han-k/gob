@@ -2,8 +2,11 @@ require "fmt"
 require "log"
 require "net"
 require "net/rpc"
+
 module Main
   class Arith
+
+    # (Args, *int) -> error
     def Multiply(args, reply)
       reply = args.A * args.B
 
@@ -16,9 +19,9 @@ module Main
     attr_accessor :B
   end
 
-  private
 
-    def self.runRPC
+    # ()
+    def runRPC
       srv = rpc.NewServer()
       srv.Register(Arith.new())
       l, err = net.Listen("tcp", "127.0.0.1:0")

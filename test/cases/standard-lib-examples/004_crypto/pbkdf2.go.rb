@@ -3,10 +3,11 @@ require "crypto/rand"
 require "crypto/sha256"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runPBKDF2
+module Main
+
+    # ()
+    def runPBKDF2
       salt = make([], 16)
       rand.Read(salt)
       key, err = pbkdf2.Key(sha256.New, "hunter2", salt, 100_000, 32)

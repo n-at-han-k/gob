@@ -1,12 +1,13 @@
 require "expvar"
 require "fmt"
+
 module Main
   hits = expvar.NewInt("hits")
   lastKey = expvar.NewString("last_key")
 
-  private
 
-    def self.runExpvar
+    # ()
+    def runExpvar
       hits.Add(1)
       hits.Add(2)
       lastKey.Set("hello")

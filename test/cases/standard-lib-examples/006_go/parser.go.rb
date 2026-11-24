@@ -2,10 +2,11 @@ require "fmt"
 require "go/parser"
 require "go/token"
 require "log"
-module Main
-  private
 
-    def self.runParser
+module Main
+
+    # ()
+    def runParser
       expr, err = parser.ParseExpr("1 + 2*3")
 
       if err != nil

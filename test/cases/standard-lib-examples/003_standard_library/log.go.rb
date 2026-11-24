@@ -1,10 +1,11 @@
 require "log"
 require "log/slog"
 require "os"
-module Main
-  private
 
-    def self.runLog
+module Main
+
+    # ()
+    def runLog
       log.SetFlags(log.LstdFlags | log.Lshortfile)
       log.Println("classic log line")
       logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))

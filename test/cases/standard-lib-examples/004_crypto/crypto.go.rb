@@ -4,10 +4,11 @@ require "crypto/sha1"
 require "crypto/sha256"
 require "crypto/sha512"
 require "fmt"
-module Main
-  private
 
-    def self.runCrypto
+module Main
+
+    # ()
+    def runCrypto
       hashes = [crypto.MD5, crypto.SHA1, crypto.SHA256, crypto.SHA512]
 
       hashes.each do |_, h|

@@ -1,6 +1,7 @@
 require "fmt"
 require "os"
 require "sort"
+
 module Main
   demos = {
     "ast" => runAST,
@@ -18,6 +19,8 @@ module Main
     "types" => runTypes,
     "version" => runVersion
   }
+
+  # ()
   def main
     if len(os.Args) < 2
       fmt.Println("usage: go run . <package>")

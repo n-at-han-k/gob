@@ -1,10 +1,11 @@
 require "crypto/des"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runDES
+module Main
+
+    # ()
+    def runDES
       key = "8bytekey".bytes
       block, err = des.NewCipher(key)
 

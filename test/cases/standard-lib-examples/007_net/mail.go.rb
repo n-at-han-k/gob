@@ -3,10 +3,11 @@ require "io"
 require "log"
 require "net/mail"
 require "strings"
-module Main
-  private
 
-    def self.runMail
+module Main
+
+    # ()
+    def runMail
       raw =
         "From: Alice <alice@example.com>\r\n" +
         "To: Bob <bob@example.org>, carol@example.net\r\n" + "Subject: hi\r\n" +

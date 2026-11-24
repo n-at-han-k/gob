@@ -1,10 +1,11 @@
 require "fmt"
 require "go/scanner"
 require "go/token"
-module Main
-  private
 
-    def self.runScanner
+module Main
+
+    # ()
+    def runScanner
       src = "x := 1 + 2 // trailing comment".bytes
       fset = token.NewFileSet()
       file = fset.AddFile("snippet.go", fset.Base(), len(src))

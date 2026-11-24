@@ -1,9 +1,10 @@
 require "crypto/subtle"
 require "fmt"
-module Main
-  private
 
-    def self.runSubtle
+module Main
+
+    # ()
+    def runSubtle
       a = "expected-token".bytes
       b = "expected-token".bytes
       c = "wrong-token   ".bytes

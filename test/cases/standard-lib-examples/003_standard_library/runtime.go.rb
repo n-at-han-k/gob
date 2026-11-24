@@ -1,9 +1,10 @@
 require "fmt"
 require "runtime"
-module Main
-  private
 
-    def self.runRuntime
+module Main
+
+    # ()
+    def runRuntime
       fmt.Println("go version:", runtime.Version())
       fmt.Println("GOOS/GOARCH:", runtime.GOOS, runtime.GOARCH)
       fmt.Println("NumCPU:    ", runtime.NumCPU())

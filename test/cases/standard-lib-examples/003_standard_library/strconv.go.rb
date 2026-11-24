@@ -1,9 +1,10 @@
 require "fmt"
 require "strconv"
-module Main
-  private
 
-    def self.runStrconv
+module Main
+
+    # ()
+    def runStrconv
       fmt.Println("Itoa:      ", strconv.Itoa(42))
       fmt.Println("FormatFloat:", strconv.FormatFloat(3.14, "f", 2, 64))
       fmt.Println("FormatBool:", strconv.FormatBool(true))

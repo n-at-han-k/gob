@@ -1,15 +1,16 @@
 require "encoding/asn1"
 require "fmt"
 require "log"
+
 module Main
   class Person
     attr_accessor :Name
     attr_accessor :Age
   end
 
-  private
 
-    def self.runASN1
+    # ()
+    def runASN1
       p = Person.new(Name: "Nathan", Age: 30)
       der, err = asn1.Marshal(p)
 

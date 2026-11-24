@@ -1,9 +1,10 @@
 require "cmp"
 require "fmt"
-module Main
-  private
 
-    def self.runCmp
+module Main
+
+    # ()
+    def runCmp
       fmt.Println(cmp.Compare(1, 2))
       fmt.Println(cmp.Compare(3, 3))
       fmt.Println(cmp.Compare("b", "a"))

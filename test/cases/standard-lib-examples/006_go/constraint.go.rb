@@ -1,10 +1,11 @@
 require "fmt"
 require "go/build/constraint"
 require "log"
-module Main
-  private
 
-    def self.runConstraint
+module Main
+
+    # ()
+    def runConstraint
       line = "//go:build linux && (amd64 || arm64)"
       expr, err = constraint.Parse(line)
 

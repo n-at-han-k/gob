@@ -3,10 +3,11 @@ require "crypto/cipher"
 require "crypto/rand"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runAES
+module Main
+
+    # ()
+    def runAES
       key = make([], 32)
       rand.Read(key)
       block, err = aes.NewCipher(key)

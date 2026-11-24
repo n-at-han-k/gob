@@ -1,10 +1,11 @@
 require "fmt"
 require "go/build"
 require "log"
-module Main
-  private
 
-    def self.runBuild
+module Main
+
+    # ()
+    def runBuild
       pkg, err = build.Default.Import("fmt", "", 0)
 
       if err != nil

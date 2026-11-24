@@ -1,9 +1,10 @@
 require "fmt"
 require "syscall"
-module Main
-  private
 
-    def self.runSyscall
+module Main
+
+    # ()
+    def runSyscall
       fmt.Println("pid:  ", syscall.Getpid())
       fmt.Println("ppid: ", syscall.Getppid())
       fmt.Println("uid:  ", syscall.Getuid())

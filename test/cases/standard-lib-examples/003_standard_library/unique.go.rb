@@ -1,9 +1,10 @@
 require "fmt"
 require "unique"
-module Main
-  private
 
-    def self.runUnique
+module Main
+
+    # ()
+    def runUnique
       a = unique.Make("hello")
       b = unique.Make("hello")
       c = unique.Make("world")

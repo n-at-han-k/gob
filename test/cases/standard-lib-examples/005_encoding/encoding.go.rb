@@ -1,15 +1,18 @@
 require "encoding"
 require "fmt"
+
 module Main
   class Colour
     attr_accessor :R
     attr_accessor :G
     attr_accessor :B
 
+    # () -> ([]byte, error)
     def MarshalText
       return fmt.Appendf(nil, "#%02x%02x%02x", this.R, this.G, this.B), nil
     end
 
+    # ([]byte) -> error
     def UnmarshalText(text)
       _, err = fmt.Sscanf(string(text), "#%02x%02x%02x", this.R, this.G, this.B)
 
@@ -17,9 +20,9 @@ module Main
     end
   end
 
-  private
 
-    def self.runEncoding
+    # ()
+    def runEncoding
       m = Colour.new(255, 128, 0)
       txt, _ = m.MarshalText()
       fmt.Printf("marshalled: %s\n", txt)

@@ -2,10 +2,11 @@ require "fmt"
 require "net/http"
 require "net/http/httptest"
 require "net/http/httptrace"
-module Main
-  private
 
-    def self.runHTTPTrace
+module Main
+
+    # ()
+    def runHTTPTrace
       srv =
         httptest.NewServer(http.HandlerFunc(lambda { |w, r| fmt.Fprintln(w, "hello") }))
 

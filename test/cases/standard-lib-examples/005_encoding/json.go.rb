@@ -2,6 +2,7 @@ require "encoding/json"
 require "fmt"
 require "log"
 require "strings"
+
 module Main
   class Article
     attr_accessor :Title
@@ -10,9 +11,9 @@ module Main
     attr_accessor :internal
   end
 
-  private
 
-    def self.runJSON
+    # ()
+    def runJSON
       a = Article.new(Title: "Learning Go", Views: 12, Tags: %w[go stdlib])
       data, err = json.Marshal(a)
 

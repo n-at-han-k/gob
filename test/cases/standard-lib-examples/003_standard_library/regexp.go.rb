@@ -1,9 +1,10 @@
 require "fmt"
 require "regexp"
-module Main
-  private
 
-    def self.runRegexp
+module Main
+
+    # ()
+    def runRegexp
       re = regexp.MustCompile("(\\w+)@(\\w+\\.\\w+)")
       text = "contact nathan@example.com or admin@test.org"
       fmt.Println("match?     ", re.MatchString(text))

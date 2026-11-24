@@ -1,10 +1,11 @@
 require "flag"
 require "fmt"
 require "os"
-module Main
-  private
 
-    def self.runFlag
+module Main
+
+    # ()
+    def runFlag
       fs = flag.NewFlagSet("demo", flag.ExitOnError)
       name = fs.String("name", "world", "who to greet")
       loud = fs.Bool("loud", false, "shout the greeting")

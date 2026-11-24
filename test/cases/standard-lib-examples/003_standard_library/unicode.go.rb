@@ -1,10 +1,11 @@
 require "fmt"
 require "unicode"
 require "unicode/utf8"
-module Main
-  private
 
-    def self.runUnicode
+module Main
+
+    # ()
+    def runUnicode
       "Aa1!  你".each do |_, r|
         fmt.Printf("%q letter=%v digit=%v space=%v\n", r, unicode.IsLetter(r), unicode.IsDigit(r), unicode.IsSpace(r))
       end

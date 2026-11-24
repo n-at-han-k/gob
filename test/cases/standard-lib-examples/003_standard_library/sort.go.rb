@@ -1,14 +1,15 @@
 require "fmt"
 require "sort"
+
 module Main
   class Person
     attr_accessor :Name
     attr_accessor :Age
   end
 
-  private
 
-    def self.runSort
+    # ()
+    def runSort
       nums = [5, 2, 4, 1, 3]
       sort.Ints(nums)
       fmt.Println("ints:", nums)

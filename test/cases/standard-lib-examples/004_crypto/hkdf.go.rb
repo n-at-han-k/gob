@@ -2,10 +2,11 @@ require "crypto/hkdf"
 require "crypto/sha256"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runHKDF
+module Main
+
+    # ()
+    def runHKDF
       secret = "some shared secret bytes".bytes
       salt = "optional salt".bytes
       info = "app: session key v1".bytes

@@ -1,9 +1,10 @@
 require "fmt"
 require "runtime/secret"
-module Main
-  private
 
-    def self.runSecret
+module Main
+
+    # ()
+    def runSecret
       key = "hunter2-shhhh".bytes
 
       secret.Do(

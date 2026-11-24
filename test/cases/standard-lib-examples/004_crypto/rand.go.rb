@@ -2,10 +2,11 @@ require "crypto/rand"
 require "fmt"
 require "log"
 require "math/big"
-module Main
-  private
 
-    def self.runRand
+module Main
+
+    # ()
+    def runRand
       buf = make([], 16)
       _, err = rand.Read(buf)
 

@@ -1,10 +1,11 @@
 require "fmt"
 require "log"
 require "net/netip"
-module Main
-  private
 
-    def self.runNetip
+module Main
+
+    # ()
+    def runNetip
       addr, err = netip.ParseAddr("2001:db8::1")
 
       if err != nil

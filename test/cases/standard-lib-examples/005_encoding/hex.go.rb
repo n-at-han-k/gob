@@ -1,10 +1,11 @@
 require "encoding/hex"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runHex
+module Main
+
+    # ()
+    def runHex
       src = "hello hex".bytes
       encoded = hex.EncodeToString(src)
       fmt.Println("encoded:", encoded)

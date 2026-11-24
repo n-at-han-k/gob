@@ -2,10 +2,11 @@ require "fmt"
 require "net/http"
 require "net/http/cookiejar"
 require "net/url"
-module Main
-  private
 
-    def self.runCookieJar
+module Main
+
+    # ()
+    def runCookieJar
       jar, _ = cookiejar.New(nil)
       u, _ = url.Parse("https://example.com/")
 
@@ -21,7 +22,8 @@ module Main
       fmt.Println("cookies for sibling site:", jar.Cookies(mustURL("https://other.example.org/")))
     end
 
-    def self.mustURL(s)
+    # (string) -> *url.URL
+    def mustURL(s)
       u, err = url.Parse(s)
 
       if err != nil

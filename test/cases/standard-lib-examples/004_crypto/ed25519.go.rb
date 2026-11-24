@@ -2,10 +2,11 @@ require "crypto/ed25519"
 require "crypto/rand"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runED25519
+module Main
+
+    # ()
+    def runED25519
       pub, priv, err = ed25519.GenerateKey(rand.Reader)
 
       if err != nil

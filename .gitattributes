@@ -1,0 +1,2 @@
+*.gob linguist-language=ruby
+*.gob.out linguist-language=go

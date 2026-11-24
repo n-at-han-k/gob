@@ -1,9 +1,10 @@
 require "fmt"
 require "runtime/cgo"
-module Main
-  private
 
-    def self.runCGO
+module Main
+
+    # ()
+    def runCGO
       original = { "answer" => 42 }
       h = cgo.NewHandle(original)
       defer { h.Delete() }

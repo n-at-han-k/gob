@@ -3,10 +3,11 @@ require "log"
 require "net"
 require "net/rpc"
 require "net/rpc/jsonrpc"
-module Main
-  private
 
-    def self.runJSONRPC
+module Main
+
+    # ()
+    def runJSONRPC
       srv = rpc.NewServer()
       srv.Register(Arith.new())
       l, err = net.Listen("tcp", "127.0.0.1:0")

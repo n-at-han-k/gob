@@ -1,13 +1,14 @@
 require "fmt"
+
 module Main
   class Point
     attr_accessor :X
     attr_accessor :Y
   end
 
-  private
 
-    def self.runFmt
+    # ()
+    def runFmt
       fmt.Println("hello", 42, true)
       fmt.Printf("%d + %d = %d\n", 2, 3, 2 + 3)
       fmt.Printf("%.2f pi\n", 3.14159)

@@ -2,15 +2,16 @@ require "bytes"
 require "encoding/gob"
 require "fmt"
 require "log"
+
 module Main
   class Message
     attr_accessor :Kind
     attr_accessor :Body
   end
 
-  private
 
-    def self.runGob
+    # ()
+    def runGob
       buf = nil
       enc = gob.NewEncoder(buf)
       err = enc.Encode(Message.new(Kind: "primes", Body: [2, 3, 5, 7, 11]))

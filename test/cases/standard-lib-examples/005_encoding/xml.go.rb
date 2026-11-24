@@ -1,6 +1,7 @@
 require "encoding/xml"
 require "fmt"
 require "log"
+
 module Main
   class Book
     attr_accessor :XMLName
@@ -9,9 +10,9 @@ module Main
     attr_accessor :Tags
   end
 
-  private
 
-    def self.runXML
+    # ()
+    def runXML
       b = Book.new(Title: "Learning Go", Author: "Nathan", Tags: %w[go stdlib])
       data, err = xml.MarshalIndent(b, "", "  ")
 

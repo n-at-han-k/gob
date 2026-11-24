@@ -1,6 +1,7 @@
 require "fmt"
 require "os"
 require "sort"
+
 module Main
   demos = {
     "net" => runNet,
@@ -20,6 +21,8 @@ module Main
     "textproto" => runTextproto,
     "url" => runURL
   }
+
+  # ()
   def main
     if len(os.Args) < 2
       fmt.Println("usage: go run . <package>")

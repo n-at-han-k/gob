@@ -2,10 +2,11 @@ require "bytes"
 require "encoding/binary"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runBinary
+module Main
+
+    # ()
+    def runBinary
       buf = nil
       binary.Write(buf, binary.BigEndian, uint32(0xdeadbeef))
       binary.Write(buf, binary.LittleEndian, uint16(0x1234))

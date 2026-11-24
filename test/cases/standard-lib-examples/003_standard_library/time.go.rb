@@ -1,9 +1,10 @@
 require "fmt"
 require "time"
-module Main
-  private
 
-    def self.runTime
+module Main
+
+    # ()
+    def runTime
       now = time.Now()
       fmt.Println("iso:  ", now.Format(time.RFC3339))
       fmt.Println("ymd:  ", now.Format("2006-01-02"))

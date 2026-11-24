@@ -1,9 +1,10 @@
 require "fmt"
 require "math"
-module Main
-  private
 
-    def self.runMath
+module Main
+
+    # ()
+    def runMath
       fmt.Println("Pi:      ", math.Pi)
       fmt.Println("Sqrt(2): ", math.Sqrt(2))
       fmt.Println("Pow:     ", math.Pow(2, 10))

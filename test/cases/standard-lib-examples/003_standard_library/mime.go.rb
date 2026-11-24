@@ -1,10 +1,11 @@
 require "fmt"
 require "log"
 require "mime"
-module Main
-  private
 
-    def self.runMime
+module Main
+
+    # ()
+    def runMime
       fmt.Println(".html:", mime.TypeByExtension(".html"))
       fmt.Println(".json:", mime.TypeByExtension(".json"))
       mt, params, err = mime.ParseMediaType("text/plain; charset=\"utf-8\"")

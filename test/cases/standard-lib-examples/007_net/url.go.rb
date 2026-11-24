@@ -1,10 +1,11 @@
 require "fmt"
 require "log"
 require "net/url"
-module Main
-  private
 
-    def self.runURL
+module Main
+
+    # ()
+    def runURL
       u, err =
         url.Parse("https://user:pw@example.com:8443/api/v1/items?tag=go&tag=stdlib&limit=10#top")
 

@@ -1,9 +1,10 @@
 require "fmt"
 require "net/smtp"
-module Main
-  private
 
-    def self.runSMTP
+module Main
+
+    # ()
+    def runSMTP
       auth =
         smtp.PlainAuth("", "alice@example.com", "hunter2", "smtp.example.com")
 

@@ -1,9 +1,10 @@
 require "fmt"
 require "slices"
-module Main
-  private
 
-    def self.runSlices
+module Main
+
+    # ()
+    def runSlices
       s = [3, 1, 4, 1, 5, 9, 2, 6]
       slices.Sort(s)
       fmt.Println("sorted:", s)

@@ -1,8 +1,9 @@
 require "fmt"
-module Main
-  private
 
-    def self.runSecret
+module Main
+
+    # ()
+    def runSecret
       fmt.Println("runtime/secret is not available in this build.")
       fmt.Println("Rebuild with:")
       fmt.Println("  GOEXPERIMENT=runtimesecret go run . secret")

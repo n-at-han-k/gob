@@ -1,9 +1,10 @@
 require "fmt"
 require "net"
-module Main
-  private
 
-    def self.runNet
+module Main
+
+    # ()
+    def runNet
       ip = net.ParseIP("192.168.1.42")
       fmt.Println("ip:", ip, "is loopback:", ip.IsLoopback())
       addr, network, _ = net.ParseCIDR("10.0.0.5/24")

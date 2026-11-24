@@ -1,10 +1,11 @@
 require "crypto/hmac"
 require "crypto/sha256"
 require "fmt"
-module Main
-  private
 
-    def self.runHMAC
+module Main
+
+    # ()
+    def runHMAC
       key = "shared secret".bytes
       msg = "transfer $100".bytes
       mac = hmac.New(sha256.New, key)

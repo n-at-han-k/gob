@@ -4,10 +4,11 @@ require "crypto/rand"
 require "crypto/sha256"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runECDSA
+module Main
+
+    # ()
+    def runECDSA
       priv, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 
       if err != nil

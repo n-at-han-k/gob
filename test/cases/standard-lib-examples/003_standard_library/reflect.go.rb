@@ -1,14 +1,15 @@
 require "fmt"
 require "reflect"
+
 module Main
   class ReflectUser
     attr_accessor :Name
     attr_accessor :Age
   end
 
-  private
 
-    def self.runReflect
+    # ()
+    def runReflect
       u = ReflectUser.new(Name: "Nathan", Age: 30)
       v = reflect.ValueOf(u)
       t = reflect.TypeOf(u)

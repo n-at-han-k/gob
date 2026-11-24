@@ -1,9 +1,10 @@
 require "fmt"
 require "strings"
-module Main
-  private
 
-    def self.runStrings
+module Main
+
+    # ()
+    def runStrings
       s = "The quick brown fox jumps over the lazy dog"
       fmt.Println("Upper:      ", strings.ToUpper(s))
       fmt.Println("Contains:   ", strings.Contains(s, "fox"))

@@ -5,10 +5,11 @@ require "hash/crc32"
 require "hash/crc64"
 require "hash/fnv"
 require "hash/maphash"
-module Main
-  private
 
-    def self.runHash
+module Main
+
+    # ()
+    def runHash
       data = "hello".bytes
 
       hashes = [

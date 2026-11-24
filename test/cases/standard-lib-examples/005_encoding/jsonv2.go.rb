@@ -1,15 +1,16 @@
 require "encoding/json/v2"
 require "fmt"
 require "log"
+
 module Main
   class V2article
     attr_accessor :Title
     attr_accessor :Tags
   end
 
-  private
 
-    def self.runJSONv2
+    # ()
+    def runJSONv2
       a = V2article.new(Title: "Learning Go", Tags: %w[go v2])
       data, err = json.Marshal(a)
 

@@ -1,10 +1,11 @@
 require "fmt"
 require "maps"
 require "slices"
-module Main
-  private
 
-    def self.runMaps
+module Main
+
+    # ()
+    def runMaps
       m = { "a" => 1, "b" => 2, "c" => 3 }
       keys = slices.Sorted(maps.Keys(m))
       fmt.Println("keys:", keys)

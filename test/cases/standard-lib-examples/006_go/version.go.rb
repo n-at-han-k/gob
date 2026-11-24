@@ -1,9 +1,10 @@
 require "fmt"
 require "go/version"
-module Main
-  private
 
-    def self.runVersion
+module Main
+
+    # ()
+    def runVersion
       vs = %w[go1.20 go1.21.0 go1.22rc2 go1.23.4-custom notaversion]
 
       vs.each do |_, v|

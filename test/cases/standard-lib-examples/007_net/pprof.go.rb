@@ -3,10 +3,11 @@ require "io"
 require "net/http"
 require "net/http/httptest"
 require "net/http/pprof"
-module Main
-  private
 
-    def self.runPProf
+module Main
+
+    # ()
+    def runPProf
       srv = httptest.NewServer(http.DefaultServeMux)
       defer { srv.Close() }
       resp, _ = http.Get(srv.URL + "/debug/pprof/")

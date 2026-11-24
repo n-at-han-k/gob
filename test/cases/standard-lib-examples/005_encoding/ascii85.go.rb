@@ -1,9 +1,10 @@
 require "encoding/ascii85"
 require "fmt"
-module Main
-  private
 
-    def self.runAscii85
+module Main
+
+    # ()
+    def runAscii85
       src = "hello ascii85".bytes
       dst = make([], ascii85.MaxEncodedLen(len(src)))
       n = ascii85.Encode(dst, src)

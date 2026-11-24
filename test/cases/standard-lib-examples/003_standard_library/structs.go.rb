@@ -1,6 +1,7 @@
 require "fmt"
 require "structs"
 require "unsafe"
+
 module Main
   class Stat
     attr_accessor :_
@@ -9,9 +10,9 @@ module Main
     attr_accessor :Mode
   end
 
-  private
 
-    def self.runStructs
+    # ()
+    def runStructs
       fmt.Println("size:", unsafe.Sizeof(Stat.new()))
       fmt.Println("align:", unsafe.Alignof(Stat.new()))
     end

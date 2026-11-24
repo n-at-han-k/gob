@@ -1,9 +1,10 @@
 require "crypto/elliptic"
 require "fmt"
-module Main
-  private
 
-    def self.runElliptic
+module Main
+
+    # ()
+    def runElliptic
       [
         elliptic.P224(),
         elliptic.P256(),

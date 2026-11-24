@@ -7,10 +7,11 @@ require "fmt"
 require "log"
 require "math/big"
 require "time"
-module Main
-  private
 
-    def self.runX509
+module Main
+
+    # ()
+    def runX509
       priv, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 
       if err != nil

@@ -1,9 +1,10 @@
 require "fmt"
 require "runtime/debug"
-module Main
-  private
 
-    def self.runDebug
+module Main
+
+    # ()
+    def runDebug
       info, ok = debug.ReadBuildInfo()
 
       if ok

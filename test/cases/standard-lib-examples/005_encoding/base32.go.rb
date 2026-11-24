@@ -1,10 +1,11 @@
 require "encoding/base32"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runBase32
+module Main
+
+    # ()
+    def runBase32
       src = "hello base32".bytes
       encoded = base32.StdEncoding.EncodeToString(src)
       fmt.Println("std:  ", encoded)

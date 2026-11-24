@@ -3,10 +3,11 @@ require "crypto/ecdh"
 require "crypto/rand"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runECDH
+module Main
+
+    # ()
+    def runECDH
       curve = ecdh.P256()
       alice, err = curve.GenerateKey(rand.Reader)
 

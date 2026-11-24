@@ -1,10 +1,11 @@
 require "fmt"
 require "log"
 require "os"
-module Main
-  private
 
-    def self.runOS
+module Main
+
+    # ()
+    def runOS
       fmt.Println("pid:", os.Getpid())
       fmt.Println("HOME:", os.Getenv("HOME"))
       os.Setenv("MY_VAR", "hello")

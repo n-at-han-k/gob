@@ -3,10 +3,11 @@ require "fmt"
 require "log"
 require "os"
 require "strings"
-module Main
-  private
 
-    def self.runCSV
+module Main
+
+    # ()
+    def runCSV
       w = csv.NewWriter(os.Stdout)
 
       w.WriteAll(

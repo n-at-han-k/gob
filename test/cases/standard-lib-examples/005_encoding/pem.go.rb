@@ -1,10 +1,11 @@
 require "encoding/pem"
 require "fmt"
 require "os"
-module Main
-  private
 
-    def self.runPEM
+module Main
+
+    # ()
+    def runPEM
       block =
         Block.new(
           Type: "MESSAGE",

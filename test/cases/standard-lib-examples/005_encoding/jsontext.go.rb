@@ -2,10 +2,11 @@ require "encoding/json/jsontext"
 require "fmt"
 require "io"
 require "strings"
-module Main
-  private
 
-    def self.runJSONText
+module Main
+
+    # ()
+    def runJSONText
       src = "{\"name\":\"Nathan\",\"tags\":[\"go\",\"stdlib\"],\"count\":3}"
       dec = jsontext.NewDecoder(strings.NewReader(src))
 

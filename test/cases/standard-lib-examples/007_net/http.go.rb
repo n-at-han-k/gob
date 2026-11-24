@@ -3,10 +3,11 @@ require "io"
 require "log"
 require "net/http"
 require "net/http/httptest"
-module Main
-  private
 
-    def self.runHTTP
+module Main
+
+    # ()
+    def runHTTP
       srv =
         httptest.NewServer(
           http.HandlerFunc(

@@ -3,10 +3,11 @@ require "net/http"
 require "net/http/cgi"
 require "net/http/httptest"
 require "os"
-module Main
-  private
 
-    def self.runCGI
+module Main
+
+    # ()
+    def runCGI
       os.Setenv("REQUEST_METHOD", "GET")
       os.Setenv("SERVER_PROTOCOL", "HTTP/1.1")
       os.Setenv("HTTP_HOST", "example.local")

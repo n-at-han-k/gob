@@ -7,6 +7,7 @@ module Main
 
   packageLevel = "I live at package scope"
 
+  # ()
   def main
     define_var :a, :int
     define_var :b, :string
@@ -57,6 +58,7 @@ module Main
     fmt.Println(kept)
   end
 
+  # () -> (string, string)
   def ignoreOne 
     return "discarded", "kept"
   end

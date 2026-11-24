@@ -1,10 +1,11 @@
 require "crypto/rc4"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runRC4
+module Main
+
+    # ()
+    def runRC4
       c, err = rc4.NewCipher("weakkey".bytes)
 
       if err != nil

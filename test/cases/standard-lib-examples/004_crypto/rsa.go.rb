@@ -4,10 +4,11 @@ require "crypto/rsa"
 require "crypto/sha256"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runRSA
+module Main
+
+    # ()
+    def runRSA
       priv, err = rsa.GenerateKey(rand.Reader, 2048)
 
       if err != nil

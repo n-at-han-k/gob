@@ -2,17 +2,19 @@ require "context"
 require "errors"
 require "fmt"
 require "time"
-module Main
-  private
 
-    def self.work(ctx)
+module Main
+
+    # (context.Context) -> error
+    def work(ctx)
       select do |c|
         c << time.After(200 * time.Millisecond) { return nil }
         c << ctx.Done() { return ctx.Err() }
       end
     end
 
-    def self.runContext
+    # ()
+    def runContext
       ctx, cancel =
         context.WithTimeout(context.Background(), 100 * time.Millisecond)
 

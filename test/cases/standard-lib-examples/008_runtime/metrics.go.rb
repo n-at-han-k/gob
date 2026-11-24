@@ -1,9 +1,10 @@
 require "fmt"
 require "runtime/metrics"
-module Main
-  private
 
-    def self.runMetrics
+module Main
+
+    # ()
+    def runMetrics
       samples = [
         { Name => "/memory/classes/heap/objects:bytes" },
         { Name => "/sched/goroutines:goroutines" },

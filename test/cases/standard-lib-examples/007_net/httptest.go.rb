@@ -1,10 +1,11 @@
 require "fmt"
 require "net/http"
 require "net/http/httptest"
-module Main
-  private
 
-    def self.runHTTPTest
+module Main
+
+    # ()
+    def runHTTPTest
       handler =
         http.HandlerFunc(
           lambda do |w, r|

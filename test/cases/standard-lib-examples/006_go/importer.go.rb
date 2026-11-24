@@ -1,10 +1,11 @@
 require "fmt"
 require "go/importer"
 require "log"
-module Main
-  private
 
-    def self.runImporter
+module Main
+
+    # ()
+    def runImporter
       pkg, err = importer.Default().Import("fmt")
 
       if err != nil

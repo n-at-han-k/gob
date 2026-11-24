@@ -1,14 +1,15 @@
 require "fmt"
 require "unsafe"
+
 module Main
   class Header
     attr_accessor :Flag
     attr_accessor :Len
   end
 
-  private
 
-    def self.runUnsafe
+    # ()
+    def runUnsafe
       fmt.Println("Sizeof header:  ", unsafe.Sizeof(Header.new()))
       fmt.Println("Alignof header: ", unsafe.Alignof(Header.new()))
       fmt.Println("Offsetof Len:   ", unsafe.Offsetof(Header.new().Len))

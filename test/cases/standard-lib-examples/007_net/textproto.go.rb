@@ -3,10 +3,11 @@ require "fmt"
 require "log"
 require "net/textproto"
 require "strings"
-module Main
-  private
 
-    def self.runTextproto
+module Main
+
+    # ()
+    def runTextproto
       raw =
         "Host: example.com\r\n" +
         "Content-Type: text/plain;\r\n charset=utf-8\r\n" + "X-Trace: abc\r\n" +

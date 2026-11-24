@@ -5,10 +5,8 @@ import (
 	"fmt"    
 )
 
-var (
-	hits    = expvar.NewInt("hits")
-	lastKey = expvar.NewString("last_key")
-)
+var hits    = expvar.NewInt("hits")
+var lastKey = expvar.NewString("last_key")
 
 func runExpvar() {
 	hits.Add(1)

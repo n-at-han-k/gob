@@ -2,10 +2,11 @@ require "fmt"
 require "html"
 require "html/template"
 require "os"
-module Main
-  private
 
-    def self.runHTML
+module Main
+
+    # ()
+    def runHTML
       raw = "<script>alert(\"xss\")</script>"
       fmt.Println(html.EscapeString(raw))
 

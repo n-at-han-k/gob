@@ -2,10 +2,11 @@ require "fmt"
 require "os"
 require "runtime"
 require "runtime/pprof"
-module Main
-  private
 
-    def self.runPProf
+module Main
+
+    # ()
+    def runPProf
       junk = make([], 0, 100)
       100.times { junk = append(junk, make([], 1024)) }
       runtime.GC()

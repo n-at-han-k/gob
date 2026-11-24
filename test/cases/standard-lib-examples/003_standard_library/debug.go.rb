@@ -8,10 +8,11 @@ require "debug/plan9obj"
 require "fmt"
 require "log"
 require "os"
-module Main
-  private
 
-    def self.runDebug
+module Main
+
+    # ()
+    def runDebug
       self_, err = os.Executable()
 
       if err != nil
@@ -25,7 +26,8 @@ module Main
       debugGosym(self_)
     end
 
-    def self.debugBuildinfo(path)
+    # (string)
+    def debugBuildinfo(path)
       bi, err = buildinfo.ReadFile(path)
 
       if err != nil
@@ -39,7 +41,8 @@ module Main
       fmt.Println("main path: ", bi.Main.Path)
     end
 
-    def self.debugFormats(path)
+    # (string)
+    def debugFormats(path)
       fmt.Println("\n=== format detection ===")
       f, err = elf.Open(path)
 
@@ -78,7 +81,8 @@ module Main
       end
     end
 
-    def self.debugElfSections(path)
+    # (string)
+    def debugElfSections(path)
       f, err = elf.Open(path)
 
       if err != nil
@@ -97,7 +101,8 @@ module Main
       end
     end
 
-    def self.debugDwarf(path)
+    # (string)
+    def debugDwarf(path)
       f, err = elf.Open(path)
 
       if err != nil
@@ -134,7 +139,8 @@ module Main
       end
     end
 
-    def self.debugGosym(path)
+    # (string)
+    def debugGosym(path)
       f, err = elf.Open(path)
 
       if err != nil

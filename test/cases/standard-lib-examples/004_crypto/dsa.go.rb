@@ -3,10 +3,11 @@ require "crypto/rand"
 require "crypto/sha256"
 require "fmt"
 require "log"
-module Main
-  private
 
-    def self.runDSA
+module Main
+
+    # ()
+    def runDSA
       params = nil
       err = dsa.GenerateParameters(params, rand.Reader, dsa.L1024N160)
 

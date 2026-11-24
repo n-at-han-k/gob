@@ -5,10 +5,11 @@ require "go/parser"
 require "go/token"
 require "go/types"
 require "log"
-module Main
-  private
 
-    def self.runTypes
+module Main
+
+    # ()
+    def runTypes
       src =
         "package p\nimport \"fmt\"\nfunc Greet(name string) { fmt.Println(\"hi\", name) }\nvar Answer = 21 * 2\n"
 

@@ -1,22 +1,25 @@
 require "errors"
 require "fmt"
 require "os"
+
 module Main
   class NotFoundError
     attr_accessor :key
 
+    # () -> string
     def Error
       return fmt.Sprintf("key %q not found", this.key)
     end
   end
 
-  private
 
-    def self.lookup(k)
+    # (string) -> error
+    def lookup(k)
       return NotFoundError.new(key: k)
     end
 
-    def self.runErrors
+    # ()
+    def runErrors
       sentinel = errors.New("sentinel failure")
       fmt.Println(sentinel)
       wrapped = fmt.Errorf("during startup: %w", sentinel)

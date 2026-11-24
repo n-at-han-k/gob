@@ -1,9 +1,10 @@
 require "fmt"
 require "net/http/fcgi"
-module Main
-  private
 
-    def self.runFCGI
+module Main
+
+    # ()
+    def runFCGI
       fmt.Printf("fcgi.Serve signature: %T\n", fcgi.Serve)
       fmt.Println("wire the handler up behind nginx via fastcgi_pass to see it run.")
     end

@@ -3,10 +3,11 @@ require "go/ast"
 require "go/parser"
 require "go/token"
 require "log"
-module Main
-  private
 
-    def self.runAST
+module Main
+
+    # ()
+    def runAST
       src =
         "package p\n// Add returns a+b.\nfunc Add(a, b int) int { return a + b }\nvar Answer = 42\n"
 

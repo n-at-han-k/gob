@@ -2,10 +2,11 @@ require "crypto/aes"
 require "crypto/cipher"
 require "crypto/rand"
 require "fmt"
-module Main
-  private
 
-    def self.runCipher
+module Main
+
+    # ()
+    def runCipher
       key = make([], 16)
       rand.Read(key)
       block, _ = aes.NewCipher(key)

@@ -8,10 +8,11 @@ require "encoding/base64"
 require "fmt"
 require "io"
 require "log"
-module Main
-  private
 
-    def self.runCompress
+module Main
+
+    # ()
+    def runCompress
       sample = "compress me compress me compress me compress me".bytes
       gzipDemo(sample)
       flateDemo(sample)
@@ -20,7 +21,8 @@ module Main
       bzip2Demo()
     end
 
-    def self.gzipDemo(in_)
+    # ([]byte)
+    def gzipDemo(in_)
       buf = nil
       gw = gzip.NewWriter(buf)
       _, err = gw.Write(in_)
@@ -42,7 +44,8 @@ module Main
       fmt.Printf("gzip:  %d -> %d bytes, roundtrip=%q\n", len(in_), compressedLen, out)
     end
 
-    def self.flateDemo(in_)
+    # ([]byte)
+    def flateDemo(in_)
       buf = nil
       fw, _ = flate.NewWriter(buf, flate.DefaultCompression)
       fw.Write(in_)
@@ -53,7 +56,8 @@ module Main
       fmt.Printf("flate: roundtrip=%q\n", out)
     end
 
-    def self.zlibDemo(in_)
+    # ([]byte)
+    def zlibDemo(in_)
       buf = nil
       zw = zlib.NewWriter(buf)
       zw.Write(in_)
@@ -69,7 +73,8 @@ module Main
       fmt.Printf("zlib:  roundtrip=%q\n", out)
     end
 
-    def self.lzwDemo(in_)
+    # ([]byte)
+    def lzwDemo(in_)
       buf = nil
       lw = lzw.NewWriter(buf, lzw.LSB, 8)
       lw.Write(in_)
@@ -80,7 +85,8 @@ module Main
       fmt.Printf("lzw:   roundtrip=%q\n", out)
     end
 
-    def self.bzip2Demo
+    # ()
+    def bzip2Demo
       b64 =
         "QlpoOTFBWSZTWatrofEAAALZgAAQQAAQABJkwBAgADEA000EAB6j705RogeLuSKcKEhVtdD4gA=="
 

@@ -1,10 +1,11 @@
 require "fmt"
 require "iter"
 require "slices"
-module Main
-  private
 
-    def self.countdown(from)
+module Main
+
+    # (int) -> iter.Seq[int]
+    def countdown(from)
       return(
         lambda do |yield_|
           i = from
@@ -20,7 +21,8 @@ module Main
       )
     end
 
-    def self.runIter
+    # ()
+    def runIter
       countdown(3).each { |n| fmt.Println(n) }
       slices.All(%w[a b c]).each { |i, v| fmt.Println(i, v) }
     end

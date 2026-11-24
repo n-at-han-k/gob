@@ -1,9 +1,10 @@
 require "fmt"
 require "go/token"
-module Main
-  private
 
-    def self.runToken
+module Main
+
+    # ()
+    def runToken
       [token.FUNC, token.ADD, token.INT, token.IDENT].each do |_, t|
         fmt.Printf("%s\tkeyword=%v\toperator=%v\tliteral=%v\n", t, t.IsKeyword(), t.IsOperator(), t.IsLiteral())
       end

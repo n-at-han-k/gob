@@ -1,9 +1,10 @@
 require "fmt"
 require "index/suffixarray"
-module Main
-  private
 
-    def self.runIndex
+module Main
+
+    # ()
+    def runIndex
       text = "the quick brown fox jumps over the lazy dog".bytes
       idx = suffixarray.New(text)
       fmt.Println("'the' offsets:", idx.Lookup("the".bytes, -1))

@@ -3,10 +3,11 @@ require "net/http"
 require "net/http/httptest"
 require "net/http/httputil"
 require "net/url"
-module Main
-  private
 
-    def self.runHTTPUtil
+module Main
+
+    # ()
+    def runHTTPUtil
       upstream =
         httptest.NewServer(http.HandlerFunc(lambda { |w, r| fmt.Fprintf(w, "upstream got %s\n", r.URL.Path) }))
 

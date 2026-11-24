@@ -1,10 +1,11 @@
 require "fmt"
 require "go/constant"
 require "go/token"
-module Main
-  private
 
-    def self.runConstant
+module Main
+
+    # ()
+    def runConstant
       big = constant.Shift(constant.MakeInt64(1), token.SHL, 100)
       fmt.Println("1 << 100 =", big)
 

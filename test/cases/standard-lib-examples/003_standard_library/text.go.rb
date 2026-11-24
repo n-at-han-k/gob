@@ -2,10 +2,11 @@ require "log"
 require "os"
 require "text/tabwriter"
 require "text/template"
-module Main
-  private
 
-    def self.runText
+module Main
+
+    # ()
+    def runText
       tmpl = "Hello {{.Name}}!\n{{range .Tasks}}  - {{.}}\n{{end}}"
       t = template.Must(template.New("greet").Parse(tmpl))
 
