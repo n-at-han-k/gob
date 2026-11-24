@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module Gob
-  module Rules
+  module Transpilation
+    module Rules
     module_function
 
     def const_go_name(name)
@@ -127,7 +128,7 @@ module Gob
                when SyntaxTree::StringLiteral then string_value(name_node)
                else name_node.to_s
                end
-        go_name = Gob::Rules.const_go_name(name)
+        go_name = Gob::Transpilation::Rules.const_go_name(name)
         val = visit(value_node)
         decl = SyntaxTree::Go::GenDecl.new(
           doc: nil, tok_pos: nil, tok: "const", lparen: nil,
@@ -187,7 +188,7 @@ module Gob
                when SyntaxTree::StringLiteral then string_value(name_node)
                else name_node.to_s
                end
-        go_name = Gob::Rules.const_go_name(name)
+        go_name = Gob::Transpilation::Rules.const_go_name(name)
         val = visit(value_node)
         decl = SyntaxTree::Go::GenDecl.new(
           doc: nil, tok_pos: nil, tok: "const", lparen: nil,
@@ -811,7 +812,7 @@ module Gob
           val = visit(node.value)
           decl = SyntaxTree::Go::GenDecl.new(
             doc: nil, tok_pos: nil, tok: "const", lparen: nil,
-            specs: [SyntaxTree::Go::ValueSpec.new(doc: nil, names: [ident(Gob::Rules.const_go_name(name.to_s))], type: nil, values: [val], comment: nil)],
+            specs: [SyntaxTree::Go::ValueSpec.new(doc: nil, names: [ident(Gob::Transpilation::Rules.const_go_name(name.to_s))], type: nil, values: [val], comment: nil)],
             rparen: nil
           )
           decl.instance_variable_set(:@location, node.location) rescue nil
@@ -884,7 +885,7 @@ module Gob
       matcher.rule(:const_ref) do |node|
         next Matcher::MISS unless node.is_a?(SyntaxTree::ConstRef)
 
-        ident(Gob::Rules.const_go_name(node.constant.value))
+        ident(Gob::Transpilation::Rules.const_go_name(node.constant.value))
       end
 
       matcher.rule(:class_declaration) do |node|
@@ -1001,7 +1002,7 @@ module Gob
         next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
         next Matcher::MISS unless node.value.is_a?(SyntaxTree::Const)
 
-        ident(Gob::Rules.const_go_name(node.value.value))
+        ident(Gob::Transpilation::Rules.const_go_name(node.value.value))
       end
 
       matcher.rule(:unary) do |node|
@@ -1178,5 +1179,6 @@ module Gob
     end
 
     # Helpers available in rule context via transpiler instance_exec
+  end
   end
 end
