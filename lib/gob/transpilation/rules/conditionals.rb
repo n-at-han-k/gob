@@ -32,8 +32,7 @@ module Gob
                 contents: SyntaxTree::Statements[
                   body: [
                     SyntaxTree::MAssign[
-                      target: SyntaxTree::MLHS[parts: targets],
-                      value: value
+                      target: SyntaxTree::MLHS[parts: targets], value: value
                     ]
                   ]
                 ]
@@ -41,11 +40,10 @@ module Gob
               statements: SyntaxTree::Statements[body: body],
               consequent: consequent
             ]
+
             targets => [
               *,
-              SyntaxTree::VarField[
-                value: SyntaxTree::Ident[value: "err"]
-              ]
+              SyntaxTree::VarField[value: SyntaxTree::Ident[value: "err"]]
             ]
 
             IfErrorAssignment(
@@ -65,8 +63,7 @@ module Gob
                 contents: SyntaxTree::Statements[
                   body: [
                     SyntaxTree::MAssign[
-                      target: SyntaxTree::MLHS[parts: targets],
-                      value: value
+                      target: SyntaxTree::MLHS[parts: targets], value: value
                     ]
                   ]
                 ]
@@ -74,10 +71,9 @@ module Gob
               statements: SyntaxTree::Statements[body: body],
               consequent: consequent
             ]
+
             targets => [
-              SyntaxTree::VarField[
-                value: SyntaxTree::Ident[value: "err"]
-              ],
+              SyntaxTree::VarField[value: SyntaxTree::Ident[value: "err"]],
               *
             ]
 

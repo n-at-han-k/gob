@@ -392,9 +392,7 @@ module SyntaxTree
       def AssignmentNames(targets)
         Array(targets).map do |target|
           case target
-          in SyntaxTree::VarField[
-            value: SyntaxTree::Ident[value: name]
-          ]
+          in SyntaxTree::VarField[value: SyntaxTree::Ident[value: name]]
             name
           end
         end
@@ -926,6 +924,14 @@ module SyntaxTree
 
       def ParenExpr(x)
         SyntaxTree::Go::ParenExpr.new(lparen: nil, x: x, rparen: nil)
+      end
+
+      def ArrayLiteral(elements)
+        CompositeLit(ArrayType(Ident("any")), elements)
+      end
+
+      def HashLiteral(entries)
+        CompositeLit(MapType(Ident("any"), Ident("any")), entries)
       end
 
       def KeyValueExpr(key, value)

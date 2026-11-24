@@ -95,6 +95,14 @@ module Gob
             Ident(name)
           end
 
+          matcher.rule(:label) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Label)
+
+            node => SyntaxTree::Label[value: value]
+
+            Ident(value.chomp(":"))
+          end
+
           matcher.rule(:dynamic_symbol) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::DynaSymbol)
 
