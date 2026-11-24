@@ -99,11 +99,7 @@ module Gob
               ]
             ]
 
-            Lambda(
-              BlockParameters(block_var),
-              BodyStatements(bodystmt),
-              context: self
-            )
+            Lambda(block_var, BodyStatements(bodystmt), context: self)
           end
         end
       end

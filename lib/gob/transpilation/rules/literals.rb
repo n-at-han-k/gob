@@ -7,6 +7,16 @@ module Gob
         module_function
 
         def register(matcher)
+          matcher.rule(:char_literal) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::StringLiteral)
+
+            node => SyntaxTree::StringLiteral[
+              quote: "'", parts: [SyntaxTree::TStringContent[value: value]]
+            ]
+
+            CharLiteral(value)
+          end
+
           matcher.rule(:empty_string) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::StringLiteral)
 

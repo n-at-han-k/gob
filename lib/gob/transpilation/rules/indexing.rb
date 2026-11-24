@@ -7,6 +7,22 @@ module Gob
         module_function
 
         def register(matcher)
+          matcher.rule(:pointer_index) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::ARef)
+
+            node => SyntaxTree::ARef[
+              collection: SyntaxTree::VarRef[
+                value: SyntaxTree::IVar[value: name]
+              ],
+              index: SyntaxTree::Args[parts: [index]]
+            ]
+
+            UnaryExpr(
+              :&,
+              IndexExpr(Ident(name.delete_prefix("@")), visit(index))
+            )
+          end
+
           matcher.rule(:full_slice) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::ARef)
 

@@ -18,7 +18,7 @@ module Gob
             in SyntaxTree::VCall[value: SyntaxTree::Ident[value: name]]
               Ident(name)
             in SyntaxTree::VarRef[value: SyntaxTree::Const[value: name]]
-              Ident(name)
+              Ident(Gob::Transpilation::Rules.const_go_name(name))
             in SyntaxTree::SymbolLiteral[value: SyntaxTree::Ident[value: name]]
               Ident(name)
             else

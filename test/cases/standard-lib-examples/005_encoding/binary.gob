@@ -13,10 +13,10 @@ module Main
 
     var :a, uint32
     var :b, uint16
-    if err = binary.Read(buf, binary.BigEndian, a)
+    if err = binary.Read(@buf, binary.BigEndian, @a)
       log.Fatal(err)
     end
-    binary.Read(buf, binary.LittleEndian, b)
+    binary.Read(@buf, binary.LittleEndian, @b)
     fmt.Printf("a=%#x b=%#x\n", a, b)
 
     var :vbuf, Array[byte, binary.MaxVarintLen64]

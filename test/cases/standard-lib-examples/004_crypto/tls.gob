@@ -5,7 +5,7 @@ module Main
   def runTLS
     cfg = @tls.Config.new(
       MinVersion: tls.VersionTLS12,
-      NextProtos: Array[string].new("h2" "http/1.1")
+      NextProtos: Array[string].new("h2", "http/1.1")
     )
     fmt.Printf("min version: 0x%04x (TLS 1.2)\n", cfg.MinVersion)
     fmt.Println("ALPN offers:", cfg.NextProtos)

@@ -21,6 +21,24 @@ module Gob
             Matcher::DROP
           end
 
+          matcher.rule(:drop_struct_instance) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
+            node => SyntaxTree::CallNode[
+              receiver: SyntaxTree::CallNode[
+                receiver: SyntaxTree::VarRef[
+                  value: SyntaxTree::Const[value: "Struct"]
+                ],
+                operator: SyntaxTree::Period[value: "."],
+                message: SyntaxTree::Ident[value: "new"]
+              ],
+              operator: SyntaxTree::Period[value: "."],
+              message: SyntaxTree::Ident[value: "new"]
+            ]
+
+            Matcher::DROP
+          end
+
           matcher.rule(:constructor) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
 

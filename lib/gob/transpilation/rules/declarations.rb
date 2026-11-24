@@ -28,7 +28,7 @@ module Gob
             next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
 
             node => SyntaxTree::Command[
-              message: SyntaxTree::Ident[value: "var"],
+              message: SyntaxTree::Ident[value: "var" | "define_var"],
               arguments: SyntaxTree::Args[
                 parts: [
                   SyntaxTree::SymbolLiteral[
@@ -46,7 +46,7 @@ module Gob
             next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
 
             node => SyntaxTree::Command[
-              message: SyntaxTree::Ident[value: "var"],
+              message: SyntaxTree::Ident[value: "var" | "define_var"],
               arguments: SyntaxTree::Args[
                 parts: [
                   SyntaxTree::SymbolLiteral[
@@ -70,7 +70,7 @@ module Gob
             next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
 
             node => SyntaxTree::Command[
-              message: SyntaxTree::Ident[value: "const"],
+              message: SyntaxTree::Ident[value: "const" | "define_const"],
               arguments: SyntaxTree::Args[
                 parts: [
                   SyntaxTree::SymbolLiteral[
@@ -122,7 +122,7 @@ module Gob
             next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
 
             node => SyntaxTree::Command[
-              message: SyntaxTree::Ident[value: "var"],
+              message: SyntaxTree::Ident[value: "var" | "define_var"],
               arguments: SyntaxTree::Args[
                 parts: [
                   SyntaxTree::Assign[
@@ -165,7 +165,7 @@ module Gob
             next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
 
             node => SyntaxTree::Command[
-              message: SyntaxTree::Ident[value: "var"],
+              message: SyntaxTree::Ident[value: "var" | "define_var"],
               arguments: SyntaxTree::Args[
                 parts: [
                   SyntaxTree::Assign[
@@ -185,7 +185,7 @@ module Gob
             next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
 
             node => SyntaxTree::Command[
-              message: SyntaxTree::Ident[value: "const"],
+              message: SyntaxTree::Ident[value: "const" | "define_const"],
               arguments: SyntaxTree::Args[
                 parts: [
                   SyntaxTree::Assign[

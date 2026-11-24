@@ -8,7 +8,7 @@ module Main
 
     shake = sha3.NewSHAKE128()
     shake.Write(Array[byte].new("hello"))
-    out = make(Arrary[byte], 42)
+    out = make(Array[byte], 42)
     shake.Read(out)
     fmt.Printf("shake128 (42 B): %x\n", out)
   end

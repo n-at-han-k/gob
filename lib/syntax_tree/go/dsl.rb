@@ -12,6 +12,10 @@ module SyntaxTree
         SyntaxTree::Go::BasicLit.new(kind: kind.to_sym, value: value.to_s)
       end
 
+      def CharLiteral(value)
+        BasicLit(:CHAR, "'#{value}'")
+      end
+
       def StringLiteral(value)
         BasicLit(:STRING, "\"#{value}\"")
       end
@@ -46,6 +50,8 @@ module SyntaxTree
 
       def GoType(node, context:)
         case node
+        in SyntaxTree::VCall[value: SyntaxTree::Ident[value: "Proc"]]
+          FuncType([], nil)
         in SyntaxTree::VCall[value: SyntaxTree::Ident[value: name]]
           Ident(name)
         in SyntaxTree::SymbolLiteral[value: value]
@@ -58,7 +64,7 @@ module SyntaxTree
             end
           Ident(name)
         in SyntaxTree::VarRef[value: SyntaxTree::Const[value: name]]
-          Ident(name)
+          Ident(Gob::Transpilation::Rules.const_go_name(name))
         in SyntaxTree::CallNode[
              receiver: nil,
              operator: nil,
@@ -122,6 +128,8 @@ module SyntaxTree
                arguments: nil
              ]
             true
+          in SyntaxTree::VarRef[value: SyntaxTree::IVar]
+            true
           else
             false
           end
@@ -152,7 +160,15 @@ module SyntaxTree
               context.visit(part)
             end
           end
-        type = GoType(receiver, context: context)
+        type =
+          case receiver
+          in SyntaxTree::VarRef[value: SyntaxTree::IVar[value: name]]
+            Ident(
+              Gob::Transpilation::Rules.const_go_name(name.delete_prefix("@"))
+            )
+          else
+            GoType(receiver, context: context)
+          end
         if type.is_a?(SyntaxTree::Go::ArrayType) &&
              type.elt.is_a?(SyntaxTree::Go::Ident) && type.elt.name == "byte" &&
              elements.length == 1 &&
@@ -460,7 +476,19 @@ module SyntaxTree
           signature_text,
           body,
           context: context,
-          recv: FieldList([Field([], Ident(context.current_class))])
+          recv:
+            FieldList(
+              [
+                Field(
+                  [],
+                  Ident(
+                    Gob::Transpilation::Rules.const_go_name(
+                      context.current_class
+                    )
+                  )
+                )
+              ]
+            )
         )
       end
 
@@ -484,11 +512,12 @@ module SyntaxTree
         end
       end
 
-      def Lambda(params, body, context:)
+      def Lambda(block_var, body, context:)
+        params = BlockParameters(block_var)
         parameter_names = ParameterNames(ParameterNodes(params))
         signature_text =
           context
-            .collect_comments(params)
+            .collect_comments(block_var)
             .map(&:value)
             .find { |comment| context.parse_signature_comment(comment) }
         signature =
@@ -535,7 +564,15 @@ module SyntaxTree
             end
           end
 
-        GenDecl(:type, [TypeSpec(name, Struct(fields))])
+        GenDecl(
+          :type,
+          [
+            TypeSpec(
+              Gob::Transpilation::Rules.const_go_name(name),
+              Struct(fields)
+            )
+          ]
+        )
       end
 
       def ProcType(parameters, returns, context:)
@@ -558,7 +595,15 @@ module SyntaxTree
       def StructNewFromNames(name, names)
         fields = names.map { |field_name| [field_name, nil] }
 
-        GenDecl(:type, [TypeSpec(name, Struct(fields))])
+        GenDecl(
+          :type,
+          [
+            TypeSpec(
+              Gob::Transpilation::Rules.const_go_name(name),
+              Struct(fields)
+            )
+          ]
+        )
       end
 
       def FieldName(symbol)
@@ -601,7 +646,18 @@ module SyntaxTree
           end
         end
 
-        [GenDecl(:type, [TypeSpec(name, Struct(fields))]), *methods]
+        [
+          GenDecl(
+            :type,
+            [
+              TypeSpec(
+                Gob::Transpilation::Rules.const_go_name(name),
+                Struct(fields)
+              )
+            ]
+          ),
+          *methods
+        ]
       end
 
       def BlockStmt(statements = [])
