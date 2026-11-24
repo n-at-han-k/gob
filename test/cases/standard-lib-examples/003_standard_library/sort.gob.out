@@ -16,14 +16,14 @@ func runSort() {
 	fmt.Println("ints:", nums)
 	people := []any{[]any{"C", 30}, []any{"A", 25}, []any{"B", 30}}
 	sort.Slice(people, func(i, j) {
-	if people[i].Age != people[j].Age {
-		return people[i].Age < people[j].Age
-	}
-	return people[i].Name < people[j].Name
-})
+		if people[i].Age != people[j].Age {
+			return people[i].Age < people[j].Age
+		}
+		return people[i].Name < people[j].Name
+	})
 	fmt.Println("people:", people)
 	sort.SliceStable(people, func(i, j) {
-	return people[i].Age < people[j].Age
-})
+		return people[i].Age < people[j].Age
+	})
 	fmt.Println("stable:", people)
 }

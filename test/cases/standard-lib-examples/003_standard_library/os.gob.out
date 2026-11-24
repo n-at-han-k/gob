@@ -17,8 +17,8 @@ func runOS() {
 		log.Fatal(err)
 	}
 	defer func() {
-	os.Remove(f.Name())
-}()
+		os.Remove(f.Name())
+	}()
 	f.WriteString("hello from os\n")
 	f.Close()
 	data, _ := os.ReadFile(f.Name())

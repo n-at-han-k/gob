@@ -113,6 +113,8 @@ Nathank/CommentStructure:
   Enabled: false
 Nathank/NoReturn:
   Enabled: false
+Nathank/NoModifierIf:
+  Enabled: false
 
 Layout/LineLength:
   Enabled: false

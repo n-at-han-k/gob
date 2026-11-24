@@ -12,7 +12,7 @@ func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("usage: go run . <package>")
 		fmt.Println("available demos:")
-		names := make(#<SyntaxTree::ArrayLiteral:0x00007d67bc26dcb0>, 0, len(demos))
+		names := make(#<SyntaxTree::ArrayLiteral:0x0000778418acce48>, 0, len(demos))
 		for k := range demos {
 			names := append(names, k)
 		}

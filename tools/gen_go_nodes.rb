@@ -52,12 +52,35 @@ module GoNodeGenerator
             BodyStmt(
               Statements(
                 schema.map do |node|
+                  # Positions and parser metadata are not part of tree identity.
+                  fields = node["fields"].select do |field|
+                    !%w[pos semantic map].include?(field["role"]) &&
+                      !%w[doc comment comments imports unresolved go_version].include?(fname(field))
+                  end
+
                   ClassDeclaration(
                     ConstRef(Const(node["name"])),
                     ConstRef(Const("Node")),
                     BodyStmt(
                       Statements(
                         [
+                          Assign(
+                            ConstRef(Const("SEMANTIC_FIELDS")),
+                            CallNode(
+                              HashLiteral(
+                                LBrace("{"),
+                                fields.map do |field|
+                                  Assoc(
+                                    SymbolLiteral(Ident(fname(field))),
+                                    SymbolLiteral(Ident(field["role"]))
+                                  )
+                                end
+                              ),
+                              Period("."),
+                              Ident("freeze"),
+                              nil
+                            )
+                          ),
                           CallNode(
                             nil,
                             nil,
@@ -200,40 +223,6 @@ module GoNodeGenerator
                                     Ident("visit"),
                                     ArgParen(Args([VarRef(Kw("self"))]))
                                   )
-                                ]
-                              ),
-                              nil,
-                              nil,
-                              nil,
-                              nil
-                            )
-                          ),
-                          DefNode(
-                            nil,
-                            nil,
-                            Ident("==="),
-                            Params([Ident("other")], [], nil, [], [], nil, nil),
-                            BodyStmt(
-                              Statements(
-                                [
-                                  node["fields"].reduce(
-                                    CallNode(
-                                      VarRef(Ident("other")),
-                                      Period("."),
-                                      Ident("is_a?"),
-                                      ArgParen(Args([ConstRef(Const(node["name"]))]))
-                                    )
-                                  ) do |acc, f|
-                                    Binary(
-                                      acc,
-                                      :"&&",
-                                      Binary(
-                                        VarRef(IVar("@#{fname(f)}")),
-                                        :===,
-                                        CallNode(VarRef(Ident("other")), Period("."), Ident(fname(f)), nil)
-                                      )
-                                    )
-                                  end
                                 ]
                               ),
                               nil,

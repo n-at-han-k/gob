@@ -7,15 +7,15 @@ import (
 	"time"
 )
 
-func work(ctx context.Context) (error) {
+func work(ctx context.Context) error {
 	/* unsupported: SyntaxTree::Go::SelectStmt */
 }
 
 func runContext() {
-	ctx, cancel := context.WithTimeout(context.Background(), 100 * time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer func() {
-	cancel()
-}()
+		cancel()
+	}()
 	if err := work(ctx); errors.Is(err, context.DeadlineExceeded) {
 		fmt.Println("timed out as expected")
 	}

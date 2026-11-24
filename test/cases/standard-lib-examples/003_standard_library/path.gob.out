@@ -12,9 +12,9 @@ func runPath() {
 	fmt.Println("Dir:   ", path.Dir("/x/y/z.txt"))
 	fmt.Println("Ext:   ", path.Ext("archive.tar.gz"))
 	fmt.Println("Match: ", func() {
-	m, _ := path.Match("*.go", "main.go")
-	return m
-}.call())
+		m, _ := path.Match("*.go", "main.go")
+		return m
+	}.call())
 	fmt.Println("filepath.Join:", filepath.Join("dir", "sub", "file.txt"))
 	abs, _ := filepath.Abs("main.go")
 	fmt.Println("Abs:         ", abs)

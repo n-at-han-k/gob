@@ -9,7 +9,7 @@ type Point struct {
 
 func runFmt() {
 	fmt.Println("hello", 42, true)
-	fmt.Printf("%d + %d = %d\n", 2, 3, 2 + 3)
+	fmt.Printf("%d + %d = %d\n", 2, 3, 2+3)
 	fmt.Printf("%.2f pi\n", 3.14159)
 	fmt.Printf("%q quoted\n", "text")
 	fmt.Printf("%v vs %+v vs %#v\n", Point{1, 2}, Point{1, 2}, Point{1, 2})

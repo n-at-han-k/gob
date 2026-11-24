@@ -15,7 +15,7 @@ func runMaps() {
 	fmt.Println("orig:", m, "clone:", cp)
 	fmt.Println("equal:", maps.Equal(m, map[any]any{"a": 1, "b": 2, "c": 3}))
 	maps.DeleteFunc(m, func(k, v) {
-	return v > 1
-})
+		return v > 1
+	})
 	fmt.Println("after delete:", m)
 }

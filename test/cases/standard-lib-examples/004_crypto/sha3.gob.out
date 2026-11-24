@@ -10,7 +10,7 @@ func runSHA3() {
 	fmt.Printf("Sum512: %x\n", sha3.Sum512([]byte("hello")))
 	shake := sha3.NewSHAKE128()
 	shake.Write([]byte("hello"))
-	out := make(#<SyntaxTree::ARef:0x00007d67bc3458e0>, 42)
+	out := make(#<SyntaxTree::ARef:0x0000778418f06c70>, 42)
 	shake.Read(out)
 	fmt.Printf("shake128 (42 B): %x\n", out)
 }

@@ -29,11 +29,93 @@ module GoVisitorGenerator
                   ClassDeclaration(
                     ConstRef(Const("Visitor")),
                     ConstPathRef(ConstRef(Const("SyntaxTree")), Const("BasicVisitor")),
-                    BodyStmt(Statements(schema.map { |n| visit_alias(n["name"]) }), nil, nil, nil, nil)
+                    BodyStmt(
+                      Statements(
+                        [
+                          DefNode(
+                            nil,
+                            nil,
+                            Ident("visit"),
+                            Params([Ident("node")], [], nil, [], [], nil, nil),
+                            BodyStmt(
+                              Statements(
+                                [
+                                  Case(
+                                    Kw("case"),
+                                    VarRef(Ident("node")),
+                                    When(
+                                      Args([ConstRef(Const("Array"))]),
+                                      Statements(
+                                        [
+                                          MethodAddBlock(
+                                            CallNode(VarRef(Ident("node")), Period("."), Ident("map"), nil),
+                                            BlockNode(
+                                              LBrace("{"),
+                                              BlockVar(
+                                                Params([Ident("child")], [], nil, [], [], nil, nil),
+                                                []
+                                              ),
+                                              BodyStmt(
+                                                Statements(
+                                                  [
+                                                    CallNode(
+                                                      nil,
+                                                      nil,
+                                                      Ident("visit"),
+                                                      ArgParen(Args([VarRef(Ident("child"))]))
+                                                    )
+                                                  ]
+                                                ),
+                                                nil,
+                                                nil,
+                                                nil,
+                                                nil
+                                              )
+                                            )
+                                          )
+                                        ]
+                                      ),
+                                      When(
+                                        Args([Kw("nil")]),
+                                        Statements([Kw("nil")]),
+                                        Else(
+                                          Kw("else"),
+                                          Statements(
+                                            [
+                                              CallNode(
+                                                VarRef(Ident("node")),
+                                                Period("."),
+                                                Ident("accept"),
+                                                ArgParen(Args([VarRef(Kw("self"))]))
+                                              )
+                                            ]
+                                          )
+                                        )
+                                      )
+                                    )
+                                  )
+                                ]
+                              ),
+                              nil,
+                              nil,
+                              nil,
+                              nil
+                            )
+                          )
+                        ] + schema.map { |n| visit_alias(n["name"]) }
+                      ),
+                      nil,
+                      nil,
+                      nil,
+                      nil
+                    )
                   )
                 ]
               ),
-              nil, nil, nil, nil
+              nil,
+              nil,
+              nil,
+              nil
             )
           )
         ]
@@ -88,30 +170,6 @@ module GoVisitorGenerator
     )
   end
 
-  def build_simple_subclass(schema, class_name, base, extra_body = [])
-    Program(
-      Statements(
-        [
-          ModuleDeclaration(
-            ConstPathRef(ConstRef(Const("SyntaxTree")), Const("Go")),
-            BodyStmt(
-              Statements(
-                [
-                  ClassDeclaration(
-                    ConstRef(Const(class_name)),
-                    ConstRef(Const(base)),
-                    BodyStmt(Statements(extra_body), nil, nil, nil, nil)
-                  )
-                ]
-              ),
-              nil, nil, nil, nil
-            )
-          )
-        ]
-      )
-    )
-  end
-
   def write(path, program)
     File.write(path, SyntaxTree.format_node("", program))
     puts "wrote #{path}"
@@ -130,33 +188,5 @@ if $PROGRAM_NAME == __FILE__
   GoVisitorGenerator.write(
     File.join(root, "lib/syntax_tree/go/format.rb"),
     GoVisitorGenerator.build_format(schema)
-  )
-
-  q_attr = -> {
-    [
-      GoVisitorGenerator.CallNode(nil, nil, GoVisitorGenerator.Ident("attr_reader"), GoVisitorGenerator.ArgParen(GoVisitorGenerator.Args([GoVisitorGenerator.SymbolLiteral(GoVisitorGenerator.Ident("q"))]))),
-      GoVisitorGenerator.DefNode(
-        nil, nil, GoVisitorGenerator.Ident("initialize"),
-        GoVisitorGenerator.Params([GoVisitorGenerator.Ident("q")], [], nil, [], [], nil, nil),
-        GoVisitorGenerator.BodyStmt(GoVisitorGenerator.Statements([
-          GoVisitorGenerator.Assign(GoVisitorGenerator.VarField(GoVisitorGenerator.IVar("@q")), GoVisitorGenerator.VarRef(GoVisitorGenerator.Ident("q")))
-        ]), nil, nil, nil, nil)
-      )
-    ]
-  }
-
-  GoVisitorGenerator.write(
-    File.join(root, "lib/syntax_tree/go/pretty_print_visitor.rb"),
-    GoVisitorGenerator.build_simple_subclass(schema, "PrettyPrintVisitor", "Visitor", q_attr.call)
-  )
-
-  GoVisitorGenerator.write(
-    File.join(root, "lib/syntax_tree/go/json_visitor.rb"),
-    GoVisitorGenerator.build_simple_subclass(schema, "JSONVisitor", "Visitor")
-  )
-
-  GoVisitorGenerator.write(
-    File.join(root, "lib/syntax_tree/go/match_visitor.rb"),
-    GoVisitorGenerator.build_simple_subclass(schema, "MatchVisitor", "Visitor", q_attr.call)
   )
 end

@@ -11,8 +11,8 @@ import (
 func runPProf() {
 	srv := httptest.NewServer(http.DefaultServeMux)
 	defer func() {
-	srv.Close()
-}()
+		srv.Close()
+	}()
 	resp, _ := http.Get(srv.URL + "/debug/pprof/")
 	body, _ := io.ReadAll(resp.Body)
 	resp.Body.Close()

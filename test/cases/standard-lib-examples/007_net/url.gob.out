@@ -18,6 +18,6 @@ func runURL() {
 	q := u.Query()
 	fmt.Println("tags:    ", q["tag"])
 	built := &url.URL{Scheme: "https", Host: "example.com", Path: "/search"}
-	built.#<SyntaxTree::Const:0x00007d67bc22a6b8> = url.Values{"q": []any{"go & rust"}}.Encode()
+	built.#<SyntaxTree::Const:0x0000778418c3d750> = url.Values{"q": []any{"go & rust"}}.Encode()
 	fmt.Println("built:   ", built)
 }

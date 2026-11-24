@@ -11,13 +11,13 @@ const statusInactive = "inactive"
 var packageLevel = "I live at package scope"
 
 func main() {
-		var a int
-		var b string
-		var c bool
-		var d float64
+	var a int
+	var b string
+	var c bool
+	var d float64
 	fmt.Println("zero values:", a, b, c, d)
-		var name string = "Nathan"
-		var age int = 30
+	var name string = "Nathan"
+	var age int = 30
 	fmt.Println(name, age)
 	city := "Wellington"
 	country := "New Zealand"
@@ -30,10 +30,10 @@ func main() {
 	port := 8080
 	enabled := true
 	fmt.Println(host, port, enabled)
-		var count int32 = 100
-		var big int64 = int64(count) * 1000
+	var count int32 = 100
+	var big int64 = int64(count) * 1000
 	fmt.Println(big)
-		const greeting = "hi"
+	const greeting = "hi"
 	fmt.Println(greeting, pi, statusActive, statusInactive)
 	fmt.Println(packageLevel)
 	shadow := "outer"

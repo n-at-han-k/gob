@@ -67,8 +67,8 @@ func debugElfSections(path string) {
 		return
 	}
 	defer func() {
-	f.Close()
-}()
+		f.Close()
+	}()
 	fmt.Println("\n=== elf sections (first 5) ===")
 	for i, s := range f.Sections {
 		if i >= 5 {
@@ -83,8 +83,8 @@ func debugDwarf(path string) {
 		return
 	}
 	defer func() {
-	f.Close()
-}()
+		f.Close()
+	}()
 	if d, err := f.DWARF(); err != nil {
 		fmt.Println("\n=== dwarf ===\n  not available:", err)
 		return
@@ -110,8 +110,8 @@ func debugGosym(path string) {
 		return
 	}
 	defer func() {
-	f.Close()
-}()
+		f.Close()
+	}()
 	text := f.Section(".text")
 	pclntab := f.Section(".gopclntab")
 	if text == nil || pclntab == nil {

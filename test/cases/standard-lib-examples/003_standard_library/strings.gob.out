@@ -15,7 +15,7 @@ func runStrings() {
 	fmt.Println("Replace:    ", strings.Replace(s, "fox", "cat", 1))
 	fmt.Println("HasPrefix:  ", strings.HasPrefix(s, "The"))
 	fmt.Println("TrimSpace:  ", strings.TrimSpace("   pad   "))
-		var b strings.Builder
+	var b strings.Builder
 	for _, w := range []any{"one", "two", "three"} {
 		b.WriteString(w)
 		b.WriteByte(" ")

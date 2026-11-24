@@ -17,7 +17,7 @@ func runSlices() {
 	slices.Reverse(cp)
 	fmt.Println("reversed clone:", cp)
 	odd := slices.DeleteFunc(slices.Clone(s), func(v) {
-	return v % 2 == 0
-})
+		return v%2 == 0
+	})
 	fmt.Println("odd only:", odd)
 }

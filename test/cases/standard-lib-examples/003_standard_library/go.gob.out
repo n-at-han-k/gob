@@ -15,10 +15,10 @@ func runGoTools() {
 		log.Fatal(err)
 	}
 	ast.Inspect(file, func(n) {
-	if fn, ok := n; ok {
-		pos := fset.Position(fn.Pos())
-		fmt.Printf("func %s at %s\n", fn.Name.Name, pos)
-	}
-	return true
-})
+		if fn, ok := n; ok {
+			pos := fset.Position(fn.Pos())
+			fmt.Printf("func %s at %s\n", fn.Name.Name, pos)
+		}
+		return true
+	})
 }

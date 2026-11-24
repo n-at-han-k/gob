@@ -22,16 +22,13 @@ module SyntaxTree
 
       private
 
-      def visit_node(node)
-        hash = { "type" => node.class.name.split("::").last }
-        node.deconstruct_keys(nil).each do |key, value|
-          next if key == :location
-          next if key == :comments && (value.nil? || value.empty?)
-
-          hash[key.to_s] = visit(value)
+        def visit_node(node)
+          { "type" => node.class.name.split("::").last }.tap do |hash|
+            node.semantic_fields.each do |key, value, _role|
+              hash[key.to_s] = visit(value)
+            end
+          end
         end
-        hash
-      end
     end
   end
 end

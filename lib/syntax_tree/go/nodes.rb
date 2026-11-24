@@ -1,5 +1,6 @@
 module SyntaxTree::Go
   class Comment < Node
+    SEMANTIC_FIELDS = { text: :string }.freeze
     attr_reader(:slash, :text, :location, :comments)
     def initialize(
       slash: nil,
@@ -25,11 +26,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(Comment) && @slash === other.slash && @text === other.text
-    end
   end
   class CommentGroup < Node
+    SEMANTIC_FIELDS = { list: :children }.freeze
     attr_reader(:list, :location, :comments)
     def initialize(
       list: [],
@@ -53,11 +52,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(CommentGroup) && @list === other.list
-    end
   end
   class Field < Node
+    SEMANTIC_FIELDS = { names: :children, type: :child, tag: :child }.freeze
     attr_reader(:doc, :names, :type, :tag, :comment, :location, :comments)
     def initialize(
       doc: nil,
@@ -97,12 +94,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(Field) && @doc === other.doc && @names === other.names &&
-        @type === other.type && @tag === other.tag && @comment === other.comment
-    end
   end
   class FieldList < Node
+    SEMANTIC_FIELDS = { list: :children }.freeze
     attr_reader(:opening, :list, :closing, :location, :comments)
     def initialize(
       opening: nil,
@@ -136,12 +130,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(FieldList) && @opening === other.opening &&
-        @list === other.list && @closing === other.closing
-    end
   end
   class BadExpr < Node
+    SEMANTIC_FIELDS = {}.freeze
     attr_reader(:from, :to, :location, :comments)
     def initialize(
       from: nil,
@@ -167,11 +158,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(BadExpr) && @from === other.from && @to === other.to
-    end
   end
   class Ident < Node
+    SEMANTIC_FIELDS = { name: :string }.freeze
     attr_reader(:name_pos, :name, :obj, :location, :comments)
     def initialize(
       name_pos: nil,
@@ -205,12 +194,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(Ident) && @name_pos === other.name_pos &&
-        @name === other.name && @obj === other.obj
-    end
   end
   class Ellipsis < Node
+    SEMANTIC_FIELDS = { elt: :child }.freeze
     attr_reader(:ellipsis, :elt, :location, :comments)
     def initialize(
       ellipsis: nil,
@@ -241,12 +227,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(Ellipsis) && @ellipsis === other.ellipsis &&
-        @elt === other.elt
-    end
   end
   class BasicLit < Node
+    SEMANTIC_FIELDS = { kind: :token, value: :string }.freeze
     attr_reader(:value_pos, :value_end, :kind, :value, :location, :comments)
     def initialize(
       value_pos: nil,
@@ -283,13 +266,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(BasicLit) && @value_pos === other.value_pos &&
-        @value_end === other.value_end && @kind === other.kind &&
-        @value === other.value
-    end
   end
   class FuncLit < Node
+    SEMANTIC_FIELDS = { type: :child, body: :child }.freeze
     attr_reader(:type, :body, :location, :comments)
     def initialize(
       type: nil,
@@ -315,11 +294,13 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(FuncLit) && @type === other.type && @body === other.body
-    end
   end
   class CompositeLit < Node
+    SEMANTIC_FIELDS = {
+      type: :child,
+      elts: :children,
+      incomplete: :bool
+    }.freeze
     attr_reader(
       :type,
       :lbrace,
@@ -367,13 +348,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(CompositeLit) && @type === other.type &&
-        @lbrace === other.lbrace && @elts === other.elts &&
-        @rbrace === other.rbrace && @incomplete === other.incomplete
-    end
   end
   class ParenExpr < Node
+    SEMANTIC_FIELDS = { x: :child }.freeze
     attr_reader(:lparen, :x, :rparen, :location, :comments)
     def initialize(
       lparen: nil,
@@ -407,12 +384,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(ParenExpr) && @lparen === other.lparen && @x === other.x &&
-        @rparen === other.rparen
-    end
   end
   class SelectorExpr < Node
+    SEMANTIC_FIELDS = { x: :child, sel: :child }.freeze
     attr_reader(:x, :sel, :location, :comments)
     def initialize(
       x: nil,
@@ -438,11 +412,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(SelectorExpr) && @x === other.x && @sel === other.sel
-    end
   end
   class IndexExpr < Node
+    SEMANTIC_FIELDS = { x: :child, index: :child }.freeze
     attr_reader(:x, :lbrack, :index, :rbrack, :location, :comments)
     def initialize(
       x: nil,
@@ -479,12 +451,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(IndexExpr) && @x === other.x && @lbrack === other.lbrack &&
-        @index === other.index && @rbrack === other.rbrack
-    end
   end
   class IndexListExpr < Node
+    SEMANTIC_FIELDS = { x: :child, indices: :children }.freeze
     attr_reader(:x, :lbrack, :indices, :rbrack, :location, :comments)
     def initialize(
       x: nil,
@@ -521,13 +490,15 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(IndexListExpr) && @x === other.x &&
-        @lbrack === other.lbrack && @indices === other.indices &&
-        @rbrack === other.rbrack
-    end
   end
   class SliceExpr < Node
+    SEMANTIC_FIELDS = {
+      x: :child,
+      low: :child,
+      high: :child,
+      max: :child,
+      slice3: :bool
+    }.freeze
     attr_reader(
       :x,
       :lbrack,
@@ -583,13 +554,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(SliceExpr) && @x === other.x && @lbrack === other.lbrack &&
-        @low === other.low && @high === other.high && @max === other.max &&
-        @slice3 === other.slice3 && @rbrack === other.rbrack
-    end
   end
   class TypeAssertExpr < Node
+    SEMANTIC_FIELDS = { x: :child, type: :child }.freeze
     attr_reader(:x, :lparen, :type, :rparen, :location, :comments)
     def initialize(
       x: nil,
@@ -626,13 +593,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(TypeAssertExpr) && @x === other.x &&
-        @lparen === other.lparen && @type === other.type &&
-        @rparen === other.rparen
-    end
   end
   class CallExpr < Node
+    SEMANTIC_FIELDS = { fun: :child, args: :children }.freeze
     attr_reader(:fun, :lparen, :args, :ellipsis, :rparen, :location, :comments)
     def initialize(
       fun: nil,
@@ -672,13 +635,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(CallExpr) && @fun === other.fun && @lparen === other.lparen &&
-        @args === other.args && @ellipsis === other.ellipsis &&
-        @rparen === other.rparen
-    end
   end
   class StarExpr < Node
+    SEMANTIC_FIELDS = { x: :child }.freeze
     attr_reader(:star, :x, :location, :comments)
     def initialize(
       star: nil,
@@ -704,11 +663,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(StarExpr) && @star === other.star && @x === other.x
-    end
   end
   class UnaryExpr < Node
+    SEMANTIC_FIELDS = { op: :token, x: :child }.freeze
     attr_reader(:op_pos, :op, :x, :location, :comments)
     def initialize(
       op_pos: nil,
@@ -742,12 +699,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(UnaryExpr) && @op_pos === other.op_pos && @op === other.op &&
-        @x === other.x
-    end
   end
   class BinaryExpr < Node
+    SEMANTIC_FIELDS = { x: :child, op: :token, y: :child }.freeze
     attr_reader(:x, :op_pos, :op, :y, :location, :comments)
     def initialize(
       x: nil,
@@ -784,12 +738,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(BinaryExpr) && @x === other.x && @op_pos === other.op_pos &&
-        @op === other.op && @y === other.y
-    end
   end
   class KeyValueExpr < Node
+    SEMANTIC_FIELDS = { key: :child, value: :child }.freeze
     attr_reader(:key, :colon, :value, :location, :comments)
     def initialize(
       key: nil,
@@ -823,12 +774,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(KeyValueExpr) && @key === other.key &&
-        @colon === other.colon && @value === other.value
-    end
   end
   class ArrayType < Node
+    SEMANTIC_FIELDS = { len: :child, elt: :child }.freeze
     attr_reader(:lbrack, :len, :elt, :location, :comments)
     def initialize(
       lbrack: nil,
@@ -862,12 +810,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(ArrayType) && @lbrack === other.lbrack &&
-        @len === other.len && @elt === other.elt
-    end
   end
   class StructType < Node
+    SEMANTIC_FIELDS = { fields: :child, incomplete: :bool }.freeze
     attr_reader(:struct, :fields, :incomplete, :location, :comments)
     def initialize(
       struct: nil,
@@ -901,12 +846,13 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(StructType) && @struct === other.struct &&
-        @fields === other.fields && @incomplete === other.incomplete
-    end
   end
   class FuncType < Node
+    SEMANTIC_FIELDS = {
+      type_params: :child,
+      params: :child,
+      results: :child
+    }.freeze
     attr_reader(:func, :type_params, :params, :results, :location, :comments)
     def initialize(
       func: nil,
@@ -943,13 +889,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(FuncType) && @func === other.func &&
-        @type_params === other.type_params && @params === other.params &&
-        @results === other.results
-    end
   end
   class InterfaceType < Node
+    SEMANTIC_FIELDS = { methods: :child, incomplete: :bool }.freeze
     attr_reader(:interface, :methods, :incomplete, :location, :comments)
     def initialize(
       interface: nil,
@@ -983,12 +925,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(InterfaceType) && @interface === other.interface &&
-        @methods === other.methods && @incomplete === other.incomplete
-    end
   end
   class MapType < Node
+    SEMANTIC_FIELDS = { key: :child, value: :child }.freeze
     attr_reader(:map, :key, :value, :location, :comments)
     def initialize(
       map: nil,
@@ -1022,12 +961,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(MapType) && @map === other.map && @key === other.key &&
-        @value === other.value
-    end
   end
   class ChanType < Node
+    SEMANTIC_FIELDS = { dir: :scalar, value: :child }.freeze
     attr_reader(:begin_, :arrow, :dir, :value, :location, :comments)
     def initialize(
       begin_: nil,
@@ -1064,12 +1000,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(ChanType) && @begin_ === other.begin_ &&
-        @arrow === other.arrow && @dir === other.dir && @value === other.value
-    end
   end
   class BadStmt < Node
+    SEMANTIC_FIELDS = {}.freeze
     attr_reader(:from, :to, :location, :comments)
     def initialize(
       from: nil,
@@ -1095,11 +1028,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(BadStmt) && @from === other.from && @to === other.to
-    end
   end
   class DeclStmt < Node
+    SEMANTIC_FIELDS = { decl: :child }.freeze
     attr_reader(:decl, :location, :comments)
     def initialize(
       decl: nil,
@@ -1123,11 +1054,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(DeclStmt) && @decl === other.decl
-    end
   end
   class EmptyStmt < Node
+    SEMANTIC_FIELDS = { implicit: :bool }.freeze
     attr_reader(:semicolon, :implicit, :location, :comments)
     def initialize(
       semicolon: nil,
@@ -1158,12 +1087,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(EmptyStmt) && @semicolon === other.semicolon &&
-        @implicit === other.implicit
-    end
   end
   class LabeledStmt < Node
+    SEMANTIC_FIELDS = { label: :child, stmt: :child }.freeze
     attr_reader(:label, :colon, :stmt, :location, :comments)
     def initialize(
       label: nil,
@@ -1197,12 +1123,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(LabeledStmt) && @label === other.label &&
-        @colon === other.colon && @stmt === other.stmt
-    end
   end
   class ExprStmt < Node
+    SEMANTIC_FIELDS = { x: :child }.freeze
     attr_reader(:x, :location, :comments)
     def initialize(x: nil, location: SyntaxTree::Location.default, comments: [])
       @x = x
@@ -1222,11 +1145,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(ExprStmt) && @x === other.x
-    end
   end
   class SendStmt < Node
+    SEMANTIC_FIELDS = { chan: :child, value: :child }.freeze
     attr_reader(:chan, :arrow, :value, :location, :comments)
     def initialize(
       chan: nil,
@@ -1260,12 +1181,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(SendStmt) && @chan === other.chan && @arrow === other.arrow &&
-        @value === other.value
-    end
   end
   class IncDecStmt < Node
+    SEMANTIC_FIELDS = { x: :child, tok: :token }.freeze
     attr_reader(:x, :tok_pos, :tok, :location, :comments)
     def initialize(
       x: nil,
@@ -1299,12 +1217,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(IncDecStmt) && @x === other.x && @tok_pos === other.tok_pos &&
-        @tok === other.tok
-    end
   end
   class AssignStmt < Node
+    SEMANTIC_FIELDS = { lhs: :children, tok: :token, rhs: :children }.freeze
     attr_reader(:lhs, :tok_pos, :tok, :rhs, :location, :comments)
     def initialize(
       lhs: [],
@@ -1341,12 +1256,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(AssignStmt) && @lhs === other.lhs &&
-        @tok_pos === other.tok_pos && @tok === other.tok && @rhs === other.rhs
-    end
   end
   class GoStmt < Node
+    SEMANTIC_FIELDS = { call: :child }.freeze
     attr_reader(:go, :call, :location, :comments)
     def initialize(
       go: nil,
@@ -1372,11 +1284,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(GoStmt) && @go === other.go && @call === other.call
-    end
   end
   class DeferStmt < Node
+    SEMANTIC_FIELDS = { call: :child }.freeze
     attr_reader(:defer, :call, :location, :comments)
     def initialize(
       defer: nil,
@@ -1402,11 +1312,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(DeferStmt) && @defer === other.defer && @call === other.call
-    end
   end
   class ReturnStmt < Node
+    SEMANTIC_FIELDS = { results: :children }.freeze
     attr_reader(:return_, :results, :location, :comments)
     def initialize(
       return_: nil,
@@ -1437,12 +1345,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(ReturnStmt) && @return_ === other.return_ &&
-        @results === other.results
-    end
   end
   class BranchStmt < Node
+    SEMANTIC_FIELDS = { tok: :token, label: :child }.freeze
     attr_reader(:tok_pos, :tok, :label, :location, :comments)
     def initialize(
       tok_pos: nil,
@@ -1476,12 +1381,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(BranchStmt) && @tok_pos === other.tok_pos &&
-        @tok === other.tok && @label === other.label
-    end
   end
   class BlockStmt < Node
+    SEMANTIC_FIELDS = { list: :children }.freeze
     attr_reader(:lbrace, :list, :rbrace, :location, :comments)
     def initialize(
       lbrace: nil,
@@ -1515,12 +1417,14 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(BlockStmt) && @lbrace === other.lbrace &&
-        @list === other.list && @rbrace === other.rbrace
-    end
   end
   class IfStmt < Node
+    SEMANTIC_FIELDS = {
+      init: :child,
+      cond: :child,
+      body: :child,
+      else_: :child
+    }.freeze
     attr_reader(:if_, :init, :cond, :body, :else_, :location, :comments)
     def initialize(
       if_: nil,
@@ -1560,12 +1464,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(IfStmt) && @if_ === other.if_ && @init === other.init &&
-        @cond === other.cond && @body === other.body && @else_ === other.else_
-    end
   end
   class CaseClause < Node
+    SEMANTIC_FIELDS = { list: :children, body: :children }.freeze
     attr_reader(:case_, :list, :colon, :body, :location, :comments)
     def initialize(
       case_: nil,
@@ -1602,12 +1503,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(CaseClause) && @case_ === other.case_ &&
-        @list === other.list && @colon === other.colon && @body === other.body
-    end
   end
   class SwitchStmt < Node
+    SEMANTIC_FIELDS = { init: :child, tag: :child, body: :child }.freeze
     attr_reader(:switch, :init, :tag, :body, :location, :comments)
     def initialize(
       switch: nil,
@@ -1644,12 +1542,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(SwitchStmt) && @switch === other.switch &&
-        @init === other.init && @tag === other.tag && @body === other.body
-    end
   end
   class TypeSwitchStmt < Node
+    SEMANTIC_FIELDS = { init: :child, assign: :child, body: :child }.freeze
     attr_reader(:switch, :init, :assign, :body, :location, :comments)
     def initialize(
       switch: nil,
@@ -1686,12 +1581,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(TypeSwitchStmt) && @switch === other.switch &&
-        @init === other.init && @assign === other.assign && @body === other.body
-    end
   end
   class CommClause < Node
+    SEMANTIC_FIELDS = { comm: :child, body: :children }.freeze
     attr_reader(:case_, :comm, :colon, :body, :location, :comments)
     def initialize(
       case_: nil,
@@ -1728,12 +1620,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(CommClause) && @case_ === other.case_ &&
-        @comm === other.comm && @colon === other.colon && @body === other.body
-    end
   end
   class SelectStmt < Node
+    SEMANTIC_FIELDS = { body: :child }.freeze
     attr_reader(:select, :body, :location, :comments)
     def initialize(
       select: nil,
@@ -1759,12 +1648,14 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(SelectStmt) && @select === other.select &&
-        @body === other.body
-    end
   end
   class ForStmt < Node
+    SEMANTIC_FIELDS = {
+      init: :child,
+      cond: :child,
+      post: :child,
+      body: :child
+    }.freeze
     attr_reader(:for_, :init, :cond, :post, :body, :location, :comments)
     def initialize(
       for_: nil,
@@ -1804,12 +1695,15 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(ForStmt) && @for_ === other.for_ && @init === other.init &&
-        @cond === other.cond && @post === other.post && @body === other.body
-    end
   end
   class RangeStmt < Node
+    SEMANTIC_FIELDS = {
+      key: :child,
+      value: :child,
+      tok: :token,
+      x: :child,
+      body: :child
+    }.freeze
     attr_reader(
       :for_,
       :key,
@@ -1869,14 +1763,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(RangeStmt) && @for_ === other.for_ && @key === other.key &&
-        @value === other.value && @tok_pos === other.tok_pos &&
-        @tok === other.tok && @range === other.range && @x === other.x &&
-        @body === other.body
-    end
   end
   class ImportSpec < Node
+    SEMANTIC_FIELDS = { name: :child, path: :child }.freeze
     attr_reader(:doc, :name, :path, :comment, :end_pos, :location, :comments)
     def initialize(
       doc: nil,
@@ -1916,13 +1805,13 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(ImportSpec) && @doc === other.doc && @name === other.name &&
-        @path === other.path && @comment === other.comment &&
-        @end_pos === other.end_pos
-    end
   end
   class ValueSpec < Node
+    SEMANTIC_FIELDS = {
+      names: :children,
+      type: :child,
+      values: :children
+    }.freeze
     attr_reader(:doc, :names, :type, :values, :comment, :location, :comments)
     def initialize(
       doc: nil,
@@ -1962,13 +1851,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(ValueSpec) && @doc === other.doc && @names === other.names &&
-        @type === other.type && @values === other.values &&
-        @comment === other.comment
-    end
   end
   class TypeSpec < Node
+    SEMANTIC_FIELDS = { name: :child, type_params: :child, type: :child }.freeze
     attr_reader(
       :doc,
       :name,
@@ -2020,13 +1905,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(TypeSpec) && @doc === other.doc && @name === other.name &&
-        @type_params === other.type_params && @assign === other.assign &&
-        @type === other.type && @comment === other.comment
-    end
   end
   class BadDecl < Node
+    SEMANTIC_FIELDS = {}.freeze
     attr_reader(:from, :to, :location, :comments)
     def initialize(
       from: nil,
@@ -2052,11 +1933,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(BadDecl) && @from === other.from && @to === other.to
-    end
   end
   class GenDecl < Node
+    SEMANTIC_FIELDS = { tok: :token, specs: :children }.freeze
     attr_reader(
       :doc,
       :tok_pos,
@@ -2108,14 +1987,14 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(GenDecl) && @doc === other.doc &&
-        @tok_pos === other.tok_pos && @tok === other.tok &&
-        @lparen === other.lparen && @specs === other.specs &&
-        @rparen === other.rparen
-    end
   end
   class FuncDecl < Node
+    SEMANTIC_FIELDS = {
+      recv: :child,
+      name: :child,
+      type: :child,
+      body: :child
+    }.freeze
     attr_reader(:doc, :recv, :name, :type, :body, :location, :comments)
     def initialize(
       doc: nil,
@@ -2155,12 +2034,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(FuncDecl) && @doc === other.doc && @recv === other.recv &&
-        @name === other.name && @type === other.type && @body === other.body
-    end
   end
   class File < Node
+    SEMANTIC_FIELDS = { name: :child, decls: :children }.freeze
     attr_reader(
       :doc,
       :package,
@@ -2228,16 +2104,9 @@ module SyntaxTree::Go
     def format(q)
       Format.new(q).visit(self)
     end
-    def ===(other)
-      other.is_a?(File) && @doc === other.doc && @package === other.package &&
-        @name === other.name && @decls === other.decls &&
-        @file_start === other.file_start && @file_end === other.file_end &&
-        @scope === other.scope && @imports === other.imports &&
-        @unresolved === other.unresolved && @comments === other.comments &&
-        @go_version === other.go_version
-    end
   end
   class Package < Node
+    SEMANTIC_FIELDS = { name: :string }.freeze
     attr_reader(:name, :scope, :imports, :files, :location, :comments)
     def initialize(
       name: nil,
@@ -2273,10 +2142,6 @@ module SyntaxTree::Go
     end
     def format(q)
       Format.new(q).visit(self)
-    end
-    def ===(other)
-      other.is_a?(Package) && @name === other.name && @scope === other.scope &&
-        @imports === other.imports && @files === other.files
     end
   end
 end

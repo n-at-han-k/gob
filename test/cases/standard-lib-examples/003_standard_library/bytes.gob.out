@@ -13,7 +13,7 @@ func runBytes() {
 	fmt.Println("ToUpper:", string(bytes.ToUpper(a)))
 	fmt.Println("Split:", bytes.Split(a, []byte(" ")))
 	fmt.Println("Replace:", string(bytes.ReplaceAll(a, b, []byte("gopher"))))
-		var buf bytes.Buffer
+	var buf bytes.Buffer
 	buf.WriteString("one ")
 	buf.WriteString("two ")
 	fmt.Fprintf(&buf, "three=%d", 3)
