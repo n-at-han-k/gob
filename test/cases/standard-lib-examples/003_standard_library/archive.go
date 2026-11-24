@@ -1,14 +1,14 @@
 package main
 
 import (
-	"archive/tar" // https://pkg.go.dev/archive/tar — Package tar implements access to tar archives.
-	"archive/zip" // https://pkg.go.dev/archive/zip — Package zip provides support for reading and writing ZIP archives.
-	"bytes"       // https://pkg.go.dev/bytes — Package bytes implements functions for the manipulation of byte slices.
-	"fmt"         // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"io"          // https://pkg.go.dev/io — Package io provides basic interfaces to I/O primitives.
-	"log"         // https://pkg.go.dev/log — Package log implements a simple logging package.
-	"os"          // https://pkg.go.dev/os — Package os provides a platform-independent interface to operating system functionality.
-	"strings"     // https://pkg.go.dev/strings — Package strings implements simple functions to manipulate UTF-8 encoded strings.
+	"archive/tar" 
+	"archive/zip" 
+	"bytes"       
+	"fmt"         
+	"io"          
+	"log"         
+	"os"          
+	"strings"     
 )
 
 func runArchive() {
@@ -17,7 +17,7 @@ func runArchive() {
 }
 
 func zipDemo() {
-	// Create a zip archive on disk.
+
 	f, err := os.Create("example.zip")
 	if err != nil {
 		log.Fatal(err)
@@ -28,7 +28,6 @@ func zipDemo() {
 	zw.Close()
 	f.Close()
 
-	// Read it back and print each file's contents.
 	zr, err := zip.OpenReader("example.zip")
 	if err != nil {
 		log.Fatal(err)
@@ -44,7 +43,7 @@ func zipDemo() {
 }
 
 func tarDemo() {
-	// Build a tar archive in memory (writers accept any io.Writer).
+
 	var buf bytes.Buffer
 	tw := tar.NewWriter(&buf)
 	files := map[string]string{
@@ -66,7 +65,6 @@ func tarDemo() {
 	}
 	tw.Close()
 
-	// Read it back by walking headers until io.EOF.
 	tr := tar.NewReader(&buf)
 	fmt.Println("--- tar ---")
 	for {

@@ -1,13 +1,11 @@
 package main
 
 import (
-	"encoding/asn1" // https://pkg.go.dev/encoding/asn1 — Package asn1 implements parsing of DER-encoded ASN.1 data structures (ITU-T Rec X.690).
-	"fmt"           // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"log"           // https://pkg.go.dev/log — Package log implements a simple logging package.
+	"encoding/asn1" 
+	"fmt"           
+	"log"           
 )
 
-// ASN.1 encodes structured data as a compact binary format used by
-// X.509 certificates, LDAP, SNMP, and other protocols.
 type person struct {
 	Name string
 	Age  int

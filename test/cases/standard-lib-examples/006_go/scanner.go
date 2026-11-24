@@ -1,13 +1,11 @@
 package main
 
 import (
-	"fmt"        // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"go/scanner" // https://pkg.go.dev/go/scanner — Package scanner implements a scanner for Go source text.
-	"go/token"   // https://pkg.go.dev/go/token — Package token defines constants representing the lexical tokens of the Go programming language.
+	"fmt"        
+	"go/scanner" 
+	"go/token"   
 )
 
-// scanner is the lexer: it turns raw source bytes into a stream of
-// (position, token, literal) triples. Below the parser, above the file.
 func runScanner() {
 	src := []byte(`x := 1 + 2 // trailing comment`)
 

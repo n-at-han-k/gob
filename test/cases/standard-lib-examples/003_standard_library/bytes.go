@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes" // https://pkg.go.dev/bytes — Package bytes implements functions for the manipulation of byte slices.
-	"fmt"   // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
+	"bytes" 
+	"fmt"   
 )
 
 func runBytes() {
@@ -15,7 +15,6 @@ func runBytes() {
 	fmt.Println("Split:", bytes.Split(a, []byte(" ")))
 	fmt.Println("Replace:", string(bytes.ReplaceAll(a, b, []byte("gopher"))))
 
-	// Buffer is a growable byte buffer implementing io.Reader/Writer.
 	var buf bytes.Buffer
 	buf.WriteString("one ")
 	buf.WriteString("two ")

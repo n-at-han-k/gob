@@ -1,15 +1,12 @@
 package main
 
 import (
-	"bytes"        // https://pkg.go.dev/bytes — Package bytes implements functions for the manipulation of byte slices.
-	"encoding/gob" // https://pkg.go.dev/encoding/gob — Package gob manages streams of gobs — binary values exchanged between an Encoder (transmitter) and a Decoder (receiver).
-	"fmt"          // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"log"          // https://pkg.go.dev/log — Package log implements a simple logging package.
+	"bytes"        
+	"encoding/gob" 
+	"fmt"          
+	"log"          
 )
 
-// gob is a Go-native binary format that carries type info with the value,
-// so the decoder knows how to reconstruct concrete types. Ideal for RPC
-// between Go processes; not portable to other languages.
 type message struct {
 	Kind string
 	Body []int

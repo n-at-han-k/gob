@@ -1,17 +1,11 @@
 package main
 
 import (
-	"fmt"  // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"os"   // https://pkg.go.dev/os — Package os provides a platform-independent interface to operating system functionality.
-	"sort" // https://pkg.go.dev/sort — Package sort provides primitives for sorting slices and user-defined collections.
+	"fmt"  
+	"os"   
+	"sort" 
 )
 
-// Each *.go file in this directory demonstrates one crypto/* subpackage.
-// Run one demo at a time, e.g.:
-//
-//	go run . aes
-//
-// or list what's available with `go run .`.
 var demos = map[string]func(){
 	"crypto":   runCrypto,
 	"aes":      runAES,

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crypto/sha512" // https://pkg.go.dev/crypto/sha512 — Package sha512 implements the SHA-384, SHA-512, SHA-512/224, and SHA-512/256 hash algorithms as defined in FIPS 180-4.
-	"fmt"           // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
+	"crypto/sha512" 
+	"fmt"           
 )
 
 func runSHA512() {

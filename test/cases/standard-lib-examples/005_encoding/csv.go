@@ -1,15 +1,15 @@
 package main
 
 import (
-	"encoding/csv" // https://pkg.go.dev/encoding/csv — Package csv reads and writes comma-separated values (CSV) files.
-	"fmt"          // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"log"          // https://pkg.go.dev/log — Package log implements a simple logging package.
-	"os"           // https://pkg.go.dev/os — Package os provides a platform-independent interface to operating system functionality.
-	"strings"      // https://pkg.go.dev/strings — Package strings implements simple functions to manipulate UTF-8 encoded strings.
+	"encoding/csv" 
+	"fmt"          
+	"log"          
+	"os"           
+	"strings"      
 )
 
 func runCSV() {
-	// Write CSV to stdout — quoting and comma-escaping is automatic.
+
 	w := csv.NewWriter(os.Stdout)
 	w.WriteAll([][]string{
 		{"name", "city", "notes"},
@@ -18,7 +18,6 @@ func runCSV() {
 	})
 	w.Flush()
 
-	// Read it back from a string.
 	input := "id,label\n1,apple\n2,orange\n3,pear\n"
 	r := csv.NewReader(strings.NewReader(input))
 	records, err := r.ReadAll()

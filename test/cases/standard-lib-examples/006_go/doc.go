@@ -1,16 +1,14 @@
 package main
 
 import (
-	"fmt"       // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"go/ast"    // https://pkg.go.dev/go/ast — Package ast declares the types used to represent syntax trees for Go packages.
-	"go/doc"    // https://pkg.go.dev/go/doc — Package doc extracts source code documentation from a Go AST.
-	"go/parser" // https://pkg.go.dev/go/parser — Package parser implements a parser for Go source files.
-	"go/token"  // https://pkg.go.dev/go/token — Package token defines constants representing the lexical tokens of the Go programming language.
-	"log"       // https://pkg.go.dev/log — Package log implements a simple logging package.
+	"fmt"       
+	"go/ast"    
+	"go/doc"    
+	"go/parser" 
+	"go/token"  
+	"log"       
 )
 
-// doc turns a parsed package into the structure godoc renders:
-// the package synopsis plus a doc comment for each exported symbol.
 func runDoc() {
 	src := `// Package math2 does a little arithmetic.
 package math2

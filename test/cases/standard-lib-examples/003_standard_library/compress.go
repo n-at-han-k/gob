@@ -1,16 +1,16 @@
 package main
 
 import (
-	"bytes"           // https://pkg.go.dev/bytes — Package bytes implements functions for the manipulation of byte slices.
-	"compress/bzip2"  // https://pkg.go.dev/compress/bzip2 — Package bzip2 implements bzip2 decompression.
-	"compress/flate"  // https://pkg.go.dev/compress/flate — Package flate implements the DEFLATE compressed data format (RFC 1951).
-	"compress/gzip"   // https://pkg.go.dev/compress/gzip — Package gzip implements reading and writing of gzip format compressed files (RFC 1952).
-	"compress/lzw"    // https://pkg.go.dev/compress/lzw — Package lzw implements the Lempel-Ziv-Welch compressed data format.
-	"compress/zlib"   // https://pkg.go.dev/compress/zlib — Package zlib implements reading and writing of zlib format compressed data (RFC 1950).
-	"encoding/base64" // https://pkg.go.dev/encoding/base64 — Package base64 implements base64 encoding as specified by RFC 4648.
-	"fmt"             // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"io"              // https://pkg.go.dev/io — Package io provides basic interfaces to I/O primitives.
-	"log"             // https://pkg.go.dev/log — Package log implements a simple logging package.
+	"bytes"           
+	"compress/bzip2"  
+	"compress/flate"  
+	"compress/gzip"   
+	"compress/lzw"    
+	"compress/zlib"   
+	"encoding/base64" 
+	"fmt"             
+	"io"              
+	"log"             
 )
 
 func runCompress() {
@@ -20,7 +20,7 @@ func runCompress() {
 	flateDemo(sample)
 	zlibDemo(sample)
 	lzwDemo(sample)
-	bzip2Demo() // decompression-only, so uses a pre-made payload
+	bzip2Demo() 
 }
 
 func gzipDemo(in []byte) {
@@ -81,8 +81,7 @@ func lzwDemo(in []byte) {
 }
 
 func bzip2Demo() {
-	// The stdlib only decompresses bzip2, so we ship a pre-compressed
-	// payload (base64-encoded bzip2 of "hello bzip2\n") to decode.
+
 	const b64 = "QlpoOTFBWSZTWatrofEAAALZgAAQQAAQABJkwBAgADEA000EAB6j705RogeLuSKcKEhVtdD4gA=="
 	compressed, err := base64.StdEncoding.DecodeString(b64)
 	if err != nil {

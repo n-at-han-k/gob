@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"     // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"strings" // https://pkg.go.dev/strings — Package strings implements simple functions to manipulate UTF-8 encoded strings.
+	"fmt"     
+	"strings" 
 )
 
 func runStrings() {
@@ -17,7 +17,6 @@ func runStrings() {
 	fmt.Println("HasPrefix:  ", strings.HasPrefix(s, "The"))
 	fmt.Println("TrimSpace:  ", strings.TrimSpace("   pad   "))
 
-	// Builder concatenates efficiently without repeated allocations.
 	var b strings.Builder
 	for _, w := range []string{"one", "two", "three"} {
 		b.WriteString(w)

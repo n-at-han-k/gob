@@ -1,18 +1,11 @@
 package main
 
 import (
-	"fmt"  // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"os"   // https://pkg.go.dev/os — Package os provides a platform-independent interface to operating system functionality.
-	"sort" // https://pkg.go.dev/sort — Package sort provides primitives for sorting slices and user-defined collections.
+	"fmt"  
+	"os"   
+	"sort" 
 )
 
-// Each *.go file in this directory demonstrates one go/* subpackage —
-// the toolchain-facing packages that let Go programs read, analyse and
-// rewrite Go source. Run one demo at a time, e.g.:
-//
-//	go run . ast
-//
-// or list what's available with `go run .`.
 var demos = map[string]func(){
 	"ast":        runAST,
 	"build":      runBuild,

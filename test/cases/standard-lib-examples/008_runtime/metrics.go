@@ -1,15 +1,12 @@
 package main
 
 import (
-	"fmt"             // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"runtime/metrics" // https://pkg.go.dev/runtime/metrics — Package metrics provides a stable interface to access implementation-defined metrics exported by the Go runtime.
+	"fmt"             
+	"runtime/metrics" 
 )
 
-// runtime/metrics is the modern replacement for runtime.MemStats: a
-// stable, self-describing list of values you can pick individually
-// instead of paying for the whole snapshot.
 func runMetrics() {
-	// Ask for a couple of concrete metrics.
+
 	samples := []metrics.Sample{
 		{Name: "/memory/classes/heap/objects:bytes"},
 		{Name: "/sched/goroutines:goroutines"},
@@ -28,7 +25,6 @@ func runMetrics() {
 		}
 	}
 
-	// The full catalogue is discoverable at runtime.
 	all := metrics.All()
 	fmt.Printf("\n%d metrics available; first 5 names:\n", len(all))
 	for i, d := range all {

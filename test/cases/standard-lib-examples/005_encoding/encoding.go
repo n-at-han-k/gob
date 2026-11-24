@@ -1,13 +1,10 @@
 package main
 
 import (
-	"encoding" // https://pkg.go.dev/encoding — Package encoding defines interfaces shared by other packages that convert data to and from byte-level and textual representations.
-	"fmt"      // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
+	"encoding" 
+	"fmt"      
 )
 
-// The root encoding package only defines marker interfaces
-// (TextMarshaler/Unmarshaler, BinaryMarshaler/Unmarshaler) that other
-// packages — json, xml, etc. — check for when serialising values.
 type colour struct{ R, G, B byte }
 
 func (c colour) MarshalText() ([]byte, error) {
@@ -20,7 +17,7 @@ func (c *colour) UnmarshalText(text []byte) error {
 }
 
 func runEncoding() {
-	// Type-assert to the interface to prove the methods are wired up.
+
 	var m encoding.TextMarshaler = colour{255, 128, 0}
 	txt, _ := m.MarshalText()
 	fmt.Printf("marshalled: %s\n", txt)

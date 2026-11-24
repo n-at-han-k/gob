@@ -1,15 +1,12 @@
 package main
 
 import (
-	"fmt"     // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"log"     // https://pkg.go.dev/log — Package log implements a simple logging package.
-	"net"     // https://pkg.go.dev/net — Package net provides a portable interface for network I/O.
-	"net/rpc" // https://pkg.go.dev/net/rpc — Package rpc provides access to the exported methods of an object across a network or other I/O connection.
+	"fmt"     
+	"log"     
+	"net"     
+	"net/rpc" 
 )
 
-// net/rpc exports methods on a Go value over a socket using gob
-// encoding. It's a curio nowadays — reach for gRPC in new code — but
-// the API is a nice tiny example of code generation-free RPC.
 type Arith struct{}
 
 type Args struct{ A, B int }

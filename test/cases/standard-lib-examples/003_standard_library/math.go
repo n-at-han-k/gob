@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"  // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"math" // https://pkg.go.dev/math — Package math provides basic constants and mathematical functions.
+	"fmt"  
+	"math" 
 )
 
 func runMath() {
@@ -16,7 +16,6 @@ func runMath() {
 	fmt.Println("Floor:   ", math.Floor(1.8))
 	fmt.Println("Round:   ", math.Round(1.5))
 
-	// Special floating-point values.
 	fmt.Println("Inf > MaxFloat64:", math.IsInf(math.Inf(1), 1))
 	fmt.Println("IsNaN(NaN):     ", math.IsNaN(math.NaN()))
 }

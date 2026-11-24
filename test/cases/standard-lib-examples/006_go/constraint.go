@@ -1,13 +1,11 @@
 package main
 
 import (
-	"fmt"                 // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"go/build/constraint" // https://pkg.go.dev/go/build/constraint — Package constraint implements parsing and evaluation of build constraint lines.
-	"log"                 // https://pkg.go.dev/log — Package log implements a simple logging package.
+	"fmt"                 
+	"go/build/constraint" 
+	"log"                 
 )
 
-// constraint parses //go:build lines and answers "would this file be
-// included in the build for tags X?".
 func runConstraint() {
 	line := "//go:build linux && (amd64 || arm64)"
 	expr, err := constraint.Parse(line)
@@ -17,7 +15,6 @@ func runConstraint() {
 
 	fmt.Println("expr:", expr)
 
-	// Evaluate for a couple of hypothetical build environments.
 	envs := []map[string]bool{
 		{"linux": true, "amd64": true},
 		{"linux": true, "arm": true},

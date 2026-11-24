@@ -1,9 +1,9 @@
 package main
 
 import (
-	"encoding/xml" // https://pkg.go.dev/encoding/xml — Package xml implements a simple XML 1.0 parser that understands XML namespaces.
-	"fmt"          // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"log"          // https://pkg.go.dev/log — Package log implements a simple logging package.
+	"encoding/xml" 
+	"fmt"          
+	"log"          
 )
 
 type book struct {
@@ -16,7 +16,6 @@ type book struct {
 func runXML() {
 	b := book{Title: "Learning Go", Author: "Nathan", Tags: []string{"go", "stdlib"}}
 
-	// MarshalIndent pretty-prints — Marshal returns a single line.
 	data, err := xml.MarshalIndent(b, "", "  ")
 	if err != nil {
 		log.Fatal(err)

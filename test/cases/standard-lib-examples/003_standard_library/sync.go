@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"         // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"sync"        // https://pkg.go.dev/sync — Package sync provides basic synchronization primitives such as mutual exclusion locks.
-	"sync/atomic" // https://pkg.go.dev/sync/atomic — Package atomic provides low-level atomic memory primitives useful for implementing synchronization algorithms.
+	"fmt"         
+	"sync"        
+	"sync/atomic" 
 )
 
 func runSync() {
-	// WaitGroup blocks until N goroutines call Done.
+
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	counter := 0
@@ -24,7 +24,6 @@ func runSync() {
 	wg.Wait()
 	fmt.Println("mutex counter:", counter)
 
-	// atomic avoids locks for simple counters.
 	var atomicCounter atomic.Int64
 	var wg2 sync.WaitGroup
 	for i := 0; i < 100; i++ {
@@ -34,7 +33,6 @@ func runSync() {
 	wg2.Wait()
 	fmt.Println("atomic counter:", atomicCounter.Load())
 
-	// Once guarantees init code runs exactly once.
 	var once sync.Once
 	for i := 0; i < 3; i++ {
 		once.Do(func() { fmt.Println("initialised") })

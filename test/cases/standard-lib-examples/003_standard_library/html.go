@@ -1,18 +1,17 @@
 package main
 
 import (
-	"fmt"           // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"html"          // https://pkg.go.dev/html — Package html provides functions for escaping and unescaping HTML text.
-	"html/template" // https://pkg.go.dev/html/template — Package template (html/template) implements data-driven templates for generating HTML output safe against code injection.
-	"os"            // https://pkg.go.dev/os — Package os provides a platform-independent interface to operating system functionality.
+	"fmt"           
+	"html"          
+	"html/template" 
+	"os"            
 )
 
 func runHTML() {
-	// html.EscapeString neutralises HTML-special characters.
+
 	raw := `<script>alert("xss")</script>`
 	fmt.Println(html.EscapeString(raw))
 
-	// html/template auto-escapes template values based on context.
 	tmpl := template.Must(template.New("t").Parse(
 		`<p>Hello {{.Name}}! Comment: {{.Body}}</p>` + "\n",
 	))

@@ -1,12 +1,10 @@
 package main
 
 import (
-	"fmt" // https://pkg.go.dev/fmt — Package fmt implements formatted I/O with functions analogous to C's printf and scanf.
-	"net" // https://pkg.go.dev/net — Package net provides a portable interface for network I/O, including TCP/IP, UDP, DNS, and Unix domain sockets.
+	"fmt" 
+	"net" 
 )
 
-// Read-only helpers only — no sockets — so this runs offline.
-// See http.go for a real client/server round-trip.
 func runNet() {
 	ip := net.ParseIP("192.168.1.42")
 	fmt.Println("ip:", ip, "loopback:", ip.IsLoopback(), "private:", ip.IsPrivate())
