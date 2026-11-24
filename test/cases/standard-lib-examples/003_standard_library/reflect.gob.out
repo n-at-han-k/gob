@@ -8,3 +8,13 @@ import (
 type ReflectUser struct {
 	Name, Age any
 }
+
+func runReflect() {
+	u := ReflectUser{Name: "Nathan", Age: 30}
+	v := reflect.ValueOf(u)
+	t := reflect.TypeOf(u)
+	fmt.Println("kind:", v.Kind(), "type:", t.Name())
+	up := ReflectUser{}
+	reflect.ValueOf(up).Elem().FieldByName("Name").SetString("Reflected")
+	fmt.Printf("mutated: %+v\n", up)
+}

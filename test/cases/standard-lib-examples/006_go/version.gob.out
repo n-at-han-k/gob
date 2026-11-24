@@ -4,3 +4,9 @@ import (
 	"fmt"
 	"go/version"
 )
+
+func runVersion() {
+	vs := []string{"go1.20", "go1.21.0", "go1.22rc2", "go1.23.4-custom", "notaversion"}
+	fmt.Println("go1.21 <  go1.22:", version.Compare("go1.21", "go1.22") < 0)
+	fmt.Println("go1.22 >= go1.22rc2:", version.Compare("go1.22", "go1.22rc2") >= 0)
+}

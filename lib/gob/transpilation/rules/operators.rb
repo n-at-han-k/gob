@@ -8,6 +8,8 @@ module Gob
 
         def register(matcher)
           matcher.rule(:boolean_and_or) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Binary)
+
             node => SyntaxTree::Binary[
               left: left, operator: operator, right: right
             ]
@@ -18,6 +20,8 @@ module Gob
           end
 
           matcher.rule(:binary) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Binary)
+
             node => SyntaxTree::Binary[
               left: left, operator: operator, right: right
             ]
@@ -26,18 +30,24 @@ module Gob
           end
 
           matcher.rule(:unary) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Unary)
+
             node => SyntaxTree::Unary[operator: operator, statement: statement]
 
             UnaryExpr(operator, visit(statement))
           end
 
           matcher.rule(:not_operator) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Not)
+
             node => SyntaxTree::Not[statement: statement]
 
             UnaryExpr(:!, visit(statement))
           end
 
           matcher.rule(:op_assign) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::OpAssign)
+
             node => SyntaxTree::OpAssign[
               target: SyntaxTree::VarField[
                 value: SyntaxTree::Ident[value: name]

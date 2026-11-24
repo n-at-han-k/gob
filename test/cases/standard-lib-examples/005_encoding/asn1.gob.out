@@ -7,5 +7,13 @@ import (
 )
 
 type person struct {
-	Name any
+	Name, Age any
+}
+
+func runASN1() {
+	p := person{Name: "Nathan", Age: 30}
+	der, err := asn1.Marshal(p)
+	fmt.Printf("DER (%d bytes): %x\n", len(der), der)
+	var back person
+	fmt.Printf("parsed: %+v\n", back)
 }

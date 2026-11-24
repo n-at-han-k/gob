@@ -60,6 +60,15 @@ module SyntaxTree
         in SyntaxTree::VarRef[value: SyntaxTree::Const[value: name]]
           Ident(name)
         in SyntaxTree::CallNode[
+             receiver: nil,
+             operator: nil,
+             message: SyntaxTree::Ident[value: "ptr" | "ref"],
+             arguments: SyntaxTree::ArgParen[
+               arguments: SyntaxTree::Args[parts: [type]]
+             ]
+           ]
+          StarExpr(GoType(type, context: context))
+        in SyntaxTree::CallNode[
              receiver: receiver,
              operator: SyntaxTree::Period[value: "."],
              message: SyntaxTree::Const[value: name],
@@ -86,7 +95,7 @@ module SyntaxTree
           ArrayType(PointerType(element, context: context))
         in SyntaxTree::ARef[
              collection: SyntaxTree::VarRef[
-               value: SyntaxTree::Const[value: "Hash"]
+               value: SyntaxTree::Const[value: "Hash" | "Map"]
              ],
              index: SyntaxTree::Args[parts: [key, value]]
            ]
@@ -334,9 +343,7 @@ module SyntaxTree
         case params
         in SyntaxTree::Params[requireds: requireds]
           Array(requireds)
-        in SyntaxTree::Paren[
-               contents: SyntaxTree::Params[requireds: requireds]
-             ]
+        in SyntaxTree::Paren[contents: SyntaxTree::Params[requireds: requireds]]
           Array(requireds)
         else
           []
@@ -377,9 +384,7 @@ module SyntaxTree
             nil
           else
             FieldList(
-              return_types.map do |type|
-                Field([], context.parse_go_type(type))
-              end
+              return_types.map { |type| Field([], context.parse_go_type(type)) }
             )
           end
 
@@ -470,9 +475,7 @@ module SyntaxTree
 
       def BodyStatements(node)
         case node
-        in SyntaxTree::BodyStmt[
-          statements: SyntaxTree::Statements[body: body]
-        ]
+        in SyntaxTree::BodyStmt[statements: SyntaxTree::Statements[body: body]]
           body
         in SyntaxTree::Statements[body: body]
           body
@@ -488,7 +491,8 @@ module SyntaxTree
             .collect_comments(params)
             .map(&:value)
             .find { |comment| context.parse_signature_comment(comment) }
-        signature = signature_text && Signature(signature_text, context: context)
+        signature =
+          signature_text && Signature(signature_text, context: context)
         parameter_types = signature ? signature[:params] : []
         return_types = signature ? signature[:returns] : []
         fields =
@@ -503,9 +507,7 @@ module SyntaxTree
             nil
           else
             FieldList(
-              return_types.map do |type|
-                Field([], context.parse_go_type(type))
-              end
+              return_types.map { |type| Field([], context.parse_go_type(type)) }
             )
           end
 
@@ -527,9 +529,8 @@ module SyntaxTree
           assocs.map do |assoc|
             case assoc
             in SyntaxTree::Assoc[
-              key: SyntaxTree::Label[value: label],
-              value: type
-            ]
+                 key: SyntaxTree::Label[value: label], value: type
+               ]
               [label.chomp(":"), GoType(type, context: context)]
             end
           end
@@ -560,6 +561,15 @@ module SyntaxTree
         GenDecl(:type, [TypeSpec(name, Struct(fields))])
       end
 
+      def FieldName(symbol)
+        case symbol
+        in SyntaxTree::Const[value: name]
+          name
+        in SyntaxTree::Ident[value: name]
+          name
+        end
+      end
+
       def StructDefinition(name, body, context:)
         fields = []
         methods = []
@@ -570,26 +580,17 @@ module SyntaxTree
             in SyntaxTree::Command[
                  message: SyntaxTree::Ident[value: "attr_accessor"],
                  arguments: SyntaxTree::Args[
-                   parts: [
-                     SyntaxTree::SymbolLiteral[
-                       value: SyntaxTree::Const[value: field_name]
-                     ],
-                     type
-                   ]
+                   parts: [SyntaxTree::SymbolLiteral[value: symbol], type]
                  ]
                ]
-              fields << [field_name, GoType(type, context: context)]
+              fields << [FieldName(symbol), GoType(type, context: context)]
             in SyntaxTree::Command[
                  message: SyntaxTree::Ident[value: "attr_accessor"],
                  arguments: SyntaxTree::Args[
-                   parts: [
-                     SyntaxTree::SymbolLiteral[
-                       value: SyntaxTree::Const[value: field_name]
-                     ]
-                   ]
+                   parts: [SyntaxTree::SymbolLiteral[value: symbol]]
                  ]
                ]
-              fields << [field_name, nil]
+              fields << [FieldName(symbol), nil]
             in SyntaxTree::DefNode
               methods.concat(Array(context.visit(child)))
             in SyntaxTree::VoidStmt
@@ -634,6 +635,18 @@ module SyntaxTree
           comment: nil,
           end_pos: nil
         )
+      end
+
+      def VarDeclaration(name, type, values, context:)
+        context.declare(name)
+
+        GenDecl(:var, [ValueSpec([name], type, values: values)])
+      end
+
+      def ConstDeclaration(name, value, context:)
+        context.declare(name)
+
+        GenDecl(:const, [ValueSpec([name], values: [value])])
       end
 
       def ValueSpec(names, type = nil, values: [])

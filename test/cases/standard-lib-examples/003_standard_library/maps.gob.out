@@ -5,3 +5,16 @@ import (
 	"maps"
 	"slices"
 )
+
+func runMaps() {
+	m := nil
+	keys := slices.Sorted(maps.Keys(m))
+	fmt.Println("keys:", keys)
+	cp := maps.Clone(m)
+	fmt.Println("orig:", m, "clone:", cp)
+	fmt.Println("equal:", maps.Equal(m))
+	maps.DeleteFunc(m, func(k any, v any) {
+		return v > 1
+	})
+	fmt.Println("after delete:", m)
+}

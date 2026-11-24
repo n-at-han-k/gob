@@ -8,6 +8,8 @@ module Gob
 
         def register(matcher)
           matcher.rule(:begin_block) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Begin)
+
             node => SyntaxTree::Begin[
               bodystmt: SyntaxTree::BodyStmt[
                 statements: SyntaxTree::Statements[body: body]
@@ -15,9 +17,7 @@ module Gob
             ]
 
             BlockStmt(
-              scoped do
-                visit_all(body).map { |statement| stmtify(statement) }
-              end
+              scoped { visit_all(body).map { |statement| stmtify(statement) } }
             )
           end
           matcher.rule(:bare_assoc_hash) { Matcher::MISS }

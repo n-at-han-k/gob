@@ -10,3 +10,29 @@ import (
 	"os"
 	"strings"
 )
+
+func runArchive() {
+	zipDemo()
+	tarDemo()
+}
+
+func zipDemo() {
+	f, err := os.Create("example.zip")
+	zw := zip.NewWriter(f)
+	w, _ := zw.Create("hello.txt")
+	io.Copy(w, strings.NewReader("hello from inside a zip"))
+	zw.Close()
+	f.Close()
+	zr, err := zip.OpenReader("example.zip")
+	defer zr.Close()
+	fmt.Println("--- zip ---")
+}
+
+func tarDemo() {
+	var buf bytes.Buffer
+	tw := tar.NewWriter(buf)
+	files := nil
+	tw.Close()
+	tr := tar.NewReader(&buf)
+	fmt.Println("--- tar ---")
+}

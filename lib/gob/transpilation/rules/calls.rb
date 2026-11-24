@@ -7,7 +7,23 @@ module Gob
         module_function
 
         def register(matcher)
+          matcher.rule(:drop_struct_new) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
+            node => SyntaxTree::CallNode[
+              receiver: SyntaxTree::VarRef[
+                value: SyntaxTree::Const[value: "Struct"]
+              ],
+              operator: SyntaxTree::Period[value: "."],
+              message: SyntaxTree::Ident[value: "new"]
+            ]
+
+            Matcher::DROP
+          end
+
           matcher.rule(:constructor) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
             node => SyntaxTree::CallNode[
               receiver: receiver,
               operator: SyntaxTree::Period[value: "."],
@@ -19,6 +35,8 @@ module Gob
           end
 
           matcher.rule(:selector_property) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
             node => SyntaxTree::CallNode[
               receiver: receiver,
               operator: SyntaxTree::Period[value: "."],
@@ -30,6 +48,8 @@ module Gob
           end
 
           matcher.rule(:selector_call) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
             node => SyntaxTree::CallNode[
               receiver: receiver,
               operator: SyntaxTree::Period[value: "."],
@@ -41,6 +61,8 @@ module Gob
           end
 
           matcher.rule(:make_call) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
             node => SyntaxTree::CallNode[
               receiver: nil,
               operator: nil,
@@ -52,6 +74,8 @@ module Gob
           end
 
           matcher.rule(:function_call) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
             node => SyntaxTree::CallNode[
               receiver: nil,
               operator: nil,
@@ -63,6 +87,8 @@ module Gob
           end
 
           matcher.rule(:command_call) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CommandCall)
+
             node => SyntaxTree::CommandCall[
               receiver: receiver,
               operator: SyntaxTree::Period[value: "."],
@@ -74,6 +100,8 @@ module Gob
           end
 
           matcher.rule(:safe_navigation) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
+
             node => SyntaxTree::CallNode[
               receiver: receiver,
               operator: SyntaxTree::Op[value: "&."],

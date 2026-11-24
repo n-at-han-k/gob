@@ -4,3 +4,11 @@ import (
 	"fmt"
 	"runtime/debug"
 )
+
+func runDebug() {
+	var stats debug.GCStats
+	debug.ReadGCStats(stats)
+	fmt.Printf("gc runs: %d, total pause: %v\n", stats.NumGC, stats.PauseTotal)
+	stack := debug.Stack()
+	fmt.Print("stack:\n", string(stack), "...\n")
+}

@@ -8,3 +8,15 @@ import (
 	"sync"
 	"time"
 )
+
+func runTrace() {
+	f, _ := os.CreateTemp("", "trace-*.out")
+	defer os.Remove(f.Name())
+	defer f.Close()
+	var wg sync.WaitGroup
+	wg.Wait()
+	trace.Stop()
+	info, _ := f.Stat()
+	fmt.Printf("wrote trace: %s (%d bytes)\n", f.Name(), info.Size())
+	fmt.Println("view with: go tool trace", f.Name())
+}

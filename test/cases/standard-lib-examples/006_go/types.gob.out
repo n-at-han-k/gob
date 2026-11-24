@@ -9,3 +9,17 @@ import (
 	"go/types"
 	"log"
 )
+
+func runTypes() {
+	src := `package p
+import "fmt"
+func Greet(name string) { fmt.Println("hi", name) }
+var Answer = 21 * 2
+`
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, "p.go", src, 0)
+	conf := types.Config{Importer: importer.Default()}
+	info := &types.Info{Defs: map[*ast.Ident]types.Object{}, Types: map[ast.Expr]types.TypeAndValue{}}
+	pkg, err := conf.Check("p", fset, []*ast.File{file}, info)
+	fmt.Println("package:", pkg.Name())
+}

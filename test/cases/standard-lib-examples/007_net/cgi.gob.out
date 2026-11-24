@@ -7,3 +7,18 @@ import (
 	"net/http/httptest"
 	"os"
 )
+
+func runCGI() {
+	os.Setenv("REQUEST_METHOD", "GET")
+	os.Setenv("SERVER_PROTOCOL", "HTTP/1.1")
+	os.Setenv("HTTP_HOST", "example.local")
+	os.Setenv("PATH_INFO", "/hello")
+	os.Setenv("QUERY_STRING", "who=world")
+	rec := httptest.NewRecorder()
+	handler := http.HandlerFunc(func(w any, r any) {
+		fmt.Fprintf(w, "CGI script saw %s with %s=%s\n", r.URL.Path, "who", r.URL.Query().Get("who"))
+	})
+	req, _ := cgi.RequestFromMap()
+	handler.ServeHTTP(rec, req)
+	fmt.Print(rec.Body.String())
+}

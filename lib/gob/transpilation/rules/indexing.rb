@@ -8,12 +8,16 @@ module Gob
 
         def register(matcher)
           matcher.rule(:full_slice) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::ARef)
+
             node => SyntaxTree::ARef[collection: collection, index: nil]
 
             SliceExpr(visit(collection))
           end
 
           matcher.rule(:prefix_slice) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::ARef)
+
             node => SyntaxTree::ARef[
               collection: collection,
               index: SyntaxTree::Args[
@@ -31,6 +35,8 @@ module Gob
           end
 
           matcher.rule(:bounded_slice) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::ARef)
+
             node => SyntaxTree::ARef[
               collection: collection,
               index: SyntaxTree::Args[
@@ -48,6 +54,8 @@ module Gob
           end
 
           matcher.rule(:index) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::ARef)
+
             node => SyntaxTree::ARef[
               collection: collection, index: SyntaxTree::Args[parts: [index]]
             ]

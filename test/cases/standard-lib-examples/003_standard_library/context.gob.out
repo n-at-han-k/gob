@@ -6,3 +6,13 @@ import (
 	"fmt"
 	"time"
 )
+
+func work(ctx any) {
+}
+
+func runContext() {
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+	err := work(ctx)
+	ctx2 := context.WithValue(context.Background(), key("user"), "nathan")
+	fmt.Println("user:", ctx2.Value(key("user")))
+}

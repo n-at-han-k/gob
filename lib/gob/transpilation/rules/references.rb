@@ -8,42 +8,56 @@ module Gob
 
         def register(matcher)
           matcher.rule(:variable) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
+
             node => SyntaxTree::VarRef[value: SyntaxTree::Ident[value: name]]
 
             Ident(name)
           end
 
           matcher.rule(:constant) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
+
             node => SyntaxTree::VarRef[value: SyntaxTree::Const[value: name]]
 
             Ident(Gob::Transpilation::Rules.const_go_name(name))
           end
 
           matcher.rule(:instance_variable) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
+
             node => SyntaxTree::VarRef[value: SyntaxTree::IVar[value: name]]
 
             UnaryExpr(:&, Ident(name.delete_prefix("@")))
           end
 
           matcher.rule(:class_variable) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
+
             node => SyntaxTree::VarRef[value: SyntaxTree::CVar[value: name]]
 
             Ident(name.delete_prefix("@@"))
           end
 
           matcher.rule(:global_variable) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
+
             node => SyntaxTree::VarRef[value: SyntaxTree::GVar[value: name]]
 
             Ident(name.delete_prefix("$"))
           end
 
           matcher.rule(:bare_identifier) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::VCall)
+
             node => SyntaxTree::VCall[value: SyntaxTree::Ident[value: name]]
 
             Ident(name)
           end
 
           matcher.rule(:const_path_ref) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::ConstPathRef)
+
             node => SyntaxTree::ConstPathRef[
               constant: SyntaxTree::Const[value: name]
             ]

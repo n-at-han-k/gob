@@ -18,51 +18,105 @@ module Gob
 
       def emit(node, out, indent: 0)
         case node
-        when SyntaxTree::Go::File then emit_file(node, out)
-        when SyntaxTree::Go::GenDecl then emit_gen_decl(node, out, indent: indent)
-        when SyntaxTree::Go::ImportSpec then emit_import_spec(node, out)
-        when SyntaxTree::Go::FuncDecl then emit_func_decl(node, out, indent: indent)
-        when SyntaxTree::Go::FuncType then emit_func_type(node, out)
-        when SyntaxTree::Go::FieldList then emit_field_list(node, out)
-        when SyntaxTree::Go::Field then emit_field(node, out)
-        when SyntaxTree::Go::TypeSpec then emit_type_spec(node, out, indent: indent)
-        when SyntaxTree::Go::ValueSpec then emit_value_spec(node, out)
-        when SyntaxTree::Go::StructType then emit_struct_type(node, out, indent: indent)
-        when SyntaxTree::Go::BlockStmt then emit_block_stmt(node, out, indent: indent)
-        when SyntaxTree::Go::ExprStmt then emit(node.x, out, indent: indent)
-        when SyntaxTree::Go::ReturnStmt then emit_return_stmt(node, out, indent: indent)
-        when SyntaxTree::Go::AssignStmt then emit_assign_stmt(node, out, indent: indent)
-        when SyntaxTree::Go::DeclStmt then emit(node.decl, out, indent: indent)
-        when SyntaxTree::Go::CallExpr then emit_call_expr(node, out)
-        when SyntaxTree::Go::SelectorExpr then emit_selector_expr(node, out)
-        when SyntaxTree::Go::Ident then out << node.name.to_s
-        when SyntaxTree::Go::BasicLit then out << node.value.to_s
-        when SyntaxTree::Go::BinaryExpr then emit_binary_expr(node, out)
-        when SyntaxTree::Go::UnaryExpr then emit_unary_expr(node, out)
-        when SyntaxTree::Go::ParenExpr then emit_paren_expr(node, out)
-        when SyntaxTree::Go::CompositeLit then emit_composite_lit(node, out)
-        when SyntaxTree::Go::KeyValueExpr then emit_key_value_expr(node, out)
-        when SyntaxTree::Go::IndexExpr then emit_index_expr(node, out)
-        when SyntaxTree::Go::StarExpr then out << "*"; emit(node.x, out)
-        when SyntaxTree::Go::ArrayType then emit_array_type(node, out)
-        when SyntaxTree::Go::MapType then emit_map_type(node, out)
-        when SyntaxTree::Go::FuncLit then emit_func_lit(node, out, indent: indent)
-        when SyntaxTree::Go::TypeAssertExpr then emit_type_assert(node, out)
-        when SyntaxTree::Go::IfStmt then emit_if_stmt(node, out, indent: indent)
-        when SyntaxTree::Go::ForStmt then emit_for_stmt(node, out, indent: indent)
-        when SyntaxTree::Go::RangeStmt then emit_range_stmt(node, out, indent: indent)
-        when SyntaxTree::Go::SwitchStmt then emit_switch_stmt(node, out, indent: indent)
-        when SyntaxTree::Go::CaseClause then emit_case_clause(node, out, indent: indent)
-        when SyntaxTree::Go::BranchStmt then emit_branch_stmt(node, out, indent: indent)
-        when SyntaxTree::Go::IncDecStmt then emit(node.x, out); out << node.tok.to_s
-        when SyntaxTree::Go::DeferStmt then out << "defer "; emit(node.call, out)
-        when SyntaxTree::Go::GoStmt then out << "go "; emit(node.call, out)
-        when SyntaxTree::Go::SendStmt then emit(node.chan, out); out << " <- "; emit(node.value, out)
-        when SyntaxTree::Go::LabeledStmt then out << node.label.name.to_s << ":\n"; emit(node.stmt, out, indent: indent)
-        when SyntaxTree::Go::EmptyStmt then nil
-        when SyntaxTree::Go::CommentGroup then emit_comment_group(node, out, indent: indent)
-        when SyntaxTree::Go::Comment then emit_comment(node, out, indent: indent)
-        when nil then out << "nil"
+        when SyntaxTree::Go::File
+          emit_file(node, out)
+        when SyntaxTree::Go::GenDecl
+          emit_gen_decl(node, out, indent: indent)
+        when SyntaxTree::Go::ImportSpec
+          emit_import_spec(node, out)
+        when SyntaxTree::Go::FuncDecl
+          emit_func_decl(node, out, indent: indent)
+        when SyntaxTree::Go::FuncType
+          emit_func_type(node, out)
+        when SyntaxTree::Go::FieldList
+          emit_field_list(node, out)
+        when SyntaxTree::Go::Field
+          emit_field(node, out)
+        when SyntaxTree::Go::TypeSpec
+          emit_type_spec(node, out, indent: indent)
+        when SyntaxTree::Go::ValueSpec
+          emit_value_spec(node, out)
+        when SyntaxTree::Go::StructType
+          emit_struct_type(node, out, indent: indent)
+        when SyntaxTree::Go::BlockStmt
+          emit_block_stmt(node, out, indent: indent)
+        when SyntaxTree::Go::ExprStmt
+          emit(node.x, out, indent: indent)
+        when SyntaxTree::Go::ReturnStmt
+          emit_return_stmt(node, out, indent: indent)
+        when SyntaxTree::Go::AssignStmt
+          emit_assign_stmt(node, out, indent: indent)
+        when SyntaxTree::Go::DeclStmt
+          emit(node.decl, out, indent: indent)
+        when SyntaxTree::Go::CallExpr
+          emit_call_expr(node, out)
+        when SyntaxTree::Go::SelectorExpr
+          emit_selector_expr(node, out)
+        when SyntaxTree::Go::Ident
+          out << node.name.to_s
+        when SyntaxTree::Go::BasicLit
+          out << node.value.to_s
+        when SyntaxTree::Go::BinaryExpr
+          emit_binary_expr(node, out)
+        when SyntaxTree::Go::UnaryExpr
+          emit_unary_expr(node, out)
+        when SyntaxTree::Go::ParenExpr
+          emit_paren_expr(node, out)
+        when SyntaxTree::Go::CompositeLit
+          emit_composite_lit(node, out)
+        when SyntaxTree::Go::KeyValueExpr
+          emit_key_value_expr(node, out)
+        when SyntaxTree::Go::IndexExpr
+          emit_index_expr(node, out)
+        when SyntaxTree::Go::SliceExpr
+          emit_slice_expr(node, out)
+        when SyntaxTree::Go::StarExpr
+          out << "*"
+          emit(node.x, out)
+        when SyntaxTree::Go::ArrayType
+          emit_array_type(node, out)
+        when SyntaxTree::Go::MapType
+          emit_map_type(node, out)
+        when SyntaxTree::Go::FuncLit
+          emit_func_lit(node, out, indent: indent)
+        when SyntaxTree::Go::TypeAssertExpr
+          emit_type_assert(node, out)
+        when SyntaxTree::Go::IfStmt
+          emit_if_stmt(node, out, indent: indent)
+        when SyntaxTree::Go::ForStmt
+          emit_for_stmt(node, out, indent: indent)
+        when SyntaxTree::Go::RangeStmt
+          emit_range_stmt(node, out, indent: indent)
+        when SyntaxTree::Go::SwitchStmt
+          emit_switch_stmt(node, out, indent: indent)
+        when SyntaxTree::Go::CaseClause
+          emit_case_clause(node, out, indent: indent)
+        when SyntaxTree::Go::BranchStmt
+          emit_branch_stmt(node, out, indent: indent)
+        when SyntaxTree::Go::IncDecStmt
+          emit(node.x, out)
+          out << node.tok.to_s
+        when SyntaxTree::Go::DeferStmt
+          out << "defer "
+          emit(node.call, out)
+        when SyntaxTree::Go::GoStmt
+          out << "go "
+          emit(node.call, out)
+        when SyntaxTree::Go::SendStmt
+          emit(node.chan, out)
+          out << " <- "
+          emit(node.value, out)
+        when SyntaxTree::Go::LabeledStmt
+          out << node.label.name.to_s << ":\n"
+          emit(node.stmt, out, indent: indent)
+        when SyntaxTree::Go::EmptyStmt
+          nil
+        when SyntaxTree::Go::CommentGroup
+          emit_comment_group(node, out, indent: indent)
+        when SyntaxTree::Go::Comment
+          emit_comment(node, out, indent: indent)
+        when nil
+          out << "nil"
         else
           out << "/* unsupported: #{node.class} */"
         end
@@ -115,14 +169,20 @@ module Gob
       end
 
       def emit_value_spec(node, out)
-        node.names.each_with_index { |n, i| out << ", " if i > 0; emit(n, out) }
+        node.names.each_with_index do |n, i|
+          out << ", " if i > 0
+          emit(n, out)
+        end
         if node.type
           out << " "
           emit(node.type, out)
         end
         if node.values && !node.values.empty?
           out << " = "
-          node.values.each_with_index { |v, i| out << ", " if i > 0; emit(v, out) }
+          node.values.each_with_index do |v, i|
+            out << ", " if i > 0
+            emit(v, out)
+          end
         end
       end
 
@@ -215,9 +275,15 @@ module Gob
       end
 
       def emit_assign_stmt(node, out, indent: 0)
-        node.lhs.each_with_index { |n, i| out << ", " if i > 0; emit(n, out) }
+        node.lhs.each_with_index do |n, i|
+          out << ", " if i > 0
+          emit(n, out)
+        end
         out << " #{node.tok} "
-        node.rhs.each_with_index { |n, i| out << ", " if i > 0; emit(n, out) }
+        node.rhs.each_with_index do |n, i|
+          out << ", " if i > 0
+          emit(n, out)
+        end
       end
 
       def emit_call_expr(node, out)
@@ -227,9 +293,7 @@ module Gob
           out << ", " if i > 0
           emit(arg, out)
         end
-        if node.ellipsis
-          out << "..."
-        end
+        out << "..." if node.ellipsis
         out << ")"
       end
 
@@ -279,6 +343,19 @@ module Gob
         out << "]"
       end
 
+      def emit_slice_expr(node, out)
+        emit(node.x, out)
+        out << "["
+        emit(node.low, out) if node.low
+        out << ":"
+        emit(node.high, out) if node.high
+        if node.slice3
+          out << ":"
+          emit(node.max, out) if node.max
+        end
+        out << "]"
+      end
+
       def emit_array_type(node, out)
         out << "["
         emit(node.len, out) if node.len
@@ -302,11 +379,7 @@ module Gob
       def emit_type_assert(node, out)
         emit(node.x, out)
         out << ".("
-        if node.type
-          emit(node.type, out)
-        else
-          out << "type"
-        end
+        node.type ? emit(node.type, out) : out << "type"
         out << ")"
       end
 
@@ -379,7 +452,10 @@ module Gob
           out << tabs(indent) << "default:\n"
         else
           out << tabs(indent) << "case "
-          node.list.each_with_index { |n, i| out << ", " if i > 0; emit(n, out) }
+          node.list.each_with_index do |n, i|
+            out << ", " if i > 0
+            emit(n, out)
+          end
           out << ":\n"
         end
         node.body.each do |stmt|

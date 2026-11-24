@@ -6,3 +6,22 @@ import (
 	"container/ring"
 	"fmt"
 )
+
+var intHeap = Class{[]int}
+
+func runContainer() {
+	l := list.New()
+	l.PushBack("b")
+	l.PushFront("a")
+	l.PushBack("c")
+	e := l.Front()
+	fmt.Println()
+	h := IntHeap{5, 1, 4, 2, 3}
+	heap.Init(h)
+	fmt.Println()
+	r := ring.New(5)
+	r.Do(func(v any) {
+		fmt.Print(v, " ")
+	})
+	fmt.Println()
+}

@@ -5,3 +5,10 @@ import (
 	"iter"
 	"slices"
 )
+
+func countdown(from any) {
+	return
+}
+
+func runIter() {
+}

@@ -8,13 +8,15 @@ module Gob
 
         def register(matcher)
           matcher.rule(:method) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::DefNode)
+
             node => SyntaxTree::DefNode[
               target: nil,
               operator: nil,
               name: SyntaxTree::Const[value: _name],
               params: SyntaxTree::Paren[
                 contents: SyntaxTree::Params[requireds: _parameters],
-                comments: [SyntaxTree::Comment[value: signature]]
+                comments: [SyntaxTree::Comment[value: /^#\s*\(/ => signature]]
               ],
               bodystmt: SyntaxTree::BodyStmt[
                 statements: SyntaxTree::Statements[body: body]
@@ -25,13 +27,15 @@ module Gob
           end
 
           matcher.rule(:signed_function) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::DefNode)
+
             node => SyntaxTree::DefNode[
               target: nil,
               operator: nil,
               name: SyntaxTree::Ident[value: _name],
               params: SyntaxTree::Paren[
                 contents: SyntaxTree::Params[requireds: _parameters],
-                comments: [SyntaxTree::Comment[value: signature]]
+                comments: [SyntaxTree::Comment[value: /^#\s*\(/ => signature]]
               ],
               bodystmt: SyntaxTree::BodyStmt[
                 statements: SyntaxTree::Statements[body: body]
@@ -48,12 +52,14 @@ module Gob
           end
 
           matcher.rule(:returns_only_function) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::DefNode)
+
             node => SyntaxTree::DefNode[
               target: nil,
               operator: nil,
               name: SyntaxTree::Ident[value: _name],
               params: SyntaxTree::Params[
-                comments: [SyntaxTree::Comment[value: signature]]
+                comments: [SyntaxTree::Comment[value: /^#\s*->/ => signature]]
               ],
               bodystmt: SyntaxTree::BodyStmt[
                 statements: SyntaxTree::Statements[body: body]
@@ -64,6 +70,8 @@ module Gob
           end
 
           matcher.rule(:function) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::DefNode)
+
             node => SyntaxTree::DefNode[
               target: nil,
               operator: nil,
@@ -78,6 +86,8 @@ module Gob
           end
 
           matcher.rule(:lambda) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::MethodAddBlock)
+
             node => SyntaxTree::MethodAddBlock[
               call: SyntaxTree::CallNode[
                 receiver: nil,
@@ -85,8 +95,7 @@ module Gob
                 message: SyntaxTree::Ident[value: "lambda"]
               ],
               block: SyntaxTree::BlockNode[
-                block_var: block_var,
-                bodystmt: bodystmt
+                block_var: block_var, bodystmt: bodystmt
               ]
             ]
 

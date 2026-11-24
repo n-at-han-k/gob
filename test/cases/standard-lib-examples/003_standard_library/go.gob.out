@@ -7,3 +7,13 @@ import (
 	"go/token"
 	"log"
 )
+
+func runGoTools() {
+	src := "package p\nfunc Add(a, b int) int { return a + b }\nfunc Sub(a, b int) int { return a - b }\n"
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, "example.go", src, 0)
+	ast.Inspect(file, func(n any) {
+		fn, ok := n
+		return true
+	})
+}

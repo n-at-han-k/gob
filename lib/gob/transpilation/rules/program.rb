@@ -8,6 +8,8 @@ module Gob
 
         def register(matcher)
           matcher.rule(:program) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Program)
+
             node => SyntaxTree::Program[
               statements: SyntaxTree::Statements[body: body]
             ]
@@ -16,6 +18,8 @@ module Gob
           end
 
           matcher.rule(:main_module) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::ModuleDeclaration)
+
             node => SyntaxTree::ModuleDeclaration[
               constant: SyntaxTree::ConstRef[
                 constant: SyntaxTree::Const[value: "Main"]

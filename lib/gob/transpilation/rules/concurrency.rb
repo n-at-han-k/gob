@@ -7,11 +7,27 @@ module Gob
         module_function
 
         def register(matcher)
-          matcher.rule(:defer) { Matcher::MISS }
-          matcher.rule(:go) { Matcher::MISS }
-          matcher.rule(:send) { Matcher::MISS }
-          matcher.rule(:select) { Matcher::MISS }
-          matcher.rule(:receive) { Matcher::MISS }
+          matcher.rule(:defer) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
+
+            node => SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "defer"],
+              arguments: SyntaxTree::Args[parts: [call]]
+            ]
+
+            DeferStmt(visit(call))
+          end
+
+          matcher.rule(:go) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
+
+            node => SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "go"],
+              arguments: SyntaxTree::Args[parts: [call]]
+            ]
+
+            GoStmt(visit(call))
+          end
         end
       end
     end

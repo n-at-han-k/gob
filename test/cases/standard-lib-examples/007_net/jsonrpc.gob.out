@@ -7,3 +7,15 @@ import (
 	"net/rpc"
 	"net/rpc/jsonrpc"
 )
+
+func runJSONRPC() {
+	srv := rpc.NewServer()
+	srv.Register(Arith{})
+	defer l.Close()
+	go nil
+	conn, err := net.Dial("tcp", l.Addr().String())
+	client := rpc.NewClientWithCodec(jsonrpc.NewClientCodec(conn))
+	defer client.Close()
+		var result int
+	fmt.Println("9 * 9 =", result)
+}

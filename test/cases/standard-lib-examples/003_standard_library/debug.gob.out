@@ -12,3 +12,50 @@ import (
 	"log"
 	"os"
 )
+
+func runDebug() {
+	self_, err := os.Executable()
+	debugBuildinfo(self_)
+	debugFormats(self_)
+	debugElfSections(self_)
+	debugDwarf(self_)
+	debugGosym(self_)
+}
+
+func debugBuildinfo(path any) {
+	bi, err := buildinfo.ReadFile(path)
+	fmt.Println("=== buildinfo ===")
+	fmt.Println("go version:", bi.GoVersion)
+	fmt.Println("main path: ", bi.Main.Path)
+}
+
+func debugFormats(path any) {
+	fmt.Println("\n=== format detection ===")
+	f, err := elf.Open(path)
+	f, err = macho.Open(path)
+	f, err = pe.Open(path)
+	f, err = plan9obj.Open(path)
+}
+
+func debugElfSections(path any) {
+	f, err := elf.Open(path)
+	fmt.Println("\n=== elf sections (first 5) ===")
+}
+
+func debugDwarf(path any) {
+	f, err := elf.Open(path)
+	d, err := f.DWARF()
+	fmt.Println("\n=== dwarf (first 3 compilation units) ===")
+	r := d.Reader()
+	shown := 0
+}
+
+func debugGosym(path any) {
+	f, err := elf.Open(path)
+	text := f.Section(".text")
+	pclntab := f.Section(".gopclntab")
+	data, err := pclntab.Data()
+	tab, err := gosym.NewTable(nil, gosym.NewLineTable(data, text.Addr))
+	fmt.Println("\n=== gosym (main.main location) ===")
+	fn := tab.LookupFunc("main.main")
+}

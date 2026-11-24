@@ -13,3 +13,47 @@ import (
 	"log"
 	"os"
 )
+
+func runImage() {
+	size := 100
+	img := makeGradient(size)
+	tint := image.NewUniform(RGBA{200, 0, 0, 128})
+	quadrant := image.Rect(size/2, size/2, size, size)
+	draw.Draw(img, quadrant, tint, Point{}, draw.Over)
+	writeFile("gradient.png", func(w any) {
+		return png.Encode(w, img)
+	})
+	writeFile("gradient.jpg", func(w any) {
+		return jpeg.Encode(w, img, Options{Quality: 90})
+	})
+	writeGIF("gradient.gif", img)
+	decoded, format, err := image.Decode(bytes.NewReader(pngBytes(img)))
+	fmt.Printf("decoded format=%s bounds=%v\n", format, decoded.Bounds())
+	fmt.Printf("Plan9 palette:   %d colours\n", len(palette.Plan9))
+	fmt.Printf("WebSafe palette: %d colours\n", len(palette.WebSafe))
+}
+
+func makeGradient(size any) {
+	img := image.NewRGBA(image.Rect(0, 0, size, size))
+	return img
+}
+
+func writeFile(name any, enc any) {
+	f, err := os.Create(name)
+	err = enc(f)
+	fmt.Println("wrote", name)
+}
+
+func writeGIF(name any, src any) {
+	paletted := image.NewPaletted(src.Bounds(), palette.Plan9)
+	draw.FloydSteinberg.Draw(paletted, src.Bounds(), src, Point{})
+	writeFile(name, func(w any) {
+		return gif.Encode(w, paletted, nil)
+	})
+}
+
+func pngBytes(img any) {
+	define_var(buf, bytes.Buffer)
+	png.Encode(buf, img)
+	return buf.Bytes()
+}

@@ -4,3 +4,6 @@ import (
 	"crypto/elliptic"
 	"fmt"
 )
+
+func runElliptic() {
+}

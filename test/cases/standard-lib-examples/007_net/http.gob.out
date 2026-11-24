@@ -7,3 +7,14 @@ import (
 	"net/http"
 	"net/http/httptest"
 )
+
+func runHTTP() {
+	srv := httptest.NewServer(http.HandlerFunc(func(w any, r any) {
+		fmt.Fprintf(w, "hello %s, you asked for %s\n", r.RemoteAddr, r.URL.Path)
+	}))
+	defer srv.Close()
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(resp.Body)
+	fmt.Println("status:", resp.Status)
+	fmt.Print("body:  ", string(body))
+}

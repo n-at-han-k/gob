@@ -6,3 +6,16 @@ import (
 	"go/token"
 	"log"
 )
+
+func runParser() {
+	expr, err := parser.ParseExpr("1 + 2*3")
+	fmt.Printf("expression AST: %#v\n\n", expr)
+	src := `package p
+import (
+	"fmt"
+	"io"
+)
+`
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, "p.go", src, parser.ImportsOnly)
+}

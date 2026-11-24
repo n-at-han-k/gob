@@ -8,3 +8,18 @@ import (
 type Person struct {
 	Name, Age any
 }
+
+func runSort() {
+	nums := nil
+	sort.Ints(nums)
+	fmt.Println("ints:", nums)
+	people := nil
+	sort.Slice(people, func(i any, j any) {
+		return people[i].Name < people[j].Name
+	})
+	fmt.Println("people:", people)
+	sort.SliceStable(people, func(i any, j any) {
+		return people[i].Age < people[j].Age
+	})
+	fmt.Println("stable:", people)
+}

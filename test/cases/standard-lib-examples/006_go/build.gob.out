@@ -5,3 +5,11 @@ import (
 	"go/build"
 	"log"
 )
+
+func runBuild() {
+	pkg, err := build.Default.Import("fmt", "", 0)
+	fmt.Println("import path:", pkg.ImportPath)
+	fmt.Println("directory:  ", pkg.Dir)
+	fmt.Println("go files:   ", pkg.GoFiles)
+	fmt.Println("imports:    ", pkg.Imports)
+}

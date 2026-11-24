@@ -5,3 +5,10 @@ import (
 	"os"
 	"sort"
 )
+
+var demos = map[string]Proc{ast: runAST, build: runBuild, constraint: runConstraint, constant: runConstant, doc: runDoc, comment: runComment, format: runFormat, importer: runImporter, parser: runParser, printer: runPrinter, scanner: runScanner, token: runToken, types: runTypes, version: runVersion}
+
+func main() {
+	demo, ok := demos[os.Args[1]]
+	demo()
+}

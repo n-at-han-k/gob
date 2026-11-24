@@ -11,3 +11,11 @@ type message struct {
 	Kind string
 	Body []int
 }
+
+func runGob() {
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	fmt.Printf("encoded %d bytes\n", buf.Len())
+	var back message
+	fmt.Printf("decoded: %+v\n", back)
+}

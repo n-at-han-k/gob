@@ -8,6 +8,12 @@ module Gob
 
         def register(matcher)
           matcher.rule(:named_type) do |node|
+            unless node.is_a?(SyntaxTree::VCall) ||
+                     node.is_a?(SyntaxTree::VarRef) ||
+                     node.is_a?(SyntaxTree::SymbolLiteral)
+              next Matcher::MISS
+            end
+
             case node
             in SyntaxTree::VCall[value: SyntaxTree::Ident[value: name]]
               Ident(name)
@@ -21,17 +27,22 @@ module Gob
           end
 
           matcher.rule(:pointer_type) do |node|
+            unless node.is_a?(SyntaxTree::IVar) ||
+                     node.is_a?(SyntaxTree::CallNode)
+              next Matcher::MISS
+            end
+
             case node
             in SyntaxTree::IVar[value: name]
               StarExpr(Ident(name.delete_prefix("@")))
             in SyntaxTree::CallNode[
-              receiver: nil,
-              operator: nil,
-              message: SyntaxTree::Ident[value: "ptr" | "ref"],
-              arguments: SyntaxTree::ArgParen[
-                arguments: SyntaxTree::Args[parts: [type]]
-              ]
-            ]
+                 receiver: nil,
+                 operator: nil,
+                 message: SyntaxTree::Ident[value: "ptr" | "ref"],
+                 arguments: SyntaxTree::ArgParen[
+                   arguments: SyntaxTree::Args[parts: [type]]
+                 ]
+               ]
               StarExpr(GoType(type, context: self))
             else
               Matcher::MISS
@@ -39,6 +50,8 @@ module Gob
           end
 
           matcher.rule(:proc_type) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::ARef)
+
             node => SyntaxTree::ARef[
               collection: SyntaxTree::VarRef[
                 value: SyntaxTree::Const[value: "Proc"]
@@ -50,6 +63,8 @@ module Gob
           end
 
           matcher.rule(:array_type) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::ARef)
+
             node => SyntaxTree::ARef[
               collection: SyntaxTree::VarRef[
                 value: SyntaxTree::Const[value: "Array"]
@@ -61,6 +76,8 @@ module Gob
           end
 
           matcher.rule(:fixed_array_type) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::ARef)
+
             node => SyntaxTree::ARef[
               collection: SyntaxTree::VarRef[
                 value: SyntaxTree::Const[value: "Array"]
@@ -72,6 +89,8 @@ module Gob
           end
 
           matcher.rule(:hash_type) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::ARef)
+
             node => SyntaxTree::ARef[
               collection: SyntaxTree::VarRef[
                 value: SyntaxTree::Const[value: "Hash" | "Map"]

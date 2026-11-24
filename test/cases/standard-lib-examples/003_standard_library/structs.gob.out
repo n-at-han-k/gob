@@ -7,5 +7,10 @@ import (
 )
 
 type Stat struct {
-	Dev, Ino, Mode any
+	_, Dev, Ino, Mode any
+}
+
+func runStructs() {
+	fmt.Println("size:", unsafe.Sizeof(Stat{}))
+	fmt.Println("align:", unsafe.Alignof(Stat{}))
 }

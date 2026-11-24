@@ -6,3 +6,17 @@ import (
 	"crypto/rand"
 	"fmt"
 )
+
+func runCipher() {
+	key := make([]byte, 16)
+	rand.Read(key)
+	block, _ := aes.NewCipher(key)
+	iv := make([]byte, block.BlockSize())
+	rand.Read(iv)
+	plaintext := []byte("streaming plaintext")
+	ct := make([]byte, len(plaintext))
+	cipher.NewCTR(block, iv).XORKeyStream(ct, plaintext)
+	pt := make([]byte, len(ct))
+	cipher.NewCTR(block, iv).XORKeyStream(pt, ct)
+	fmt.Printf("ct: %x\npt: %s\n", ct, pt)
+}

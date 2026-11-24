@@ -7,3 +7,12 @@ import (
 	"os"
 	"strings"
 )
+
+func runCSV() {
+	w := csv.NewWriter(os.Stdout)
+	w.WriteAll([][]string{nil, nil, nil})
+	w.Flush()
+	input := "id,label\n1,apple\n2,orange\n3,pear\n"
+	r := csv.NewReader(strings.NewReader(input))
+	records, err := r.ReadAll()
+}

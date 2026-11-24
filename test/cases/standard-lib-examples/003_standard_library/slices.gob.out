@@ -4,3 +4,20 @@ import (
 	"fmt"
 	"slices"
 )
+
+func runSlices() {
+	s := nil
+	slices.Sort(s)
+	fmt.Println("sorted:", s)
+	fmt.Println("Contains 5:", slices.Contains(s, 5))
+	idx, found := slices.BinarySearch(s, 5)
+	fmt.Println("BinarySearch 5:", idx, found)
+	fmt.Println("Min:", slices.Min(s), "Max:", slices.Max(s))
+	cp := slices.Clone(s)
+	slices.Reverse(cp)
+	fmt.Println("reversed clone:", cp)
+	odd := slices.DeleteFunc(slices.Clone(s), func(v any) {
+		return v%2 == 0
+	})
+	fmt.Println("odd only:", odd)
+}

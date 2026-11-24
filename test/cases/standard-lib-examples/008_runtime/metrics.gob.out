@@ -4,3 +4,10 @@ import (
 	"fmt"
 	"runtime/metrics"
 )
+
+func runMetrics() {
+	samples := []metrics.Sample{nil, nil, nil}
+	metrics.Read(samples)
+	all := metrics.All()
+	fmt.Printf("\n%d metrics available; first 5 names:\n", len(all))
+}

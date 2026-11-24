@@ -8,12 +8,16 @@ module Gob
 
         def register(matcher)
           matcher.rule(:comment) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Comment)
+
             node => SyntaxTree::Comment
 
             Matcher::DROP
           end
 
           matcher.rule(:void_statement) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::VoidStmt)
+
             node => SyntaxTree::VoidStmt
 
             Matcher::DROP

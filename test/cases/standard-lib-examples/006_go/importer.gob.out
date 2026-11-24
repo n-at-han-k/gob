@@ -5,3 +5,10 @@ import (
 	"go/importer"
 	"log"
 )
+
+func runImporter() {
+	pkg, err := importer.Default().Import("fmt")
+	fmt.Println("package:", pkg.Path())
+	fmt.Println("name:   ", pkg.Name())
+	fmt.Println("first 5 exported names:")
+}

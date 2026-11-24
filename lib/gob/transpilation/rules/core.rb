@@ -40,13 +40,13 @@ module Gob
         Types.register(matcher)
         Indexing.register(matcher)
         Assignments.register(matcher)
+        Concurrency.register(matcher)
         Declarations.register(matcher)
         Functions.register(matcher)
         Conditionals.register(matcher)
         Loops.register(matcher)
         Switches.register(matcher)
         Blocks.register(matcher)
-        Concurrency.register(matcher)
         Fallback.register(matcher)
       end
     end

@@ -10,3 +10,11 @@ type v2article struct {
 	Title string
 	Tags  []string
 }
+
+func runJSONv2() {
+	a := v2article{Title: "Learning Go", Tags: []string{"go", "v2"}}
+	data, err := json.Marshal(a)
+	fmt.Println("marshalled:", string(data))
+	var back v2article
+	fmt.Printf("parsed: %+v\n", back)
+}

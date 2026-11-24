@@ -5,3 +5,15 @@ import (
 	"log"
 	"net/netip"
 )
+
+func runNetip() {
+	addr, err := netip.ParseAddr("2001:db8::1")
+	fmt.Println("addr:      ", addr)
+	fmt.Println("is v6?     ", addr.Is6())
+	fmt.Println("is private?", addr.IsPrivate())
+	prefix := netip.MustParsePrefix("10.0.0.0/8")
+	fmt.Println("prefix:    ", prefix)
+	fmt.Println("contains 10.1.2.3?", prefix.Contains(netip.MustParseAddr("10.1.2.3")))
+	seen := nil
+	fmt.Println("map:       ", seen)
+}
