@@ -8,7 +8,9 @@ module RuboCop
 
         ALLOWED_SENDS = %w[
           define_const
+          const
           define_var
+          var
           attr_accessor
           private
           public

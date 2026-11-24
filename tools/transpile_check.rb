@@ -24,9 +24,46 @@ def pos_hash?(value)
   value.is_a?(Hash) && value.keys.sort == %w[column line offset]
 end
 
+
+def normalize_go_string(v)
+  if v.start_with?("`") && v.end_with?("`")
+    return v[1..-2]
+  end
+  if v.start_with?('"') && v.end_with?('"')
+    inner = v[1..-2]
+    # basic unescape for comparison
+    return inner.gsub(/\\([abfnrtv\\'""])/) { |m|
+      case m[1]
+      when "a" then "\a"
+      when "b" then "\b"
+      when "f" then "\f"
+      when "n" then "\n"
+      when "r" then "\r"
+      when "t" then "\t"
+      when "v" then "\v"
+      when "\\\\" then "\\\\"
+      when '"' then '"'
+      when "'" then "'"
+      else m
+      end
+    }
+  end
+  v
+end
 def normalize(node)
   case node
   when SyntaxTree::Go::Node
+    if node.is_a?(SyntaxTree::Go::ParenExpr)
+      return normalize(node.x)
+    end
+    # normalize: simple var decl -> := assign for comparison
+    if node.is_a?(SyntaxTree::Go::DeclStmt) && node.decl.is_a?(SyntaxTree::Go::GenDecl) && node.decl.tok.to_s == "var" && node.decl.specs.length == 1
+      spec = node.decl.specs.first
+      if spec.names.length >= 1 && spec.values && spec.values.length == spec.names.length && spec.type.nil?
+        assign = SyntaxTree::Go::AssignStmt.new(lhs: spec.names, tok: ":=", rhs: spec.values)
+        return normalize(assign)
+      end
+    end
     hash = { "type" => node.class.name.split("::").last }
     node.deconstruct_keys(nil).each do |key, value|
       next if key == :location
@@ -41,7 +78,7 @@ def normalize(node)
       next if key == :doc
       next if key.to_s.end_with?("_pos")
       next if key.to_s.end_with?("_end")
-      next if %i[opening closing lparen rparen lbrace rbrace lbrack rbrack colon semicolon arrow ellipsis tok_pos begin_ end_ pos func return_ case_ for_ if_ else_ defer go select range struct interface map chan switch].include?(key)
+      next if %i[opening closing lparen rparen lbrace rbrace lbrack rbrack colon semicolon arrow ellipsis tok_pos begin_ end_ pos func return_ case_ for_ if_ else_ defer go select range struct interface map chan switch star].include?(key)
       next if pos_hash?(value)
 
       hash[key.to_s] = normalize(value)
@@ -61,6 +98,9 @@ def normalize(node)
       rescue ArgumentError
         hash["value"] = v
       end
+    end
+    if hash["type"] == "BasicLit" && hash["kind"] == "STRING" && hash["value"].is_a?(String)
+      hash["value"] = normalize_go_string(hash["value"])
     end
     hash
   when Array

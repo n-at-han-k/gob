@@ -12,7 +12,9 @@ module RuboCop
           public
           protected
           define_const
+          const
           define_var
+          var
         ].freeze
 
         def on_new_investigation

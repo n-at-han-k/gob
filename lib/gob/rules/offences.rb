@@ -20,17 +20,17 @@ module Gob
       module_function
 
       MODULE_WHITELIST = %w[
-        require define_const define_var attr_accessor
+        require define_const const define_var var attr_accessor
         private public protected module_function include extend prepend
       ].freeze
 
       CLASS_WHITELIST = %w[
-        define_const define_var attr_accessor
+        define_const const define_var var attr_accessor
         private public protected include extend prepend
       ].freeze
 
       TOP_LEVEL_WHITELIST = %w[
-        require private public protected define_const define_var
+        require private public protected define_const const define_var var
       ].freeze
 
       def check!(source, path: nil)

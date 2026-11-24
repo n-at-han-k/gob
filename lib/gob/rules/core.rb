@@ -86,8 +86,8 @@ module Gob
         if bs.is_a?(SyntaxTree::BodyStmt)
           next Matcher::MISS if bs.rescue_clause || bs.else_clause || bs.ensure_clause
         end
-        stmts = visit_all(stmt_body(bs)).map { |s| stmtify(s) }
-        SyntaxTree::Go::BlockStmt.new(lbrace: nil, list: stmts, rbrace: nil)
+        stmts = scoped { visit_all(stmt_body(bs)).map { |s| stmtify(s) } }
+        block_stmt(list: stmts)
       end
 
       matcher.rule(:require) do |node|
@@ -106,7 +106,7 @@ module Gob
 
         name = node.message.is_a?(SyntaxTree::Ident) ? node.message.value : node.message.to_s
         next Matcher::DROP if %w[private public protected module_function].include?(name)
-        next Matcher::MISS if %w[define_const define_var].include?(name)
+        next Matcher::MISS if %w[define_const define_var const var].include?(name)
 
         args = visit_args(node.arguments)
         call_expr(fun: ident(name), args: args)
@@ -114,7 +114,7 @@ module Gob
 
       matcher.rule(:define_const) do |node|
         next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
-        next Matcher::MISS unless node.message.is_a?(SyntaxTree::Ident) && node.message.value == "define_const"
+        next Matcher::MISS unless node.message.is_a?(SyntaxTree::Ident) && %w[define_const const].include?(node.message.value)
 
         parts = node.arguments.is_a?(SyntaxTree::Args) ? node.arguments.parts : Array(node.arguments)
         name_node = parts[0]
@@ -140,7 +140,7 @@ module Gob
 
       matcher.rule(:define_var) do |node|
         next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
-        next Matcher::MISS unless node.message.is_a?(SyntaxTree::Ident) && node.message.value == "define_var"
+        next Matcher::MISS unless node.message.is_a?(SyntaxTree::Ident) && %w[define_var var].include?(node.message.value)
 
         parts = node.arguments.is_a?(SyntaxTree::Args) ? node.arguments.parts : Array(node.arguments)
         name_node = parts[0]
@@ -154,15 +154,9 @@ module Gob
                when SyntaxTree::StringLiteral then string_value(name_node)
                else name_node.to_s
                end
-        type_name = case type_node
-                    when SyntaxTree::SymbolLiteral then type_node.value.value.to_s
-                    when SyntaxTree::Ident then type_node.value
-                    when SyntaxTree::StringLiteral then string_value(type_node)
-                    else type_node.to_s
-                    end
         val = value_node ? visit(value_node) : nil
         spec = SyntaxTree::Go::ValueSpec.new(
-          doc: nil, names: [ident(name)], type: ident(type_name), values: val ? [val] : [], comment: nil
+          doc: nil, names: [ident(name)], type: type_from_node(type_node), values: val ? [val] : [], comment: nil
         )
         decl = SyntaxTree::Go::GenDecl.new(doc: nil, tok_pos: nil, tok: "var", lparen: nil, specs: [spec], rparen: nil)
         decl.instance_variable_set(:@location, node.location) rescue nil
@@ -174,7 +168,7 @@ module Gob
         next Matcher::MISS unless node.receiver.nil?
         msg = node.message
         name_str = msg.is_a?(SyntaxTree::Ident) ? msg.value : msg.to_s
-        next Matcher::MISS unless name_str == "define_const"
+        next Matcher::MISS unless %w[define_const const].include?(name_str)
 
         parts = if node.arguments.is_a?(SyntaxTree::ArgParen)
                   node.arguments.arguments.is_a?(SyntaxTree::Args) ? node.arguments.arguments.parts : Array(node.arguments.arguments)
@@ -209,7 +203,7 @@ module Gob
         next Matcher::MISS unless node.receiver.nil?
         msg = node.message
         name_str = msg.is_a?(SyntaxTree::Ident) ? msg.value : msg.to_s
-        next Matcher::MISS unless name_str == "define_var"
+        next Matcher::MISS unless %w[define_var var].include?(name_str)
 
         parts = if node.arguments.is_a?(SyntaxTree::ArgParen)
                   node.arguments.arguments.is_a?(SyntaxTree::Args) ? node.arguments.arguments.parts : Array(node.arguments.arguments)
@@ -229,15 +223,9 @@ module Gob
                when SyntaxTree::StringLiteral then string_value(name_node)
                else name_node.to_s
                end
-        type_name = case type_node
-                    when SyntaxTree::SymbolLiteral then type_node.value.value.to_s
-                    when SyntaxTree::Ident then type_node.value
-                    when SyntaxTree::StringLiteral then string_value(type_node)
-                    else type_node.to_s
-                    end
         val = value_node ? visit(value_node) : nil
         spec = SyntaxTree::Go::ValueSpec.new(
-          doc: nil, names: [ident(name)], type: ident(type_name), values: val ? [val] : [], comment: nil
+          doc: nil, names: [ident(name)], type: type_from_node(type_node), values: val ? [val] : [], comment: nil
         )
         decl = SyntaxTree::Go::GenDecl.new(doc: nil, tok_pos: nil, tok: "var", lparen: nil, specs: [spec], rparen: nil)
         decl.instance_variable_set(:@location, node.location) rescue nil
@@ -286,21 +274,15 @@ module Gob
               end
             end
 
+            tag_lit = tag ? SyntaxTree::Go::BasicLit.new(kind: "STRING", value: tag) : nil
             if type_node.nil?
               # embedding: attr_accessor :User
               fields << SyntaxTree::Go::Field.new(
-                doc: nil, names: [], type: ident(field_name), tag: tag ? SyntaxTree::Go::BasicLit.new(kind: "STRING", value: tag) : nil, comment: nil
+                doc: nil, names: [], type: ident(field_name), tag: tag_lit, comment: nil
               )
             else
-              type_name = case type_node
-                          when SyntaxTree::SymbolLiteral then type_node.value.value.to_s
-                          when SyntaxTree::Ident then type_node.value
-                          when SyntaxTree::StringLiteral then string_value(type_node)
-                          else type_node.to_s
-                          end
-              tag_lit = tag ? SyntaxTree::Go::BasicLit.new(kind: "STRING", value: tag) : nil
               fields << SyntaxTree::Go::Field.new(
-                doc: nil, names: [ident(field_name)], type: parse_go_type(type_name), tag: tag_lit, comment: nil
+                doc: nil, names: [ident(field_name)], type: type_from_node(type_node), tag: tag_lit, comment: nil
               )
             end
             next
@@ -508,7 +490,6 @@ module Gob
       matcher.rule(:call_node) do |node|
         next Matcher::MISS unless node.is_a?(SyntaxTree::CallNode)
 
-        receiver = visit(node.receiver)
         msg = node.message
         msg_name = if msg.is_a?(SyntaxTree::Const) || msg.is_a?(SyntaxTree::Ident)
                      msg.value
@@ -517,7 +498,92 @@ module Gob
                    else
                      msg.to_s
                    end
-        next Matcher::MISS if receiver.nil? && %w[define_const define_var].include?(msg_name.to_s)
+
+        # make(Type, ...) / new(Type) - type arg as first argument
+        if node.receiver.nil? && %w[make new].include?(msg_name)
+          raw_args = if node.arguments.is_a?(SyntaxTree::ArgParen)
+                       node.arguments.arguments.is_a?(SyntaxTree::Args) ? node.arguments.arguments.parts : Array(node.arguments.arguments)
+                     elsif node.arguments.is_a?(SyntaxTree::Args)
+                       node.arguments.parts
+                     else
+                       Array(node.arguments)
+                     end
+          if raw_args[0]
+            type_arg = type_from_node(raw_args[0])
+            rest = raw_args[1..].map { |a| visit(a) }
+            next SyntaxTree::Go::CallExpr.new(fun: ident(msg_name), lparen: nil, args: [type_arg] + rest, ellipsis: nil, rparen: nil)
+          end
+        end
+
+        # addr(x) => &x
+        if node.receiver.nil? && msg_name == "addr"
+          args = visit_args(node.arguments)
+          if args.length == 1
+            next SyntaxTree::Go::UnaryExpr.new(op_pos: nil, op: "&", x: args.first)
+          end
+        end
+
+        # slice(x, low, high) => x[low:high] (nil/omitted for missing)
+        if node.receiver.nil? && msg_name == "slice"
+          raw = if node.arguments.is_a?(SyntaxTree::ArgParen)
+                  node.arguments.arguments.is_a?(SyntaxTree::Args) ? node.arguments.arguments.parts : Array(node.arguments.arguments)
+                elsif node.arguments.is_a?(SyntaxTree::Args)
+                  node.arguments.parts
+                else
+                  Array(node.arguments)
+                end
+          if raw[0]
+            x = visit(raw[0])
+            low = raw[1] ? visit(raw[1]) : nil
+            high = raw[2] ? visit(raw[2]) : nil
+            low = nil if low.is_a?(SyntaxTree::Go::Ident) && low.name == "nil"
+            high = nil if high.is_a?(SyntaxTree::Go::Ident) && high.name == "nil"
+            next SyntaxTree::Go::SliceExpr.new(x: x, lbrack: nil, low: low, high: high, max: nil, slice3: false, rbrack: nil)
+          end
+        end
+
+        # Type.new(...) where receiver is Array[...] or Hash[...] type syntax
+        if msg_name == "new" && node.receiver
+          recv_node = node.receiver
+          is_type_syntax = false
+          if recv_node.is_a?(SyntaxTree::ARef) && recv_node.collection.is_a?(SyntaxTree::VarRef) && recv_node.collection.value.is_a?(SyntaxTree::Const) && %w[Array Hash].include?(recv_node.collection.value.value)
+            is_type_syntax = true
+          elsif recv_node.is_a?(SyntaxTree::ARef) && recv_node.collection.is_a?(SyntaxTree::VarRef) && recv_node.collection.value.is_a?(SyntaxTree::Ident) && %w[Array Hash].include?(recv_node.collection.value.value)
+            is_type_syntax = true
+          elsif recv_node.is_a?(SyntaxTree::CallNode) && recv_node.message.is_a?(SyntaxTree::Ident) && recv_node.message.value == "[]" && recv_node.receiver.is_a?(SyntaxTree::VarRef) && recv_node.receiver.value.is_a?(SyntaxTree::Const) && %w[Array Hash].include?(recv_node.receiver.value.value)
+            is_type_syntax = true
+          elsif recv_node.is_a?(SyntaxTree::CallNode) && recv_node.message.is_a?(SyntaxTree::Ident) && recv_node.message.value == "[]" && recv_node.receiver.is_a?(SyntaxTree::VarRef) && recv_node.receiver.value.is_a?(SyntaxTree::Ident) && %w[Array Hash].include?(recv_node.receiver.value.value)
+            is_type_syntax = true
+          end
+          if is_type_syntax
+            type = type_from_node(recv_node)
+            args = visit_args(node.arguments)
+            if type.is_a?(SyntaxTree::Go::MapType)
+              elts = if args.length == 1 && args.first.is_a?(SyntaxTree::Go::CompositeLit) && args.first.type.is_a?(SyntaxTree::Go::MapType)
+                       args.first.elts
+                     else
+                       args
+                     end
+              next SyntaxTree::Go::CompositeLit.new(type: type, lbrace: nil, elts: elts, rbrace: nil, incomplete: false)
+            end
+            if type.is_a?(SyntaxTree::Go::ArrayType)
+              elt = type.elt
+              is_byte_rune = elt.is_a?(SyntaxTree::Go::Ident) && %w[byte rune].include?(elt.name)
+              if is_byte_rune
+                next SyntaxTree::Go::CallExpr.new(fun: type, lparen: nil, args: args, ellipsis: nil, rparen: nil)
+              end
+              elts = if args.length == 1 && args.first.is_a?(SyntaxTree::Go::CompositeLit) && args.first.type.is_a?(SyntaxTree::Go::MapType)
+                       args.first.elts
+                     else
+                       args
+                     end
+              next SyntaxTree::Go::CompositeLit.new(type: type, lbrace: nil, elts: elts, rbrace: nil, incomplete: false)
+            end
+          end
+        end
+
+        receiver = visit(node.receiver)
+        next Matcher::MISS if receiver.nil? && %w[define_const define_var const var].include?(msg_name.to_s)
 
         # @User.new(...) => &User{...}
         if receiver.is_a?(SyntaxTree::Go::UnaryExpr) && receiver.op.to_s == "&" && receiver.x.is_a?(SyntaxTree::Go::Ident) && msg_name == "new"
@@ -533,9 +599,30 @@ module Gob
           )
         end
 
-        # Type.new(...) => Type{...} (value struct literal)
-        if msg_name == "new" && (receiver.is_a?(SyntaxTree::Go::Ident) || receiver.is_a?(SyntaxTree::Go::SelectorExpr))
+        # Type.new(...) => Type{...}, or typed map/slice literal/conversion
+        if msg_name == "new" && (receiver.is_a?(SyntaxTree::Go::Ident) || receiver.is_a?(SyntaxTree::Go::SelectorExpr) || receiver.is_a?(SyntaxTree::Go::ArrayType) || receiver.is_a?(SyntaxTree::Go::MapType))
           args = visit_args(node.arguments)
+          if receiver.is_a?(SyntaxTree::Go::MapType)
+            elts = if args.length == 1 && args.first.is_a?(SyntaxTree::Go::CompositeLit) && args.first.type.is_a?(SyntaxTree::Go::MapType)
+                     args.first.elts
+                   else
+                     args
+                   end
+            next SyntaxTree::Go::CompositeLit.new(type: receiver, lbrace: nil, elts: elts, rbrace: nil, incomplete: false)
+          end
+          if receiver.is_a?(SyntaxTree::Go::ArrayType)
+            elt = receiver.elt
+            is_byte_rune = elt.is_a?(SyntaxTree::Go::Ident) && %w[byte rune].include?(elt.name)
+            if is_byte_rune
+              next SyntaxTree::Go::CallExpr.new(fun: receiver, lparen: nil, args: args, ellipsis: nil, rparen: nil)
+            end
+            elts = if args.length == 1 && args.first.is_a?(SyntaxTree::Go::CompositeLit) && args.first.type.is_a?(SyntaxTree::Go::MapType)
+                     args.first.elts
+                   else
+                     args
+                   end
+            next SyntaxTree::Go::CompositeLit.new(type: receiver, lbrace: nil, elts: elts, rbrace: nil, incomplete: false)
+          end
           if args.length == 1 && args.first.is_a?(SyntaxTree::Go::CompositeLit) && args.first.type.is_a?(SyntaxTree::Go::MapType)
             elts = args.first.elts
           else
@@ -692,6 +779,7 @@ module Gob
             case node.value.value
             when "true", "false" then ident(node.value.value)
             when "nil" then ident("nil")
+            when "self" then ident("self")
             else next Matcher::MISS
             end
           else
@@ -966,7 +1054,7 @@ module Gob
             else_node = visit(node.consequent)
           elsif node.consequent.is_a?(SyntaxTree::Else)
             else_stmts = visit_all(node.consequent.statements.body).map { |s| stmtify(s) }
-            else_node = SyntaxTree::Go::BlockStmt.new(lbrace: nil, list: else_stmts, rbrace: nil)
+            else_node = block_stmt(list: else_stmts)
           end
         end
         SyntaxTree::Go::IfStmt.new(if_: nil, init: nil, cond: cond, body: block_stmt(list: consequent), else_: else_node)
@@ -983,7 +1071,7 @@ module Gob
             else_node = visit(node.consequent)
           elsif node.consequent.is_a?(SyntaxTree::Else)
             else_stmts = visit_all(node.consequent.statements.body).map { |s| stmtify(s) }
-            else_node = SyntaxTree::Go::BlockStmt.new(lbrace: nil, list: else_stmts, rbrace: nil)
+            else_node = block_stmt(list: else_stmts)
           end
         end
         SyntaxTree::Go::IfStmt.new(if_: nil, init: nil, cond: cond, body: block_stmt(list: consequent), else_: else_node)
@@ -999,7 +1087,7 @@ module Gob
         if node.consequent
           if node.consequent.is_a?(SyntaxTree::Else)
             else_stmts = visit_all(node.consequent.statements.body).map { |s| stmtify(s) }
-            else_node = SyntaxTree::Go::BlockStmt.new(lbrace: nil, list: else_stmts, rbrace: nil)
+            else_node = block_stmt(list: else_stmts)
           end
         end
         SyntaxTree::Go::IfStmt.new(if_: nil, init: nil, cond: cond, body: block_stmt(list: consequent), else_: else_node)

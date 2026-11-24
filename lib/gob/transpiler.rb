@@ -122,21 +122,75 @@ module Gob
       return node if node.nil?
 
       case node
-      when SyntaxTree::Go::ExprStmt, SyntaxTree::Go::AssignStmt, SyntaxTree::Go::DeclStmt,
+      when SyntaxTree::Go::DeclStmt,
+           SyntaxTree::Go::ExprStmt, SyntaxTree::Go::AssignStmt,
            SyntaxTree::Go::ReturnStmt, SyntaxTree::Go::IfStmt, SyntaxTree::Go::ForStmt,
            SyntaxTree::Go::RangeStmt, SyntaxTree::Go::SwitchStmt, SyntaxTree::Go::SelectStmt,
            SyntaxTree::Go::BlockStmt, SyntaxTree::Go::BranchStmt, SyntaxTree::Go::DeferStmt,
            SyntaxTree::Go::GoStmt, SyntaxTree::Go::SendStmt, SyntaxTree::Go::IncDecStmt,
            SyntaxTree::Go::LabeledStmt, SyntaxTree::Go::EmptyStmt, SyntaxTree::Go::TypeSwitchStmt,
-           SyntaxTree::Go::CaseClause, SyntaxTree::Go::CommClause, SyntaxTree::Go::BadStmt,
-           SyntaxTree::Go::GenDecl
+           SyntaxTree::Go::CaseClause, SyntaxTree::Go::CommClause, SyntaxTree::Go::BadStmt
         node
+      when SyntaxTree::Go::GenDecl
+        SyntaxTree::Go::DeclStmt.new(decl: node)
       else
         if node.class.name.include?("Expr") || node.is_a?(SyntaxTree::Go::Ident) || node.is_a?(SyntaxTree::Go::BasicLit)
           SyntaxTree::Go::ExprStmt.new(x: node)
         else
           node
         end
+      end
+    end
+
+    def merge_if_init(stmts)
+      out = []
+      i = 0
+      while i < stmts.length
+        s = stmts[i]
+        n = stmts[i + 1]
+        if n.is_a?(SyntaxTree::Go::IfStmt) && n.init.nil?
+          # merge preceding assign/decl-assign into if init when simple err pattern
+          if s.is_a?(SyntaxTree::Go::AssignStmt) && s.lhs.length == 1 && s.lhs.first.is_a?(SyntaxTree::Go::Ident)
+            name = s.lhs.first.name
+            if cond_uses_ident?(n.cond, name)
+              out << SyntaxTree::Go::IfStmt.new(if_: nil, init: s, cond: n.cond, body: n.body, else_: n.else_)
+              i += 2
+              next
+            end
+          elsif s.is_a?(SyntaxTree::Go::DeclStmt) && s.decl.is_a?(SyntaxTree::Go::GenDecl) && s.decl.tok.to_s == "var" && s.decl.specs.length == 1
+            spec = s.decl.specs.first
+            if spec.names.length == 1 && spec.values && !spec.values.empty?
+              name = spec.names.first.name
+              asn = SyntaxTree::Go::AssignStmt.new(lhs: [ident(name)], tok: ":=", rhs: spec.values)
+              if cond_uses_ident?(n.cond, name)
+                out << SyntaxTree::Go::IfStmt.new(if_: nil, init: asn, cond: n.cond, body: n.body, else_: n.else_)
+                i += 2
+                next
+              end
+            end
+          end
+        end
+        out << s
+        i += 1
+      end
+      out
+    end
+
+    def cond_uses_ident?(node, name)
+      return false unless node
+      case node
+      when SyntaxTree::Go::Ident
+        node.name == name
+      when SyntaxTree::Go::BinaryExpr
+        cond_uses_ident?(node.x, name) || cond_uses_ident?(node.y, name)
+      when SyntaxTree::Go::UnaryExpr
+        cond_uses_ident?(node.x, name)
+      when SyntaxTree::Go::ParenExpr
+        cond_uses_ident?(node.x, name)
+      when SyntaxTree::Go::CallExpr
+        cond_uses_ident?(node.fun, name) || Array(node.args).any? { |a| cond_uses_ident?(a, name) }
+      else
+        false
       end
     end
 
@@ -155,6 +209,10 @@ module Gob
 
     def declared?(name)
       @scopes.any? { |s| s.include?(name) }
+    end
+
+    def declared_in_current_scope?(name)
+      @scopes.last.include?(name)
     end
 
     def package_scope?
@@ -308,6 +366,185 @@ module Gob
       ident(s)
     end
 
+    def type_from_node(node)
+      case node
+      when SyntaxTree::ConstRef
+        ident(node.constant.value)
+      when SyntaxTree::VarRef
+        if node.value.is_a?(SyntaxTree::Ident) || node.value.is_a?(SyntaxTree::Const)
+          name = node.value.value
+          return build_proc_type([], nil) if name == "Proc"
+          ident(name)
+        elsif node.value.is_a?(SyntaxTree::IVar)
+          # @User => *User (pointer type in type position)
+          name = node.value.value.delete_prefix("@")
+          SyntaxTree::Go::StarExpr.new(star: nil, x: ident(name))
+        else
+          ident(node.to_s)
+        end
+      when SyntaxTree::IVar
+        name = node.value.delete_prefix("@")
+        SyntaxTree::Go::StarExpr.new(star: nil, x: ident(name))
+      when SyntaxTree::VCall
+        name = node.value.value
+        return build_proc_type([], nil) if name == "Proc"
+        ident(name)
+      when SyntaxTree::Ident
+        return build_proc_type([], nil) if node.value == "Proc"
+        ident(node.value)
+      when SyntaxTree::CallNode
+        recv = node.receiver
+        msg = node.message
+        msg_name = msg.is_a?(SyntaxTree::Ident) || msg.is_a?(SyntaxTree::Const) ? msg.value : msg.to_s
+        # ptr(Type) / ref(Type) => *Type in type position
+        if recv.nil? && %w[ptr ref].include?(msg_name)
+          args = node.arguments.is_a?(SyntaxTree::ArgParen) ? node.arguments.arguments.parts : (node.arguments.is_a?(SyntaxTree::Args) ? node.arguments.parts : [])
+          if args[0]
+            return SyntaxTree::Go::StarExpr.new(star: nil, x: type_from_node(args[0]))
+          end
+        end
+        # Array[T] => []T, Array[T,n] => [n]T, Hash[K,V] => map[K]V
+        # handle receiver.ident as pkg.Type
+        if recv.nil? && %w[Array Hash].include?(msg_name)
+          # not expected, but handle
+        end
+        if recv.is_a?(SyntaxTree::VarRef) && (recv.value.is_a?(SyntaxTree::Ident) || recv.value.is_a?(SyntaxTree::Const))
+          rname = recv.value.value
+          if rname == "Array" && msg_name == "[]"
+            args = node.arguments.is_a?(SyntaxTree::ArgParen) ? node.arguments.arguments.parts : (node.arguments.is_a?(SyntaxTree::Args) ? node.arguments.parts : [])
+            elt = args[0] ? type_from_node(args[0]) : ident("any")
+            len_node = args[1] ? visit(args[1]) : nil
+            return SyntaxTree::Go::ArrayType.new(lbrack: nil, len: len_node, elt: elt)
+          end
+          if rname == "Hash" && msg_name == "[]"
+            args = node.arguments.is_a?(SyntaxTree::ArgParen) ? node.arguments.arguments.parts : (node.arguments.is_a?(SyntaxTree::Args) ? node.arguments.parts : [])
+            k = args[0] ? type_from_node(args[0]) : ident("any")
+            v = args[1] ? type_from_node(args[1]) : ident("any")
+            return SyntaxTree::Go::MapType.new(map: nil, key: k, value: v)
+          end
+        end
+        # pkg.Type (selector-like CallNode) or Type[] style
+        if msg_name == "[]" && recv
+          r = type_from_node(recv)
+          # r might be ident Array/Hash - handle above; otherwise generic index
+          args = node.arguments.is_a?(SyntaxTree::ArgParen) ? node.arguments.arguments.parts : (node.arguments.is_a?(SyntaxTree::Args) ? node.arguments.parts : [])
+          if r.is_a?(SyntaxTree::Go::Ident) && r.name == "Array"
+            elt = args[0] ? type_from_node(args[0]) : ident("any")
+            len_node = args[1] ? visit(args[1]) : nil
+            return SyntaxTree::Go::ArrayType.new(lbrack: nil, len: len_node, elt: elt)
+          end
+          if r.is_a?(SyntaxTree::Go::Ident) && r.name == "Hash"
+            k = args[0] ? type_from_node(args[0]) : ident("any")
+            v = args[1] ? type_from_node(args[1]) : ident("any")
+            return SyntaxTree::Go::MapType.new(map: nil, key: k, value: v)
+          end
+        end
+        # pkg.Type or Type.Field as selector type (no args)
+        if node.arguments.nil?
+          recv_ident = case recv
+                       when SyntaxTree::VarRef
+                         recv.value.value if recv.value.is_a?(SyntaxTree::Ident) || recv.value.is_a?(SyntaxTree::Const)
+                       when SyntaxTree::VCall
+                         recv.value.value if recv.value.is_a?(SyntaxTree::Ident) || recv.value.is_a?(SyntaxTree::Const)
+                       when SyntaxTree::Const
+                         recv.value
+                       end
+          if recv_ident
+            sel = msg.is_a?(SyntaxTree::Ident) || msg.is_a?(SyntaxTree::Const) ? msg.value : msg_name
+            return selector_expr(x: ident(recv_ident), sel: sel)
+          end
+          # recv might already be a Go type node-ish from recursion? no, recv is Ruby node
+          recv_type = type_from_node(recv) rescue nil
+          if recv_type.is_a?(SyntaxTree::Go::Ident)
+            sel = msg.is_a?(SyntaxTree::Ident) || msg.is_a?(SyntaxTree::Const) ? msg.value : msg_name
+            return selector_expr(x: recv_type, sel: sel)
+          end
+        end
+        parse_go_type(node.to_s)
+      when SyntaxTree::ARef
+        # Proc[...] or Proc[...][...] => func type
+        proc_info = proc_type_parts(node)
+        return build_proc_type(proc_info[0], proc_info[1]) if proc_info
+
+        recv = node.collection
+        if recv.is_a?(SyntaxTree::VarRef) && (recv.value.is_a?(SyntaxTree::Ident) || recv.value.is_a?(SyntaxTree::Const))
+          rname = recv.value.value
+          args = node.index.is_a?(SyntaxTree::Args) ? node.index.parts : Array(node.index)
+          if rname == "Array"
+            elt = args[0] ? type_from_node(args[0]) : ident("any")
+            len_node = args[1] ? visit(args[1]) : nil
+            return SyntaxTree::Go::ArrayType.new(lbrack: nil, len: len_node, elt: elt)
+          end
+          if rname == "Hash"
+            k = args[0] ? type_from_node(args[0]) : ident("any")
+            v = args[1] ? type_from_node(args[1]) : ident("any")
+            return SyntaxTree::Go::MapType.new(map: nil, key: k, value: v)
+          end
+        end
+        parse_go_type(node.to_s)
+      when SyntaxTree::ConstPathRef
+        left = type_from_node(node.parent)
+        right = node.constant.value
+        if left.is_a?(SyntaxTree::Go::Ident)
+          selector_expr(x: left, sel: right)
+        else
+          ident(right)
+        end
+      when SyntaxTree::SymbolLiteral
+        parse_go_type(node.value.value.to_s)
+      when SyntaxTree::Const
+        return build_proc_type([], nil) if node.value == "Proc"
+        ident(node.value)
+      when SyntaxTree::StringLiteral
+        parse_go_type(string_value(node).to_s)
+      else
+        parse_go_type(node.to_s)
+      end
+    end
+
+    def proc_type_parts(node)
+      # Returns [params_parts, returns_parts_or_nil] if node is Proc[...] or Proc[...][...]
+      return nil unless node.is_a?(SyntaxTree::ARef)
+      inner = node.collection
+      args2 = node.index.is_a?(SyntaxTree::Args) ? node.index.parts : Array(node.index)
+      if inner.is_a?(SyntaxTree::ARef)
+        base = inner.collection
+        base_name = type_ident_name(base)
+        return nil unless base_name == "Proc"
+        params = inner.index.is_a?(SyntaxTree::Args) ? inner.index.parts : Array(inner.index)
+        return [params, args2]
+      end
+      base_name = type_ident_name(inner)
+      return nil unless base_name == "Proc"
+      [args2, nil]
+    end
+
+    def type_ident_name(node)
+      case node
+      when SyntaxTree::VarRef
+        node.value.value if node.value.is_a?(SyntaxTree::Ident) || node.value.is_a?(SyntaxTree::Const)
+      when SyntaxTree::VCall
+        node.value.value if node.value.is_a?(SyntaxTree::Ident) || node.value.is_a?(SyntaxTree::Const)
+      when SyntaxTree::ConstRef
+        node.constant.value
+      when SyntaxTree::Ident, SyntaxTree::Const
+        node.value
+      else
+        nil
+      end
+    end
+
+    def build_proc_type(param_nodes, return_nodes)
+      params = Array(param_nodes).map { |n| SyntaxTree::Go::Field.new(doc: nil, names: [], type: type_from_node(n), tag: nil, comment: nil) }
+      params_list = SyntaxTree::Go::FieldList.new(opening: nil, list: params, closing: nil)
+      results_list = nil
+      if return_nodes
+        rets = Array(return_nodes).map { |n| SyntaxTree::Go::Field.new(doc: nil, names: [], type: type_from_node(n), tag: nil, comment: nil) }
+        results_list = SyntaxTree::Go::FieldList.new(opening: nil, list: rets, closing: nil)
+      end
+      SyntaxTree::Go::FuncType.new(func: nil, type_params: nil, params: params_list, results: results_list)
+    end
+
     def assign_target_name(node, _ctx = self)
       case node
       when SyntaxTree::VarField
@@ -388,7 +625,7 @@ module Gob
 
       # Function scope
       if simple
-        fresh = names.any? { |n| n.match?(/\A[\w]+\z/) && !declared?(n) }
+        fresh = names.any? { |n| n.match?(/\A[\w]+\z/) && !declared_in_current_scope?(n) }
         names.each { |n| declare(n) }
         tok = fresh ? ":=" : "="
         lhs = names.map { |n| ident(n) }

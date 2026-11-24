@@ -74,7 +74,66 @@ module Gob
       end
 
       def block_stmt(list: [], lbrace: nil, rbrace: nil)
-        SyntaxTree::Go::BlockStmt.new(lbrace: lbrace, list: Array(list), rbrace: rbrace)
+        SyntaxTree::Go::BlockStmt.new(lbrace: lbrace, list: merge_if_init_stmts(Array(list)), rbrace: rbrace)
+      end
+
+      def merge_if_init_stmts(stmts)
+        out = []
+        i = 0
+        while i < stmts.length
+          s = stmts[i]
+          n = stmts[i + 1]
+          if n.is_a?(SyntaxTree::Go::IfStmt) && n.init.nil? && should_merge_if_init?(s, n.cond)
+            init = if s.is_a?(SyntaxTree::Go::AssignStmt)
+                     s
+                   elsif s.is_a?(SyntaxTree::Go::DeclStmt) && s.decl.is_a?(SyntaxTree::Go::GenDecl) && s.decl.tok.to_s == "var" && s.decl.specs.length == 1
+                     spec = s.decl.specs.first
+                     SyntaxTree::Go::AssignStmt.new(lhs: spec.names.map { |nm| SyntaxTree::Go::Ident.new(name: nm.name, name_pos: nil, obj: nil) }, tok: ":=", rhs: spec.values)
+                   end
+            if init
+              out << SyntaxTree::Go::IfStmt.new(if_: nil, init: init, cond: n.cond, body: n.body, else_: n.else_)
+              i += 2
+              next
+            end
+          end
+          out << s
+          i += 1
+        end
+        out
+      end
+
+      def should_merge_if_init?(s, cond)
+        names = []
+        if s.is_a?(SyntaxTree::Go::AssignStmt) && s.lhs.all? { |l| l.is_a?(SyntaxTree::Go::Ident) }
+          names = s.lhs.map(&:name)
+        elsif s.is_a?(SyntaxTree::Go::DeclStmt) && s.decl.is_a?(SyntaxTree::Go::GenDecl) && s.decl.tok.to_s == "var" && s.decl.specs.length == 1
+          spec = s.decl.specs.first
+          return false unless spec.names.length >= 1 && spec.values && !spec.values.empty?
+          names = spec.names.map(&:name)
+        else
+          return false
+        end
+        return false unless names.any? { |name| go_cond_uses_ident?(cond, name) }
+        # conservative: merge common err/ok patterns
+        names.any? { |n| %w[err ok].include?(n) }
+      end
+
+      def go_cond_uses_ident?(node, name)
+        return false unless node
+        case node
+        when SyntaxTree::Go::Ident
+          node.name == name
+        when SyntaxTree::Go::BinaryExpr
+          go_cond_uses_ident?(node.x, name) || go_cond_uses_ident?(node.y, name)
+        when SyntaxTree::Go::UnaryExpr
+          go_cond_uses_ident?(node.x, name)
+        when SyntaxTree::Go::ParenExpr
+          go_cond_uses_ident?(node.x, name)
+        when SyntaxTree::Go::CallExpr
+          go_cond_uses_ident?(node.fun, name) || Array(node.args).any? { |a| go_cond_uses_ident?(a, name) }
+        else
+          false
+        end
       end
 
       def expr_stmt(x:)
