@@ -24,8 +24,7 @@ AllCops:
   TargetRubyVersion: 3.4
   Exclude:
     - 'refs/**/*'
-    - 'data/**/*'
-    - 'bin/**/*'
+    - 'test/cases/**/*'
 
 Style/DisableSyntax:
   DisableSyntax:
