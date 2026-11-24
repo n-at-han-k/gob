@@ -7,7 +7,6 @@ require:
 
   - ./cops/multiline_condition.rb
   - ./cops/blank_line_between_statements.rb
-  - ./cops/single_line_arguments.rb
   - ./cops/single_line_block.rb
   - ./cops/multiline_string.rb
   - ./cops/macro_parentheses.rb
@@ -43,8 +42,6 @@ Transpile/MultilineStructNew:
 Transpile/MultilineCondition:
   Enabled: true
 Transpile/BlankLineBetweenStatements:
-  Enabled: true
-Transpile/SingleLineArguments:
   Enabled: true
 Transpile/SingleLineBlock:
   Enabled: true

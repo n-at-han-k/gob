@@ -30,8 +30,7 @@ module RuboCop
       #
       # `Style/BlockDelimiters` cannot be used for it: its `line_count_based`
       # style rewrites the condition case too, and the golden keeps braces
-      # there. Same division of labour as SingleLineArguments, which also
-      # leaves a condition to MultilineCondition.
+      # there.
       class BlockDelimiters < Base
         extend AutoCorrector
 

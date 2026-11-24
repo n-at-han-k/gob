@@ -57,10 +57,7 @@ module RuboCop
         private
 
           # The string is a call's only argument, so the CALL opens out too and
-          # the literals line up under one another, one level in. Done here
-          # rather than left to SingleLineArguments, which declines to touch an
-          # argument that already spans lines -- and this one does, by the time
-          # it would be asked.
+          # the literals line up under one another, one level in.
           def wrap_call(node, parts)
             send_node = node.parent
             return if send_node.loc.begin.nil? || send_node.loc.end.nil?

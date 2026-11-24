@@ -83,6 +83,16 @@
     };
     version = "2.0.0";
   };
+  drb = {
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0wrkl7yiix268s2md1h6wh91311w95ikd8fy8m5gx589npyxc00b";
+      type = "gem";
+    };
+    version = "2.2.3";
+  };
   ffi = {
     groups = ["default"];
     platforms = [];
@@ -132,6 +142,17 @@
       type = "gem";
     };
     version = "1.7.0";
+  };
+  minitest = {
+    dependencies = ["drb" "prism"];
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0vh733a365lw2dpa8zvdmr35715kfrm9hqsli8g67248maakadzz";
+      type = "gem";
+    };
+    version = "6.1.0";
   };
   parallel = {
     groups = ["default"];
