@@ -93,6 +93,7 @@ GEM
     sorbet-runtime (0.6.13715)
     syntax_tree (6.3.0)
       prettier_print (>= 1.2.0)
+    thor (1.5.0)
     token-resolver (2.0.16)
       parslet (~> 2.0)
       version_gem (~> 1.1, >= 1.1.17)
@@ -128,6 +129,7 @@ DEPENDENCIES
   rubocop-disable_syntax
   rubocop-nathank
   syntax_tree
+  thor
   unparser
 
 BUNDLED WITH

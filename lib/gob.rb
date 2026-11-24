@@ -6,6 +6,22 @@ require_relative "gob/validation/rules"
 require_relative "gob/go/printer"
 
 module Gob
+
+  #
+  # Artist: Gio
+  # Url: https://asciiart.website/art/6033
+  #
+  GOBBY = <<-____
+                             ;=\_|)_
+      gob                   ,\   o  '-/_
+                 ________ ;'  <      Y/
+              _-'        '        _.'=
+             /                   /
+  _=--     _/             _\  | ;
+  -=______/ _         _===  \ \/
+        --"-' '--==== --"-   ""-
+  ____
+
   def self.default_matcher
     @default_matcher ||= begin
       matcher = Matcher.new

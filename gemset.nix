@@ -386,6 +386,16 @@
     };
     version = "6.3.0";
   };
+  thor = {
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0wsy88vg2mazl039392hqrcwvs5nb9kq8jhhrrclir2px1gybag3";
+      type = "gem";
+    };
+    version = "1.5.0";
+  };
   token-resolver = {
     dependencies = ["parslet" "version_gem"];
     groups = ["default"];

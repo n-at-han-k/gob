@@ -13,10 +13,10 @@ module Gob
           retry
           redo
         ].freeze
-
         def on_def(node)
           check_body(node)
         end
+
         alias on_defs on_def
 
         private
@@ -24,7 +24,6 @@ module Gob
           def check_body(node)
             node.each_descendant do |child|
               next unless DISALLOWED_TYPES.include?(child.type)
-
               add_offense(child.loc.keyword || child.loc.expression, message: format(MSG, name: child.type))
             end
           end

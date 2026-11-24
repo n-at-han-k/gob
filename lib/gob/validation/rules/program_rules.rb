@@ -16,12 +16,17 @@ module Gob
           define_var
           var
         ].freeze
-
         def on_new_investigation
           return unless processed_source.ast
 
           body = processed_source.ast
-          children = body.begin_type? ? body.children : [body]
+
+          if body.begin_type?
+            children = body.children
+          else
+            children = [body]
+          end
+
           children.each { |child| check_node(child) }
         end
 
@@ -42,10 +47,19 @@ module Gob
               add_offense(node.loc.selector || node.loc.expression, message: format(MSG, name: name))
             when :block
               send_node = node.send_node
-              if send_node && ALLOWED_SENDS.include?(send_node.method_name.to_s)
+
+              if (
+                send_node &&
+                ALLOWED_SENDS.include?(send_node.method_name.to_s)
+              )
                 true
               else
-                name = send_node ? send_node.method_name.to_s : "block"
+                if send_node
+                  name = send_node.method_name.to_s
+                else
+                  name = "block"
+                end
+
                 add_offense(node.loc.expression, message: format(MSG, name: name))
               end
             else

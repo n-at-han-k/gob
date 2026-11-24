@@ -62,8 +62,8 @@ module Gob
       def check!(source, path: nil)
         offenses = validate(source, path: path)
         return offenses if offenses.empty?
-
         first = offenses.first
+
         raise Gob::Validation::Offence.new(
           first.message,
           path: path || "gob_check.rb",

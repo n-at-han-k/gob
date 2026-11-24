@@ -19,7 +19,6 @@ module Gob
           extend
           prepend
         ].freeze
-
         def on_class(node)
           check_body(node.body)
         end
@@ -29,7 +28,12 @@ module Gob
           def check_body(body)
             return if body.nil?
 
-            children = body.begin_type? ? body.children : [body]
+            if body.begin_type?
+              children = body.children
+            else
+              children = [body]
+            end
+
             children.each { |child| check_node(child) }
           end
 
@@ -46,14 +50,22 @@ module Gob
             when :send
               name = node.method_name.to_s
               return if ALLOWED_SENDS.include?(name)
-
               add_offense(node.loc.selector || node.loc.expression, message: format(MSG, name: name))
             when :block
               send_node = node.send_node
-              if send_node && ALLOWED_SENDS.include?(send_node.method_name.to_s)
+
+              if (
+                send_node &&
+                ALLOWED_SENDS.include?(send_node.method_name.to_s)
+              )
                 true
               else
-                name = send_node ? send_node.method_name.to_s : "block"
+                if send_node
+                  name = send_node.method_name.to_s
+                else
+                  name = "block"
+                end
+
                 add_offense(node.loc.expression, message: format(MSG, name: name))
               end
             else
