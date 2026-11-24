@@ -18,14 +18,14 @@ module Main
     end
 
     def Push(x) # (any)
-      this = append(this, x)
+      this = append(@this, x)
     end
 
     def Pop # () -> any
-      old = this
+      old = @this
       n = len(old)
       x = old[n - 1]
-      this = old[...n - 1]
+      @this = old[...n - 1]
 
       return x
     end
