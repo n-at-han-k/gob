@@ -11,18 +11,3 @@ import (
 	"math/big"
 	"time"
 )
-
-func runX509() {
-	if priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader); err != nil {
-		log.Fatal(err)
-	}
-	tmpl := &x509.Certificate{SerialNumber: big.NewInt(1), Subject: pkix.Name{CommonName: "example.local", Organization: []string{"Learning Go"}}, NotBefore: time.Now(), NotAfter: time.Now().Add(24 * time.Hour), KeyUsage: x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign, IsCA: true}
-	if der, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, &priv.PublicKey, priv); err != nil {
-		log.Fatal(err)
-	}
-	cert, _ := x509.ParseCertificate(der)
-	fmt.Println("subject:  ", cert.Subject)
-	fmt.Println("issuer:   ", cert.Issuer)
-	fmt.Println("not after:", cert.NotAfter.Format(time.RFC3339))
-	fmt.Println("is CA:    ", cert.IsCA)
-}

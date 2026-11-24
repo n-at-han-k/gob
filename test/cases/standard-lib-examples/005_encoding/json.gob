@@ -5,9 +5,9 @@ require "strings"
 
 module Main
   var article = Struct.new(
-    Title:    string        # `json:"title"`
-    Views:    int           # `json:"views,omitempty"`
-    Tags:     Array[string] # `json:"tags"`
+    Title:    string,        # `json:"title"`
+    Views:    int,           # `json:"views,omitempty"`
+    Tags:     Array[string], # `json:"tags"`
     internal: string
   )
 

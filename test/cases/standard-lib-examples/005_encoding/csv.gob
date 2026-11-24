@@ -12,7 +12,7 @@ module Main
       ["name" "city" "notes"],
       ["Nathan", "Wellington", "hello, world"],
       ["Ada", "London", `she said "hi"`]
-    )
+    ))
     w.Flush()
 
     input = "id,label\n1,apple\n2,orange\n3,pear\n"

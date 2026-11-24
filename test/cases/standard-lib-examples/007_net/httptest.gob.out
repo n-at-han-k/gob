@@ -5,18 +5,3 @@ import (
 	"net/http"
 	"net/http/httptest"
 )
-
-func runHTTPTest() {
-	handler := http.HandlerFunc(func(w, r) {
-	w.Header().Set("X-Test", "yes")
-	w.WriteHeader(http.StatusTeapot)
-	fmt.Fprintln(w, "short and stout")
-})
-	req := httptest.NewRequest(http.MethodGet, "/kettle", nil)
-	rec := httptest.NewRecorder()
-	handler.ServeHTTP(rec, req)
-	resp := rec.Result()
-	fmt.Println("status:", resp.Status)
-	fmt.Println("header:", resp.Header.Get("X-Test"))
-	fmt.Print("body:  ", rec.Body.String())
-}

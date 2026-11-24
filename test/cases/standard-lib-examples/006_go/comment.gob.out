@@ -4,11 +4,3 @@ import (
 	"fmt"
 	"go/doc/comment"
 )
-
-func runComment() {
-	src := "Package widget draws widgets.\n\n# Overview\n\nWidgets come in three sizes:\n  - small\n  - medium\n  - large\n\nSee [example.com] for details.\n\n[example.com]: https://example.com\n"
-		var p comment.Parser
-	doc := p.Parse(src)
-		var pr comment.Printer
-	fmt.Print(string(pr.Markdown(doc)))
-}

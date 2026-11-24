@@ -5,13 +5,3 @@ import (
 	"log"
 	"mime"
 )
-
-func runMime() {
-	fmt.Println(".html:", mime.TypeByExtension(".html"))
-	fmt.Println(".json:", mime.TypeByExtension(".json"))
-	if mt, params, err := mime.ParseMediaType("text/plain; charset=\"utf-8\""); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("type:", mt, "params:", params)
-	fmt.Println(mime.FormatMediaType("text/html", map[any]any{"charset": "utf-8"}))
-}

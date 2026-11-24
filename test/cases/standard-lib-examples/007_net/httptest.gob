@@ -8,7 +8,7 @@ module Main
       w.Header().Set("X-Test", "yes")
       w.WriteHeader(http.StatusTeapot)
       fmt.Fprintln(w, "short and stout")
-    })
+    end)
 
     req = httptest.NewRequest(http.MethodGet, "/kettle", nil)
     rec = httptest.NewRecorder()

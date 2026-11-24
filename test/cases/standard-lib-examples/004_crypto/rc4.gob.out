@@ -5,16 +5,3 @@ import (
 	"fmt"
 	"log"
 )
-
-func runRC4() {
-	if c, err := rc4.NewCipher([]byte("weakkey")); err != nil {
-		log.Fatal(err)
-	}
-	pt := []byte("legacy data")
-	ct := make([]byte, len(pt))
-	c.XORKeyStream(ct, pt)
-	c2, _ := rc4.NewCipher([]byte("weakkey"))
-	out := make([]byte, len(ct))
-	c2.XORKeyStream(out, ct)
-	fmt.Printf("ct: %x\npt: %s\n", ct, out)
-}

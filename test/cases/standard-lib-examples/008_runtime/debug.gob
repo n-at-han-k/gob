@@ -3,7 +3,7 @@ require "runtime/debug"
 
 module Main
   def runDebug
-    if info, ok = debug.ReadBuildInfo()
+    if (info, ok = debug.ReadBuildInfo())
       fmt.Println("go version:", info.GoVersion)
       fmt.Println("main path: ", info.Main.Path)
 

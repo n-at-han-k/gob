@@ -6,7 +6,3 @@ import (
 )
 
 var greeting = ""
-
-func runEmbed() {
-	fmt.Print(greeting)
-}

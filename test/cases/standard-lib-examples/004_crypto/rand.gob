@@ -6,7 +6,7 @@ require "math/big"
 module Main
   def runRand
     buf = make(Array[byte], 16)
-    if _, err = rand.Read(buf)
+    if (_, err = rand.Read(buf))
       log.Fatal(err)
     end
     fmt.Printf("random bytes: %x\n", buf)

@@ -1,3 +1,5 @@
+FUCKING READ ./DEVELOPMENT.md RIGHT FUCKING NOW!!!! DO NOT PASS GO DO NOT COLLECT £200... READ IT NOW.
+
 **The purpose of this library** is STRICTLY `ruby-to-go`... 
 
 **The only reason** any `ast-grep` stuff exists is because we needed to generate `ruby` examples so that there was something to turn into `go`. NEVER consider `go-to-ruby` conversion, we do not care.

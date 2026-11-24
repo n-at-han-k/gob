@@ -7,21 +7,7 @@ import (
 	"log"
 )
 
-type Message struct {
-	Kind
-	Body
-}
-
-func runGob() {
-		var buf bytes.Buffer
-	enc := gob.NewEncoder(buf)
-	if err := enc.Encode(Message{Kind: "primes", Body: []any{2, 3, 5, 7, 11}}); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("encoded %d bytes\n", buf.Len())
-		var back message
-	if err = gob.NewDecoder(buf).Decode(back); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("decoded: %+v\n", back)
+type message struct {
+	Kind string
+	Body []int
 }

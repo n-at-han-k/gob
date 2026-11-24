@@ -5,16 +5,3 @@ import (
 	"fmt"
 	"log"
 )
-
-func runDES() {
-	key := []byte("8bytekey")
-	if block, err := des.NewCipher(key); err != nil {
-		log.Fatal(err)
-	}
-	plaintext := []byte("blockdat")
-	ct := make([]byte, des.BlockSize)
-	block.Encrypt(ct, plaintext)
-	pt := make([]byte, des.BlockSize)
-	block.Decrypt(pt, ct)
-	fmt.Printf("block size: %d\nct: %x\npt: %s\n", block.BlockSize(), ct, pt)
-}

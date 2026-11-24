@@ -7,32 +7,3 @@ import (
 	"net/rpc"
 	"net/rpc/jsonrpc"
 )
-
-func runJSONRPC() {
-	srv := rpc.NewServer()
-	srv.Register(Arith{})
-	if l, err := net.Listen("tcp", "127.0.0.1:0"); err != nil {
-		log.Fatal(err)
-	}
-	defer func() {
-	l.Close()
-}()
-	go func() {
-	if conn, err := l.Accept(); err != nil {
-		return
-	}
-	srv.ServeCodec(jsonrpc.NewServerCodec(conn))
-}().call()
-	if conn, err = net.Dial("tcp", l.Addr().String()); err != nil {
-		log.Fatal(err)
-	}
-	client := rpc.NewClientWithCodec(jsonrpc.NewClientCodec(conn))
-	defer func() {
-	client.Close()
-}()
-		var result int
-	if err = client.Call("Arith.Multiply", Args{9, 9}, result); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("9 * 9 =", result)
-}

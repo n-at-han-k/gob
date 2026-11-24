@@ -1,0 +1,103 @@
+# frozen_string_literal: true
+
+module Gob
+  module Transpilation
+    module Rules
+      module Functions
+        module_function
+
+        def register(matcher)
+          matcher.rule(:method) do |node|
+            node => SyntaxTree::DefNode[
+              target: nil,
+              operator: nil,
+              name: SyntaxTree::Const[value: _name],
+              params: SyntaxTree::Paren[
+                contents: SyntaxTree::Params[requireds: _parameters],
+                comments: [SyntaxTree::Comment[value: signature]]
+              ],
+              bodystmt: SyntaxTree::BodyStmt[
+                statements: SyntaxTree::Statements[body: body]
+              ]
+            ]
+
+            Method(node.name, node.params, signature, body, context: self)
+          end
+
+          matcher.rule(:signed_function) do |node|
+            node => SyntaxTree::DefNode[
+              target: nil,
+              operator: nil,
+              name: SyntaxTree::Ident[value: _name],
+              params: SyntaxTree::Paren[
+                contents: SyntaxTree::Params[requireds: _parameters],
+                comments: [SyntaxTree::Comment[value: signature]]
+              ],
+              bodystmt: SyntaxTree::BodyStmt[
+                statements: SyntaxTree::Statements[body: body]
+              ]
+            ]
+
+            SignedFunction(
+              node.name,
+              node.params,
+              signature,
+              body,
+              context: self
+            )
+          end
+
+          matcher.rule(:returns_only_function) do |node|
+            node => SyntaxTree::DefNode[
+              target: nil,
+              operator: nil,
+              name: SyntaxTree::Ident[value: _name],
+              params: SyntaxTree::Params[
+                comments: [SyntaxTree::Comment[value: signature]]
+              ],
+              bodystmt: SyntaxTree::BodyStmt[
+                statements: SyntaxTree::Statements[body: body]
+              ]
+            ]
+
+            ReturnsOnlyFunction(node.name, signature, body, context: self)
+          end
+
+          matcher.rule(:function) do |node|
+            node => SyntaxTree::DefNode[
+              target: nil,
+              operator: nil,
+              name: SyntaxTree::Ident[value: _name],
+              params: params,
+              bodystmt: SyntaxTree::BodyStmt[
+                statements: SyntaxTree::Statements[body: body]
+              ]
+            ]
+
+            UnsignedFunction(node.name, params, body, context: self)
+          end
+
+          matcher.rule(:lambda) do |node|
+            node => SyntaxTree::MethodAddBlock[
+              call: SyntaxTree::CallNode[
+                receiver: nil,
+                operator: nil,
+                message: SyntaxTree::Ident[value: "lambda"]
+              ],
+              block: SyntaxTree::BlockNode[
+                block_var: block_var,
+                bodystmt: bodystmt
+              ]
+            ]
+
+            Lambda(
+              BlockParameters(block_var),
+              BodyStatements(bodystmt),
+              context: self
+            )
+          end
+        end
+      end
+    end
+  end
+end

@@ -6,14 +6,3 @@ import (
 	"text/tabwriter"
 	"text/template"
 )
-
-func runText() {
-	tmpl := "Hello {{.Name}}!\n{{range .Tasks}}  - {{.}}\n{{end}}"
-	t := template.Must(template.New("greet").Parse(tmpl))
-	t.Execute(os.Stdout, map[any]any{"Name": "Nathan", "Tasks": []any{"learn Go", "write examples", "ship it"}})
-	tw := tabwriter.NewWriter(os.Stdout, 0, 0, 2, " ", 0)
-	if _, err := tw.Write([]byte("Name\tAge\tRole\napple\t3\tfruit\nblue\t42\tcolour\n")); err != nil {
-		log.Fatal(err)
-	}
-	tw.Flush()
-}

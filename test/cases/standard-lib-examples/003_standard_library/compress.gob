@@ -23,7 +23,7 @@ module Main
   def gzipDemo(in_) # []byte
     var :buf, bytes.Buffer
     gw = gzip.NewWriter(@buf)
-    if _, err = gw.Write(in_)
+    if (_, err = gw.Write(in_))
       log.Fatal(err)
     end
     gw.Close()

@@ -4,7 +4,7 @@ require "log"
 
 module Main
   var person = Struct.new(
-    :Name
+    :Name,
     :Age
   )
 
@@ -17,7 +17,7 @@ module Main
     fmt.Printf("DER (%d bytes): %x\n", len(der), der)
 
     var :back, person
-    if _, err = asn1.Unmarshal(der, back)
+    if (_, err = asn1.Unmarshal(der, back))
       log.Fatal(err)
     end
     fmt.Printf("parsed: %+v\n", back)

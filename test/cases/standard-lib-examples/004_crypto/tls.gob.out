@@ -4,9 +4,3 @@ import (
 	"crypto/tls"
 	"fmt"
 )
-
-func runTLS() {
-	cfg := Config{MinVersion: tls.VersionTLS12, NextProtos: []any{"h2", "http/1.1"}}
-	fmt.Printf("min version: 0x%04x (TLS 1.2)\n", cfg.MinVersion)
-	fmt.Println("ALPN offers:", cfg.NextProtos)
-}

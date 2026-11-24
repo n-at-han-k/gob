@@ -7,16 +7,3 @@ import (
 	"net/http/httputil"
 	"net/url"
 )
-
-func runHTTPUtil() {
-	upstream := httptest.NewServer(http.HandlerFunc(func(w, r) {
-	fmt.Fprintf(w, "upstream got %s\n", r.URL.Path)
-}))
-	defer(upstream.Close())
-	target, _ := url.Parse(upstream.URL)
-	proxy := httptest.NewServer(httputil.NewSingleHostReverseProxy(target))
-	defer(proxy.Close())
-	resp, _ := http.Get(proxy.URL + "/echo")
-	dump, _ := httputil.DumpResponse(resp, true)
-	fmt.Print(string(dump))
-}

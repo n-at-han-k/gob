@@ -7,7 +7,7 @@ require "log"
 
 module Main
   def runDoc
-	  src := `// Package math2 does a little arithmetic.
+	  src = `// Package math2 does a little arithmetic.
 package math2
 
 // Add returns the sum of a and b.

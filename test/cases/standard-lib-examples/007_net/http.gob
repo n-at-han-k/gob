@@ -11,7 +11,7 @@ module Main
     }))
     defer srv.Close()
 
-    if resp, err = http.Get(srv.URL + "/greet")
+    if (resp, err = http.Get(srv.URL + "/greet"))
       log.Fatal(err)
     end
     defer resp.Body.Close()

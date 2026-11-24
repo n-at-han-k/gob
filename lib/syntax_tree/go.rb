@@ -5,6 +5,7 @@ require "gipper"
 
 require_relative "go/node"
 require_relative "go/nodes"
+require_relative "go/dsl"
 require_relative "go/visitor"
 require_relative "go/format"
 require_relative "go/pretty_print_visitor"

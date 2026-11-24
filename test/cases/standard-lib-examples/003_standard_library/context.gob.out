@@ -6,19 +6,3 @@ import (
 	"fmt"
 	"time"
 )
-
-func work(ctx context.Context) error {
-	/* unsupported: SyntaxTree::Go::SelectStmt */
-}
-
-func runContext() {
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
-	defer func() {
-		cancel()
-	}()
-	if err := work(ctx); errors.Is(err, context.DeadlineExceeded) {
-		fmt.Println("timed out as expected")
-	}
-	ctx2 := context.WithValue(context.Background(), key("user"), "nathan")
-	fmt.Println("user:", ctx2.Value(key("user")))
-}

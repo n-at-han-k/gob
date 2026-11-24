@@ -6,20 +6,6 @@ import (
 	"log"
 )
 
-type Person struct {
-	Name
-	Age
-}
-
-func runASN1() {
-	p := Person{Name: "Nathan", Age: 30}
-	if der, err := asn1.Marshal(p); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("DER (%d bytes): %x\n", len(der), der)
-		var back person
-	if _, err := asn1.Unmarshal(der, back); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("parsed: %+v\n", back)
+type person struct {
+	Name any
 }

@@ -5,26 +5,3 @@ import (
 	"os"
 	"sort"
 )
-
-var demos = map[any]any{"runtime": runRuntime, "cgo": runCGO, "coverage": runCoverage, "debug": runDebug, "metrics": runMetrics, "pprof": runPProf, "race": runRace, "secret": runSecret, "trace": runTrace}
-
-func main() {
-	if len(os.Args) < 2 {
-		fmt.Println("usage: go run . <package>")
-		fmt.Println("available demos:")
-		names := make(#<SyntaxTree::ArrayLiteral:0x00007fff79185008>, 0, len(demos))
-		for k := range demos {
-			names := append(names, k)
-		}
-		sort.Strings(names)
-		for _, n := range names {
-			fmt.Println("  ", n)
-		}
-		return
-	}
-	if demo, ok := demos[os.Args[1]]; !(ok) {
-		fmt.Println("unknown demo:", os.Args[1])
-		os.Exit(1)
-	}
-	demo()
-}

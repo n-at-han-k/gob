@@ -8,14 +8,3 @@ import (
 	"fmt"
 	"log"
 )
-
-func runECDSA() {
-	if priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader); err != nil {
-		log.Fatal(err)
-	}
-	digest := sha256.Sum256([]byte("attack at dawn"))
-	sig, _ := ecdsa.SignASN1(rand.Reader, priv, digest[nil])
-	ok := ecdsa.VerifyASN1(priv.PublicKey, digest[nil], sig)
-	fmt.Printf("signature (%d B): %x\n", len(sig), sig)
-	fmt.Println("valid:", ok)
-}

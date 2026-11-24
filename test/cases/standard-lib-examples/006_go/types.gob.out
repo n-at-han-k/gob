@@ -9,23 +9,3 @@ import (
 	"go/types"
 	"log"
 )
-
-func runTypes() {
-	src := "package p\nimport \"fmt\"\nfunc Greet(name string) { fmt.Println(\"hi\", name) }\nvar Answer = 21 * 2\n"
-	fset := token.NewFileSet()
-	if file, err := parser.ParseFile(fset, "p.go", src, 0); err != nil {
-		log.Fatal(err)
-	}
-	conf := types.Config{Importer: importer.Default()}
-	info := &types.Info{Defs: map[*ast.Ident]types.Object{}, Types: map[ast.Expr]types.TypeAndValue{}}
-	if pkg, err := conf.Check("p", fset, []*ast.File{file}, info); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("package:", pkg.Name())
-	for id, obj := range info.Defs {
-		if obj == nil {
-			continue
-		}
-		fmt.Printf("  %s :: %s\n", id.Name, obj.Type())
-	}
-}

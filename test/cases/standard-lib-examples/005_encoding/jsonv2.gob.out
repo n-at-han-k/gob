@@ -6,20 +6,7 @@ import (
 	"log"
 )
 
-type V2article struct {
-	Title
-	Tags
-}
-
-func runJSONv2() {
-	a := V2article{Title: "Learning Go", Tags: []any{"go", "v2"}}
-	if data, err := json.Marshal(a); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("marshalled:", string(data))
-		var back v2article
-	if err = json.Unmarshal(data, back); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("parsed: %+v\n", back)
+type v2article struct {
+	Title string
+	Tags  []string
 }

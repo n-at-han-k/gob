@@ -7,15 +7,3 @@ import (
 	"net/textproto"
 	"strings"
 )
-
-func runTextproto() {
-	raw := "Host: example.com\r\n" + "Content-Type: text/plain;\r\n charset=utf-8\r\n" + "X-Trace: abc\r\n" + "\r\n"
-	r := textproto.NewReader(bufio.NewReader(strings.NewReader(raw)))
-	if hdr, err := r.ReadMIMEHeader(); err != nil {
-		log.Fatal(err)
-	}
-	for k, v := range hdr {
-		fmt.Printf("  %s: %v\n", k, v)
-	}
-	fmt.Println("canonical:", textproto.CanonicalMIMEHeaderKey("x-trace"))
-}

@@ -56,7 +56,7 @@ module Main
         log.Fatal(err)
       end
 
-      if _, err = tw.Write(Array[byte].new(body))
+      if (_, err = tw.Write(Array[byte].new(body)))
         log.Fatal(err)
       end
     end

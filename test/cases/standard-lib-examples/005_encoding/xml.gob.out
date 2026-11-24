@@ -6,22 +6,8 @@ import (
 	"log"
 )
 
-type Book struct {
-	XMLName
-	Title
-	Author
-	Tags
-}
-
-func runXML() {
-	b := Book{Title: "Learning Go", Author: "Nathan", Tags: []any{"go", "stdlib"}}
-	if data, err := xml.MarshalIndent(b, "", "  "); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(xml.Header + string(data))
-		var back book
-	if err = xml.Unmarshal(data, back); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("parsed: %+v\n", back)
+type book struct {
+	XMLName       xml.Name
+	Title, Author string
+	Tags          []string
 }

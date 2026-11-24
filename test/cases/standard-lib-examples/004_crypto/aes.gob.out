@@ -7,21 +7,3 @@ import (
 	"fmt"
 	"log"
 )
-
-func runAES() {
-	key := make([]byte, 32)
-	rand.Read(key)
-	if block, err := aes.NewCipher(key); err != nil {
-		log.Fatal(err)
-	}
-	gcm, _ := cipher.NewGCM(block)
-	nonce := make([]byte, gcm.NonceSize())
-	rand.Read(nonce)
-	plaintext := []byte("secret message")
-	ct := gcm.Seal(nil, nonce, plaintext, nil)
-	if pt, err := gcm.Open(nil, nonce, ct, nil); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("ciphertext (%d bytes): %x\n", len(ct), ct)
-	fmt.Printf("decrypted: %s\n", pt)
-}
