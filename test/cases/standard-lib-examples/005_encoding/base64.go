@@ -1,9 +1,9 @@
 package main
 
 import (
-	"encoding/base64" 
-	"fmt"             
-	"log"             
+	"encoding/base64"
+	"fmt"
+	"log"
 )
 
 func runBase64() {

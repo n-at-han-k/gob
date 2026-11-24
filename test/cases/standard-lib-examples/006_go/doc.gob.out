@@ -12,12 +12,10 @@ import (
 func runDoc() {
 	src := "// Package math2 does a little arithmetic.\npackage math2\n\n// Add returns the sum of a and b.\nfunc Add(a, b int) int { return a + b }\n\n// Sub returns a minus b.\nfunc Sub(a, b int) int { return a - b }\n"
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, "math2.go", src, parser.ParseComments)
-	if err != nil {
+	if file, err := parser.ParseFile(fset, "math2.go", src, parser.ParseComments); err != nil {
 		log.Fatal(err)
 	}
-	p, err := doc.NewFromFiles(fset, []any{file}, "example.com/math2")
-	if err != nil {
+	if p, err := doc.NewFromFiles(fset, []any{file}, "example.com/math2"); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("package:", p.Name)

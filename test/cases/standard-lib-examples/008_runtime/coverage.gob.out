@@ -11,18 +11,15 @@ func runCoverage() {
 	defer func() {
 	os.RemoveAll(dir)
 }()
-	err := coverage.WriteMetaDir(dir)
-	if err != nil {
+	if err := coverage.WriteMetaDir(dir); err != nil {
 		fmt.Println("WriteMetaDir:", err)
 	} else {
 		fmt.Println("wrote meta to", dir)
 	}
-	err = coverage.WriteCountersDir(dir)
-	if err != nil {
+	if err = coverage.WriteCountersDir(dir); err != nil {
 		fmt.Println("WriteCountersDir:", err)
 	}
-	err = coverage.ClearCounters()
-	if err != nil {
+	if err = coverage.ClearCounters(); err != nil {
 		fmt.Println("ClearCounters:", err)
 	}
 	fmt.Println("(rebuild with `go build -cover` for these to succeed)")

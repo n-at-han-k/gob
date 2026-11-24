@@ -14,7 +14,7 @@ func runHTTPTrace() {
 	defer func() {
 	srv.Close()
 }()
-	trace := ClientTrace.new(map[any]any{GetConn: func(host) {
+	trace := ClientTrace{GetConn: func(host) {
 	fmt.Println("GetConn:", host)
 }, GotConn: func(info) {
 	fmt.Println("GotConn: reused=", info.Reused)
@@ -22,7 +22,7 @@ func runHTTPTrace() {
 	fmt.Println("WroteHeaders")
 }, GotFirstResponseByte: func() {
 	fmt.Println("GotFirstResponseByte")
-}})
+}}
 	req, _ := http.NewRequest("GET", srv.URL, nil)
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	resp, _ := http.DefaultTransport.RoundTrip(req)

@@ -2,33 +2,31 @@ require "encoding"
 require "fmt"
 
 module Main
-  class Colour
-    attr_accessor :R
-    attr_accessor :G
-    attr_accessor :B
-
-    # () -> ([]byte, error)
-    def MarshalText
-      return fmt.Appendf(nil, "#%02x%02x%02x", this.R, this.G, this.B), nil
+  var color = Struct.new(
+    :R,
+    :G,
+    :B
+  ) do
+    def MarshalText # -> ([]byte, error)
+      return fmt.Appendf(nil, "#%02x%02x%02x", self.R, self.G, self.B), nil
     end
 
-    # ([]byte) -> error
-    def UnmarshalText(text)
-      _, err = fmt.Sscanf(string(text), "#%02x%02x%02x", this.R, this.G, this.B)
-
+    def UnmarshalText(text) # []byte -> error
+      _, err = fmt.Sscanf(string(text), "#%02x%02x%02x", @self.R, @self.G, @self.B)
       return err
     end
   end
 
+  def runEncoding
 
-    # ()
-    def runEncoding
-      m = Colour.new(255, 128, 0)
-      txt, _ = m.MarshalText()
-      fmt.Printf("marshalled: %s\n", txt)
-      back = nil
-      u = back
-      _ = u.UnmarshalText("#0080ff".bytes)
-      fmt.Printf("parsed:     %+v\n", back)
-    end
+    var :m = Colour.new(255, 128, 0)
+    txt, _ = m.MarshalText()
+    fmt.Printf("marshalled: %s\n", txt)
+
+    var :back, colour
+    var :u, encoding.TextUnmarshaler
+    u = @back
+    _ = u.UnmarshalText(Array[byte].new("#0080ff"))
+    fmt.Printf("parsed:     %+v\n", back)
+  end
 end

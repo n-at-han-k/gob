@@ -3,31 +3,26 @@ require "fmt"
 require "log"
 
 module Main
-  class Book
-    attr_accessor :XMLName
-    attr_accessor :Title
-    attr_accessor :Author
-    attr_accessor :Tags
-  end
+  var book = Struct.new(
+	  XMLName: xml.Name,     # `xml:"book"`
+	  Title:   string,       # `xml:"title"`
+	  Author:  string,       # `xml:"author,attr"`
+	  Tags:    Array[string] # `xml:"tags>tag"`
+  )
 
+  def runXML
+    b = book.new(Title: "Learning Go", Author: "Nathan", Tags: Array[string].new("go", "stdlib"))
 
-    # ()
-    def runXML
-      b = Book.new(Title: "Learning Go", Author: "Nathan", Tags: %w[go stdlib])
-      data, err = xml.MarshalIndent(b, "", "  ")
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      fmt.Println(xml.Header + string(data))
-      back = nil
-      err = xml.Unmarshal(data, back)
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      fmt.Printf("parsed: %+v\n", back)
+    data, err = xml.MarshalIndent(b, "", "  ")
+    if err != nil
+      log.Fatal(err)
     end
+    fmt.Println(xml.Header + string(data))
+
+    var :back, book
+    if err = xml.Unmarshal(data, back)
+      log.Fatal(err)
+    end
+    fmt.Printf("parsed: %+v\n", back)
+  end
 end

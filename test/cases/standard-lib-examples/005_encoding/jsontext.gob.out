@@ -11,8 +11,7 @@ func runJSONText() {
 	src := "{\"name\":\"Nathan\",\"tags\":[\"go\",\"stdlib\"],\"count\":3}"
 	dec := jsontext.NewDecoder(strings.NewReader(src))
 	for {
-		tok, err := dec.ReadToken()
-		if err == io.EOF {
+		if tok, err := dec.ReadToken(); err == io.EOF {
 			break
 		}
 		if err != nil {

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"  
-	"os"   
-	"sort" 
+	"fmt"
+	"os"
+	"sort"
 )
 
 var demos = map[string]func(){
@@ -37,6 +37,7 @@ func main() {
 		}
 		return
 	}
+
 	demo, ok := demos[os.Args[1]]
 	if !ok {
 		fmt.Println("unknown demo:", os.Args[1])

@@ -4,19 +4,21 @@ require "crypto/rand"
 require "fmt"
 
 module Main
+  def runCipher
+    key = make(Array[byte], 16)
+    rand.Read(key)
+    block, _ = aes.NewCipher(key)
 
-    # ()
-    def runCipher
-      key = make([], 16)
-      rand.Read(key)
-      block, _ = aes.NewCipher(key)
-      iv = make([], block.BlockSize())
-      rand.Read(iv)
-      plaintext = "streaming plaintext".bytes
-      ct = make([], len(plaintext))
-      cipher.NewCTR(block, iv).XORKeyStream(ct, plaintext)
-      pt = make([], len(ct))
-      cipher.NewCTR(block, iv).XORKeyStream(pt, ct)
-      fmt.Printf("ct: %x\npt: %s\n", ct, pt)
-    end
+    iv = make(Array[byte], block.BlockSize())
+    rand.Read(iv)
+
+    plaintext = Array[byte].new("streaming plaintext")
+    ct = make(Array[byte], len(plaintext))
+    cipher.NewCTR(block, iv).XORKeyStream(ct, plaintext)
+
+    pt = make(Array[byte], len(ct))
+    cipher.NewCTR(block, iv).XORKeyStream(pt, ct)
+
+    fmt.Printf("ct: %x\npt: %s\n", ct, pt)
+  end
 end

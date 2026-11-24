@@ -2,10 +2,8 @@ require "crypto/sha1"
 require "fmt"
 
 module Main
-
-    # ()
-    def runSHA1
-      sum = sha1.Sum("hello".bytes)
-      fmt.Printf("sha1: %x\n", sum)
-    end
+  def runSHA1
+    sum = sha1.Sum(Array[byte].new("hello"))
+    fmt.Printf("sha1: %x\n", sum)
+  end
 end

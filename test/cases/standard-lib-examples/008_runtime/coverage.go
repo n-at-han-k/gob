@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"              
-	"os"               
-	"runtime/coverage" 
+	"fmt"
+	"os"
+	"runtime/coverage"
 )
 
 func runCoverage() {
@@ -15,11 +15,14 @@ func runCoverage() {
 	} else {
 		fmt.Println("wrote meta to", dir)
 	}
+
 	if err := coverage.WriteCountersDir(dir); err != nil {
 		fmt.Println("WriteCountersDir:", err)
 	}
+
 	if err := coverage.ClearCounters(); err != nil {
 		fmt.Println("ClearCounters:", err)
 	}
+
 	fmt.Println("(rebuild with `go build -cover` for these to succeed)")
 }

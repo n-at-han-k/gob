@@ -9,19 +9,17 @@ import (
 )
 
 func runAES() {
-	key := make([]any{}, 32)
+	key := make(#<SyntaxTree::ArrayLiteral:0x00007fff79410020>, 32)
 	rand.Read(key)
-	block, err := aes.NewCipher(key)
-	if err != nil {
+	if block, err := aes.NewCipher(key); err != nil {
 		log.Fatal(err)
 	}
 	gcm, _ := cipher.NewGCM(block)
-	nonce := make([]any{}, gcm.NonceSize())
+	nonce := make(#<SyntaxTree::ArrayLiteral:0x00007fff79478fd0>, gcm.NonceSize())
 	rand.Read(nonce)
-	plaintext := "secret message".bytes
+	plaintext := []byte("secret message")
 	ct := gcm.Seal(nil, nonce, plaintext, nil)
-	pt, err := gcm.Open(nil, nonce, ct, nil)
-	if err != nil {
+	if pt, err := gcm.Open(nil, nonce, ct, nil); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("ciphertext (%d bytes): %x\n", len(ct), ct)

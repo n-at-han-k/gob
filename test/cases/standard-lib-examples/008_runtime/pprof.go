@@ -1,19 +1,18 @@
 package main
 
 import (
-	"fmt"           
-	"os"            
-	"runtime"       
-	"runtime/pprof" 
+	"fmt"
+	"os"
+	"runtime"
+	"runtime/pprof"
 )
 
 func runPProf() {
-
 	junk := make([][]byte, 0, 100)
 	for range 100 {
 		junk = append(junk, make([]byte, 1024))
 	}
-	runtime.GC() 
+	runtime.GC()
 
 	f, err := os.CreateTemp("", "heap-*.prof")
 	if err != nil {

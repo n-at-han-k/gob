@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"  
-	"os"   
-	"sort" 
+	"fmt"
+	"os"
+	"sort"
 )
 
 var demos = map[string]func(){
@@ -27,16 +27,19 @@ func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("usage: go run . <package>")
 		fmt.Println("available demos:")
+
 		names := make([]string, 0, len(demos))
 		for k := range demos {
 			names = append(names, k)
 		}
+
 		sort.Strings(names)
 		for _, n := range names {
 			fmt.Println("  ", n)
 		}
 		return
 	}
+
 	demo, ok := demos[os.Args[1]]
 	if !ok {
 		fmt.Println("unknown demo:", os.Args[1])

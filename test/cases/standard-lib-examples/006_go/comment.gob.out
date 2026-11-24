@@ -7,8 +7,8 @@ import (
 
 func runComment() {
 	src := "Package widget draws widgets.\n\n# Overview\n\nWidgets come in three sizes:\n  - small\n  - medium\n  - large\n\nSee [example.com] for details.\n\n[example.com]: https://example.com\n"
-	p := nil
+		var p comment.Parser
 	doc := p.Parse(src)
-	pr := nil
+		var pr comment.Printer
 	fmt.Print(string(pr.Markdown(doc)))
 }

@@ -4,13 +4,14 @@ import "fmt"
 
 const pi = 3.14159
 
-const statusActive   = "active"
-const statusInactive = "inactive"
+const (
+	statusActive   = "active"
+	statusInactive = "inactive"
+)
 
 var packageLevel = "I live at package scope"
 
 func main() {
-
 	var a int
 	var b string
 	var c bool
@@ -32,9 +33,9 @@ func main() {
 	x, y = 10, 20.5
 	fmt.Println(x, y)
 
-var host    = "localhost"
-var port    = 8080
-var enabled = true
+	host := "localhost"
+	port := 8080
+	enabled := true
 	fmt.Println(host, port, enabled)
 
 	var count int32 = 100

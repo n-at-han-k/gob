@@ -3,19 +3,18 @@ require "fmt"
 require "log"
 
 module Main
+  def runBase32
+    src = Array[byte].new("hello base32")
 
-    # ()
-    def runBase32
-      src = "hello base32".bytes
-      encoded = base32.StdEncoding.EncodeToString(src)
-      fmt.Println("std:  ", encoded)
-      decoded, err = base32.StdEncoding.DecodeString(encoded)
+    encoded = base32.StdEncoding.EncodeToString(src)
+    fmt.Println("std:  ", encoded)
 
-      if err != nil
-        log.Fatal(err)
-      end
-
-      fmt.Printf("decoded: %s\n", decoded)
-      fmt.Println("hex:  ", base32.HexEncoding.EncodeToString(src))
+    decoded, err = base32.StdEncoding.DecodeString(encoded)
+    if err != nil
+      log.Fatal(err)
     end
+    fmt.Printf("decoded: %s\n", decoded)
+
+    fmt.Println("hex:  ", base32.HexEncoding.EncodeToString(src))
+  end
 end

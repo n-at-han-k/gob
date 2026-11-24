@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"             
-	"runtime/metrics" 
+	"fmt"
+	"runtime/metrics"
 )
 
 func runMetrics() {
-
 	samples := []metrics.Sample{
 		{Name: "/memory/classes/heap/objects:bytes"},
 		{Name: "/sched/goroutines:goroutines"},

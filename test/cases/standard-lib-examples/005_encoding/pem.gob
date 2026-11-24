@@ -3,21 +3,18 @@ require "fmt"
 require "os"
 
 module Main
+  def runPEM
+    block = @pem.Block.new(
+      Type: "MESSAGE",
+      Headers: Hash[string, string].new(
+        Comment:  "learning-go example"
+      ),
+      Bytes: Array[byte].new("some binary payload")
+    )
+    pem.Encode(os.Stdout, block)
 
-    # ()
-    def runPEM
-      block =
-        Block.new(
-          Type: "MESSAGE",
-          Headers: {
-            "Comment" => "learning-go example"
-          },
-          Bytes: "some binary payload".bytes
-        )
-
-      pem.Encode(os.Stdout, block)
-      encoded = pem.EncodeToMemory(block)
-      got, rest = pem.Decode(encoded)
-      fmt.Printf("type=%s bytes=%q leftover=%d\n", got.Type, got.Bytes, len(rest))
-    end
+    encode = pem.EncodeToMemory(block)
+    got, rest = pem.Decode(encoded)
+    fmt.Printf("type=%s bytes=%q leftover=%d\n", got.Type, got.Bytes, len(rest))
+  end
 end

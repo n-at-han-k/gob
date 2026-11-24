@@ -52,7 +52,7 @@ func runContainer() {
 	fmt.Println()
 	r := ring.New(5)
 	for i := range r.Len() {
-		r.#<SyntaxTree::Const:0x00007fff673a63a8> = (i)
+		r.#<SyntaxTree::Const:0x00007fff771c6a00> = (i)
 		r = r.Next()
 	}
 	r.Do(func(v) {

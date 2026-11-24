@@ -1,10 +1,10 @@
 package main
 
 import (
-	"bytes"        
-	"encoding/gob" 
-	"fmt"          
-	"log"          
+	"bytes"
+	"encoding/gob"
+	"fmt"
+	"log"
 )
 
 type message struct {

@@ -4,18 +4,15 @@ require "fmt"
 require "log"
 
 module Main
+  def runHKDF
+    secret = Array[byte].new("some shared secret bytes")
+    salt = Array[byte].new("optional salt")
+    info = Array[byte].new("app: session key v1")
 
-    # ()
-    def runHKDF
-      secret = "some shared secret bytes".bytes
-      salt = "optional salt".bytes
-      info = "app: session key v1".bytes
-      key, err = hkdf.Key(sha256.New, secret, salt, string(info), 32)
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      fmt.Printf("derived 32-byte key: %x\n", key)
+    key, err = hkdf.Key(sha256.New, secret, salt, string(info), 32)
+    if err != nil
+      log.Fatal(err)
     end
+    fmt.Printf("derived 32-byte key: %x\n", key)
+  end
 end

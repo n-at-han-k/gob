@@ -2,13 +2,12 @@ require "crypto/subtle"
 require "fmt"
 
 module Main
+  def runSubtle
+    a = Array[byte].new("expected-token")
+    b = Array[byte].new("expected-token")
+    c = Array[byte].new("wrong-token   ")
 
-    # ()
-    def runSubtle
-      a = "expected-token".bytes
-      b = "expected-token".bytes
-      c = "wrong-token   ".bytes
-      fmt.Println("equal (constant time):", subtle.ConstantTimeCompare(a, b) == 1)
-      fmt.Println("not equal:            ", subtle.ConstantTimeCompare(a, c) == 1)
-    end
+    fmt.Println("equal (constant time):", subtle.ConstantTimeCompare(a, b) == 1)
+    fmt.Println("not equal:            ", subtle.ConstantTimeCompare(a, c) == 1)
+  end
 end

@@ -10,8 +10,7 @@ import (
 
 func runECDH() {
 	curve := ecdh.P256()
-	alice, err := curve.GenerateKey(rand.Reader)
-	if err != nil {
+	if alice, err := curve.GenerateKey(rand.Reader); err != nil {
 		log.Fatal(err)
 	}
 	bob, _ := curve.GenerateKey(rand.Reader)

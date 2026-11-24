@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"     
-	"runtime" 
+	"fmt"
+	"runtime"
 )
 
 func runRuntime() {
@@ -17,6 +17,5 @@ func runRuntime() {
 
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
-	fmt.Printf("heap alloc: %d KiB, sys: %d KiB, num GC: %d\n",
-		m.HeapAlloc/1024, m.Sys/1024, m.NumGC)
+	fmt.Printf("heap alloc: %d KiB, sys: %d KiB, num GC: %d\n", m.HeapAlloc/1024, m.Sys/1024, m.NumGC)
 }

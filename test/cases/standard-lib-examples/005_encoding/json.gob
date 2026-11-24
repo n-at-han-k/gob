@@ -4,36 +4,35 @@ require "log"
 require "strings"
 
 module Main
-  class Article
-    attr_accessor :Title
-    attr_accessor :Views
-    attr_accessor :Tags
-    attr_accessor :internal
-  end
+  var article = Struct.new(
+    Title:    string        # `json:"title"`
+    Views:    int           # `json:"views,omitempty"`
+    Tags:     Array[string] # `json:"tags"`
+    internal: string
+  )
 
+  def runJSON
+    a = Article.new(Title: "Learning Go", Views: 12, Tags: Array[string].new("go", "stdlib"))
 
-    # ()
-    def runJSON
-      a = Article.new(Title: "Learning Go", Views: 12, Tags: %w[go stdlib])
-      data, err = json.Marshal(a)
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      fmt.Println("compact:", string(data))
-      pretty, _ = json.MarshalIndent(a, "", "  ")
-      fmt.Println(string(pretty))
-      back = nil
-      json.Unmarshal(data, back)
-      fmt.Printf("parsed: %+v\n", back)
-      stream = "{\"n\":1}{\"n\":2}{\"n\":3}"
-      dec = json.NewDecoder(strings.NewReader(stream))
-
-      while dec.More()
-        v = nil
-        dec.Decode(v)
-        fmt.Println("stream:", v)
-      end
+    data, err = json.Marshal(a)
+    if err != nil
+      log.Fatal(err)
     end
+    fmt.Println("compact:", string(data))
+
+    pretty, _ = json.MarshalIndent(a, "", "  ")
+    fmt.Println(string(pretty))
+
+    var :back, Article
+    json.Unmarshal(data, @back)
+    fmt.Printf("parsed: %+v\n", back)
+
+    stream = `{"n":1}{"n":2}{"n":3}`
+    dec = json.NewDecoder(strings.NewReader(stream))
+    while dec.More()
+      var :v, Hash[string, int]
+      dec.Decode(@v)
+      fmt.Println("stream:", v)
+    end
+  end
 end

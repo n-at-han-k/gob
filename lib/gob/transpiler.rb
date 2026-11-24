@@ -28,6 +28,16 @@ module Gob
       @class_stack.last
     end
 
+    def contains_yield?(node)
+      return false unless node
+      return node.any? { |n| contains_yield?(n) } if node.is_a?(Array)
+      return true if defined?(SyntaxTree::YieldNode) && node.is_a?(SyntaxTree::YieldNode)
+      return false unless node.respond_to?(:child_nodes)
+      node.child_nodes.compact.any? { |n| contains_yield?(n) }
+    rescue
+      false
+    end
+
     def transpile(source)
       @source = source
       @scopes = [Set.new]
@@ -75,6 +85,7 @@ module Gob
 
       args_node = node
       args_node = args_node.arguments if args_node.is_a?(SyntaxTree::ArgParen)
+      args_node = args_node.contents if args_node.is_a?(SyntaxTree::Paren)
       parts = args_node.is_a?(SyntaxTree::Args) ? args_node.parts : Array(args_node)
       visited = visit_all(parts)
 
@@ -302,19 +313,33 @@ module Gob
       when SyntaxTree::VarField
         name = node.value
         if name.is_a?(SyntaxTree::IVar)
-          return SyntaxTree::Go::SelectorExpr.new(x: SyntaxTree::Go::Ident.new(name: "self", location: nil, comments: []), sel: SyntaxTree::Go::Ident.new(name: name.value.delete_prefix("@"), location: nil, comments: []))
+          n = name.value.delete_prefix("@")
+          return SyntaxTree::Go::UnaryExpr.new(op_pos: nil, op: "&".to_sym, x: SyntaxTree::Go::Ident.new(name: n, location: nil, comments: []))
+        end
+        if name.is_a?(SyntaxTree::CVar)
+          n = name.value.delete_prefix("@@")
+          return SyntaxTree::Go::StarExpr.new(star: nil, x: SyntaxTree::Go::Ident.new(name: n, location: nil, comments: []))
         end
         name = name.value if name.is_a?(SyntaxTree::Ident) || name.is_a?(SyntaxTree::Const)
         name.to_s
       when SyntaxTree::Ident
         node.value
       when SyntaxTree::IVar
-        SyntaxTree::Go::SelectorExpr.new(x: SyntaxTree::Go::Ident.new(name: "self", location: nil, comments: []), sel: SyntaxTree::Go::Ident.new(name: node.value.delete_prefix("@"), location: nil, comments: []))
+        n = node.value.delete_prefix("@")
+        SyntaxTree::Go::UnaryExpr.new(op_pos: nil, op: "&".to_sym, x: SyntaxTree::Go::Ident.new(name: n, location: nil, comments: []))
+      when SyntaxTree::CVar
+        n = node.value.delete_prefix("@@")
+        SyntaxTree::Go::StarExpr.new(star: nil, x: SyntaxTree::Go::Ident.new(name: n, location: nil, comments: []))
       when SyntaxTree::ConstRef
         node.constant.value
       when SyntaxTree::VarRef
         if node.value.is_a?(SyntaxTree::IVar)
-          return SyntaxTree::Go::SelectorExpr.new(x: SyntaxTree::Go::Ident.new(name: "self", location: nil, comments: []), sel: SyntaxTree::Go::Ident.new(name: node.value.value.delete_prefix("@"), location: nil, comments: []))
+          n = node.value.value.delete_prefix("@")
+          return SyntaxTree::Go::UnaryExpr.new(op_pos: nil, op: "&".to_sym, x: SyntaxTree::Go::Ident.new(name: n, location: nil, comments: []))
+        end
+        if node.value.is_a?(SyntaxTree::CVar)
+          n = node.value.value.delete_prefix("@@")
+          return SyntaxTree::Go::StarExpr.new(star: nil, x: SyntaxTree::Go::Ident.new(name: n, location: nil, comments: []))
         end
         node.value.is_a?(SyntaxTree::Ident) ? node.value.value : node.value.to_s
       when SyntaxTree::ARefField, SyntaxTree::Field, SyntaxTree::ConstPathField
@@ -383,6 +408,8 @@ module Gob
                 end
               end
               [v]
+            elsif values.length == lhs.length
+              values
             else
               [array_composite(values)]
             end

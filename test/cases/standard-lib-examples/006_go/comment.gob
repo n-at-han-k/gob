@@ -2,15 +2,24 @@ require "fmt"
 require "go/doc/comment"
 
 module Main
+  def runComment
+	  src = `Package widget draws widgets.
 
-    # ()
-    def runComment
-      src =
-        "Package widget draws widgets.\n\n# Overview\n\nWidgets come in three sizes:\n  - small\n  - medium\n  - large\n\nSee [example.com] for details.\n\n[example.com]: https://example.com\n"
+# Overview
 
-      p = nil
-      doc = p.Parse(src)
-      pr = nil
-      fmt.Print(string(pr.Markdown(doc)))
-    end
+Widgets come in three sizes:
+  - small
+  - medium
+  - large
+
+See [example.com] for details.
+
+[example.com]: https://example.com
+`
+    var :p, comment.Parser
+    doc = p.Parse(src)
+
+    var :pr, comment.Printer
+    fmt.Print(string(pr.Markdown(doc)))
+  end
 end

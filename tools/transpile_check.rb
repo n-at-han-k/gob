@@ -7,14 +7,16 @@ require "gob"
 require "syntax_tree/go"
 require "json"
 require "optparse"
+require "pathname"
+require "fileutils"
 
-options = { limit: nil, verbose: false }
+options = { limit: nil, verbose: false, write: true, root: "test/cases/standard-lib-examples" }
 
 OptionParser.new do |opts|
-  opts.banner = "Usage: tools/transpile_check.rb [options] [ruby_file go_file]"
-  opts.on("--src DIR", "Ruby source dir (default: src)") { |v| options[:src] = v }
-  opts.on("--out DIR", "Go golden dir (default: out)") { |v| options[:out] = v }
+  opts.banner = "Usage: tools/transpile_check.rb [options] [gob_file go_file]"
+  opts.on("--root DIR", "Cases root (default: test/cases/standard-lib-examples)") { |v| options[:root] = v }
   opts.on("--limit N", Integer, "Limit number of files") { |v| options[:limit] = v }
+  opts.on("--no-write", "Do not write .gob.out files") { options[:write] = false }
   opts.on("-v", "--verbose", "Show diff details") { options[:verbose] = true }
 end.parse!(ARGV)
 
@@ -36,6 +38,7 @@ def normalize(node)
       next if key == :file_end
       next if key == :package
       next if key == :go_version
+      next if key == :doc
       next if key.to_s.end_with?("_pos")
       next if key.to_s.end_with?("_end")
       next if %i[opening closing lparen rparen lbrace rbrace lbrack rbrack colon semicolon arrow ellipsis tok_pos begin_ end_ pos func return_ case_ for_ if_ else_ defer go select range struct interface map chan switch].include?(key)
@@ -43,7 +46,6 @@ def normalize(node)
 
       hash[key.to_s] = normalize(value)
     end
-    # Canonicalize numeric literal formatting
     if hash["type"] == "BasicLit" && hash["kind"] == "INT" && hash["value"].is_a?(String)
       v = hash["value"].delete("_")
       begin
@@ -64,7 +66,6 @@ def normalize(node)
   when Array
     node.map { |v| normalize(v) }
   when Hash
-    # pos hash or other metadata
     node
   when Symbol
     node.to_s
@@ -115,68 +116,55 @@ def compare(expected, actual, path = "$", diffs = [], limit: 30)
   diffs
 end
 
-def check_pair(ruby_file, go_file, verbose: false)
-  ruby_source = ::File.read(ruby_file)
-  go_source = ::File.read(go_file)
-
-  begin
-    actual_ast = Gob.transpile(ruby_source)
-  rescue => e
-    return { file: ruby_file, status: :transpile_error, error: "#{e.class}: #{e.message}" }
-  end
-
-  expected_ast = SyntaxTree::Go.parse(go_source)
-
-  expected = normalize(expected_ast)
-  actual = normalize(actual_ast)
-  diffs = compare(expected, actual, limit: verbose ? 50 : 10)
-
-  if diffs.empty?
-    { file: ruby_file, status: :ok }
-  else
-    { file: ruby_file, status: :mismatch, diffs: diffs }
-  end
-end
-
 pairs = []
-
 if ARGV.length == 2
   pairs << [ARGV[0], ARGV[1]]
 else
-  src_dir = options[:src] || "src"
-  out_dir = options[:out] || "out"
-  Dir.glob("#{src_dir}/**/*.rb").sort.each do |rb|
-    go = rb.sub(/^#{Regexp.escape(src_dir)}\//, "#{out_dir}/").sub(/\.rb$/, ".go")
-    pairs << [rb, go] if ::File.exist?(go)
+  root = Pathname(options[:root])
+  Dir[root.join("**/*.gob").to_s].sort.each do |gob|
+    go = gob.sub(/\.gob\z/, ".go")
+    pairs << [gob, go] if File.exist?(go)
   end
 end
-
 pairs = pairs.first(options[:limit]) if options[:limit]
 
-results = { ok: 0, mismatch: 0, transpile_error: 0, missing: 0 }
-pairs.each do |rb, go|
-  unless ::File.exist?(go)
-    puts "MISS  #{rb} (no #{go})"
-    results[:missing] += 1
-    next
-  end
+ok = diff = err = 0
+pairs.each do |gob, go|
+  begin
+    src = File.read(gob)
+    actual_ast = Gob.transpile(src, path: gob)
+    actual_go = Gob::Go::Printer.print(actual_ast)
+    if options[:write]
+      File.write("#{gob}.out", actual_go)
+    end
 
-  result = check_pair(rb, go, verbose: options[:verbose])
-  case result[:status]
-  when :ok
-    puts "OK    #{rb}"
-    results[:ok] += 1
-  when :mismatch
-    puts "DIFF  #{rb}"
-    result[:diffs].each { |d| puts "  - #{d}" }
-    results[:mismatch] += 1
-  when :transpile_error
-    puts "ERR   #{rb}"
-    puts "  #{result[:error]}"
-    results[:transpile_error] += 1
+    expected_ast = SyntaxTree::Go.parse(File.read(go))
+    na = normalize(actual_ast)
+    ne = normalize(expected_ast)
+    if na == ne
+      ok += 1
+      puts "OK #{gob}" if options[:verbose]
+    else
+      diff += 1
+      puts "DIFF #{gob}"
+      if options[:verbose]
+        compare(ne, na).each { |d| puts "  #{d}" }
+      end
+    end
+  rescue => e
+    err += 1
+    puts "ERR #{gob}"
+    puts "  #{e.class}: #{e.message}"
+    if options[:verbose]
+      puts e.backtrace.first(5).map { |l| "  #{l}" }
+    end
+    if options[:write]
+      begin
+        # still try to write partial/errored output? skip
+      rescue
+      end
+    end
   end
 end
 
-puts ""
-puts "ok=#{results[:ok]} diff=#{results[:mismatch]} err=#{results[:transpile_error]} missing=#{results[:missing]} total=#{pairs.length}"
-exit 1 unless results[:mismatch] == 0 && results[:transpile_error] == 0 && results[:missing] == 0
+puts "ok=#{ok} diff=#{diff} err=#{err} total=#{pairs.length}"

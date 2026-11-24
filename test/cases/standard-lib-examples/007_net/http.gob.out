@@ -15,8 +15,7 @@ func runHTTP() {
 	defer func() {
 	srv.Close()
 }()
-	resp, err := http.Get(srv.URL + "/greet")
-	if err != nil {
+	if resp, err := http.Get(srv.URL + "/greet"); err != nil {
 		log.Fatal(err)
 	}
 	defer func() {

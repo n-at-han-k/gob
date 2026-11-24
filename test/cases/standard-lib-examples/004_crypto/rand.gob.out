@@ -8,9 +8,8 @@ import (
 )
 
 func runRand() {
-	buf := make([]any{}, 16)
-	_, err := rand.Read(buf)
-	if err != nil {
+	buf := make(#<SyntaxTree::ArrayLiteral:0x00007fff79179e88>, 16)
+	if _, err := rand.Read(buf); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("random bytes: %x\n", buf)

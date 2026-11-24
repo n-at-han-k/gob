@@ -6,11 +6,11 @@ import (
 )
 
 func runSHA3() {
-	fmt.Printf("Sum256: %x\n", sha3.Sum256("hello".bytes))
-	fmt.Printf("Sum512: %x\n", sha3.Sum512("hello".bytes))
+	fmt.Printf("Sum256: %x\n", sha3.Sum256([]byte("hello")))
+	fmt.Printf("Sum512: %x\n", sha3.Sum512([]byte("hello")))
 	shake := sha3.NewSHAKE128()
-	shake.Write("hello".bytes)
-	out := make([]any{}, 42)
+	shake.Write([]byte("hello"))
+	out := make(#<SyntaxTree::ArrayLiteral:0x00007fff79665460>, 42)
 	shake.Read(out)
 	fmt.Printf("shake128 (42 B): %x\n", out)
 }

@@ -7,11 +7,10 @@ import (
 )
 
 func runHex() {
-	src := "hello hex".bytes
+	src := []byte("hello hex")
 	encoded := hex.EncodeToString(src)
 	fmt.Println("encoded:", encoded)
-	back, err := hex.DecodeString(encoded)
-	if err != nil {
+	if back, err := hex.DecodeString(encoded); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("decoded: %s\n", back)

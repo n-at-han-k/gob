@@ -2,37 +2,32 @@ require "fmt"
 require "runtime/metrics"
 
 module Main
+  def runMetrics
+    samples = Array[metrics.Sample].new(
+      { Name: "/memory/classes/heap/objects:bytes" },
+      { Name: "/sched/goroutines:goroutines" },
+      { Name: "/gc/cycles/total:gc-cycles" }
+    )
+    metrics.Read(samples)
 
-    # ()
-    def runMetrics
-      samples = [
-        { Name => "/memory/classes/heap/objects:bytes" },
-        { Name => "/sched/goroutines:goroutines" },
-        { Name => "/gc/cycles/total:gc-cycles" }
-      ]
-
-      metrics.Read(samples)
-
-      samples.each do |_, s|
-        case s.Value.Kind()
-        when metrics.KindUint64
-          fmt.Printf("  %-40s %d\n", s.Name, s.Value.Uint64())
-        when metrics.KindFloat64
-          fmt.Printf("  %-40s %f\n", s.Name, s.Value.Float64())
-        when metrics.KindBad
-          fmt.Printf("  %-40s (unsupported)\n", s.Name)
-        end
-      end
-
-      all = metrics.All()
-      fmt.Printf("\n%d metrics available; first 5 names:\n", len(all))
-
-      all.each do |i, d|
-        if i == 5
-          break
-        end
-
-        fmt.Println("  ", d.Name)
+    samples.each do |_, s|
+      case s.Value.Kind()
+      when metrics.KindUint64
+        fmt.Printf("  %-40s %d\n", s.Name, s.Value.Uint64())
+      when metrics.KindFloat64
+        fmt.Printf("  %-40s %f\n", s.Name, s.Value.Float64())
+      when metrics.KindBad
+        fmt.Printf("  %-40s (unsupported)\n", s.Name)
       end
     end
+
+    all = metrics.All()
+    fmt.Printf("\n%d metrics available; first 5 names:\n", len(all))
+    all.each do |i, d|
+      if i == 5
+        break
+      end
+      fmt.Println("  ", d.Name)
+    end
+  end
 end

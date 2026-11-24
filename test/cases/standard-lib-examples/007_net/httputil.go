@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"               
-	"net/http"          
-	"net/http/httptest" 
-	"net/http/httputil" 
-	"net/url"           
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/http/httputil"
+	"net/url"
 )
 
 func runHTTPUtil() {

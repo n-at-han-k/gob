@@ -16,8 +16,8 @@ func main() {
 		var c bool
 		var d float64
 	fmt.Println("zero values:", a, b, c, d)
-	name := "Nathan"
-	age := 30
+		var name string = "Nathan"
+		var age int = 30
 	fmt.Println(name, age)
 	city := "Wellington"
 	country := "New Zealand"
@@ -31,21 +31,21 @@ func main() {
 	enabled := true
 	fmt.Println(host, port, enabled)
 		var count int32 = 100
-	big := int64(count) * 1000
+		var big int64 = int64(count) * 1000
 	fmt.Println(big)
 		const greeting = "hi"
 	fmt.Println(greeting, pi, statusActive, statusInactive)
 	fmt.Println(packageLevel)
 	shadow := "outer"
 	{
-		shadow = "inner"
+		shadow := "inner"
 		fmt.Println(shadow)
 	}
 	fmt.Println(shadow)
 	swap1, swap2 := "first", "second"
 	swap1, swap2 = swap2, swap1
 	fmt.Println(swap1, swap2)
-	_, kept := ignoreOne
+	_, kept := ignoreOne()
 	fmt.Println(kept)
 }
 

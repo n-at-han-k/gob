@@ -13,14 +13,12 @@ import (
 func runTypes() {
 	src := "package p\nimport \"fmt\"\nfunc Greet(name string) { fmt.Println(\"hi\", name) }\nvar Answer = 21 * 2\n"
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, "p.go", src, 0)
-	if err != nil {
+	if file, err := parser.ParseFile(fset, "p.go", src, 0); err != nil {
 		log.Fatal(err)
 	}
-	conf := Config.new(map[any]any{Importer: importer.Default()})
-	info := Info.new(map[any]any{Defs: map[any]any{}, Types: map[any]any{}})
-	pkg, err := conf.Check("p", fset, []any{file}, info)
-	if err != nil {
+	conf := types.Config{Importer: importer.Default()}
+	info := &types.Info{Defs: map[*ast.Ident]types.Object{}, Types: map[ast.Expr]types.TypeAndValue{}}
+	if pkg, err := conf.Check("p", fset, []*ast.File{file}, info); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("package:", pkg.Name())

@@ -1,15 +1,14 @@
 package main
 
 import (
-	"fmt"          
-	"net/http"     
-	"net/http/cgi" 
-	"net/http/httptest" 
-	"os"           
+	"fmt"
+	"net/http"
+	"net/http/cgi"
+	"net/http/httptest"
+	"os"
 )
 
 func runCGI() {
-
 	os.Setenv("REQUEST_METHOD", "GET")
 	os.Setenv("SERVER_PROTOCOL", "HTTP/1.1")
 	os.Setenv("HTTP_HOST", "example.local")

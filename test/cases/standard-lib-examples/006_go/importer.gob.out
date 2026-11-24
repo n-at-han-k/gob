@@ -7,8 +7,7 @@ import (
 )
 
 func runImporter() {
-	pkg, err := importer.Default().Import("fmt")
-	if err != nil {
+	if pkg, err := importer.Default().Import("fmt"); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("package:", pkg.Path())

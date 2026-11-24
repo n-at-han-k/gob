@@ -6,19 +6,17 @@ require "fmt"
 require "log"
 
 module Main
-
-    # ()
-    def runECDSA
-      priv, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      digest = sha256.Sum256("attack at dawn".bytes)
-      sig, _ = ecdsa.SignASN1(rand.Reader, priv, digest)
-      ok = ecdsa.VerifyASN1(priv.PublicKey, digest, sig)
-      fmt.Printf("signature (%d B): %x\n", len(sig), sig)
-      fmt.Println("valid:", ok)
+  def runECDSA
+    priv, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+    if err != nil
+      log.Fatal(err)
     end
+
+    digest = sha256.Sum256(Array[byte].new("attack at dawn"))
+    sig, _ = ecdsa.SignASN1(rand.Reader, priv, digest[])
+    ok = ecdsa.VerifyASN1(priv.PublicKey, digest[], sig)
+
+    fmt.Printf("signature (%d B): %x\n", len(sig), sig)
+    fmt.Println("valid:", ok)
+  end
 end

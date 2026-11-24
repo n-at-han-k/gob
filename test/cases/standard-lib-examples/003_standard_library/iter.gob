@@ -7,7 +7,7 @@ module Main
     # (int) -> iter.Seq[int]
     def countdown(from)
       return(
-        lambda do |yield_|
+        lambda do
           i = from
 
           while i >= 0

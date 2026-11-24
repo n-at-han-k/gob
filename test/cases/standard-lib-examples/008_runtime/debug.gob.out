@@ -6,8 +6,7 @@ import (
 )
 
 func runDebug() {
-	info, ok := debug.ReadBuildInfo()
-	if ok {
+	if info, ok := debug.ReadBuildInfo(); ok {
 		fmt.Println("go version:", info.GoVersion)
 		fmt.Println("main path: ", info.Main.Path)
 		for _, s := range info.Settings {
@@ -16,7 +15,7 @@ func runDebug() {
 			}
 		}
 	}
-	stats := nil
+		var stats debug.GCStats
 	debug.ReadGCStats(stats)
 	fmt.Printf("gc runs: %d, total pause: %v\n", stats.NumGC, stats.PauseTotal)
 	stack := debug.Stack()

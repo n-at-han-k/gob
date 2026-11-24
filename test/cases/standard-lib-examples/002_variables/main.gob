@@ -7,16 +7,16 @@ module Main
 
   packageLevel = "I live at package scope"
 
-  # ()
   def main
-    define_var :a, :int
-    define_var :b, :string
-    define_var :c, :bool
-    define_var :d, :float64
+    var :a, int
+    var :b, string
+    var :c, bool
+    var :d, float64
+
     fmt.Println("zero values:", a, b, c, d)
 
-    name = "Nathan"
-    age = 30
+    var :name, string, "Nathan"
+    var :age, int, 30
     fmt.Println(name, age)
 
     city = "Wellington"
@@ -34,11 +34,11 @@ module Main
     enabled = true
     fmt.Println(host, port, enabled)
 
-    define_var :count, :int32, 100
-    big = int64(count) * 1000
+    var :count, :int32, 100
+    var :big, int64, int64(count) * 1000
     fmt.Println(big)
 
-    define_const :greeting, "hi"
+    const :greeting, "hi"
     fmt.Println(greeting, PI, STATUS_ACTIVE, STATUS_INACTIVE)
 
     fmt.Println(packageLevel)
@@ -54,12 +54,11 @@ module Main
     swap1, swap2 = swap2, swap1
     fmt.Println(swap1, swap2)
 
-    _, kept = ignoreOne
+    _, kept = ignoreOne()
     fmt.Println(kept)
   end
 
-  # () -> (string, string)
-  def ignoreOne 
+  def ignoreOne # -> (string, string)
     return "discarded", "kept"
   end
 end

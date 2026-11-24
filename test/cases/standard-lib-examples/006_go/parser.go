@@ -1,14 +1,13 @@
 package main
 
 import (
-	"fmt"       
-	"go/parser" 
-	"go/token"  
-	"log"       
+	"fmt"
+	"go/parser"
+	"go/token"
+	"log"
 )
 
 func runParser() {
-
 	expr, err := parser.ParseExpr("1 + 2*3")
 	if err != nil {
 		log.Fatal(err)

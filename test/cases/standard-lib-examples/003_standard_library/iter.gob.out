@@ -1,0 +1,20 @@
+package main
+
+import (
+	"fmt"
+	"iter"
+	"slices"
+)
+
+func countdown(from int) (iter.Seq[int]) {
+	return (/* unsupported: Array */)
+}
+
+func runIter() {
+	for n := range countdown(3) {
+		fmt.Println(n)
+	}
+	for i, v := range slices.All([]any{"a", "b", "c"}) {
+		fmt.Println(i, v)
+	}
+}

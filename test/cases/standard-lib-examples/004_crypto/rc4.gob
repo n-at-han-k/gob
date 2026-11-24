@@ -3,21 +3,20 @@ require "fmt"
 require "log"
 
 module Main
-
-    # ()
-    def runRC4
-      c, err = rc4.NewCipher("weakkey".bytes)
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      pt = "legacy data".bytes
-      ct = make([], len(pt))
-      c.XORKeyStream(ct, pt)
-      c2, _ = rc4.NewCipher("weakkey".bytes)
-      out = make([], len(ct))
-      c2.XORKeyStream(out, ct)
-      fmt.Printf("ct: %x\npt: %s\n", ct, out)
+  def runRC4
+    c, err = rc4.NewCipher(Array[byte].new("weakkey"))
+    if err != nil
+      log.Fatal(err)
     end
+
+    pt = Array[byte].new("legacy data")
+    ct = make(Array[byte], len(pt))
+    c.XORKeyStream(ct, pt)
+
+    c2, _ = rc4.NewCipher(Array[byte].new("weakkey"))
+    out = make(Array[byte], len(ct))
+    c2.XORKeyStream(out, ct)
+
+    fmt.Printf("ct: %x\npt: %s\n", ct, out)
+  end
 end

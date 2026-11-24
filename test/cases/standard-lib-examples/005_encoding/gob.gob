@@ -4,30 +4,24 @@ require "fmt"
 require "log"
 
 module Main
-  class Message
-    attr_accessor :Kind
-    attr_accessor :Body
-  end
+  var message = Struct.new(
+    Kind: string,
+    Body: Array[int]
+  )
 
+  def runGob
+    var :buf, bytes.Buffer
 
-    # ()
-    def runGob
-      buf = nil
-      enc = gob.NewEncoder(buf)
-      err = enc.Encode(Message.new(Kind: "primes", Body: [2, 3, 5, 7, 11]))
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      fmt.Printf("encoded %d bytes\n", buf.Len())
-      back = nil
-      err = gob.NewDecoder(buf).Decode(back)
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      fmt.Printf("decoded: %+v\n", back)
+    enc = gob.NewEncoder(@buf)
+    if err = enc.Encode(message.new(Kind: "primes", Body: Array[int].new(2, 3, 5, 7, 11)))
+      log.Fatal(err)
     end
+    fmt.Printf("encoded %d bytes\n", buf.Len())
+
+    var :back, message
+    if err = gob.NewDecoder(buf).Decode(back)
+      log.Fatal(err)
+    end
+    fmt.Printf("decoded: %+v\n", back)
+  end
 end

@@ -12,15 +12,13 @@ type V2article struct {
 }
 
 func runJSONv2() {
-	a := V2article.new(map[any]any{Title: "Learning Go", Tags: []any{"go", "v2"}})
-	data, err := json.Marshal(a)
-	if err != nil {
+	a := V2article{Title: "Learning Go", Tags: []any{"go", "v2"}}
+	if data, err := json.Marshal(a); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("marshalled:", string(data))
-	back := nil
-	err = json.Unmarshal(data, back)
-	if err != nil {
+		var back v2article
+	if err = json.Unmarshal(data, back); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("parsed: %+v\n", back)

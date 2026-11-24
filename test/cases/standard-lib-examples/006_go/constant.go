@@ -1,13 +1,12 @@
 package main
 
 import (
-	"fmt"          
-	"go/constant" 
-	"go/token"    
+	"fmt"
+	"go/constant"
+	"go/token"
 )
 
 func runConstant() {
-
 	big := constant.Shift(constant.MakeInt64(1), token.SHL, 100)
 	fmt.Println("1 << 100 =", big)
 

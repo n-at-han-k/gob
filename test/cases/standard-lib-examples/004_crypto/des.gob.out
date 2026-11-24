@@ -7,15 +7,14 @@ import (
 )
 
 func runDES() {
-	key := "8bytekey".bytes
-	block, err := des.NewCipher(key)
-	if err != nil {
+	key := []byte("8bytekey")
+	if block, err := des.NewCipher(key); err != nil {
 		log.Fatal(err)
 	}
-	plaintext := "blockdat".bytes
-	ct := make([]any{}, des.BlockSize)
+	plaintext := []byte("blockdat")
+	ct := make(#<SyntaxTree::ArrayLiteral:0x00007fff79ed83e0>, des.BlockSize)
 	block.Encrypt(ct, plaintext)
-	pt := make([]any{}, des.BlockSize)
+	pt := make(#<SyntaxTree::ArrayLiteral:0x00007fff79f6f470>, des.BlockSize)
 	block.Decrypt(pt, ct)
 	fmt.Printf("block size: %d\nct: %x\npt: %s\n", block.BlockSize(), ct, pt)
 }

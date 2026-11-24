@@ -5,28 +5,24 @@ require "os"
 require "strings"
 
 module Main
+  def runCSV
 
-    # ()
-    def runCSV
-      w = csv.NewWriter(os.Stdout)
+    w = csv.NewWriter(os.Stdout)
+    w.WriteAll(Array[Array[string]].new(
+      ["name" "city" "notes"],
+      ["Nathan", "Wellington", "hello, world"],
+      ["Ada", "London", `she said "hi"`]
+    )
+    w.Flush()
 
-      w.WriteAll(
-        [
-          %w[name city notes],
-          ["Nathan", "Wellington", "hello, world"],
-          ["Ada", "London", "she said \"hi\""]
-        ]
-      )
-
-      w.Flush()
-      input = "id,label\n1,apple\n2,orange\n3,pear\n"
-      r = csv.NewReader(strings.NewReader(input))
-      records, err = r.ReadAll()
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      records.each { |_, rec| fmt.Println("row:", rec) }
+    input = "id,label\n1,apple\n2,orange\n3,pear\n"
+    r = csv.NewReader(strings.NewReader(input))
+    records, err = r.ReadAll()
+    if err != nil
+      log.Fatal(err)
     end
+    records.each do |_, rec|
+      fmt.Println("row:", rec)
+    end
+  end
 end

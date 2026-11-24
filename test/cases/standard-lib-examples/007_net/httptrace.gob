@@ -4,26 +4,28 @@ require "net/http/httptest"
 require "net/http/httptrace"
 
 module Main
+  def runHTTPTrace
+    srv = httptest.NewServer(http.HandlerFunc(lambda { |w, r| # (http.ResponseWriter, *http.Request)
+      fmt.Fprintln(w, "hello")
+    }))
+    defer srv.Close()
 
-    # ()
-    def runHTTPTrace
-      srv =
-        httptest.NewServer(http.HandlerFunc(lambda { |w, r| fmt.Fprintln(w, "hello") }))
+    trace = @httptrace.ClientTrace.new(
+      GetConn: lambda { |host| # (string)
+        fmt.Println("GetConn:", host)
+      },
+      GotConn: lambda { |info| # (httptrace.GotConnInfo
+        fmt.Println("GotConn: reused=", info.Reused)
+      },
+      WroteHeaders: lambda { fmt.Println("WroteHeaders") },
+      GotFirstResponseByte: lambda { fmt.Println("GotFirstResponseByte") }
+    )
 
-      defer { srv.Close() }
+    req, _ = http.NewRequest("GET", srv.URL, nil)
+    req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 
-      trace =
-        ClientTrace.new(
-          GetConn: lambda { |host| fmt.Println("GetConn:", host) },
-          GotConn: lambda { |info| fmt.Println("GotConn: reused=", info.Reused) },
-          WroteHeaders: lambda { fmt.Println("WroteHeaders") },
-          GotFirstResponseByte: lambda { fmt.Println("GotFirstResponseByte") }
-        )
-
-      req, _ = http.NewRequest("GET", srv.URL, nil)
-      req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
-      resp, _ = http.DefaultTransport.RoundTrip(req)
-      resp.Body.Close()
-      fmt.Println("status:", resp.Status)
-    end
+    resp, _ = http.DefaultTransport.RoundTrip(req)
+    resp.Body.Close()
+    fmt.Println("status:", resp.Status)
+  end
 end

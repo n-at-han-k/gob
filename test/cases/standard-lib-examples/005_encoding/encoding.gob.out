@@ -21,11 +21,11 @@ func (self *Colour) UnmarshalText(text []byte) (error) {
 }
 
 func runEncoding() {
-	m := Colour.new(255, 128, 0)
+	m := Colour{255, 128, 0}
 	txt, _ := m.MarshalText()
 	fmt.Printf("marshalled: %s\n", txt)
-	back := nil
+		var back colour
 	u := back
-	_ = u.UnmarshalText("#0080ff".bytes)
+	_ = u.UnmarshalText([]byte("#0080ff"))
 	fmt.Printf("parsed:     %+v\n", back)
 }

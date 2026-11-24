@@ -7,11 +7,10 @@ import (
 )
 
 func runBase32() {
-	src := "hello base32".bytes
+	src := []byte("hello base32")
 	encoded := base32.StdEncoding.EncodeToString(src)
 	fmt.Println("std:  ", encoded)
-	decoded, err := base32.StdEncoding.DecodeString(encoded)
-	if err != nil {
+	if decoded, err := base32.StdEncoding.DecodeString(encoded); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("decoded: %s\n", decoded)

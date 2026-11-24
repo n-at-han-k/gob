@@ -2,14 +2,13 @@ require "crypto/md5"
 require "fmt"
 
 module Main
+  def runMD5
+    sum = md5.Sum(Array[byte].new("hello"))
+    fmt.Printf("md5: %x\n", sum)
 
-    # ()
-    def runMD5
-      sum = md5.Sum("hello".bytes)
-      fmt.Printf("md5: %x\n", sum)
-      h = md5.New()
-      h.Write("hel".bytes)
-      h.Write("lo".bytes)
-      fmt.Printf("streamed: %x\n", h.Sum(nil))
-    end
+    h = md5.New()
+    h.Write(Array[byte].new("hel"))
+    h.Write(Array[byte].new("lo"))
+    fmt.Printf("streamed: %x\n", h.Sum(nil))
+  end
 end

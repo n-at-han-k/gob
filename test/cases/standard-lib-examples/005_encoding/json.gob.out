@@ -8,29 +8,28 @@ import (
 )
 
 type Article struct {
-	Title
-	Views
-	Tags
-	internal
+	Title string `json:"title"`
+	Views int `json:"views,omitempty"`
+	Tags []string `json:"tags"`
+	internal string
 }
 
 func runJSON() {
-	a := Article.new(map[any]any{Title: "Learning Go", Views: 12, Tags: []any{"go", "stdlib"}})
-	data, err := json.Marshal(a)
-	if err != nil {
+	a := Article{Title: "Learning Go", Views: 12, Tags: []string{"go", "stdlib"}}
+	if data, err := json.Marshal(a); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("compact:", string(data))
 	pretty, _ := json.MarshalIndent(a, "", "  ")
 	fmt.Println(string(pretty))
-	back := nil
-	json.Unmarshal(data, back)
+		var back Article
+	json.Unmarshal(data, &back)
 	fmt.Printf("parsed: %+v\n", back)
 	stream := "{\"n\":1}{\"n\":2}{\"n\":3}"
 	dec := json.NewDecoder(strings.NewReader(stream))
 	for dec.More() {
-		v := nil
-		dec.Decode(v)
+				var v map[string]any
+		dec.Decode(&v)
 		fmt.Println("stream:", v)
 	}
 }

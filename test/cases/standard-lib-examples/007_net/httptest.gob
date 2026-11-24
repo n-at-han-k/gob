@@ -3,24 +3,20 @@ require "net/http"
 require "net/http/httptest"
 
 module Main
+  def runHTTPTest
+    handler = http.HandlerFunc(lambda do |w, r| # (http.ResponseWriter, *http.Request)
+      w.Header().Set("X-Test", "yes")
+      w.WriteHeader(http.StatusTeapot)
+      fmt.Fprintln(w, "short and stout")
+    })
 
-    # ()
-    def runHTTPTest
-      handler =
-        http.HandlerFunc(
-          lambda do |w, r|
-            w.Header().Set("X-Test", "yes")
-            w.WriteHeader(http.StatusTeapot)
-            fmt.Fprintln(w, "short and stout")
-          end
-        )
+    req = httptest.NewRequest(http.MethodGet, "/kettle", nil)
+    rec = httptest.NewRecorder()
+    handler.ServeHTTP(rec, req)
 
-      req = httptest.NewRequest(http.MethodGet, "/kettle", nil)
-      rec = httptest.NewRecorder()
-      handler.ServeHTTP(rec, req)
-      resp = rec.Result()
-      fmt.Println("status:", resp.Status)
-      fmt.Println("header:", resp.Header.Get("X-Test"))
-      fmt.Print("body:  ", rec.Body.String())
-    end
+    resp = rec.Result()
+    fmt.Println("status:", resp.Status)
+    fmt.Println("header:", resp.Header.Get("X-Test"))
+    fmt.Print("body:  ", rec.Body.String())
+  end
 end

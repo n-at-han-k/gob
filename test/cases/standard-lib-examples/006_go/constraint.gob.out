@@ -8,8 +8,7 @@ import (
 
 func runConstraint() {
 	line := "//go:build linux && (amd64 || arm64)"
-	expr, err := constraint.Parse(line)
-	if err != nil {
+	if expr, err := constraint.Parse(line); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("expr:", expr)

@@ -8,14 +8,13 @@ import (
 )
 
 func runBinary() {
-	buf := nil
+		var buf bytes.Buffer
 	binary.Write(buf, binary.BigEndian, uint32(0xdeadbeef))
 	binary.Write(buf, binary.LittleEndian, uint16(0x1234))
 	fmt.Printf("bytes: %x\n", buf.Bytes())
-	a := 0
-	b := 0
-	err := binary.Read(buf, binary.BigEndian, a)
-	if err != nil {
+		var a uint32
+		var b uint16
+	if err := binary.Read(buf, binary.BigEndian, a); err != nil {
 		log.Fatal(err)
 	}
 	binary.Read(buf, binary.LittleEndian, b)

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"                
-	"net/http"           
-	"net/http/cookiejar" 
-	"net/url"            
+	"fmt"
+	"net/http"
+	"net/http/cookiejar"
+	"net/url"
 )
 
 func runCookieJar() {

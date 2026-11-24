@@ -1,9 +1,9 @@
 package main
 
 import (
-	"encoding/pem" 
-	"fmt"          
-	"os"           
+	"encoding/pem"
+	"fmt"
+	"os"
 )
 
 func runPEM() {

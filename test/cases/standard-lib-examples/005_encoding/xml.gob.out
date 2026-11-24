@@ -14,15 +14,13 @@ type Book struct {
 }
 
 func runXML() {
-	b := Book.new(map[any]any{Title: "Learning Go", Author: "Nathan", Tags: []any{"go", "stdlib"}})
-	data, err := xml.MarshalIndent(b, "", "  ")
-	if err != nil {
+	b := Book{Title: "Learning Go", Author: "Nathan", Tags: []any{"go", "stdlib"}}
+	if data, err := xml.MarshalIndent(b, "", "  "); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(xml.Header + string(data))
-	back := nil
-	err = xml.Unmarshal(data, back)
-	if err != nil {
+		var back book
+	if err = xml.Unmarshal(data, back); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("parsed: %+v\n", back)

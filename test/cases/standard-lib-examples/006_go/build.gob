@@ -3,18 +3,15 @@ require "go/build"
 require "log"
 
 module Main
-
-    # ()
-    def runBuild
-      pkg, err = build.Default.Import("fmt", "", 0)
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      fmt.Println("import path:", pkg.ImportPath)
-      fmt.Println("directory:  ", pkg.Dir)
-      fmt.Println("go files:   ", pkg.GoFiles)
-      fmt.Println("imports:    ", pkg.Imports)
+  def runBuild
+    pkg, err = build.Default.Import("fmt", "", 0)
+    if err != nil
+      log.Fatal(err)
     end
+
+    fmt.Println("import path:", pkg.ImportPath)
+    fmt.Println("directory:  ", pkg.Dir)
+    fmt.Println("go files:   ", pkg.GoFiles)
+    fmt.Println("imports:    ", pkg.Imports)
+  end
 end

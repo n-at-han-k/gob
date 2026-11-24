@@ -6,11 +6,8 @@ require "crypto/sha512"
 require "fmt"
 
 module Main
-
-    # ()
     def runCrypto
-      hashes = [crypto.MD5, crypto.SHA1, crypto.SHA256, crypto.SHA512]
-
+      hashes = Array[crypto.Hash].new(crypto.MD5, crypto.SHA1, crypto.SHA256, crypto.SHA512)
       hashes.each do |_, h|
         fmt.Printf("%-8s size=%d bytes available=%v\n", h, h.Size(), h.Available())
       end

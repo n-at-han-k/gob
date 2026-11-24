@@ -8,14 +8,12 @@ import (
 )
 
 func runMLKEM() {
-	dk, err := mlkem.GenerateKey768()
-	if err != nil {
+	if dk, err := mlkem.GenerateKey768(); err != nil {
 		log.Fatal(err)
 	}
 	ek := dk.EncapsulationKey()
 	shared1, ct := ek.Encapsulate()
-	shared2, err := dk.Decapsulate(ct)
-	if err != nil {
+	if shared2, err := dk.Decapsulate(ct); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("shared secret (%d B): %x\n", len(shared1), shared1)

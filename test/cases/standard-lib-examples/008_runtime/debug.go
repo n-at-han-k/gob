@@ -1,14 +1,15 @@
 package main
 
 import (
-	"fmt"           
-	"runtime/debug" 
+	"fmt"
+	"runtime/debug"
 )
 
 func runDebug() {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		fmt.Println("go version:", info.GoVersion)
 		fmt.Println("main path: ", info.Main.Path)
+
 		for _, s := range info.Settings {
 			if s.Key == "vcs.revision" || s.Key == "GOARCH" || s.Key == "CGO_ENABLED" {
 				fmt.Printf("  %s = %s\n", s.Key, s.Value)
@@ -24,5 +25,6 @@ func runDebug() {
 	if len(stack) > 200 {
 		stack = stack[:200]
 	}
+
 	fmt.Print("stack:\n", string(stack), "...\n")
 }

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"             
-	"log"             
-	"net"             
-	"net/rpc"         
-	"net/rpc/jsonrpc" 
+	"fmt"
+	"log"
+	"net"
+	"net/rpc"
+	"net/rpc/jsonrpc"
 )
 
 func runJSONRPC() {
@@ -17,6 +17,7 @@ func runJSONRPC() {
 		log.Fatal(err)
 	}
 	defer l.Close()
+
 	go func() {
 		conn, err := l.Accept()
 		if err != nil {

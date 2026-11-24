@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"      
-	"go/token" 
+	"fmt"
+	"go/token"
 )
 
 func runToken() {
-
 	for _, t := range []token.Token{token.FUNC, token.ADD, token.INT, token.IDENT} {
-		fmt.Printf("%s\tkeyword=%v\toperator=%v\tliteral=%v\n",
-			t, t.IsKeyword(), t.IsOperator(), t.IsLiteral())
+		fmt.Printf("%s\tkeyword=%v\toperator=%v\tliteral=%v\n", t, t.IsKeyword(), t.IsOperator(), t.IsLiteral())
 	}
 
 	fset := token.NewFileSet()

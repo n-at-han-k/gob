@@ -26,6 +26,7 @@ module Gob
         when SyntaxTree::Go::FieldList then emit_field_list(node, out)
         when SyntaxTree::Go::Field then emit_field(node, out)
         when SyntaxTree::Go::TypeSpec then emit_type_spec(node, out, indent: indent)
+        when SyntaxTree::Go::ValueSpec then emit_value_spec(node, out)
         when SyntaxTree::Go::StructType then emit_struct_type(node, out, indent: indent)
         when SyntaxTree::Go::BlockStmt then emit_block_stmt(node, out, indent: indent)
         when SyntaxTree::Go::ExprStmt then emit(node.x, out, indent: indent)
@@ -111,6 +112,18 @@ module Gob
         emit(node.name, out)
         out << " "
         emit(node.type, out, indent: indent)
+      end
+
+      def emit_value_spec(node, out)
+        node.names.each_with_index { |n, i| out << ", " if i > 0; emit(n, out) }
+        if node.type
+          out << " "
+          emit(node.type, out)
+        end
+        if node.values && !node.values.empty?
+          out << " = "
+          node.values.each_with_index { |v, i| out << ", " if i > 0; emit(v, out) }
+        end
       end
 
       def emit_struct_type(node, out, indent: 0)

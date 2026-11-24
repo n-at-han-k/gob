@@ -7,8 +7,7 @@ import (
 )
 
 func runBuild() {
-	pkg, err := build.Default.Import("fmt", "", 0)
-	if err != nil {
+	if pkg, err := build.Default.Import("fmt", "", 0); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("import path:", pkg.ImportPath)

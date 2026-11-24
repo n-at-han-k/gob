@@ -2,14 +2,13 @@ require "crypto/sha256"
 require "fmt"
 
 module Main
+  def runSHA256
+    fmt.Printf("Sum256:   %x\n", sha256.Sum256(Array[byte].new("hello")))
+    fmt.Printf("Sum224:   %x\n", sha256.Sum224(Array[byte].new("hello")))
 
-    # ()
-    def runSHA256
-      fmt.Printf("Sum256:   %x\n", sha256.Sum256("hello".bytes))
-      fmt.Printf("Sum224:   %x\n", sha256.Sum224("hello".bytes))
-      h = sha256.New()
-      h.Write("hel".bytes)
-      h.Write("lo".bytes)
-      fmt.Printf("streamed: %x\n", h.Sum(nil))
-    end
+    h = sha256.New()
+    h.Write(Array[byte].new("hel"))
+    h.Write(Array[byte].new("lo"))
+    fmt.Printf("streamed: %x\n", h.Sum(nil))
+  end
 end

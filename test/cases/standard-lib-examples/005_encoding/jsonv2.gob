@@ -3,29 +3,25 @@ require "fmt"
 require "log"
 
 module Main
-  class V2article
-    attr_accessor :Title
-    attr_accessor :Tags
-  end
+  var v2article = Struct.new(
+    Title: string        # `json:"title"`
+    Tags:  Array[string] # `json:"tags,omitzero"`
+  )
 
+  def runJSONv2
+    a = v2article.new(Title: "Learning Go", Tags: Array[string].new("go", "v2"))
 
-    # ()
-    def runJSONv2
-      a = V2article.new(Title: "Learning Go", Tags: %w[go v2])
-      data, err = json.Marshal(a)
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      fmt.Println("marshalled:", string(data))
-      back = nil
-      err = json.Unmarshal(data, back)
-
-      if err != nil
-        log.Fatal(err)
-      end
-
-      fmt.Printf("parsed: %+v\n", back)
+    data, err = json.Marshal(a)
+    if err != nil
+      log.Fatal(err)
     end
+    fmt.Println("marshalled:", string(data))
+
+    var :back, v2article
+    if err = json.Unmarshal(data, @back)
+      log.Fatal(err)
+    end
+
+    fmt.Printf("parsed: %+v\n", back)
+  end
 end

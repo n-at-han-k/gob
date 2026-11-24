@@ -11,7 +11,6 @@ module RuboCop
           resbody
           ensure
           retry
-          yield
           redo
         ].freeze
 

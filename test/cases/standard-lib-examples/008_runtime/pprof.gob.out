@@ -8,13 +8,12 @@ import (
 )
 
 func runPProf() {
-	junk := make([]any{}, 0, 100)
+	junk := make(#<SyntaxTree::ArrayLiteral:0x00007fff7922cc68>, 0, 100)
 	for _ := range 100 {
-		junk = append(junk, make([]any{}, 1024))
+		junk := append(junk, make(#<SyntaxTree::ArrayLiteral:0x00007fff7922c088>, 1024))
 	}
 	runtime.GC()
-	f, err := os.CreateTemp("", "heap-*.prof")
-	if err != nil {
+	if f, err := os.CreateTemp("", "heap-*.prof"); err != nil {
 		fmt.Println("temp:", err)
 		return
 	}
@@ -24,8 +23,7 @@ func runPProf() {
 	defer func() {
 	f.Close()
 }()
-	err = pprof.Lookup("heap").WriteTo(f, 0)
-	if err != nil {
+	if err = pprof.Lookup("heap").WriteTo(f, 0); err != nil {
 		fmt.Println("write:", err)
 		return
 	}

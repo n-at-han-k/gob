@@ -7,15 +7,14 @@ import (
 )
 
 func runRC4() {
-	c, err := rc4.NewCipher("weakkey".bytes)
-	if err != nil {
+	if c, err := rc4.NewCipher([]byte("weakkey")); err != nil {
 		log.Fatal(err)
 	}
-	pt := "legacy data".bytes
-	ct := make([]any{}, len(pt))
+	pt := []byte("legacy data")
+	ct := make(#<SyntaxTree::ArrayLiteral:0x00007fff7939e420>, len(pt))
 	c.XORKeyStream(ct, pt)
-	c2, _ := rc4.NewCipher("weakkey".bytes)
-	out := make([]any{}, len(ct))
+	c2, _ := rc4.NewCipher([]byte("weakkey"))
+	out := make(#<SyntaxTree::ArrayLiteral:0x00007fff79399060>, len(ct))
 	c2.XORKeyStream(out, ct)
 	fmt.Printf("ct: %x\npt: %s\n", ct, out)
 }
