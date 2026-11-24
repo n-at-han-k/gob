@@ -5,7 +5,7 @@ on:
     branches: [main]
     paths:
       - "ext/**"
-      - "gob.gemspec"
+      - "gob-lang.gemspec"
       - "Rakefile"
       - ".github/workflows/native.yml"
       - "lib/**"
@@ -96,16 +96,16 @@ jobs:
           ruby-version: "3.4"
 
       - name: Build platform gem
-        run: gem build gob.gemspec
+        run: gem build gob-lang.gemspec
 
       - name: Verify native gem contents
         shell: bash
         run: |
-          gem specification gob-*-${{ matrix.platform }}.gem files | grep -Fq 'ext/gipper/libgipper.${{ matrix.extension }}'
-          gem specification gob-*-${{ matrix.platform }}.gem files | grep -Fq 'ext/goformatter/libgoformatter.${{ matrix.extension }}'
+          gem specification gob-lang-*-${{ matrix.platform }}.gem files | grep -Fq 'ext/gipper/libgipper.${{ matrix.extension }}'
+          gem specification gob-lang-*-${{ matrix.platform }}.gem files | grep -Fq 'ext/goformatter/libgoformatter.${{ matrix.extension }}'
 
       - uses: actions/upload-artifact@v4
         with:
           name: native-gem-${{ matrix.platform }}
-          path: gob-*-${{ matrix.platform }}.gem
+          path: gob-lang-*-${{ matrix.platform }}.gem
           if-no-files-found: error

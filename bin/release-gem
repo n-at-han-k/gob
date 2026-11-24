@@ -7,8 +7,8 @@ require "fileutils"
 require "open3"
 
 local_version = Gob::VERSION
-gem_name = "gob"
-gemspec = "gob.gemspec"
+gem_name = "gob-lang"
+gemspec = "gob-lang.gemspec"
 workflow = "native.yml"
 pkg_dir = "pkg"
 

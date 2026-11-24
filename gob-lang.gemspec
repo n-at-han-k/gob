@@ -3,8 +3,15 @@
 
 require_relative "lib/gob/version"
 
+if defined?(GemKit::Release)
+  GemKit::Release.configure do |config|
+    config.version_file = "lib/gob/version.rb"
+    config.require_path = "gob"
+  end
+end
+
 Gem::Specification.new do |spec|
-  spec.name    = "gob"
+  spec.name    = "gob-lang"
   spec.version = Gob::VERSION
   spec.authors = ["Nathan Kidd"]
   spec.email   = ["nathankidd@hey.com"]
@@ -19,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.platform = Gem::Platform.new(ENV["GOB_NATIVE_PLATFORM"]) if ENV["GOB_NATIVE_PLATFORM"]
 
   spec.files = Dir.glob(
-    ["{lib,exe}/**/*", "{ext}/**/*", "README.md", "gob.gemspec"],
+    ["{lib,exe}/**/*", "{ext}/**/*", "README.md", "gob-lang.gemspec"],
     File::FNM_DOTMATCH,
     base: __dir__
   )

@@ -59,6 +59,22 @@ module Gob
         end
       end
 
+      def validate_files(entries, formatter:)
+        paths = entries.map(&:last)
+        formatter.started(paths)
+
+        begin
+          entries.flat_map do |source, path|
+            formatter.file_started(path, {})
+            offenses = validate(source, path: path)
+            formatter.file_finished(path, offenses)
+            offenses
+          end
+        ensure
+          formatter.finished(paths)
+        end
+      end
+
       def check!(source, path: nil)
         offenses = validate(source, path: path)
         return offenses if offenses.empty?
