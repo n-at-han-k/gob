@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"      
-	"go/build" 
-	"log"      
+	"fmt"
+	"go/build"
+	"log"
 )
 
 func runBuild() {

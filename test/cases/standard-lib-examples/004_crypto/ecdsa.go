@@ -1,12 +1,12 @@
 package main
 
 import (
-	"crypto/ecdsa"    
-	"crypto/elliptic" 
-	"crypto/rand"     
-	"crypto/sha256"   
-	"fmt"             
-	"log"             
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/sha256"
+	"fmt"
+	"log"
 )
 
 func runECDSA() {

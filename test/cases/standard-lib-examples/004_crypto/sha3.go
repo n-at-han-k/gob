@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crypto/sha3" 
-	"fmt"         
+	"crypto/sha3"
+	"fmt"
 )
 
 func runSHA3() {

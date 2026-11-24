@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"      
-	"net/smtp" 
+	"fmt"
+	"net/smtp"
 )
 
 func runSMTP() {

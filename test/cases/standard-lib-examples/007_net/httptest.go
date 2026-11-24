@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"               
-	"net/http"          
-	"net/http/httptest" 
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 )
 
 func runHTTPTest() {

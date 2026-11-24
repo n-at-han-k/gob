@@ -14,7 +14,7 @@ module Main
       GetConn: lambda { |host| # (string)
         fmt.Println("GetConn:", host)
       },
-      GotConn: lambda { |info| # (httptrace.GotConnInfo
+      GotConn: lambda { |info| # (httptrace.GotConnInfo)
         fmt.Println("GotConn: reused=", info.Reused)
       },
       WroteHeaders: lambda { fmt.Println("WroteHeaders") },

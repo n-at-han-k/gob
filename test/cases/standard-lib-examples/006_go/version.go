@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"        
-	"go/version" 
+	"fmt"
+	"go/version"
 )
 
 func runVersion() {

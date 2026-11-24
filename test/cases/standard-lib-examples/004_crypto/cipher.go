@@ -1,10 +1,10 @@
 package main
 
 import (
-	"crypto/aes"    
-	"crypto/cipher" 
-	"crypto/rand"   
-	"fmt"           
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"fmt"
 )
 
 func runCipher() {

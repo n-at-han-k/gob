@@ -3,10 +3,7 @@ require "fmt"
 require "log"
 
 module Main
-  var person = Struct.new(
-    :Name,
-    :Age
-  )
+  var person = Struct.new(Name: string, Age: int)
 
   def runASN1
     p = person.new(Name: "Nathan", Age: 30)

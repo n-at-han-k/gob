@@ -1,11 +1,11 @@
 package main
 
 import (
-	"crypto/aes"    
-	"crypto/cipher" 
-	"crypto/rand"   
-	"fmt"           
-	"log"           
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"fmt"
+	"log"
 )
 
 func runAES() {

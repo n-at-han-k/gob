@@ -2,8 +2,8 @@
 package main
 
 import (
-	"fmt"            
-	"runtime/secret" 
+	"fmt"
+	"runtime/secret"
 )
 
 func runSecret() {

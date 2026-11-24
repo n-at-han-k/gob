@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"      
-	"io"       
-	"log"      
-	"net/mail" 
-	"strings"  
+	"fmt"
+	"io"
+	"log"
+	"net/mail"
+	"strings"
 )
 
 func runMail() {

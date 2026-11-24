@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crypto/elliptic" 
-	"fmt"             
+	"crypto/elliptic"
+	"fmt"
 )
 
 func runElliptic() {

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"           
-	"io"            
-	"log"           
-	"net/http"      
-	"net/http/httptest" 
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"net/http/httptest"
 )
 
 func runHTTP() {

@@ -63,9 +63,9 @@ module Gob
         when SyntaxTree::Go::ParenExpr
           emit_paren_expr(node, out)
         when SyntaxTree::Go::CompositeLit
-          emit_composite_lit(node, out)
+          emit_composite_lit(node, out, indent: indent)
         when SyntaxTree::Go::KeyValueExpr
-          emit_key_value_expr(node, out)
+          emit_key_value_expr(node, out, indent: indent)
         when SyntaxTree::Go::IndexExpr
           emit_index_expr(node, out)
         when SyntaxTree::Go::SliceExpr
@@ -320,20 +320,31 @@ module Gob
         out << ")"
       end
 
-      def emit_composite_lit(node, out)
+      def emit_composite_lit(node, out, indent: 0)
         emit(node.type, out) if node.type
-        out << "{"
-        node.elts.each_with_index do |elt, i|
-          out << ", " if i > 0
-          emit(elt, out)
+
+        if node.instance_variable_get(:@multiline) && !node.elts.empty?
+          out << "{\n"
+          node.elts.each do |elt|
+            out << tabs(indent + 1)
+            emit(elt, out, indent: indent + 1)
+            out << ",\n"
+          end
+          out << tabs(indent) << "}"
+        else
+          out << "{"
+          node.elts.each_with_index do |elt, i|
+            out << ", " if i > 0
+            emit(elt, out, indent: indent)
+          end
+          out << "}"
         end
-        out << "}"
       end
 
-      def emit_key_value_expr(node, out)
+      def emit_key_value_expr(node, out, indent: 0)
         emit(node.key, out)
         out << ": "
-        emit(node.value, out)
+        emit(node.value, out, indent: indent)
       end
 
       def emit_index_expr(node, out)

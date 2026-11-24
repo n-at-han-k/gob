@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bufio"        
-	"fmt"          
-	"log"          
-	"net/textproto" 
-	"strings"      
+	"bufio"
+	"fmt"
+	"log"
+	"net/textproto"
+	"strings"
 )
 
 func runTextproto() {

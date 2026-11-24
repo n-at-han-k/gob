@@ -63,6 +63,8 @@ module SyntaxTree
               constant
             end
           Ident(name)
+        in SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Proc"]]
+          FuncType([], nil)
         in SyntaxTree::VarRef[value: SyntaxTree::Const[value: name]]
           Ident(Gob::Transpilation::Rules.const_go_name(name))
         in SyntaxTree::CallNode[
@@ -133,6 +135,15 @@ module SyntaxTree
           else
             false
           end
+        type =
+          case receiver
+          in SyntaxTree::VarRef[value: SyntaxTree::IVar[value: name]]
+            Ident(
+              Gob::Transpilation::Rules.const_go_name(name.delete_prefix("@"))
+            )
+          else
+            GoType(receiver, context: context)
+          end
         parts =
           case arguments
           in SyntaxTree::ArgParen[arguments: SyntaxTree::Args[parts: parts]]
@@ -153,21 +164,18 @@ module SyntaxTree
                 in SyntaxTree::Assoc[
                      key: SyntaxTree::Label[value: label], value: value
                    ]
-                  KeyValueExpr(Ident(label.chomp(":")), context.visit(value))
+                  key =
+                    if type.is_a?(SyntaxTree::Go::MapType)
+                      StringLiteral(label.chomp(":"))
+                    else
+                      Ident(label.chomp(":"))
+                    end
+                  KeyValueExpr(key, context.visit(value))
                 end
               end
             else
               context.visit(part)
             end
-          end
-        type =
-          case receiver
-          in SyntaxTree::VarRef[value: SyntaxTree::IVar[value: name]]
-            Ident(
-              Gob::Transpilation::Rules.const_go_name(name.delete_prefix("@"))
-            )
-          else
-            GoType(receiver, context: context)
           end
         if type.is_a?(SyntaxTree::Go::ArrayType) &&
              type.elt.is_a?(SyntaxTree::Go::Ident) && type.elt.name == "byte" &&
@@ -178,6 +186,12 @@ module SyntaxTree
         end
 
         literal = CompositeLit(type, elements)
+        if parts.any? { |part|
+             part.is_a?(SyntaxTree::BareAssocHash) &&
+               part.location.start_line != part.location.end_line
+           }
+          literal.instance_variable_set(:@multiline, true)
+        end
         pointer ? UnaryExpr(:&, literal) : literal
       end
 
@@ -469,6 +483,45 @@ module SyntaxTree
         )
       end
 
+      def PointerReceiver?(node)
+        case node
+        when Array
+          node.any? { |child| PointerReceiver?(child) }
+        when SyntaxTree::IVar
+          true
+        when SyntaxTree::VarRef
+          node.value.is_a?(SyntaxTree::IVar)
+        when SyntaxTree::Node
+          node.child_nodes.any? { |child| PointerReceiver?(child) }
+        else
+          false
+        end
+      end
+
+      def UsesSelf?(node)
+        case node
+        when Array
+          node.any? { |child| UsesSelf?(child) }
+        when SyntaxTree::IVar
+          node.value == "@self"
+        when SyntaxTree::VarRef
+          (node.value.is_a?(SyntaxTree::Kw) && node.value.value == "self") ||
+            UsesSelf?(node.value)
+        when SyntaxTree::Node
+          node.child_nodes.any? { |child| UsesSelf?(child) }
+        else
+          false
+        end
+      end
+
+      def MethodReceiver(context:, pointer:, named:)
+        type =
+          Ident(Gob::Transpilation::Rules.const_go_name(context.current_class))
+        type = StarExpr(type) if pointer
+
+        FieldList([Field(named ? ["self"] : [], type)])
+      end
+
       def Method(name_node, params, signature_text, body, context:)
         SignedFunction(
           name_node,
@@ -477,18 +530,30 @@ module SyntaxTree
           body,
           context: context,
           recv:
-            FieldList(
-              [
-                Field(
-                  [],
-                  Ident(
-                    Gob::Transpilation::Rules.const_go_name(
-                      context.current_class
-                    )
-                  )
-                )
-              ]
+            MethodReceiver(
+              context: context,
+              pointer: PointerReceiver?(body),
+              named: UsesSelf?(body)
             )
+        )
+      end
+
+      def MethodReturnsOnly(name_node, signature_text, body, context:)
+        signature = Signature(signature_text, context: context)
+
+        Function(
+          FunctionName(name_node),
+          parameter_names: [],
+          parameter_types: [],
+          return_types: signature[:returns],
+          body: body,
+          recv:
+            MethodReceiver(
+              context: context,
+              pointer: PointerReceiver?(body),
+              named: UsesSelf?(body)
+            ),
+          context: context
         )
       end
 
@@ -553,6 +618,29 @@ module SyntaxTree
         )
       end
 
+      def StructTag(assoc, type)
+        comment =
+          assoc.comments.map(&:value).find { |value| value.match?(/`[^`]+`/) }
+        return nil unless comment
+
+        tag = comment[/`([^`]+)`/, 1]
+        name, options = tag.split(":", 2)
+        values =
+          options.to_s.sub(/\A"/, "").sub(/"\z/, "").split(",").reject(&:empty?)
+        reference =
+          type.is_a?(SyntaxTree::Go::ArrayType) ||
+            type.is_a?(SyntaxTree::Go::MapType) ||
+            type.is_a?(SyntaxTree::Go::StarExpr)
+
+        if reference && !values.include?("omitempty")
+          values << "omitempty"
+        elsif !reference
+          values.delete("omitempty")
+        end
+
+        BasicLit(:STRING, "`#{name}:\"#{values.join(",")}\"`")
+      end
+
       def StructNew(name, assocs, context:)
         fields =
           assocs.map do |assoc|
@@ -560,7 +648,8 @@ module SyntaxTree
             in SyntaxTree::Assoc[
                  key: SyntaxTree::Label[value: label], value: type
                ]
-              [label.chomp(":"), GoType(type, context: context)]
+              type = GoType(type, context: context)
+              [label.chomp(":"), type, StructTag(assoc, type)]
             end
           end
 
@@ -573,6 +662,52 @@ module SyntaxTree
             )
           ]
         )
+      end
+
+      def StructNewWithBlock(name, arguments, body, context:)
+        fields =
+          case arguments.first
+          in SyntaxTree::BareAssocHash[assocs: assocs]
+            assocs.map do |assoc|
+              case assoc
+              in SyntaxTree::Assoc[
+                   key: SyntaxTree::Label[value: label], value: type
+                 ]
+                type = GoType(type, context: context)
+                [label.chomp(":"), type, StructTag(assoc, type)]
+              end
+            end
+          else
+            arguments.filter_map do |argument|
+              case argument
+              in SyntaxTree::SymbolLiteral[
+                   value: SyntaxTree::Const[value: field_name]
+                 ]
+                [field_name, nil]
+              end
+            end
+          end
+        type_decl =
+          GenDecl(
+            :type,
+            [
+              TypeSpec(
+                Gob::Transpilation::Rules.const_go_name(name),
+                Struct(fields)
+              )
+            ]
+          )
+        methods = []
+
+        context.with_class_self(name) do
+          body.each do |child|
+            if child.is_a?(SyntaxTree::DefNode)
+              methods.concat(Array(context.visit(child)))
+            end
+          end
+        end
+
+        [type_decl, *methods]
       end
 
       def ProcType(parameters, returns, context:)
@@ -730,27 +865,29 @@ module SyntaxTree
       end
 
       def Struct(fields)
-        entries = Array(fields).map { |name, type| [name, type] }
+        entries = Array(fields).map { |name, type, tag| [name, type, tag] }
         entries =
-          entries.map.with_index do |(name, type), index|
+          entries.map.with_index do |(name, type, tag), index|
             inferred =
               type ||
                 entries[(index + 1)..]
-                  .find { |_name, candidate| candidate }
-                  &.last || Ident("any")
-            [name, inferred]
+                  .find { |_name, candidate, _tag| candidate }
+                  &.[](1) || Ident("any")
+            [name, inferred, tag]
           end
 
         grouped = []
-        entries.each do |name, type|
-          if grouped.last && grouped.last.last === type
+        entries.each do |name, type, tag|
+          if grouped.last && grouped.last[1] === type && grouped.last[2] === tag
             grouped.last.first << name
           else
-            grouped << [[name], type]
+            grouped << [[name], type, tag]
           end
         end
 
-        StructType(grouped.map { |names, type| Field(names, type) })
+        StructType(
+          grouped.map { |names, type, tag| Field(names, type, tag: tag) }
+        )
       end
 
       def StructType(fields, incomplete: false)

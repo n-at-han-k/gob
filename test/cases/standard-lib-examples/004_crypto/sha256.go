@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crypto/sha256" 
-	"fmt"           
+	"crypto/sha256"
+	"fmt"
 )
 
 func runSHA256() {

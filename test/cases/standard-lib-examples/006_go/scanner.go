@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"        
-	"go/scanner" 
-	"go/token"   
+	"fmt"
+	"go/scanner"
+	"go/token"
 )
 
 func runScanner() {

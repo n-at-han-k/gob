@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crypto/tls" 
-	"fmt"        
+	"crypto/tls"
+	"fmt"
 )
 
 func runTLS() {

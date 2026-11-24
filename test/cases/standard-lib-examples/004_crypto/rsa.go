@@ -1,12 +1,12 @@
 package main
 
 import (
-	"crypto"        
-	"crypto/rand"   
-	"crypto/rsa"    
-	"crypto/sha256" 
-	"fmt"           
-	"log"           
+	"crypto"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/sha256"
+	"fmt"
+	"log"
 )
 
 func runRSA() {

@@ -118,6 +118,40 @@ module Gob
             StructDefinition(name, body, context: self)
           end
 
+          matcher.rule(:struct_new_with_block) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
+
+            node => SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "var" | "define_var"],
+              arguments: SyntaxTree::Args[
+                parts: [
+                  SyntaxTree::Assign[
+                    target: SyntaxTree::VarField[
+                      value: SyntaxTree::Ident[value: name]
+                    ],
+                    value: SyntaxTree::CallNode[
+                      receiver: SyntaxTree::VarRef[
+                        value: SyntaxTree::Const[value: "Struct"]
+                      ],
+                      operator: SyntaxTree::Period[value: "."],
+                      message: SyntaxTree::Ident[value: "new"],
+                      arguments: SyntaxTree::ArgParen[
+                        arguments: SyntaxTree::Args[parts: arguments]
+                      ]
+                    ]
+                  ]
+                ]
+              ],
+              block: SyntaxTree::BlockNode[
+                bodystmt: SyntaxTree::BodyStmt[
+                  statements: SyntaxTree::Statements[body: body]
+                ]
+              ]
+            ]
+
+            StructNewWithBlock(name, arguments, body, context: self)
+          end
+
           matcher.rule(:struct_new) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::Command)
 

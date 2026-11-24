@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"             
-	"go/doc/comment" 
+	"fmt"
+	"go/doc/comment"
 )
 
 func runComment() {

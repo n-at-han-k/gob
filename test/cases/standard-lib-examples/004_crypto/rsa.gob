@@ -18,7 +18,7 @@ module Main
       log.Fatal(err)
     end
 
-    err = rsa.VerifyPSS(priv.PublicKey, crypto.SHA256, digest[], sig, nil)
+    err = rsa.VerifyPSS(@priv.PublicKey, crypto.SHA256, digest[], sig, nil)
     fmt.Printf("signature (%d bytes)\n", len(sig))
     fmt.Println("verify err:", err)
   end

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"       
-	"go/format" 
-	"log"       
+	"fmt"
+	"go/format"
+	"log"
 )
 
 func runFormat() {

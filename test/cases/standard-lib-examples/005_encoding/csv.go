@@ -1,11 +1,11 @@
 package main
 
 import (
-	"encoding/csv" 
-	"fmt"          
-	"log"          
-	"os"           
-	"strings"      
+	"encoding/csv"
+	"fmt"
+	"log"
+	"os"
+	"strings"
 )
 
 func runCSV() {

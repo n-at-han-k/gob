@@ -1,9 +1,9 @@
 package main
 
 import (
-	"crypto/rc4" 
-	"fmt"        
-	"log"        
+	"crypto/rc4"
+	"fmt"
+	"log"
 )
 
 func runRC4() {

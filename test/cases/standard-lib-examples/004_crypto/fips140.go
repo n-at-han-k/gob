@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crypto/fips140" 
-	"fmt"            
+	"crypto/fips140"
+	"fmt"
 )
 
 func runFIPS140() {

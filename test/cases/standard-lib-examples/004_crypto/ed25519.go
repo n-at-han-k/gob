@@ -1,10 +1,10 @@
 package main
 
 import (
-	"crypto/ed25519" 
-	"crypto/rand"    
-	"fmt"            
-	"log"            
+	"crypto/ed25519"
+	"crypto/rand"
+	"fmt"
+	"log"
 )
 
 func runED25519() {

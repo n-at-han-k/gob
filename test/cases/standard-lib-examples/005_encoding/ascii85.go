@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/ascii85" 
-	"fmt"              
+	"encoding/ascii85"
+	"fmt"
 )
 
 func runAscii85() {

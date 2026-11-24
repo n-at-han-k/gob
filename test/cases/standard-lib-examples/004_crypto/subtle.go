@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crypto/subtle" 
-	"fmt"           
+	"crypto/subtle"
+	"fmt"
 )
 
 func runSubtle() {

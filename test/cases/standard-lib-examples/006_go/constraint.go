@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"                 
-	"go/build/constraint" 
-	"log"                 
+	"fmt"
+	"go/build/constraint"
+	"log"
 )
 
 func runConstraint() {

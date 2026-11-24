@@ -1,10 +1,10 @@
 package main
 
 import (
-	"encoding/json/jsontext" 
-	"fmt"                    
-	"io"                     
-	"strings"                
+	"encoding/json/jsontext"
+	"fmt"
+	"io"
+	"strings"
 )
 
 func runJSONText() {

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"go/parser"  
-	"go/printer" 
-	"go/token"   
-	"log"        
-	"os"         
+	"go/parser"
+	"go/printer"
+	"go/token"
+	"log"
+	"os"
 )
 
 func runPrinter() {

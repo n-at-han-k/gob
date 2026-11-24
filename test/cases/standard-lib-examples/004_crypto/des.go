@@ -1,9 +1,9 @@
 package main
 
 import (
-	"crypto/des" 
-	"fmt"        
-	"log"        
+	"crypto/des"
+	"fmt"
+	"log"
 )
 
 func runDES() {

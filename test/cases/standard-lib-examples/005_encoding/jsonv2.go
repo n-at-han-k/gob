@@ -1,9 +1,9 @@
 package main
 
 import (
-	json "encoding/json/v2" 
-	"fmt"                   
-	"log"                   
+	json "encoding/json/v2"
+	"fmt"
+	"log"
 )
 
 type v2article struct {

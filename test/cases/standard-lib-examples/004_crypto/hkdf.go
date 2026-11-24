@@ -1,10 +1,10 @@
 package main
 
 import (
-	"crypto/hkdf"   
-	"crypto/sha256" 
-	"fmt"           
-	"log"           
+	"crypto/hkdf"
+	"crypto/sha256"
+	"fmt"
+	"log"
 )
 
 func runHKDF() {

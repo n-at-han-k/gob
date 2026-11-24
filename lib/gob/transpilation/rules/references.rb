@@ -7,6 +7,14 @@ module Gob
         module_function
 
         def register(matcher)
+          matcher.rule(:self_reference) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
+
+            node => SyntaxTree::VarRef[value: SyntaxTree::Kw[value: "self"]]
+
+            Ident("self")
+          end
+
           matcher.rule(:variable) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::VarRef)
 

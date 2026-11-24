@@ -51,6 +51,24 @@ module Gob
             )
           end
 
+          matcher.rule(:method_returns_only) do |node|
+            next Matcher::MISS unless node.is_a?(SyntaxTree::DefNode)
+
+            node => SyntaxTree::DefNode[
+              target: nil,
+              operator: nil,
+              name: SyntaxTree::Const[value: _name],
+              params: SyntaxTree::Params[
+                comments: [SyntaxTree::Comment[value: /^#\s*->/ => signature]]
+              ],
+              bodystmt: SyntaxTree::BodyStmt[
+                statements: SyntaxTree::Statements[body: body]
+              ]
+            ]
+
+            MethodReturnsOnly(node.name, signature, body, context: self)
+          end
+
           matcher.rule(:returns_only_function) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::DefNode)
 

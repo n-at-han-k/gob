@@ -1,11 +1,11 @@
 package main
 
 import (
-	"crypto/dsa"    
-	"crypto/rand"   
-	"crypto/sha256" 
-	"fmt"           
-	"log"           
+	"crypto/dsa"
+	"crypto/rand"
+	"crypto/sha256"
+	"fmt"
+	"log"
 )
 
 func runDSA() {

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"encoding/asn1" 
-	"fmt"           
-	"log"           
+	"encoding/asn1"
+	"fmt"
+	"log"
 )
 
 type person struct {

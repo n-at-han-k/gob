@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"       
-	"go/ast"    
-	"go/doc"    
-	"go/parser" 
-	"go/token"  
-	"log"       
+	"fmt"
+	"go/ast"
+	"go/doc"
+	"go/parser"
+	"go/token"
+	"log"
 )
 
 func runDoc() {

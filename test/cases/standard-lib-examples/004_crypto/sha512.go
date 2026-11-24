@@ -1,8 +1,8 @@
 package main
 
 import (
-	"crypto/sha512" 
-	"fmt"           
+	"crypto/sha512"
+	"fmt"
 )
 
 func runSHA512() {

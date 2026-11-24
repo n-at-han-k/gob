@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"     
-	"log"     
-	"net/url" 
+	"fmt"
+	"log"
+	"net/url"
 )
 
 func runURL() {

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"crypto/pbkdf2" 
-	"crypto/rand"   
-	"crypto/sha256" 
-	"fmt"           
-	"log"           
+	"crypto/pbkdf2"
+	"crypto/rand"
+	"crypto/sha256"
+	"fmt"
+	"log"
 )
 
 func runPBKDF2() {

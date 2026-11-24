@@ -1,10 +1,10 @@
 package main
 
 import (
-	"bytes"        
-	"crypto/mlkem" 
-	"fmt"          
-	"log"          
+	"bytes"
+	"crypto/mlkem"
+	"fmt"
+	"log"
 )
 
 func runMLKEM() {

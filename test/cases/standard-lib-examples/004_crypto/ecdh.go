@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bytes"       
-	"crypto/ecdh" 
-	"crypto/rand" 
-	"fmt"         
-	"log"         
+	"bytes"
+	"crypto/ecdh"
+	"crypto/rand"
+	"fmt"
+	"log"
 )
 
 func runECDH() {

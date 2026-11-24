@@ -1,9 +1,9 @@
 package main
 
 import (
-	"crypto/hmac"   
-	"crypto/sha256" 
-	"fmt"           
+	"crypto/hmac"
+	"crypto/sha256"
+	"fmt"
 )
 
 func runHMAC() {

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"encoding/xml" 
-	"fmt"          
-	"log"          
+	"encoding/xml"
+	"fmt"
+	"log"
 )
 
 type book struct {

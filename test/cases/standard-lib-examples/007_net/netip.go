@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"       
-	"log"       
-	"net/netip" 
+	"fmt"
+	"log"
+	"net/netip"
 )
 
 func runNetip() {

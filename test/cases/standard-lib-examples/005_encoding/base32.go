@@ -1,9 +1,9 @@
 package main
 
 import (
-	"encoding/base32" 
-	"fmt"             
-	"log"             
+	"encoding/base32"
+	"fmt"
+	"log"
 )
 
 func runBase32() {

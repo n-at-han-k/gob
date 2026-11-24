@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"         
-	"go/importer" 
-	"log"         
+	"fmt"
+	"go/importer"
+	"log"
 )
 
 func runImporter() {

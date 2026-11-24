@@ -1,9 +1,9 @@
 package main
 
 import (
-	"encoding/hex" 
-	"fmt"          
-	"log"          
+	"encoding/hex"
+	"fmt"
+	"log"
 )
 
 func runHex() {

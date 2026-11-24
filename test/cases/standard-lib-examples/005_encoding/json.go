@@ -1,10 +1,10 @@
 package main
 
 import (
-	"encoding/json" 
-	"fmt"           
-	"log"           
-	"strings"       
+	"encoding/json"
+	"fmt"
+	"log"
+	"strings"
 )
 
 type article struct {

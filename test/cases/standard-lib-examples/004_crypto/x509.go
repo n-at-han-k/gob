@@ -1,15 +1,15 @@
 package main
 
 import (
-	"crypto/ecdsa"     
-	"crypto/elliptic"  
-	"crypto/rand"      
-	"crypto/x509"      
-	"crypto/x509/pkix" 
-	"fmt"              
-	"log"              
-	"math/big"         
-	"time"             
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/x509"
+	"crypto/x509/pkix"
+	"fmt"
+	"log"
+	"math/big"
+	"time"
 )
 
 func runX509() {

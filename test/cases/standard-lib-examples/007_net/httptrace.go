@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"                
-	"net/http"           
-	"net/http/httptest"  
-	"net/http/httptrace" 
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/http/httptrace"
 )
 
 func runHTTPTrace() {

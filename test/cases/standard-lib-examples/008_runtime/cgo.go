@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"         
-	"runtime/cgo" 
+	"fmt"
+	"runtime/cgo"
 )
 
 func runCGO() {

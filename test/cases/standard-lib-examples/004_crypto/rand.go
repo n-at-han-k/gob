@@ -1,10 +1,10 @@
 package main
 
 import (
-	"crypto/rand" 
-	"fmt"         
-	"log"         
-	"math/big"    
+	"crypto/rand"
+	"fmt"
+	"log"
+	"math/big"
 )
 
 func runRand() {

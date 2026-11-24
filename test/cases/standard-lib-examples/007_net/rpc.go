@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"     
-	"log"     
-	"net"     
-	"net/rpc" 
+	"fmt"
+	"log"
+	"net"
+	"net/rpc"
 )
 
 type Arith struct{}
