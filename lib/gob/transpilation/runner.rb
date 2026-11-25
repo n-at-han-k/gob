@@ -44,8 +44,8 @@ module Gob
             results = output
 
           else
-            #params = []
-            #results = {}
+            params = []
+            results = {}
 
           end
 
