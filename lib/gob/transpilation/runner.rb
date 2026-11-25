@@ -50,7 +50,7 @@ module Gob
           end
 
           SyntaxTree::Go::FuncDecl.new(
-            name: SyntaxTree::Go::Ident.new(name: "main"),
+            name: SyntaxTree::Go::Ident.new(name: name),
             type: SyntaxTree::Go::FuncType.new(
               type_params: nil,
               params: SyntaxTree::Go::FieldList.new(list: params),
@@ -123,10 +123,8 @@ module Gob
             ]
               Hoist.new(body)
 
-                #contents: SyntaxTree::Params[requireds: _parameters],
-                #comments: [SyntaxTree::Comment[value: /^#\s*\(/ => signature]]
             in SyntaxTree::DefNode[
-              name: name,
+              name: { value: name },
               params: params,
               bodystmt: SyntaxTree::BodyStmt[
                 statements: SyntaxTree::Statements[body: body]

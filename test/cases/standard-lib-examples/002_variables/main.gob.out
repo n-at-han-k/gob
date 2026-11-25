@@ -1,9 +1,9 @@
 package main
 
-func main(yehman, yehmam eyup) {
+func main() {
 	{
 	}
 }
 
-func main(yehman, yehmam eyup) {
+func ignoreOne() {
 }
