@@ -7,12 +7,12 @@ import (
 )
 
 func runDES() () {
-	key := #<SyntaxTree::Const:0x000075853ece4058>[byte].new("8bytekey")
-	block, err := des.NewCipher(#<SyntaxTree::Ident:0x000075853ece2ff0>)
-	plaintext := #<SyntaxTree::Const:0x000075853ece1f10>[byte].new("blockdat")
-	ct := make(#<SyntaxTree::Const:0x000075853ece1290>[byte], des.BlockSize)
-	#<SyntaxTree::Ident:0x000075853ece0980>.Encrypt(#<SyntaxTree::Ident:0x000075853ece0728>, #<SyntaxTree::Ident:0x000075853ece04f8>)
-	pt := make(#<SyntaxTree::Const:0x0000758540e3ff68>[byte], des.BlockSize)
-	#<SyntaxTree::Ident:0x0000758540e3f658>.Decrypt(#<SyntaxTree::Ident:0x0000758540e3f400>, #<SyntaxTree::Ident:0x0000758540e3f108>)
-	fmt.Printf("block size: %d\nct: %x\npt: %s\n", #<SyntaxTree::Ident:0x0000758540e3e7f8>.BlockSize(), #<SyntaxTree::Ident:0x0000758540e3e410>, #<SyntaxTree::Ident:0x0000758540e3e280>)
+	key := #<SyntaxTree::Const:0x00007e5e8c8e7100>[byte].new("8bytekey")
+	block, err := des.NewCipher(#<SyntaxTree::Ident:0x00007e5e8c8e60c0>)
+	plaintext := #<SyntaxTree::Const:0x00007e5e8c8e4f40>[byte].new("blockdat")
+	ct := make(#<SyntaxTree::Const:0x00007e5e8c8e42c0>[byte], des.BlockSize)
+	#<SyntaxTree::Ident:0x00007e5e8c8e39b0>.Encrypt(#<SyntaxTree::Ident:0x00007e5e8c8e3758>, #<SyntaxTree::Ident:0x00007e5e8c8e3528>)
+	pt := make(#<SyntaxTree::Const:0x00007e5e8c8e2df8>[byte], des.BlockSize)
+	#<SyntaxTree::Ident:0x00007e5e8c8e24c0>.Decrypt(#<SyntaxTree::Ident:0x00007e5e8c8e2268>, #<SyntaxTree::Ident:0x00007e5e8c8e2038>)
+	fmt.Printf("block size: %d\nct: %x\npt: %s\n", #<SyntaxTree::Ident:0x00007e5e8c8e1750>.BlockSize(), #<SyntaxTree::Ident:0x00007e5e8c8e1368>, #<SyntaxTree::Ident:0x00007e5e8c8e11d8>)
 }

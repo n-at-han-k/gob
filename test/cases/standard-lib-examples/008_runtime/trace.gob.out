@@ -13,7 +13,7 @@ func runTrace() () {
 	f, _ := os.CreateTemp("", "trace-*.out")
 	wg.Wait()
 	trace.Stop()
-	info, _ := #<SyntaxTree::Ident:0x000075853ecebd58>.Stat()
-	fmt.Printf("wrote trace: %s (%d bytes)\n", #<SyntaxTree::Ident:0x000075853eceb308>.Name(), #<SyntaxTree::Ident:0x000075853eceaef8>.Size())
-	fmt.Println("view with: go tool trace", #<SyntaxTree::Ident:0x000075853ecea430>.Name())
+	info, _ := #<SyntaxTree::Ident:0x00007e5ee3712eb8>.Stat()
+	fmt.Printf("wrote trace: %s (%d bytes)\n", #<SyntaxTree::Ident:0x00007e5ee3710668>.Name(), #<SyntaxTree::Ident:0x00007e5ee372e8e8>.Size())
+	fmt.Println("view with: go tool trace", #<SyntaxTree::Ident:0x00007e5ee372be68>.Name())
 }

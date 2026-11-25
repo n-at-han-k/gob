@@ -6,6 +6,6 @@ import (
 )
 
 func runSHA1() () {
-	sum := sha1.Sum(#<SyntaxTree::Const:0x00007585967fa300>[byte].new("hello"))
-	fmt.Printf("sha1: %x\n", #<SyntaxTree::Ident:0x00007585967f6ed0>)
+	sum := sha1.Sum(#<SyntaxTree::Const:0x00007e5ee39d8e68>[byte].new("hello"))
+	fmt.Printf("sha1: %x\n", #<SyntaxTree::Ident:0x00007e5ee39d7a90>)
 }

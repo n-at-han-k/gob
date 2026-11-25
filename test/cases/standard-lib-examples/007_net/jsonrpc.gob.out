@@ -10,9 +10,9 @@ import (
 
 func runJSONRPC() () {
 	srv := rpc.NewServer()
-	#<SyntaxTree::Ident:0x00007585967f60e8>.Register(#<SyntaxTree::Const:0x00007585967f5bc0>.new())
+	#<SyntaxTree::Ident:0x00007e5ee39a5e00>.Register(#<SyntaxTree::Const:0x00007e5ee39a5bd0>.new())
 	l, err := net.Listen("tcp", "127.0.0.1:0")
-	conn, err := net.Dial("tcp", #<SyntaxTree::Ident:0x0000758596843398>.Addr().String())
-	client := rpc.NewClientWithCodec(jsonrpc.NewClientCodec(#<SyntaxTree::Ident:0x0000758596828ae8>))
+	conn, err := net.Dial("tcp", #<SyntaxTree::Ident:0x00007e5ee39a0ba8>.Addr().String())
+	client := rpc.NewClientWithCodec(jsonrpc.NewClientCodec(#<SyntaxTree::Ident:0x00007e5e8c9df198>))
 	fmt.Println("9 * 9 =", result)
 }

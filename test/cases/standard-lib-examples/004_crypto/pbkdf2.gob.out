@@ -9,8 +9,8 @@ import (
 )
 
 func runPBKDF2() () {
-	salt := make(#<SyntaxTree::Const:0x00007585480421d8>[byte], 16)
-	rand.Read(#<SyntaxTree::Ident:0x00007585480416e8>)
-	key, err := pbkdf2.Key(sha256.New, "hunter2", #<SyntaxTree::Ident:0x00007585480406a8>, 100_000, 32)
-	fmt.Printf("salt: %x\nkey:  %x\n", #<SyntaxTree::Ident:0x00007585969bef88>, #<SyntaxTree::Ident:0x00007585969bedf8>)
+	salt := make(#<SyntaxTree::Const:0x00007e5ee39d1fa0>[byte], 16)
+	rand.Read(#<SyntaxTree::Ident:0x00007e5ee39d1500>)
+	key, err := pbkdf2.Key(sha256.New, "hunter2", #<SyntaxTree::Ident:0x00007e5ee39d04c0>, 100_000, 32)
+	fmt.Printf("salt: %x\nkey:  %x\n", #<SyntaxTree::Ident:0x00007e5e94e2ee58>, #<SyntaxTree::Ident:0x00007e5e94e2fe70>)
 }

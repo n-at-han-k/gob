@@ -8,7 +8,7 @@ import (
 )
 
 func runGob() () {
-	enc := gob.NewEncoder(#<SyntaxTree::IVar:0x0000758540e74600>)
+	enc := gob.NewEncoder(#<SyntaxTree::IVar:0x00007e5ee38db290>)
 	fmt.Printf("encoded %d bytes\n", buf.Len())
 	fmt.Printf("decoded: %+v\n", back)
 }

@@ -10,10 +10,10 @@ import (
 
 func runECDH() () {
 	curve := ecdh.P256()
-	alice, err := #<SyntaxTree::Ident:0x0000758596471350>.GenerateKey(rand.Reader)
-	bob, _ := #<SyntaxTree::Ident:0x00007585969febb0>.GenerateKey(rand.Reader)
-	shareA, _ := #<SyntaxTree::Ident:0x00007585969fdee0>.ECDH(#<SyntaxTree::Ident:0x00007585969fdc88>.PublicKey())
-	shareB, _ := #<SyntaxTree::Ident:0x00007585969fd148>.ECDH(#<SyntaxTree::Ident:0x00007585969fcef0>.PublicKey())
-	fmt.Printf("shared secret (%d B): %x\n", len(#<SyntaxTree::Ident:0x00007585969fc130>), #<SyntaxTree::Ident:0x00007585969fbd98>)
-	fmt.Println("both sides agree:", bytes.Equal(#<SyntaxTree::Ident:0x00007585969fb2a8>, #<SyntaxTree::Ident:0x00007585969fb050>))
+	alice, err := #<SyntaxTree::Ident:0x00007e5ee39a8088>.GenerateKey(rand.Reader)
+	bob, _ := #<SyntaxTree::Ident:0x00007e5ee39a6a58>.GenerateKey(rand.Reader)
+	shareA, _ := #<SyntaxTree::Ident:0x00007e5ee39a5f18>.ECDH(#<SyntaxTree::Ident:0x00007e5ee39a5cc0>.PublicKey())
+	shareB, _ := #<SyntaxTree::Ident:0x00007e5ee39a52e8>.ECDH(#<SyntaxTree::Ident:0x00007e5ee39a5090>.PublicKey())
+	fmt.Printf("shared secret (%d B): %x\n", len(#<SyntaxTree::Ident:0x00007e5ee39a4348>), #<SyntaxTree::Ident:0x00007e5ee39a3f60>)
+	fmt.Println("both sides agree:", bytes.Equal(#<SyntaxTree::Ident:0x00007e5ee39a34c0>, #<SyntaxTree::Ident:0x00007e5ee39a3290>))
 }

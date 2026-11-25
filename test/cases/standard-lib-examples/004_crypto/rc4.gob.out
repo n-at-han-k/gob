@@ -7,12 +7,12 @@ import (
 )
 
 func runRC4() () {
-	c, err := rc4.NewCipher(#<SyntaxTree::Const:0x00007585969d4900>[byte].new("weakkey"))
-	pt := #<SyntaxTree::Const:0x00007585969d2ec0>[byte].new("legacy data")
-	ct := make(#<SyntaxTree::Const:0x00007585969d2240>[byte], len(#<SyntaxTree::Ident:0x00007585969d1c50>))
-	#<SyntaxTree::Ident:0x00007585969d1750>.XORKeyStream(#<SyntaxTree::Ident:0x00007585969d14f8>, #<SyntaxTree::Ident:0x00007585969d12c8>)
-	c2, _ := rc4.NewCipher(#<SyntaxTree::Const:0x00007585969d09e0>[byte].new("weakkey"))
-	out := make(#<SyntaxTree::Const:0x0000758548e1ef40>[byte], len(#<SyntaxTree::Ident:0x0000758548e1e3b0>))
-	#<SyntaxTree::Ident:0x0000758548e1db40>.XORKeyStream(#<SyntaxTree::Ident:0x0000758548e1d780>, #<SyntaxTree::Ident:0x0000758548e1d3e8>)
-	fmt.Printf("ct: %x\npt: %s\n", #<SyntaxTree::Ident:0x0000758548e1c6a0>, #<SyntaxTree::Ident:0x0000758548e1c498>)
+	c, err := rc4.NewCipher(#<SyntaxTree::Const:0x00007e5e8c922de0>[byte].new("weakkey"))
+	pt := #<SyntaxTree::Const:0x00007e5e8c921198>[byte].new("legacy data")
+	ct := make(#<SyntaxTree::Const:0x00007e5e8c9204f0>[byte], len(#<SyntaxTree::Ident:0x00007e5e8c8bfee8>))
+	#<SyntaxTree::Ident:0x00007e5e8c8bf8a8>.XORKeyStream(#<SyntaxTree::Ident:0x00007e5e8c8bf600>, #<SyntaxTree::Ident:0x00007e5e8c8bf3a8>)
+	c2, _ := rc4.NewCipher(#<SyntaxTree::Const:0x00007e5e8c8be9f8>[byte].new("weakkey"))
+	out := make(#<SyntaxTree::Const:0x00007e5e8c8bd8f0>[byte], len(#<SyntaxTree::Ident:0x00007e5e8c8bd198>))
+	#<SyntaxTree::Ident:0x00007e5e8c8bcc48>.XORKeyStream(#<SyntaxTree::Ident:0x00007e5e8c8bc9f0>, #<SyntaxTree::Ident:0x00007e5e8c8bc770>)
+	fmt.Printf("ct: %x\npt: %s\n", #<SyntaxTree::Ident:0x00007e5e8c8bbdc0>, #<SyntaxTree::Ident:0x00007e5e8c8bbb90>)
 }

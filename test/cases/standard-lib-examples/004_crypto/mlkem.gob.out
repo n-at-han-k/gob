@@ -9,9 +9,9 @@ import (
 
 func runMLKEM() () {
 	dk, err := mlkem.GenerateKey768()
-	ek := #<SyntaxTree::Ident:0x0000758540e399b0>.EncapsulationKey()
-	shared1, ct := #<SyntaxTree::Ident:0x0000758540e39208>.Encapsulate()
-	shared2, err := #<SyntaxTree::Ident:0x0000758540e38a10>.Decapsulate(#<SyntaxTree::Ident:0x0000758540e387b8>)
-	fmt.Printf("shared secret (%d B): %x\n", len(#<SyntaxTree::Ident:0x0000758540e371d8>), #<SyntaxTree::Ident:0x0000758540e36e40>)
-	fmt.Println("both sides agree:", bytes.Equal(#<SyntaxTree::Ident:0x0000758540e363a0>, #<SyntaxTree::Ident:0x0000758540e36170>))
+	ek := #<SyntaxTree::Ident:0x00007e5e94e4b738>.EncapsulationKey()
+	shared1, ct := #<SyntaxTree::Ident:0x00007e5e94e4abf8>.Encapsulate()
+	shared2, err := #<SyntaxTree::Ident:0x00007e5e94e49e60>.Decapsulate(#<SyntaxTree::Ident:0x00007e5e94e492f8>)
+	fmt.Printf("shared secret (%d B): %x\n", len(#<SyntaxTree::Ident:0x00007e5e94e45b08>), #<SyntaxTree::Ident:0x00007e5e94e44c30>)
+	fmt.Println("both sides agree:", bytes.Equal(#<SyntaxTree::Ident:0x00007e5e94e43628>, #<SyntaxTree::Ident:0x00007e5e94e43088>))
 }

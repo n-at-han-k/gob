@@ -8,8 +8,8 @@ import (
 )
 
 func runRand() () {
-	buf := make(#<SyntaxTree::Const:0x000075853eccfbf8>[byte], 16)
-	fmt.Printf("random bytes: %x\n", #<SyntaxTree::Ident:0x000075853eccd9c0>)
+	buf := make(#<SyntaxTree::Const:0x00007e5e8c9dd028>[byte], 16)
+	fmt.Printf("random bytes: %x\n", #<SyntaxTree::Ident:0x00007e5e8c9daeb8>)
 	n, _ := rand.Int(rand.Reader, big.NewInt(1_000_000))
-	fmt.Println("random int  :", #<SyntaxTree::Ident:0x000075853eccc048>)
+	fmt.Println("random int  :", #<SyntaxTree::Ident:0x00007e5e8c9d9568>)
 }

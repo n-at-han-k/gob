@@ -10,12 +10,12 @@ import (
 
 func runMail() () {
 	raw := "From: Alice <alice@example.com>\r\n" + "To: Bob <bob@example.org>, carol@example.net\r\n" + "Subject: hi\r\n" + "Date: Mon, 01 Jan 2024 09:00:00 +0000\r\n" + "\r\n" + "hello there\r\n"
-	msg, err := mail.ReadMessage(strings.NewReader(#<SyntaxTree::Ident:0x00007585969b4808>))
-	from, _ := mail.ParseAddress(#<SyntaxTree::Ident:0x00007585969b3020>.Header.Get("From"))
-	to, _ := mail.ParseAddressList(#<SyntaxTree::Ident:0x00007585969b1c20>.Header.Get("To"))
-	fmt.Println("from:   ", #<SyntaxTree::Ident:0x0000758540ecfe38>)
-	fmt.Println("to:     ", #<SyntaxTree::Ident:0x0000758540ecee48>)
-	fmt.Println("subject:", #<SyntaxTree::Ident:0x0000758540ecded0>.Header.Get("Subject"))
-	body, _ := io.ReadAll(#<SyntaxTree::Ident:0x0000758540ecc940>.Body)
-	fmt.Print("body:   ", string(#<SyntaxTree::Ident:0x0000758540ecbcc0>))
+	msg, err := mail.ReadMessage(strings.NewReader(#<SyntaxTree::Ident:0x00007e5ee39c9cb0>))
+	from, _ := mail.ParseAddress(#<SyntaxTree::Ident:0x00007e5ee39c8590>.Header.Get("From"))
+	to, _ := mail.ParseAddressList(#<SyntaxTree::Ident:0x00007e5ee39c7528>.Header.Get("To"))
+	fmt.Println("from:   ", #<SyntaxTree::Ident:0x00007e5ee39c6448>)
+	fmt.Println("to:     ", #<SyntaxTree::Ident:0x00007e5ee39c5b88>)
+	fmt.Println("subject:", #<SyntaxTree::Ident:0x00007e5ee39c52c8>.Header.Get("Subject"))
+	body, _ := io.ReadAll(#<SyntaxTree::Ident:0x00007e5ee39c4328>.Body)
+	fmt.Print("body:   ", string(#<SyntaxTree::Ident:0x00007e5ee39c3720>))
 }

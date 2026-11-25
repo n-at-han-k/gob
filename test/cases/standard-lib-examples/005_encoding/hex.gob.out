@@ -7,10 +7,10 @@ import (
 )
 
 func runHex() () {
-	src := #<SyntaxTree::Const:0x0000758596454ef8>[byte].new("hello hex")
-	encoded := hex.EncodeToString(#<SyntaxTree::Ident:0x0000758596453418>)
-	fmt.Println("encoded:", #<SyntaxTree::Ident:0x00007585964522e8>)
-	back, err := hex.DecodeString(#<SyntaxTree::Ident:0x0000758596451320>)
-	fmt.Printf("decoded: %s\n", #<SyntaxTree::Ident:0x000075859671ccd0>)
-	fmt.Print(hex.Dump(#<SyntaxTree::Ident:0x000075859671b1f0>))
+	src := #<SyntaxTree::Const:0x00007e5e8c9d2d30>[byte].new("hello hex")
+	encoded := hex.EncodeToString(#<SyntaxTree::Ident:0x00007e5e8c9d1d68>)
+	fmt.Println("encoded:", #<SyntaxTree::Ident:0x00007e5e8c9d1200>)
+	back, err := hex.DecodeString(#<SyntaxTree::Ident:0x00007e5e8c9d0940>)
+	fmt.Printf("decoded: %s\n", #<SyntaxTree::Ident:0x00007e5e9402f1b8>)
+	fmt.Print(hex.Dump(#<SyntaxTree::Ident:0x00007e5e9402e970>))
 }

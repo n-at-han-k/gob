@@ -7,12 +7,12 @@ import (
 )
 
 func runFormat() () {
-	src := #<SyntaxTree::Const:0x00007585969f5b78>[byte].new(`package p
+	src := #<SyntaxTree::Const:0x00007e5e94045170>[byte].new(`package p
 func   Add(a,b int)int{return a+b}
 `)
-	pretty, err := format.Source(#<SyntaxTree::Ident:0x00007585969f4430>)
+	pretty, err := format.Source(#<SyntaxTree::Ident:0x00007e5e94044108>)
 	fmt.Println("---before---")
-	fmt.Print(string(#<SyntaxTree::Ident:0x00007585969f20b8>))
+	fmt.Print(string(#<SyntaxTree::Ident:0x00007e5e94042740>))
 	fmt.Println("---after----")
-	fmt.Print(string(#<SyntaxTree::Ident:0x00007585969f1028>))
+	fmt.Print(string(#<SyntaxTree::Ident:0x00007e5e94041778>))
 }

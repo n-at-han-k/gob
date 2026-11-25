@@ -7,10 +7,10 @@ import (
 
 func runNet() () {
 	ip := net.ParseIP("192.168.1.42")
-	fmt.Println("ip:", #<SyntaxTree::Ident:0x0000758540ea6d58>, "loopback:", #<SyntaxTree::Ident:0x0000758540ea68a8>.IsLoopback(), "private:", #<SyntaxTree::Ident:0x0000758540ea6178>.IsPrivate())
+	fmt.Println("ip:", #<SyntaxTree::Ident:0x00007e5e8c9c9d48>, "loopback:", #<SyntaxTree::Ident:0x00007e5e8c9c9898>.IsLoopback(), "private:", #<SyntaxTree::Ident:0x00007e5e8c9c9168>.IsPrivate())
 	addr, network, _ := net.ParseCIDR("10.0.0.5/24")
-	fmt.Println("addr:", #<SyntaxTree::Ident:0x0000758540ea4800>, "network:", #<SyntaxTree::Ident:0x0000758540ea4350>)
+	fmt.Println("addr:", #<SyntaxTree::Ident:0x00007e5e8c9c7818>, "network:", #<SyntaxTree::Ident:0x00007e5e8c9c7368>)
 	host, port, _ := net.SplitHostPort("example.com:8080")
-	fmt.Println("host:", #<SyntaxTree::Ident:0x0000758540ea2dc0>, "port:", #<SyntaxTree::Ident:0x0000758540ea2910>)
+	fmt.Println("host:", #<SyntaxTree::Ident:0x00007e5e8c9c5dd8>, "port:", #<SyntaxTree::Ident:0x00007e5e8c9c5928>)
 	ifs, _ := net.Interfaces()
 }

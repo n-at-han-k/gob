@@ -12,10 +12,10 @@ import (
 
 func runPProf() () {
 	srv := httptest.NewServer(http.DefaultServeMux)
-	resp, _ := http.Get(#<SyntaxTree::Ident:0x000075853ecc3650>.URL + "/debug/pprof/")
-	body, _ := io.ReadAll(#<SyntaxTree::Ident:0x000075853ecc2778>.Body)
-	#<SyntaxTree::Ident:0x000075853ecc2228>.Body.Close()
-	fmt.Println("status:", #<SyntaxTree::Ident:0x000075853ecc1760>.Status)
-	snippet := string(#<SyntaxTree::Ident:0x000075853ecc1120>)
-	fmt.Println(#<SyntaxTree::Ident:0x0000758540eefc60>)
+	resp, _ := http.Get(#<SyntaxTree::Ident:0x00007e5ee3702e78>.URL + "/debug/pprof/")
+	body, _ := io.ReadAll(#<SyntaxTree::Ident:0x00007e5ee3701e38>.Body)
+	#<SyntaxTree::Ident:0x00007e5ee3701820>.Body.Close()
+	fmt.Println("status:", #<SyntaxTree::Ident:0x00007e5ee3700920>.Status)
+	snippet := string(#<SyntaxTree::Ident:0x00007e5ee37001a0>)
+	fmt.Println(#<SyntaxTree::Ident:0x00007e5ee3715a28>)
 }
