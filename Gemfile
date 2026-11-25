@@ -14,6 +14,7 @@ gem "diff-lcs"
 gem "thor"
 gem "gem_kit"
 gem "rubocop"
+gem "ostruct"
 
 group :development do
   gem "rubocop-nathank"

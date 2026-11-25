@@ -43,6 +43,7 @@ GEM
       builder
       minitest (>= 5.0, < 7)
       ruby-progressbar
+    ostruct (0.6.3)
     parallel (2.3.0)
     parser (3.3.14.0)
       ast (~> 2.4.1)
@@ -131,6 +132,7 @@ DEPENDENCIES
   gem_kit-release
   minitest
   minitest-reporters
+  ostruct
   rubocop
   rubocop-disable_syntax
   rubocop-nathank

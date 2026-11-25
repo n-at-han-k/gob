@@ -207,6 +207,16 @@
     };
     version = "1.8.0";
   };
+  ostruct = {
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "04nrir9wdpc4izqwqbysxyly8y7hsfr4fsv69rw91lfi9d5fv8lm";
+      type = "gem";
+    };
+    version = "0.6.3";
+  };
   parallel = {
     groups = ["default"];
     platforms = [];
