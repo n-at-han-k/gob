@@ -130,75 +130,15 @@ module Gob
 
         def Binary(left, operator, right) = SyntaxTree::Go::BinaryExpr.new(x: left, op: operator, y: right)
 
-        def Expression(node)
-          case node
-          in SyntaxTree::CallNode
-            [Call(node)]
-
-          in SyntaxTree::MRHS[parts: parts]
-            parts.flat_map { |part| Expression(part) }
-
-          in SyntaxTree::ARef[
-            collection: collection,
-            index: SyntaxTree::Args[parts: [index]]
-          ]
-            [
-              SyntaxTree::Go::IndexExpr.new(
-                x: Expression(collection).first,
-                index: Expression(index).first
-              )
-            ]
-
-          in SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
-            [StringLiteral(text)]
-
-          in SyntaxTree::StringLiteral[parts: []]
-            [StringLiteral("")]
-
-          in SyntaxTree::XStringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
-            [RawStringLiteral(text)]
-
-          in SyntaxTree::Int[value: text]
-            [IntLiteral(text)]
-
-          in SyntaxTree::FloatLiteral[value: text]
-            [FloatLiteral(text)]
-
-          in SyntaxTree::Binary[left: left, operator: operator, right: right]
-            [
-              SyntaxTree::Go::BinaryExpr.new(
-                x: Expression(left).first,
-                op: operator,
-                y: Expression(right).first
-              )
-            ]
-
-          in SyntaxTree::VarRef | SyntaxTree::VarField | SyntaxTree::IVar | SyntaxTree::CVar | SyntaxTree::Const
-            [Variable(node)]
-
-          in nil
-            []
-
-          else
-            raise NoMatchingPatternError, "unhandled expression node: #{node.class}"
-          end
-        end
-
         def Call(node)
           case node
           in SyntaxTree::CallNode[
             receiver: receiver,
             operator: SyntaxTree::Period[value: "."],
-            message: { value: message },
+            message: SyntaxTree::Const[value: message],
             arguments: SyntaxTree::ArgParen[arguments: arguments]
           ]
-            SyntaxTree::Go::CallExpr.new(
-              fun: SyntaxTree::Go::SelectorExpr.new(
-                x: Expression(receiver).first,
-                sel: Ident(message)
-              ),
-              args: Array(arguments&.parts).flat_map { |argument| Expression(argument) }
-            )
+            nil
 
           in SyntaxTree::CallNode[
             receiver: nil,
@@ -206,22 +146,15 @@ module Gob
             message: SyntaxTree::Ident[value: message],
             arguments: SyntaxTree::ArgParen[arguments: arguments]
           ]
-            SyntaxTree::Go::CallExpr.new(
-              fun: Ident(message),
-              args: Array(arguments&.parts).flat_map { |argument| Expression(argument) }
-            )
+            nil
 
           in SyntaxTree::CallNode[
             receiver: receiver,
             operator: SyntaxTree::Period[value: "."],
-            message: { value: message },
+            message: SyntaxTree::Const[value: message],
             arguments: nil
           ]
-            SyntaxTree::Go::SelectorExpr.new(
-              x: Expression(receiver).first,
-              sel: Ident(message)
-            )
-
+            nil
           else
             nil
           end
