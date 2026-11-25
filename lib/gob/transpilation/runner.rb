@@ -104,6 +104,12 @@ module Gob
           in SyntaxTree::VarField[value: value]
             Variable(value)
 
+          in SyntaxTree::VarRef[value: value]
+            Variable(value)
+
+          in SyntaxTree::VCall[value: value]
+            Variable(value)
+
           in SyntaxTree::IVar[value: name]
             SyntaxTree::Go::UnaryExpr.new(
               op: :&,
@@ -138,6 +144,73 @@ module Gob
           in SyntaxTree::CallNode[
             receiver: receiver,
             operator: SyntaxTree::Period[value: "."],
+            message: :call,
+            arguments: SyntaxTree::ArgParen[arguments: SyntaxTree::Args[parts: [type]]]
+          ]
+            SyntaxTree::Go::TypeAssertExpr.new(
+              x: LeftHand(receiver),
+              type:
+                case type
+                in SyntaxTree::ARef[
+                  collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Array"]],
+                  index: SyntaxTree::Args[parts: [elt]]
+                ]
+                  SyntaxTree::Go::ArrayType.new(elt: LeftHand(elt))
+                in SyntaxTree::ARef[
+                  collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Hash" | "Map"]],
+                  index: SyntaxTree::Args[parts: [key, value]]
+                ]
+                  SyntaxTree::Go::MapType.new(key: LeftHand(key), value: LeftHand(value))
+                else
+                  LeftHand(type)
+                end
+            )
+
+          in SyntaxTree::CallNode[
+            receiver: SyntaxTree::ARef[
+              collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: name]],
+              index: SyntaxTree::Args[parts: types]
+            ],
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Ident[value: "new"],
+            arguments: SyntaxTree::ArgParen[arguments: arguments]
+          ] if ["Array", "Hash", "Map"].include?(name)
+            type =
+              case name
+              when "Array"
+                SyntaxTree::Go::ArrayType.new(elt: LeftHand(types.first))
+              else
+                SyntaxTree::Go::MapType.new(key: LeftHand(types[0]), value: LeftHand(types[1]))
+              end
+
+            parts = Array(arguments&.parts)
+
+            if name == "Array" && parts.length == 1 && parts.first.is_a?(SyntaxTree::StringLiteral)
+              SyntaxTree::Go::CallExpr.new(fun: type, args: parts.map { |part| LeftHand(part) })
+            else
+              elts = parts.flat_map { |part|
+                case part
+                in SyntaxTree::BareAssocHash | SyntaxTree::HashLiteral
+                  part.assocs.map { |assoc|
+                    case assoc
+                    in SyntaxTree::Assoc[key: SyntaxTree::Label[value: key], value: value]
+                      SyntaxTree::Go::KeyValueExpr.new(key: StringLiteral(key.delete_suffix(":")), value: LeftHand(value))
+                    in SyntaxTree::Assoc[key: SyntaxTree::DynaSymbol[parts: [SyntaxTree::TStringContent[value: key]]], value: value]
+                      SyntaxTree::Go::KeyValueExpr.new(key: StringLiteral(key), value: LeftHand(value))
+                    in SyntaxTree::Assoc[key: key, value: value]
+                      SyntaxTree::Go::KeyValueExpr.new(key: LeftHand(key), value: LeftHand(value))
+                    end
+                  }
+                else
+                  LeftHand(part)
+                end
+              }
+              SyntaxTree::Go::CompositeLit.new(type: type, elts: elts)
+            end
+
+          in SyntaxTree::CallNode[
+            receiver: receiver,
+            operator: SyntaxTree::Period[value: "."],
             message: { value: message },
             arguments: SyntaxTree::ArgParen[arguments: arguments]
           ]
@@ -166,10 +239,15 @@ module Gob
             message: { value: message },
             arguments: nil
           ]
-            SyntaxTree::Go::SelectorExpr.new(
-              x: LeftHand(receiver),
-              sel: Ident(message)
-            )
+            x =
+              case receiver
+              in SyntaxTree::VarRef[value: SyntaxTree::IVar[value: name]]
+                SyntaxTree::Go::StarExpr.new(x: Ident(name.delete_prefix("@")))
+              else
+                LeftHand(receiver)
+              end
+
+            SyntaxTree::Go::SelectorExpr.new(x: x, sel: Ident(message))
 
           else
             nil
@@ -187,6 +265,9 @@ module Gob
           in SyntaxTree::MLHS[parts: parts]
             parts.map { |part| LeftHand(part) }
 
+          in SyntaxTree::MRHS[parts: parts]
+            parts.map { |part| LeftHand(part) }
+
           in SyntaxTree::Int[value: text]
             IntLiteral(text)
 
@@ -202,11 +283,20 @@ module Gob
               index: LeftHand(index)
             )
 
+          in SyntaxTree::ARefField[collection: collection, index: SyntaxTree::Args[parts: [index]]]
+            SyntaxTree::Go::IndexExpr.new(
+              x: LeftHand(collection),
+              index: LeftHand(index)
+            )
+
           in SyntaxTree::VarField[value: value]
             LeftHand(value)
 
           in SyntaxTree::VCall[value: value]
             LeftHand(value)
+
+          in SyntaxTree::Field[parent: parent, operator: SyntaxTree::Period[value: "."], name: { value: name }]
+            SyntaxTree::Go::SelectorExpr.new(x: LeftHand(parent), sel: Ident(name))
 
           in SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
             StringLiteral(text)
@@ -440,7 +530,18 @@ module Gob
               Logic(logic_node)
 
             in SyntaxTree::Comment[value: value]
-              SyntaxTree::Go::Comment.new(text: value)
+              SyntaxTree::Go::Comment.new(text: value.sub(/\A#/, "//"))
+
+            in SyntaxTree::Assign[target: target, value: value] if ctx.equal?(root_context)
+              SyntaxTree::Go::GenDecl.new(
+                tok: :var,
+                specs: [
+                  SyntaxTree::Go::ValueSpec.new(
+                    names: [LeftHand(target)],
+                    values: [RightHand(value)]
+                  )
+                ]
+              )
 
             else
               Statements(node)
