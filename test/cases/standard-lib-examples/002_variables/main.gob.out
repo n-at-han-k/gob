@@ -1,9 +1,9 @@
 package main
 
-func #<SyntaxTree::Go::Ident:0x0000799350eb5480>() {
+func main(yehman, yehmam eyup) {
 	{
 	}
 }
 
-func #<SyntaxTree::Go::Ident:0x0000799350eb5070>() {
+func main(yehman, yehmam eyup) {
 }

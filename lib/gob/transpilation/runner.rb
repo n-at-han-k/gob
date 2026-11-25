@@ -19,16 +19,16 @@ module Gob
       end
 
       module FunctionNodes
-                #SyntaxTree::Go::Field.new(
-                #  names: [],
-                #  type: SyntaxTree::Go::Ident.new(name: type)
-                #)
         def Function(name:, params:, body:)
           SyntaxTree::Go::FuncDecl.new(
-            name: SyntaxTree::Go::Ident.new(name: name),
+            name: SyntaxTree::Go::Ident.new(name: "main"),
             type: SyntaxTree::Go::FuncType.new(
               type_params: nil,
               params: SyntaxTree::Go::FieldList.new(list: [
+                SyntaxTree::Go::Field.new(
+                  names: [ SyntaxTree::Go::Ident.new(name: "yehmam") ],
+                  type: SyntaxTree::Go::Ident.new(name: "eyup")
+                )
               ]),
               results: nil
             ),
@@ -112,7 +112,7 @@ module Gob
             ]
               ctx.descend(body).then do |children|
                 Function(
-                  name: Variable(name),
+                  name: name,
                   params: params,
                   body: children.tree
                 )
