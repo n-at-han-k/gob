@@ -179,6 +179,9 @@ module Gob
           in SyntaxTree::StringLiteral[parts: []]
             [StringLiteral("")]
 
+          in SyntaxTree::XStringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
+            [RawStringLiteral(text)]
+
           in SyntaxTree::Int[value: text]
             [IntLiteral(text)]
 
