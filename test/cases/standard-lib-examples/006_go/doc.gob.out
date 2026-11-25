@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-func runDoc() {
+func runDoc() () {
 	src := `// Package math2 does a little arithmetic.
 package math2
 
@@ -20,8 +20,8 @@ func Add(a, b int) int { return a + b }
 func Sub(a, b int) int { return a - b }
 `
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, "math2.go", src, parser.ParseComments)
-	p, err := doc.NewFromFiles(fset, nil, "example.com/math2")
-	fmt.Println("package:", p.Name)
-	fmt.Println("synopsis:", doc.Synopsis(p.Doc))
+	file, err := parser.ParseFile(#<SyntaxTree::Ident:0x00007585969d5508>, "math2.go", #<SyntaxTree::Ident:0x00007585969d4fb8>, parser.ParseComments)
+	p, err := doc.NewFromFiles(#<SyntaxTree::Ident:0x00007585969d3870>, #<SyntaxTree::Const:0x00007585969d3640>[#<SyntaxTree::IVar:0x00007585969d3500>.File].new(#<SyntaxTree::Ident:0x00007585969d3028>), "example.com/math2")
+	fmt.Println("package:", #<SyntaxTree::Ident:0x00007585969d16b0>.Name)
+	fmt.Println("synopsis:", doc.Synopsis(#<SyntaxTree::Ident:0x00007585969d0a80>.Doc))
 }

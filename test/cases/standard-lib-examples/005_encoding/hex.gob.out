@@ -6,11 +6,11 @@ import (
 	"log"
 )
 
-func runHex() {
-	src := nil
-	encoded := hex.EncodeToString(src)
-	fmt.Println("encoded:", encoded)
-	back, err := hex.DecodeString(encoded)
-	fmt.Printf("decoded: %s\n", back)
-	fmt.Print(hex.Dump(src))
+func runHex() () {
+	src := #<SyntaxTree::Const:0x0000758596454ef8>[byte].new("hello hex")
+	encoded := hex.EncodeToString(#<SyntaxTree::Ident:0x0000758596453418>)
+	fmt.Println("encoded:", #<SyntaxTree::Ident:0x00007585964522e8>)
+	back, err := hex.DecodeString(#<SyntaxTree::Ident:0x0000758596451320>)
+	fmt.Printf("decoded: %s\n", #<SyntaxTree::Ident:0x000075859671ccd0>)
+	fmt.Print(hex.Dump(#<SyntaxTree::Ident:0x000075859671b1f0>))
 }

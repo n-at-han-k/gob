@@ -7,16 +7,16 @@ import (
 	"fmt"
 )
 
-func runCipher() {
-	key := make(nil, 16)
-	rand.Read(key)
-	block, _ := aes.NewCipher(key)
-	iv := make(nil, block.BlockSize())
-	rand.Read(iv)
-	plaintext := nil
-	ct := make(nil, len(plaintext))
-	cipher.NewCTR(block, iv).XORKeyStream(ct, plaintext)
-	pt := make(nil, len(ct))
-	cipher.NewCTR(block, iv).XORKeyStream(pt, ct)
-	fmt.Printf("ct: %x\npt: %s\n", ct, pt)
+func runCipher() () {
+	key := make(#<SyntaxTree::Const:0x000075859671ae30>[byte], 16)
+	rand.Read(#<SyntaxTree::Ident:0x0000758596719e18>)
+	block, _ := aes.NewCipher(#<SyntaxTree::Ident:0x00007585967193a0>)
+	iv := make(#<SyntaxTree::Const:0x0000758596718b58>[byte], #<SyntaxTree::Ident:0x0000758596718590>.BlockSize())
+	rand.Read(#<SyntaxTree::Ident:0x0000758596717c08>)
+	plaintext := #<SyntaxTree::Const:0x00007585967175c8>[byte].new("streaming plaintext")
+	ct := make(#<SyntaxTree::Const:0x0000758596716740>[byte], len(#<SyntaxTree::Ident:0x0000758596715f70>))
+	cipher.NewCTR(#<SyntaxTree::Ident:0x00007585967156b0>, #<SyntaxTree::Ident:0x0000758596715408>).XORKeyStream(#<SyntaxTree::Ident:0x0000758596714fa8>, #<SyntaxTree::Ident:0x0000758596714d28>)
+	pt := make(#<SyntaxTree::Const:0x00007585967145d0>[byte], len(#<SyntaxTree::Ident:0x0000758596713f18>))
+	cipher.NewCTR(#<SyntaxTree::Ident:0x00007585967136a8>, #<SyntaxTree::Ident:0x0000758596713428>).XORKeyStream(#<SyntaxTree::Ident:0x0000758596713068>, #<SyntaxTree::Ident:0x0000758596712d70>)
+	fmt.Printf("ct: %x\npt: %s\n", #<SyntaxTree::Ident:0x0000758596712348>, #<SyntaxTree::Ident:0x0000758596712190>)
 }

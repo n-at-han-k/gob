@@ -7,7 +7,8 @@ import (
 )
 
 func runScanner() () {
-	src := 
-	fset := 
-	file := 
+	src := #<SyntaxTree::Const:0x0000758548e13960>[byte].new(`x := 1 + 2 // trailing comment`)
+	fset := token.NewFileSet()
+	file := #<SyntaxTree::Ident:0x0000758548e12380>.AddFile("snippet.go", #<SyntaxTree::Ident:0x0000758548e11b88>.Base(), len(#<SyntaxTree::Ident:0x0000758548e11548>))
+	s.Init(#<SyntaxTree::Ident:0x0000758548e10350>, #<SyntaxTree::Ident:0x0000758548e10058>, #<SyntaxTree::Kw:0x00007585968f34f0>, scanner.ScanComments)
 }

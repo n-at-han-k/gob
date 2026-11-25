@@ -7,6 +7,9 @@ import (
 )
 
 func runConstant() () {
-	big := 
-	sum := 
+	big := constant.Shift(constant.MakeInt64(1), token.SHL, 100)
+	fmt.Println("1 << 100 =", #<SyntaxTree::Ident:0x0000758548e12970>)
+	sum := constant.BinaryOp(constant.MakeFloat64(1.5), token.ADD, constant.MakeInt64(2))
+	fmt.Println("1.5 + 2 =", #<SyntaxTree::Ident:0x0000758548e103c8>, "(kind:", #<SyntaxTree::Ident:0x000075859443f5a0>.Kind(), ")")
+	fmt.Println("1<<100 > 1e30?", constant.Compare(#<SyntaxTree::Ident:0x000075859443a3e8>, token.GTR, constant.MakeFloat64(1e30)))
 }

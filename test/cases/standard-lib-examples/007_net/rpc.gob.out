@@ -7,10 +7,10 @@ import (
 	"net/rpc"
 )
 
-func runRPC() {
+func runRPC() () {
 	srv := rpc.NewServer()
-	srv.Register(nil)
+	#<SyntaxTree::Ident:0x000075859655e358>.Register(#<SyntaxTree::Const:0x000075859655e0d8>.new())
 	l, err := net.Listen("tcp", "127.0.0.1:0")
-	client, err := rpc.Dial("tcp", l.Addr().String())
+	client, err := rpc.Dial("tcp", #<SyntaxTree::Ident:0x0000758596556608>.Addr().String())
 	fmt.Println("6 * 7 =", result)
 }

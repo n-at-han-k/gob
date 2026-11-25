@@ -6,10 +6,10 @@ import (
 	"log"
 )
 
-func runBuild() {
+func runBuild() () {
 	pkg, err := build.Default.Import("fmt", "", 0)
-	fmt.Println("import path:", pkg.ImportPath)
-	fmt.Println("directory:  ", pkg.Dir)
-	fmt.Println("go files:   ", pkg.GoFiles)
-	fmt.Println("imports:    ", pkg.Imports)
+	fmt.Println("import path:", #<SyntaxTree::Ident:0x00007585967f1660>.ImportPath)
+	fmt.Println("directory:  ", #<SyntaxTree::Ident:0x000075859684f3c8>.Dir)
+	fmt.Println("go files:   ", #<SyntaxTree::Ident:0x000075859684ccb8>.GoFiles)
+	fmt.Println("imports:    ", #<SyntaxTree::Ident:0x0000758596849310>.Imports)
 }

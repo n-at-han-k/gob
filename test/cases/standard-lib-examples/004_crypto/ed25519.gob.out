@@ -7,11 +7,11 @@ import (
 	"log"
 )
 
-func runED25519() {
+func runED25519() () {
 	pub, priv, err := ed25519.GenerateKey(rand.Reader)
-	msg := nil
-	sig := ed25519.Sign(priv, msg)
-	fmt.Printf("public key (%d B): %x\n", len(pub), pub)
-	fmt.Printf("signature (%d B): %x\n", len(sig), sig)
-	fmt.Println("valid:", ed25519.Verify(pub, msg, sig))
+	msg := #<SyntaxTree::Const:0x0000758548045ba8>[byte].new("sign me")
+	sig := ed25519.Sign(#<SyntaxTree::Ident:0x0000758548044dc0>, #<SyntaxTree::Ident:0x0000758548044b90>)
+	fmt.Printf("public key (%d B): %x\n", len(#<SyntaxTree::Ident:0x00007585480441e0>), #<SyntaxTree::Ident:0x0000758548043e48>)
+	fmt.Printf("signature (%d B): %x\n", len(#<SyntaxTree::Ident:0x0000758548043510>), #<SyntaxTree::Ident:0x0000758548043178>)
+	fmt.Println("valid:", ed25519.Verify(#<SyntaxTree::Ident:0x0000758548042688>, #<SyntaxTree::Ident:0x0000758548042458>, #<SyntaxTree::Ident:0x00007585480422c8>))
 }

@@ -5,14 +5,14 @@ import (
 	"runtime"
 )
 
-func runRuntime() {
+func runRuntime() () {
 	fmt.Println("go version:  ", runtime.Version())
 	fmt.Println("GOOS/GOARCH: ", runtime.GOOS, runtime.GOARCH)
 	fmt.Println("NumCPU:      ", runtime.NumCPU())
 	fmt.Println("NumGoroutine:", runtime.NumGoroutine())
 	fmt.Println("GOMAXPROCS:  ", runtime.GOMAXPROCS(0))
 	pc, file, line, _ := runtime.Caller(0)
-	fmt.Printf("here: %s:%d (%s)\n", file, line, runtime.FuncForPC(pc).Name())
-	runtime.ReadMemStats(&m)
-	fmt.Printf("heap alloc: %d KiB, sys: %d KiB, num GC: %d\n", m.HeapAlloc/1024, m.Sys/1024, m.NumGC)
+	fmt.Printf("here: %s:%d (%s)\n", #<SyntaxTree::Ident:0x0000758540e7f898>, #<SyntaxTree::Ident:0x0000758540e7f708>, runtime.FuncForPC(#<SyntaxTree::Ident:0x0000758540e7f320>).Name())
+	runtime.ReadMemStats(#<SyntaxTree::IVar:0x0000758540e7e290>)
+	fmt.Printf("heap alloc: %d KiB, sys: %d KiB, num GC: %d\n", m.HeapAlloc / 1024, m.Sys / 1024, m.NumGC)
 }

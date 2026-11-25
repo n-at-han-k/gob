@@ -9,5 +9,5 @@ import (
 
 func runJSONText() () {
 	src := `{"name":"Nathan","tags":["go","stdlib"],"count":3}`
-	dec := 
+	dec := jsontext.NewDecoder(strings.NewReader(#<SyntaxTree::Ident:0x0000758540eedf78>))
 }

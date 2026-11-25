@@ -6,6 +6,10 @@ import (
 )
 
 func runMD5() () {
-	sum := 
-	h := 
+	sum := md5.Sum(#<SyntaxTree::Const:0x0000758596455e48>[byte].new("hello"))
+	fmt.Printf("md5: %x\n", #<SyntaxTree::Ident:0x0000758596453bc0>)
+	h := md5.New()
+	#<SyntaxTree::Ident:0x0000758596452bd0>.Write(#<SyntaxTree::Const:0x0000758596452810>[byte].new("hel"))
+	#<SyntaxTree::Ident:0x0000758596451230>.Write(#<SyntaxTree::Const:0x0000758596450dd0>[byte].new("lo"))
+	fmt.Printf("streamed: %x\n", #<SyntaxTree::Ident:0x000075859647f130>.Sum(#<SyntaxTree::Kw:0x00007585969c3498>))
 }

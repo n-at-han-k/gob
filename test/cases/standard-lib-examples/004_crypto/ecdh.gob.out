@@ -8,12 +8,12 @@ import (
 	"log"
 )
 
-func runECDH() {
+func runECDH() () {
 	curve := ecdh.P256()
-	alice, err := curve.GenerateKey(rand.Reader)
-	bob, _ := curve.GenerateKey(rand.Reader)
-	shareA, _ := alice.ECDH(bob.PublicKey())
-	shareB, _ := bob.ECDH(alice.PublicKey())
-	fmt.Printf("shared secret (%d B): %x\n", len(shareA), shareA)
-	fmt.Println("both sides agree:", bytes.Equal(shareA, shareB))
+	alice, err := #<SyntaxTree::Ident:0x0000758596471350>.GenerateKey(rand.Reader)
+	bob, _ := #<SyntaxTree::Ident:0x00007585969febb0>.GenerateKey(rand.Reader)
+	shareA, _ := #<SyntaxTree::Ident:0x00007585969fdee0>.ECDH(#<SyntaxTree::Ident:0x00007585969fdc88>.PublicKey())
+	shareB, _ := #<SyntaxTree::Ident:0x00007585969fd148>.ECDH(#<SyntaxTree::Ident:0x00007585969fcef0>.PublicKey())
+	fmt.Printf("shared secret (%d B): %x\n", len(#<SyntaxTree::Ident:0x00007585969fc130>), #<SyntaxTree::Ident:0x00007585969fbd98>)
+	fmt.Println("both sides agree:", bytes.Equal(#<SyntaxTree::Ident:0x00007585969fb2a8>, #<SyntaxTree::Ident:0x00007585969fb050>))
 }

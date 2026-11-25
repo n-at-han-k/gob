@@ -6,7 +6,9 @@ import (
 )
 
 func runToken() () {
-	fset := 
-	f := 
-	pos := 
+	fset := token.NewFileSet()
+	f := #<SyntaxTree::Ident:0x0000758540eabb50>.AddFile("demo.go", #<SyntaxTree::Ident:0x0000758540eab560>.Base(), 100)
+	#<SyntaxTree::Ident:0x0000758540eaaea8>.SetLinesForContent(#<SyntaxTree::Const:0x0000758540eaaca0>[byte].new("line one\nline two\nline three"))
+	pos := #<SyntaxTree::Ident:0x0000758540ea9fa8>.Pos(10)
+	fmt.Println("offset 10 is at", #<SyntaxTree::Ident:0x0000758540ea93f0>.Position(#<SyntaxTree::Ident:0x0000758540ea91c0>))
 }

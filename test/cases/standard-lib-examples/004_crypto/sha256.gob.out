@@ -6,5 +6,10 @@ import (
 )
 
 func runSHA256() () {
-	h := 
+	fmt.Printf("Sum256:   %x\n", sha256.Sum256(#<SyntaxTree::Const:0x00007585968436b8>[byte].new("hello")))
+	fmt.Printf("Sum224:   %x\n", sha256.Sum224(#<SyntaxTree::Const:0x000075859695ecf0>[byte].new("hello")))
+	h := sha256.New()
+	#<SyntaxTree::Ident:0x00007585969578d8>.Write(#<SyntaxTree::Const:0x0000758596956280>[byte].new("hel"))
+	#<SyntaxTree::Ident:0x00007585969506c8>.Write(#<SyntaxTree::Const:0x000075859696d200>[byte].new("lo"))
+	fmt.Printf("streamed: %x\n", #<SyntaxTree::Ident:0x00007585969627d8>.Sum(#<SyntaxTree::Kw:0x0000758596a09ab0>))
 }

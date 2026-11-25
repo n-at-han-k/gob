@@ -135,10 +135,16 @@ module Gob
           in SyntaxTree::CallNode[
             receiver: receiver,
             operator: SyntaxTree::Period[value: "."],
-            message: SyntaxTree::Const[value: message],
+            message: { value: message },
             arguments: SyntaxTree::ArgParen[arguments: arguments]
           ]
-            nil
+            SyntaxTree::Go::CallExpr.new(
+              fun: SyntaxTree::Go::SelectorExpr.new(
+                x: LeftHand(receiver),
+                sel: Ident(message)
+              ),
+              args: Array(arguments&.parts).map { |argument| LeftHand(argument) }
+            )
 
           in SyntaxTree::CallNode[
             receiver: nil,
@@ -146,15 +152,22 @@ module Gob
             message: SyntaxTree::Ident[value: message],
             arguments: SyntaxTree::ArgParen[arguments: arguments]
           ]
-            nil
+            SyntaxTree::Go::CallExpr.new(
+              fun: Ident(message),
+              args: Array(arguments&.parts).map { |argument| LeftHand(argument) }
+            )
 
           in SyntaxTree::CallNode[
             receiver: receiver,
             operator: SyntaxTree::Period[value: "."],
-            message: SyntaxTree::Const[value: message],
+            message: { value: message },
             arguments: nil
           ]
-            nil
+            SyntaxTree::Go::SelectorExpr.new(
+              x: LeftHand(receiver),
+              sel: Ident(message)
+            )
+
           else
             nil
           end
@@ -174,7 +187,7 @@ module Gob
           in SyntaxTree::Int[value: text]
             IntLiteral(text)
 
-          in SyntaxTree::Float[value: text]
+          in SyntaxTree::FloatLiteral[value: text]
             FloatLiteral(text)
 
           in SyntaxTree::Binary[left: left, operator: operator, right: right]
@@ -186,7 +199,10 @@ module Gob
               index: LeftHand(index)
             )
 
-          in SyntaxTree::VarField[value: value] | SyntaxTree::VCall[value: value]
+          in SyntaxTree::VarField[value: value]
+            LeftHand(value)
+
+          in SyntaxTree::VCall[value: value]
             LeftHand(value)
 
           in SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
@@ -273,8 +289,8 @@ module Gob
           ]
             Command(name, args)
 
-          in SyntaxTree::CallNode[ receiver: object, operator: operator, message: SyntaxTree::Ident[value: method] ]
-            Call(object, operator, method)
+          in SyntaxTree::CallNode
+            SyntaxTree::Go::ExprStmt.new(x: Call(node))
 
           in SyntaxTree::Assign[target: target, value: value]
             SyntaxTree::Go::AssignStmt.new(
@@ -286,10 +302,10 @@ module Gob
 
           in SyntaxTree::MAssign[target: target, value: value]
             SyntaxTree::Go::AssignStmt.new(
-              lhs:     LeftHand(target),
+              lhs:     Array(LeftHand(target)),
               tok_pos: nil,
               tok:     ":=",
-              rhs:     RightHand(value)
+              rhs:     Array(RightHand(value))
             )
 
           in SyntaxTree::Assign[target: target, value: value]

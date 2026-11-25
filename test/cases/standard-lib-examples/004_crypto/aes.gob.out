@@ -8,16 +8,16 @@ import (
 	"log"
 )
 
-func runAES() {
-	key := make(nil, 32)
-	rand.Read(key)
-	block, err := aes.NewCipher(key)
-	gcm, _ := cipher.NewGCM(block)
-	nonce := make(nil, gcm.NonceSize())
-	rand.Read(nonce)
-	plaintext := nil
-	ct := gcm.Seal(nil, nonce, plaintext, nil)
-	pt, err := gcm.Open(nil, nonce, ct, nil)
-	fmt.Printf("ciphertext (%d bytes): %x\n", len(ct), ct)
-	fmt.Printf("decrypted: %s\n", pt)
+func runAES() () {
+	key := make(#<SyntaxTree::Const:0x0000758594444438>[byte], 32)
+	rand.Read(#<SyntaxTree::Ident:0x000075859445ed88>)
+	block, err := aes.NewCipher(#<SyntaxTree::Ident:0x000075859445a418>)
+	gcm, _ := cipher.NewGCM(#<SyntaxTree::Ident:0x0000758594451d90>)
+	nonce := make(#<SyntaxTree::Const:0x0000758594451160>[byte], #<SyntaxTree::Ident:0x00007585944507b0>.NonceSize())
+	rand.Read(#<SyntaxTree::Ident:0x000075859645fba0>)
+	plaintext := #<SyntaxTree::Const:0x000075859645f3a8>[byte].new("secret message")
+	ct := #<SyntaxTree::Ident:0x000075859645d580>.Seal(#<SyntaxTree::Kw:0x0000758540e6b5f0>, #<SyntaxTree::Ident:0x000075859645cd10>, #<SyntaxTree::Ident:0x000075859645ca68>, #<SyntaxTree::Kw:0x0000758540e6b2d0>)
+	pt, err := #<SyntaxTree::Ident:0x000075859645bd98>.Open(#<SyntaxTree::Kw:0x0000758540e6aa60>, #<SyntaxTree::Ident:0x000075859645b438>, #<SyntaxTree::Ident:0x000075859645a790>, #<SyntaxTree::Kw:0x0000758540e6a600>)
+	fmt.Printf("ciphertext (%d bytes): %x\n", len(#<SyntaxTree::Ident:0x0000758596455790>), #<SyntaxTree::Ident:0x0000758596454908>)
+	fmt.Printf("decrypted: %s\n", #<SyntaxTree::Ident:0x0000758596453418>)
 }
