@@ -11,5 +11,9 @@ import (
 
 func runTrace() {
 	f, _ := os.CreateTemp("", "trace-*.out")
+	wg.Wait()
+	trace.Stop()
 	info, _ := f.Stat()
+	fmt.Printf("wrote trace: %s (%d bytes)\n", f.Name(), info.Size())
+	fmt.Println("view with: go tool trace", f.Name())
 }

@@ -8,4 +8,5 @@ import (
 
 func runCoverage() {
 	dir, _ := os.MkdirTemp("", "cover-")
+	fmt.Println("(rebuild with `go build -cover` for these to succeed)")
 }

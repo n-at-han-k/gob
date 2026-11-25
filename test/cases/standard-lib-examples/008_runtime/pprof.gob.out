@@ -8,6 +8,11 @@ import (
 )
 
 func runPProf() {
+	junk := make(Array[Array[byte]], 0, 100)
+	runtime.GC()
 	f, err := os.CreateTemp("", "heap-*.prof")
 	info, _ := f.Stat()
+	fmt.Printf("wrote heap profile: %s (%d bytes)\n", f.Name(), info.Size())
+	fmt.Println("view with: go tool pprof", f.Name())
+	_ := junk
 }

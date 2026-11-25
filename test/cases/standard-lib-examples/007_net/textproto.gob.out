@@ -9,5 +9,8 @@ import (
 )
 
 func runTextproto() {
+	raw := "Host: example.com\r\n" + "Content-Type: text/plain;\r\n charset=utf-8\r\n" + "X-Trace: abc\r\n" + "\r\n"
+	r := textproto.NewReader(bufio.NewReader(strings.NewReader(raw)))
 	hdr, err := r.ReadMIMEHeader()
+	fmt.Println("canonical:", textproto.CanonicalMIMEHeaderKey("x-trace"))
 }
