@@ -1,4 +1,8 @@
 package main
 
-func runFCGI() {
+"fmt"
+
+"net/http/fcgi"
+
+func runFCGI() () {
 }

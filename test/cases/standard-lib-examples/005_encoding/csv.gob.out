@@ -1,4 +1,14 @@
 package main
 
-func runCSV() {
+"encoding/csv"
+
+"fmt"
+
+"log"
+
+"os"
+
+"strings"
+
+func runCSV() () {
 }

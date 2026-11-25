@@ -1,4 +1,10 @@
 package main
 
-func main() {
+"fmt"
+
+"os"
+
+"sort"
+
+func main() () {
 }

@@ -1,4 +1,10 @@
 package main
 
-func runBuild() {
+"fmt"
+
+"go/build"
+
+"log"
+
+func runBuild() () {
 }

@@ -1,4 +1,14 @@
 package main
 
-func runDSA() {
+"crypto/dsa"
+
+"crypto/rand"
+
+"crypto/sha256"
+
+"fmt"
+
+"log"
+
+func runDSA() () {
 }

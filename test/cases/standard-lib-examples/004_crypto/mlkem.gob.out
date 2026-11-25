@@ -1,4 +1,12 @@
 package main
 
-func runMLKEM() {
+"bytes"
+
+"crypto/mlkem"
+
+"fmt"
+
+"log"
+
+func runMLKEM() () {
 }

@@ -1,4 +1,10 @@
 package main
 
-func runASN1() {
+"encoding/asn1"
+
+"fmt"
+
+"log"
+
+func runASN1() () {
 }

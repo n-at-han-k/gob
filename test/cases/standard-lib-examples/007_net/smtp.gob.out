@@ -1,4 +1,8 @@
 package main
 
-func runSMTP() {
+"fmt"
+
+"net/smtp"
+
+func runSMTP() () {
 }

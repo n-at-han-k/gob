@@ -1,4 +1,10 @@
 package main
 
-func runConstraint() {
+"fmt"
+
+"go/build/constraint"
+
+"log"
+
+func runConstraint() () {
 }

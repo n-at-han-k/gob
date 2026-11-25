@@ -1,4 +1,8 @@
 package main
 
-func runElliptic() {
+"crypto/elliptic"
+
+"fmt"
+
+func runElliptic() () {
 }

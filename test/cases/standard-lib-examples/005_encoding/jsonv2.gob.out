@@ -1,4 +1,10 @@
 package main
 
-func runJSONv2() {
+"encoding/json/v2"
+
+"fmt"
+
+"log"
+
+func runJSONv2() () {
 }

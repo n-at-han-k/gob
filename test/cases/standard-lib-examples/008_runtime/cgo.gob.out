@@ -1,4 +1,8 @@
 package main
 
-func runCGO() {
+"fmt"
+
+"runtime/cgo"
+
+func runCGO() () {
 }

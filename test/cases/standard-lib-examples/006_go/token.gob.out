@@ -1,4 +1,8 @@
 package main
 
-func runToken() {
+"fmt"
+
+"go/token"
+
+func runToken() () {
 }

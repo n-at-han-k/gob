@@ -1,4 +1,10 @@
 package main
 
-func runXML() {
+"encoding/xml"
+
+"fmt"
+
+"log"
+
+func runXML() () {
 }

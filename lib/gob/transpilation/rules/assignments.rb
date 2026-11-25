@@ -52,31 +52,6 @@ module Gob
             LocalAssignment([name], [visit(value)], context: self)
           end
 
-          matcher.rule(:multiple_assignment) do |node|
-            next Matcher::MISS unless node.is_a?(SyntaxTree::MAssign)
-
-            node => SyntaxTree::MAssign[
-              target: SyntaxTree::MLHS[parts: targets], value: value
-            ]
-
-            names =
-              targets.map do |target|
-                case target
-                in SyntaxTree::VarField[value: SyntaxTree::Ident[value: name]]
-                  name
-                end
-              end
-            values =
-              case value
-              in SyntaxTree::MRHS[parts: parts]
-                visit_all(parts)
-              else
-                [visit(value)]
-              end
-
-            LocalAssignment(names, values, context: self)
-          end
-
           matcher.rule(:field_assignment) do |node|
             next Matcher::MISS unless node.is_a?(SyntaxTree::Assign)
 

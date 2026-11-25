@@ -1,4 +1,10 @@
 package main
 
-func runURL() {
+"fmt"
+
+"log"
+
+"net/url"
+
+func runURL() () {
 }

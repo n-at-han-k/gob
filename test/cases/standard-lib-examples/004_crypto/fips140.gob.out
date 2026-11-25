@@ -1,4 +1,8 @@
 package main
 
-func runFIPS140() {
+"crypto/fips140"
+
+"fmt"
+
+func runFIPS140() () {
 }

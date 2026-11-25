@@ -1,4 +1,8 @@
 package main
 
-func runSHA1() {
+"crypto/sha1"
+
+"fmt"
+
+func runSHA1() () {
 }

@@ -1,4 +1,10 @@
 package main
 
-func runHMAC() {
+"crypto/hmac"
+
+"crypto/sha256"
+
+"fmt"
+
+func runHMAC() () {
 }

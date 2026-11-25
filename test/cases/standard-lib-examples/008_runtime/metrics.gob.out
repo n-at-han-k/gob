@@ -1,4 +1,8 @@
 package main
 
-func runMetrics() {
+"fmt"
+
+"runtime/metrics"
+
+func runMetrics() () {
 }

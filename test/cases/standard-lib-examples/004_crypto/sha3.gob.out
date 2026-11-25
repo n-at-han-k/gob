@@ -1,4 +1,8 @@
 package main
 
-func runSHA3() {
+"crypto/sha3"
+
+"fmt"
+
+func runSHA3() () {
 }

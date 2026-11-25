@@ -1,4 +1,14 @@
 package main
 
-func runECDH() {
+"bytes"
+
+"crypto/ecdh"
+
+"crypto/rand"
+
+"fmt"
+
+"log"
+
+func runECDH() () {
 }

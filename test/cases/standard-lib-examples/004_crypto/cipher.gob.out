@@ -1,4 +1,12 @@
 package main
 
-func runCipher() {
+"crypto/aes"
+
+"crypto/cipher"
+
+"crypto/rand"
+
+"fmt"
+
+func runCipher() () {
 }

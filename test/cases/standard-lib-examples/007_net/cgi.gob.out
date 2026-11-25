@@ -1,4 +1,14 @@
 package main
 
-func runCGI() {
+"fmt"
+
+"net/http"
+
+"net/http/cgi"
+
+"net/http/httptest"
+
+"os"
+
+func runCGI() () {
 }

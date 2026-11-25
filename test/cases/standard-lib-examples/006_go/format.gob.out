@@ -1,4 +1,10 @@
 package main
 
-func runFormat() {
+"fmt"
+
+"go/format"
+
+"log"
+
+func runFormat() () {
 }

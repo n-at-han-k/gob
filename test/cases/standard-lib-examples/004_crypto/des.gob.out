@@ -1,4 +1,10 @@
 package main
 
-func runDES() {
+"crypto/des"
+
+"fmt"
+
+"log"
+
+func runDES() () {
 }

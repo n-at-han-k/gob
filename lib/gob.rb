@@ -22,16 +22,8 @@ module Gob
         --"-' '--==== --"-   ""-
   ____
 
-  def self.default_matcher
-    @default_matcher ||= begin
-      matcher = Matcher.new
-      Transpilation::Rules.register(matcher)
-      matcher
-    end
-  end
-
-  def self.transpile(source, path: nil, check: true)
-    Validation::Rules.check!(source, path: path) if check
+  def self.transpile(source, path: nil)
+    Validation::Rules.check!(source, path: path)
     Transpiler.new.transpile(source)
   end
 

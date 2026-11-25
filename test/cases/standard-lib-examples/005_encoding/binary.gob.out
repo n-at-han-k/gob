@@ -1,4 +1,12 @@
 package main
 
-func runBinary() {
+"bytes"
+
+"encoding/binary"
+
+"fmt"
+
+"log"
+
+func runBinary() () {
 }

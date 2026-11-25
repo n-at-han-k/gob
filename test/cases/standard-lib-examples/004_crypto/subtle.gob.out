@@ -1,4 +1,8 @@
 package main
 
-func runSubtle() {
+"crypto/subtle"
+
+"fmt"
+
+func runSubtle() () {
 }

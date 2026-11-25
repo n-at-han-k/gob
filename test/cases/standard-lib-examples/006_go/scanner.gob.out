@@ -1,4 +1,10 @@
 package main
 
-func runScanner() {
+"fmt"
+
+"go/scanner"
+
+"go/token"
+
+func runScanner() () {
 }

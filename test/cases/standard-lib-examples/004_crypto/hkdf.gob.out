@@ -1,4 +1,12 @@
 package main
 
-func runHKDF() {
+"crypto/hkdf"
+
+"crypto/sha256"
+
+"fmt"
+
+"log"
+
+func runHKDF() () {
 }

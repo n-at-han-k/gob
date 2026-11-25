@@ -1,4 +1,6 @@
 package main
 
-func runRace() {
+"fmt"
+
+func runRace() () {
 }

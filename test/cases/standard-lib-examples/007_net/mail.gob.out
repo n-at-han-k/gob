@@ -1,4 +1,14 @@
 package main
 
-func runMail() {
+"fmt"
+
+"io"
+
+"log"
+
+"net/mail"
+
+"strings"
+
+func runMail() () {
 }

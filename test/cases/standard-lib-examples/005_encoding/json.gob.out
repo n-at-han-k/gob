@@ -1,4 +1,12 @@
 package main
 
-func runJSON() {
+"encoding/json"
+
+"fmt"
+
+"log"
+
+"strings"
+
+func runJSON() () {
 }

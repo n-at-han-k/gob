@@ -1,4 +1,10 @@
 package main
 
-func runNetip() {
+"fmt"
+
+"log"
+
+"net/netip"
+
+func runNetip() () {
 }

@@ -1,4 +1,10 @@
 package main
 
-func runConstant() {
+"fmt"
+
+"go/constant"
+
+"go/token"
+
+func runConstant() () {
 }

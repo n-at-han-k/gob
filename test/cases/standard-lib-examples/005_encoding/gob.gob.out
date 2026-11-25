@@ -1,4 +1,12 @@
 package main
 
-func runGob() {
+"bytes"
+
+"encoding/gob"
+
+"fmt"
+
+"log"
+
+func runGob() () {
 }

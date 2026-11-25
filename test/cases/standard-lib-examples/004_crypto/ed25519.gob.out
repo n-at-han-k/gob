@@ -1,4 +1,12 @@
 package main
 
-func runED25519() {
+"crypto/ed25519"
+
+"crypto/rand"
+
+"fmt"
+
+"log"
+
+func runED25519() () {
 }

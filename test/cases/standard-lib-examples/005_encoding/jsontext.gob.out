@@ -1,4 +1,12 @@
 package main
 
-func runJSONText() {
+"encoding/json/jsontext"
+
+"fmt"
+
+"io"
+
+"strings"
+
+func runJSONText() () {
 }

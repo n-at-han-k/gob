@@ -1,4 +1,8 @@
 package main
 
-func runEncoding() {
+"encoding"
+
+"fmt"
+
+func runEncoding() () {
 }

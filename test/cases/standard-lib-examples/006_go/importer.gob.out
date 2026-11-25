@@ -1,4 +1,10 @@
 package main
 
-func runImporter() {
+"fmt"
+
+"go/importer"
+
+"log"
+
+func runImporter() () {
 }

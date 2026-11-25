@@ -1,4 +1,16 @@
 package main
 
-func runDoc() {
+"fmt"
+
+"go/ast"
+
+"go/doc"
+
+"go/parser"
+
+"go/token"
+
+"log"
+
+func runDoc() () {
 }

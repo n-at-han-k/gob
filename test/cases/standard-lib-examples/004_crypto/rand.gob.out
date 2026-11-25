@@ -1,4 +1,12 @@
 package main
 
-func runRand() {
+"crypto/rand"
+
+"fmt"
+
+"log"
+
+"math/big"
+
+func runRand() () {
 }

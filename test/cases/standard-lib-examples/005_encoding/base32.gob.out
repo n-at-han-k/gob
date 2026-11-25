@@ -1,4 +1,10 @@
 package main
 
-func runBase32() {
+"encoding/base32"
+
+"fmt"
+
+"log"
+
+func runBase32() () {
 }

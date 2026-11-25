@@ -1,4 +1,10 @@
 package main
 
-func runCoverage() {
+"fmt"
+
+"os"
+
+"runtime/coverage"
+
+func runCoverage() () {
 }

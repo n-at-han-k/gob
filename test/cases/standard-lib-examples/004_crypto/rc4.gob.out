@@ -1,4 +1,10 @@
 package main
 
-func runRC4() {
+"crypto/rc4"
+
+"fmt"
+
+"log"
+
+func runRC4() () {
 }

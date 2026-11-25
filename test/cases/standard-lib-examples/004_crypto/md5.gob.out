@@ -1,4 +1,8 @@
 package main
 
-func runMD5() {
+"crypto/md5"
+
+"fmt"
+
+func runMD5() () {
 }

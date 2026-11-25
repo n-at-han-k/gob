@@ -116,17 +116,67 @@ module Gob
             SyntaxTree::Go::Ident.new(name: name)
           end
         end
+
+        def Ident(name)
+          SyntaxTree::Go::Ident.new(name: name.to_s)
+        end
+
+        def BasicLit(kind, value)
+          SyntaxTree::Go::BasicLit.new(kind: kind.to_sym, value: value.to_s)
+        end
+
+        def CharLiteral(value)
+          BasicLit(:CHAR, "'#{value}'")
+        end
+
+        def StringLiteral(value)
+          BasicLit(:STRING, "\"#{value}\"")
+        end
+
+        def RawStringLiteral(value)
+          BasicLit(:STRING, "`#{value}`")
+        end
+
+        def IntLiteral(value)
+          BasicLit(:INT, value)
+        end
+
+        def FloatLiteral(value)
+          BasicLit(:FLOAT, value)
+        end
+
       end
 
       module StatementNodes
         def Statements(node)
           case node
+          in SyntaxTree::Command[
+            message: SyntaxTree::Ident[value: "require"],
+            arguments: SyntaxTree::Args[ parts: [
+              SyntaxTree::StringLiteral[
+                parts: [SyntaxTree::TStringContent[value: path]]
+              ]
+            ]]
+          ]
+            ImportSpec(path)
+
           in SyntaxTree::VoidStmt
             nil
           else
             nil
           end
         end
+
+        def ImportSpec(path, name: nil)
+          SyntaxTree::Go::ImportSpec.new(
+            doc: nil,
+            name: name,
+            path: StringLiteral(path),
+            comment: nil,
+            end_pos: nil
+          )
+        end
+
       end
 
       def call(node)

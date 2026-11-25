@@ -1,4 +1,8 @@
 package main
 
-func runDebug() {
+"fmt"
+
+"runtime/debug"
+
+func runDebug() () {
 }

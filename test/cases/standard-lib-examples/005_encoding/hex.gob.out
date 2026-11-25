@@ -1,4 +1,10 @@
 package main
 
-func runHex() {
+"encoding/hex"
+
+"fmt"
+
+"log"
+
+func runHex() () {
 }

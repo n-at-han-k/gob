@@ -1,4 +1,12 @@
 package main
 
-func runParser() {
+"fmt"
+
+"go/parser"
+
+"go/token"
+
+"log"
+
+func runParser() () {
 }

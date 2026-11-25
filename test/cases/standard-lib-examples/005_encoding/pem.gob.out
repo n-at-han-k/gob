@@ -1,4 +1,10 @@
 package main
 
-func runPEM() {
+"encoding/pem"
+
+"fmt"
+
+"os"
+
+func runPEM() () {
 }

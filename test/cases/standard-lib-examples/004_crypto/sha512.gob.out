@@ -1,4 +1,8 @@
 package main
 
-func runSHA512() {
+"crypto/sha512"
+
+"fmt"
+
+func runSHA512() () {
 }

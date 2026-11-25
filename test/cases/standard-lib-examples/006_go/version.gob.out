@@ -1,4 +1,8 @@
 package main
 
-func runVersion() {
+"fmt"
+
+"go/version"
+
+func runVersion() () {
 }

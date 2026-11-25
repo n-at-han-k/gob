@@ -1,4 +1,10 @@
 package main
 
-func runBase64() {
+"encoding/base64"
+
+"fmt"
+
+"log"
+
+func runBase64() () {
 }

@@ -1,4 +1,8 @@
 package main
 
-func runNet() {
+"fmt"
+
+"net"
+
+func runNet() () {
 }

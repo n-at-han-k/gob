@@ -1,4 +1,14 @@
 package main
 
-func runPrinter() {
+"go/parser"
+
+"go/printer"
+
+"go/token"
+
+"log"
+
+"os"
+
+func runPrinter() () {
 }

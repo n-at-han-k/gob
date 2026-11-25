@@ -1,4 +1,8 @@
 package main
 
-func runRuntime() {
+"fmt"
+
+"runtime"
+
+func runRuntime() () {
 }

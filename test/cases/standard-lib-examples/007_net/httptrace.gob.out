@@ -1,4 +1,12 @@
 package main
 
-func runHTTPTrace() {
+"fmt"
+
+"net/http"
+
+"net/http/httptest"
+
+"net/http/httptrace"
+
+func runHTTPTrace() () {
 }

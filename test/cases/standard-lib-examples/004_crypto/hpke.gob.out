@@ -1,4 +1,6 @@
 package main
 
-func runHPKE() {
+"fmt"
+
+func runHPKE() () {
 }

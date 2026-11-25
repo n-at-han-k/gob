@@ -1,4 +1,12 @@
 package main
 
-func runPProf() {
+"fmt"
+
+"os"
+
+"runtime"
+
+"runtime/pprof"
+
+func runPProf() () {
 }

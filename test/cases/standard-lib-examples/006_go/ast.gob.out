@@ -1,4 +1,14 @@
 package main
 
-func runAST() {
+"fmt"
+
+"go/ast"
+
+"go/parser"
+
+"go/token"
+
+"log"
+
+func runAST() () {
 }
