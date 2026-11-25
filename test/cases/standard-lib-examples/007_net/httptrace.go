@@ -14,10 +14,18 @@ func runHTTPTrace() {
 	defer srv.Close()
 
 	trace := &httptrace.ClientTrace{
-		GetConn:              func(host string) { fmt.Println("GetConn:", host) },
-		GotConn:              func(info httptrace.GotConnInfo) { fmt.Println("GotConn: reused=", info.Reused) },
-		WroteHeaders:         func() { fmt.Println("WroteHeaders") },
-		GotFirstResponseByte: func() { fmt.Println("GotFirstResponseByte") },
+		GetConn: func(host string) {
+			fmt.Println("GetConn:", host)
+		},
+		GotConn: func(info httptrace.GotConnInfo) {
+			fmt.Println("GotConn: reused=", info.Reused)
+		},
+		WroteHeaders: func() {
+			fmt.Println("WroteHeaders")
+		},
+		GotFirstResponseByte: func() {
+			fmt.Println("GotFirstResponseByte")
+		},
 	}
 
 	req, _ := http.NewRequest("GET", srv.URL, nil)

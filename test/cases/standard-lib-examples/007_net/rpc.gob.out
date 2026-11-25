@@ -8,6 +8,9 @@ import (
 )
 
 func runRPC() {
+	srv := rpc.NewServer()
+	srv.Register(Arith{})
 	l, err := net.Listen("tcp", "127.0.0.1:0")
 	client, err := rpc.Dial("tcp", l.Addr().String())
+	fmt.Println("6 * 7 =", result)
 }

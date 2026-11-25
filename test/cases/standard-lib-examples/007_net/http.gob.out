@@ -9,6 +9,11 @@ import (
 )
 
 func runHTTP() {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "hello %s, you asked for %s\n", r.RemoteAddr, r.URL.Path)
+	}))
 	resp, err := http.Get(srv.URL + "/greet")
 	body, _ := io.ReadAll(resp.Body)
+	fmt.Println("status:", resp.Status)
+	fmt.Print("body:  ", string(body))
 }

@@ -7,5 +7,8 @@ import (
 )
 
 func runXML() {
+	b := book{Title: "Learning Go", Author: "Nathan", Tags: []string{"go", "stdlib"}}
 	data, err := xml.MarshalIndent(b, "", "  ")
+	fmt.Println(xml.Header + string(data))
+	fmt.Printf("parsed: %+v\n", back)
 }

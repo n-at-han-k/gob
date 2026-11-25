@@ -8,6 +8,13 @@ import (
 )
 
 func runJSON() {
+	a := article{Title: "Learning Go", Views: 12, Tags: []string{"go", "stdlib"}}
 	data, err := json.Marshal(a)
+	fmt.Println("compact:", string(data))
 	pretty, _ := json.MarshalIndent(a, "", "  ")
+	fmt.Println(string(pretty))
+	json.Unmarshal(data, &back)
+	fmt.Printf("parsed: %+v\n", back)
+	stream := `{"n":1}{"n":2}{"n":3}`
+	dec := json.NewDecoder(strings.NewReader(stream))
 }

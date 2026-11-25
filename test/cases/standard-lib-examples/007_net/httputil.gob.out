@@ -9,7 +9,12 @@ import (
 )
 
 func runHTTPUtil() {
+	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "upstream got %s\n", r.URL.Path)
+	}))
 	target, _ := url.Parse(upstream.URL)
+	proxy := httptest.NewServer(httputil.NewSingleHostReverseProxy(target))
 	resp, _ := http.Get(proxy.URL + "/echo")
 	dump, _ := httputil.DumpResponse(resp, true)
+	fmt.Print(string(dump))
 }

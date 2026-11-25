@@ -1,9 +1,44 @@
 package main
 
+import "fmt"
+
+var PI = 3.14159
+
+var STATUS_ACTIVE = "active"
+
+var STATUS_INACTIVE = "inactive"
+
+var packageLevel = "I live at package scope"
+
 func main() {
+	fmt.Println("zero values:", a, b, c, d)
+	fmt.Println(name, age)
+	city := "Wellington"
+	country := "New Zealand"
+	fmt.Println(city, country)
+	x, y, z := 1, 2.5, "three"
+	fmt.Println(x, y, z)
+	x, y := 10, 20.5
+	fmt.Println(x, y)
+	host := "localhost"
+	port := 8080
+	enabled := true
+	fmt.Println(host, port, enabled)
+	fmt.Println(big)
+	fmt.Println(greeting, PI, STATUS_ACTIVE, STATUS_INACTIVE)
+	fmt.Println(packageLevel)
+	shadow := "outer"
 	{
+		shadow := "inner"
+		fmt.Println(shadow)
 	}
+	fmt.Println(shadow)
+	swap1, swap2 := "first", "second"
+	swap1, swap2 := swap2, swap1
+	fmt.Println(swap1, swap2)
+	_, kept := ignoreOne()
+	fmt.Println(kept)
 }
 
-func ignoreOne() {
+func ignoreOne() (string, string) {
 }

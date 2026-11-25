@@ -9,5 +9,11 @@ import (
 )
 
 func runAST() {
+	src := `package p
+// Add returns a+b.
+func Add(a, b int) int { return a + b }
+var Answer = 42
+`
+	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "example.go", src, parser.ParseComments)
 }

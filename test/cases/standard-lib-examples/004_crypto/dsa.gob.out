@@ -9,4 +9,9 @@ import (
 )
 
 func runDSA() {
+	priv := &dsa.PrivateKey{PublicKey: dsa.PublicKey{Parameters: params}}
+	digest := sha256.Sum256([]byte("hello"))
+	r, s, err := dsa.Sign(rand.Reader, priv, digest[:])
+	ok := dsa.Verify(&priv.PublicKey, digest[:], r, s)
+	fmt.Println("signature valid:", ok)
 }

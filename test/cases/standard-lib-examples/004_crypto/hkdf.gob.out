@@ -8,5 +8,9 @@ import (
 )
 
 func runHKDF() {
+	secret := []byte("some shared secret bytes")
+	salt := []byte("optional salt")
+	info := []byte("app: session key v1")
 	key, err := hkdf.Key(sha256.New, secret, salt, string(info), 32)
+	fmt.Printf("derived 32-byte key: %x\n", key)
 }
