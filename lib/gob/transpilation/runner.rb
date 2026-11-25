@@ -19,27 +19,45 @@ module Gob
       end
 
       module FunctionNodes
+        def parse_signature_comment(text)
+          case text.split(/\s*->\s*/, 2)
+          in [/\A#\s*\z/, ret] unless ret.empty?
+            { params: [], returns: ret.delete_prefix("(").delete_suffix(")").split(/\s*,\s*/) }
+          in [/\A#\s*\(([^)]*)\)\z/, ret] unless ret.empty?
+            { params: $1.split(/\s*,\s*/), returns: ret.delete_prefix("(").delete_suffix(")").split(/\s*,\s*/) }
+          in [/\A#\s*(.+)\z/, ret] unless ret.empty?
+            { params: $1.split(/\s*,\s*/), returns: ret.delete_prefix("(").delete_suffix(")").split(/\s*,\s*/) }
+          in [/\A#\s*\(([^)]*)\)\s*\z/]
+            { params: $1.split(/\s*,\s*/), returns: [] }
+          else
+            { params: [], returns: [] }
+          end
+        end
+
         def Function(name:, params:, body:)
-
-          parse_types = lambda { |string| string }
-
           case params
-          in { contents: { requireds: args }, comments: { value: types } }
-            input, output = parse_types.call(types)
+          in { contents: SyntaxTree::Params[requireds: args], comments: [SyntaxTree::Comment[value: types], *] }
+            input, output = parse_signature_comment(types).values_at(:params, :returns)
             params = args.map { |arg|
               SyntaxTree::Go::Field.new(
-                names: [ SyntaxTree::Go::Ident.new(name: arg) ],
+                names: [ SyntaxTree::Go::Ident.new(name: arg.value) ],
                 type: SyntaxTree::Go::Ident.new(name: input.shift)
               )
             }
             results = output
 
-          in { contents: { requireds: args } }
+          in { contents: SyntaxTree::Params[requireds: args] }
+            params = args.map { |arg|
+              SyntaxTree::Go::Field.new(
+                names: [ SyntaxTree::Go::Ident.new(name: arg.value) ],
+                type: SyntaxTree::Go::Ident.new(name: input.shift)
+              )
+            }
             params = []
             results = {}
 
-          in { comments: { value: types } }
-            input, output = parse_types.call(types)
+          in { comments: [SyntaxTree::Comment[value: types], *] }
+            input, output = parse_signature_comment(types).values_at(:params, :returns)
             params = []
             results = output
 
