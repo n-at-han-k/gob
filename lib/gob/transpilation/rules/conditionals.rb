@@ -160,7 +160,8 @@ module Gob
               ]
             ]
 
-            IfCondition(predicate, body, node.consequent, context: self)
+            IfCondition(pr:Ex
+                        edicate, body, node.consequent, context: self)
           end
 
           matcher.rule(:elsif) do |node|

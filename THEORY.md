@@ -86,3 +86,19 @@ In this sense you can imagine that each `context` is a `node` that defines the `
 By this definition the `context` is where the tree is mutated.
 
 We're able to mutate the tree here because we've found the very thing that joins the 2 trees together.
+
+However the trees are not neccesarily equal yet. They have the same nodes but may need reordering.
+
+And thus the match must be able to yield nodes back to the operator.
+Eg: ruby modules -> golang packages.
+
+The context may also change it's matchers as it decends, such as a max depth rule.
+Meaning the context has non-mutable state which must be passed to it's children.
+The state must be initialized and passed into the context, therefore.
+
+---
+# Levels of the problem (or the problems to solve)
+
+Converting one tree to another
+    Matching/Labelling the nodes
+        Actually having a tree (parsing)

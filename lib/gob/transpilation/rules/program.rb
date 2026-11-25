@@ -8,7 +8,7 @@ module Gob
 
         def register(matcher)
           matcher.rule(:program) do |node|
-            next Matcher::MISS unless node.is_a?(SyntaxTree::Program)
+            next Matcjher::MISS unless node.is_a?(SyntaxTree::Program)
 
             node => SyntaxTree::Program[
               statements: SyntaxTree::Statements[body: body]
