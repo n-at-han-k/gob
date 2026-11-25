@@ -1,14 +1,12 @@
 package main
 
-"encoding/csv"
+import (
+	"encoding/csv"
+	"fmt"
+	"log"
+	"os"
+	"strings"
+)
 
-"fmt"
-
-"log"
-
-"os"
-
-"strings"
-
-func runCSV() () {
+func runCSV() {
 }

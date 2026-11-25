@@ -1,14 +1,12 @@
 package main
 
-"fmt"
-
-"io"
-
-"net/http"
-
-"net/http/httptest"
-
-"net/http/pprof"
+import (
+	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"net/http/pprof"
+)
 
 # ()
 

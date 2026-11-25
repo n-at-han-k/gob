@@ -1,14 +1,12 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"io"
+	"log"
+	"net/mail"
+	"strings"
+)
 
-"io"
-
-"log"
-
-"net/mail"
-
-"strings"
-
-func runMail() () {
+func runMail() {
 }

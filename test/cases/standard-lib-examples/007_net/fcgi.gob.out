@@ -1,8 +1,9 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"net/http/fcgi"
+)
 
-"net/http/fcgi"
-
-func runFCGI() () {
+func runFCGI() {
 }

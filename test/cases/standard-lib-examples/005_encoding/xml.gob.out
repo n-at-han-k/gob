@@ -1,10 +1,10 @@
 package main
 
-"encoding/xml"
+import (
+	"encoding/xml"
+	"fmt"
+	"log"
+)
 
-"fmt"
-
-"log"
-
-func runXML() () {
+func runXML() {
 }

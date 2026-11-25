@@ -1,14 +1,12 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"net/http"
+	"net/http/cgi"
+	"net/http/httptest"
+	"os"
+)
 
-"net/http"
-
-"net/http/cgi"
-
-"net/http/httptest"
-
-"os"
-
-func runCGI() () {
+func runCGI() {
 }

@@ -1,8 +1,9 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"net/smtp"
+)
 
-"net/smtp"
-
-func runSMTP() () {
+func runSMTP() {
 }

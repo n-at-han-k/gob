@@ -1,12 +1,11 @@
 package main
 
-"bytes"
+import (
+	"bytes"
+	"encoding/gob"
+	"fmt"
+	"log"
+)
 
-"encoding/gob"
-
-"fmt"
-
-"log"
-
-func runGob() () {
+func runGob() {
 }

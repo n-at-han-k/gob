@@ -1,8 +1,9 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/version"
+)
 
-"go/version"
-
-func runVersion() () {
+func runVersion() {
 }

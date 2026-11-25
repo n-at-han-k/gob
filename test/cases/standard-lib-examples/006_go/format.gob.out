@@ -1,10 +1,10 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/format"
+	"log"
+)
 
-"go/format"
-
-"log"
-
-func runFormat() () {
+func runFormat() {
 }

@@ -1,12 +1,11 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"os"
+	"runtime"
+	"runtime/pprof"
+)
 
-"os"
-
-"runtime"
-
-"runtime/pprof"
-
-func runPProf() () {
+func runPProf() {
 }

@@ -1,8 +1,9 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"runtime"
+)
 
-"runtime"
-
-func runRuntime() () {
+func runRuntime() {
 }

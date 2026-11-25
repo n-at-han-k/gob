@@ -1,10 +1,10 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/build"
+	"log"
+)
 
-"go/build"
-
-"log"
-
-func runBuild() () {
+func runBuild() {
 }

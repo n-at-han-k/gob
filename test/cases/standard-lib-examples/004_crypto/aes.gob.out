@@ -1,14 +1,12 @@
 package main
 
-"crypto/aes"
+import (
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"fmt"
+	"log"
+)
 
-"crypto/cipher"
-
-"crypto/rand"
-
-"fmt"
-
-"log"
-
-func runAES() () {
+func runAES() {
 }

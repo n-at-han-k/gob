@@ -1,10 +1,10 @@
 package main
 
-"crypto/des"
+import (
+	"crypto/des"
+	"fmt"
+	"log"
+)
 
-"fmt"
-
-"log"
-
-func runDES() () {
+func runDES() {
 }

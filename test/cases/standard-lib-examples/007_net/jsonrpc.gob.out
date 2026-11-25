@@ -1,14 +1,12 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"log"
+	"net"
+	"net/rpc"
+	"net/rpc/jsonrpc"
+)
 
-"log"
-
-"net"
-
-"net/rpc"
-
-"net/rpc/jsonrpc"
-
-func runJSONRPC() () {
+func runJSONRPC() {
 }

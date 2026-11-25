@@ -1,16 +1,13 @@
 package main
 
-"context"
+import (
+	"context"
+	"fmt"
+	"os"
+	"runtime/trace"
+	"sync"
+	"time"
+)
 
-"fmt"
-
-"os"
-
-"runtime/trace"
-
-"sync"
-
-"time"
-
-func runTrace() () {
+func runTrace() {
 }

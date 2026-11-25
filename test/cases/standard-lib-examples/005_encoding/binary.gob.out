@@ -1,12 +1,11 @@
 package main
 
-"bytes"
+import (
+	"bytes"
+	"encoding/binary"
+	"fmt"
+	"log"
+)
 
-"encoding/binary"
-
-"fmt"
-
-"log"
-
-func runBinary() () {
+func runBinary() {
 }

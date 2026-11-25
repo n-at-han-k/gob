@@ -1,10 +1,10 @@
 package main
 
-"encoding/base64"
+import (
+	"encoding/base64"
+	"fmt"
+	"log"
+)
 
-"fmt"
-
-"log"
-
-func runBase64() () {
+func runBase64() {
 }

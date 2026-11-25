@@ -1,8 +1,9 @@
 package main
 
-"crypto/sha256"
+import (
+	"crypto/sha256"
+	"fmt"
+)
 
-"fmt"
-
-func runSHA256() () {
+func runSHA256() {
 }

@@ -1,8 +1,9 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/token"
+)
 
-"go/token"
-
-func runToken() () {
+func runToken() {
 }

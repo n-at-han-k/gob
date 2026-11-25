@@ -1,18 +1,14 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/ast"
+	"go/importer"
+	"go/parser"
+	"go/token"
+	"go/types"
+	"log"
+)
 
-"go/ast"
-
-"go/importer"
-
-"go/parser"
-
-"go/token"
-
-"go/types"
-
-"log"
-
-func runTypes() () {
+func runTypes() {
 }

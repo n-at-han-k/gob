@@ -1,8 +1,9 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/doc/comment"
+)
 
-"go/doc/comment"
-
-func runComment() () {
+func runComment() {
 }

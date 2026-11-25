@@ -1,10 +1,10 @@
 package main
 
-"crypto/rc4"
+import (
+	"crypto/rc4"
+	"fmt"
+	"log"
+)
 
-"fmt"
-
-"log"
-
-func runRC4() () {
+func runRC4() {
 }

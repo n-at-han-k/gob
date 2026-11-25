@@ -1,14 +1,12 @@
 package main
 
-"bytes"
+import (
+	"bytes"
+	"crypto/ecdh"
+	"crypto/rand"
+	"fmt"
+	"log"
+)
 
-"crypto/ecdh"
-
-"crypto/rand"
-
-"fmt"
-
-"log"
-
-func runECDH() () {
+func runECDH() {
 }

@@ -1,8 +1,9 @@
 package main
 
-"encoding/ascii85"
+import (
+	"encoding/ascii85"
+	"fmt"
+)
 
-"fmt"
-
-func runAscii85() () {
+func runAscii85() {
 }

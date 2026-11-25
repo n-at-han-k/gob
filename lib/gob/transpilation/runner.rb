@@ -160,6 +160,26 @@ module Gob
           ]
             ImportSpec(path)
 
+          in SyntaxTree::Command[
+            message: SyntaxTree::Ident[value: "var"],
+            arguments: SyntaxTree::Args[ parts: [
+              SyntaxTree::StringLiteral[
+                parts: [SyntaxTree::TStringContent[value: path]]
+              ]
+            ]]
+          ]
+            nil
+
+          in SyntaxTree::Command[
+            message: SyntaxTree::Ident[value: "const"],
+            arguments: SyntaxTree::Args[ parts: [
+              SyntaxTree::StringLiteral[
+                parts: [SyntaxTree::TStringContent[value: path]]
+              ]
+            ]]
+          ]
+            nil
+
           in SyntaxTree::VoidStmt
             nil
           else
@@ -244,6 +264,11 @@ module Gob
 
           after do |ctx|
             if ctx.equal?(root_context)
+              ctx.tree.unshift(SyntaxTree::Go::GenDecl.new(
+                tok: :import,
+                specs: ctx.tree.select { |node| node.is_a?(SyntaxTree::Go::ImportSpec) }
+              ))
+              ctx.tree.reject! { |node| node.is_a?(SyntaxTree::Go::ImportSpec) }
               file = Package(name: "main", declarations: ctx.tree.dup)
               ctx.tree.replace([file])
             end

@@ -1,10 +1,10 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+)
 
-"net/http"
-
-"net/http/httptest"
-
-func runHTTPTest() () {
+func runHTTPTest() {
 }

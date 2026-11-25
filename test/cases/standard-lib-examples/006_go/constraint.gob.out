@@ -1,10 +1,10 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/build/constraint"
+	"log"
+)
 
-"go/build/constraint"
-
-"log"
-
-func runConstraint() () {
+func runConstraint() {
 }

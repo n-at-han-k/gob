@@ -1,10 +1,10 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/importer"
+	"log"
+)
 
-"go/importer"
-
-"log"
-
-func runImporter() () {
+func runImporter() {
 }

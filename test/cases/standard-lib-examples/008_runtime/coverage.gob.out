@@ -1,10 +1,10 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"os"
+	"runtime/coverage"
+)
 
-"os"
-
-"runtime/coverage"
-
-func runCoverage() () {
+func runCoverage() {
 }

@@ -1,8 +1,9 @@
 package main
 
-"crypto/fips140"
+import (
+	"crypto/fips140"
+	"fmt"
+)
 
-"fmt"
-
-func runFIPS140() () {
+func runFIPS140() {
 }

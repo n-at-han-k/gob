@@ -1,8 +1,9 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"runtime/debug"
+)
 
-"runtime/debug"
-
-func runDebug() () {
+func runDebug() {
 }

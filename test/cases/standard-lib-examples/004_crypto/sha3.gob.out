@@ -1,8 +1,9 @@
 package main
 
-"crypto/sha3"
+import (
+	"crypto/sha3"
+	"fmt"
+)
 
-"fmt"
-
-func runSHA3() () {
+func runSHA3() {
 }

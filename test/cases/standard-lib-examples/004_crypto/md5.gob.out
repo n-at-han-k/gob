@@ -1,8 +1,9 @@
 package main
 
-"crypto/md5"
+import (
+	"crypto/md5"
+	"fmt"
+)
 
-"fmt"
-
-func runMD5() () {
+func runMD5() {
 }

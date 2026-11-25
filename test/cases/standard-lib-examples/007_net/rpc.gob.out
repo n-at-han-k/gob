@@ -1,12 +1,11 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"log"
+	"net"
+	"net/rpc"
+)
 
-"log"
-
-"net"
-
-"net/rpc"
-
-func runRPC() () {
+func runRPC() {
 }

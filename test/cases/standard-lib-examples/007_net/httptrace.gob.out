@@ -1,12 +1,11 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/http/httptrace"
+)
 
-"net/http"
-
-"net/http/httptest"
-
-"net/http/httptrace"
-
-func runHTTPTrace() () {
+func runHTTPTrace() {
 }

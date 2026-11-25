@@ -1,10 +1,10 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"os"
+	"sort"
+)
 
-"os"
-
-"sort"
-
-func main() () {
+func main() {
 }

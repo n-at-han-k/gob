@@ -1,8 +1,9 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"net"
+)
 
-"net"
-
-func runNet() () {
+func runNet() {
 }

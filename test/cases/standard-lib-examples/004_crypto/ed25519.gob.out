@@ -1,12 +1,11 @@
 package main
 
-"crypto/ed25519"
+import (
+	"crypto/ed25519"
+	"crypto/rand"
+	"fmt"
+	"log"
+)
 
-"crypto/rand"
-
-"fmt"
-
-"log"
-
-func runED25519() () {
+func runED25519() {
 }

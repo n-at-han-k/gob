@@ -1,14 +1,12 @@
 package main
 
-"bufio"
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"net/textproto"
+	"strings"
+)
 
-"fmt"
-
-"log"
-
-"net/textproto"
-
-"strings"
-
-func runTextproto() () {
+func runTextproto() {
 }

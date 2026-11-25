@@ -1,12 +1,11 @@
 package main
 
-"bytes"
+import (
+	"bytes"
+	"crypto/mlkem"
+	"fmt"
+	"log"
+)
 
-"crypto/mlkem"
-
-"fmt"
-
-"log"
-
-func runMLKEM() () {
+func runMLKEM() {
 }

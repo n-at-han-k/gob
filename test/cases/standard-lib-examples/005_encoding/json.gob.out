@@ -1,12 +1,11 @@
 package main
 
-"encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"strings"
+)
 
-"fmt"
-
-"log"
-
-"strings"
-
-func runJSON() () {
+func runJSON() {
 }

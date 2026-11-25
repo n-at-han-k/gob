@@ -1,10 +1,10 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"log"
+	"net/url"
+)
 
-"log"
-
-"net/url"
-
-func runURL() () {
+func runURL() {
 }

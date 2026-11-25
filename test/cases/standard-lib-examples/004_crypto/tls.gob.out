@@ -1,8 +1,9 @@
 package main
 
-"crypto/tls"
+import (
+	"crypto/tls"
+	"fmt"
+)
 
-"fmt"
-
-func runTLS() () {
+func runTLS() {
 }

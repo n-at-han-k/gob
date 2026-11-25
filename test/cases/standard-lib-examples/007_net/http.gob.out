@@ -1,14 +1,12 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"io"
+	"log"
+	"net/http"
+	"net/http/httptest"
+)
 
-"io"
-
-"log"
-
-"net/http"
-
-"net/http/httptest"
-
-func runHTTP() () {
+func runHTTP() {
 }

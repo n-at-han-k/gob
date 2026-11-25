@@ -1,10 +1,10 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/scanner"
+	"go/token"
+)
 
-"go/scanner"
-
-"go/token"
-
-func runScanner() () {
+func runScanner() {
 }

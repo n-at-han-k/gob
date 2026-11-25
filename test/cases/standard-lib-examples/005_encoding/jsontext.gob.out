@@ -1,12 +1,11 @@
 package main
 
-"encoding/json/jsontext"
+import (
+	"encoding/json/jsontext"
+	"fmt"
+	"io"
+	"strings"
+)
 
-"fmt"
-
-"io"
-
-"strings"
-
-func runJSONText() () {
+func runJSONText() {
 }

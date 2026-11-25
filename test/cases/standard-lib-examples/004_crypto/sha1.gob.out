@@ -1,8 +1,9 @@
 package main
 
-"crypto/sha1"
+import (
+	"crypto/sha1"
+	"fmt"
+)
 
-"fmt"
-
-func runSHA1() () {
+func runSHA1() {
 }

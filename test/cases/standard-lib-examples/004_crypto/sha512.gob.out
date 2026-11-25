@@ -1,8 +1,9 @@
 package main
 
-"crypto/sha512"
+import (
+	"crypto/sha512"
+	"fmt"
+)
 
-"fmt"
-
-func runSHA512() () {
+func runSHA512() {
 }

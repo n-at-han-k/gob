@@ -1,14 +1,12 @@
 package main
 
-"go/parser"
+import (
+	"go/parser"
+	"go/printer"
+	"go/token"
+	"log"
+	"os"
+)
 
-"go/printer"
-
-"go/token"
-
-"log"
-
-"os"
-
-func runPrinter() () {
+func runPrinter() {
 }

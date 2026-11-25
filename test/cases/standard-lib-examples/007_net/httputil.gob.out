@@ -1,14 +1,12 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/http/httputil"
+	"net/url"
+)
 
-"net/http"
-
-"net/http/httptest"
-
-"net/http/httputil"
-
-"net/url"
-
-func runHTTPUtil() () {
+func runHTTPUtil() {
 }

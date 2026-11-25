@@ -1,14 +1,12 @@
 package main
 
-"crypto/pbkdf2"
+import (
+	"crypto/pbkdf2"
+	"crypto/rand"
+	"crypto/sha256"
+	"fmt"
+	"log"
+)
 
-"crypto/rand"
-
-"crypto/sha256"
-
-"fmt"
-
-"log"
-
-func runPBKDF2() () {
+func runPBKDF2() {
 }

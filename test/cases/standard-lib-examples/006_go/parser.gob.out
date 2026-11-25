@@ -1,12 +1,11 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/parser"
+	"go/token"
+	"log"
+)
 
-"go/parser"
-
-"go/token"
-
-"log"
-
-func runParser() () {
+func runParser() {
 }

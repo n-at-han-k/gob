@@ -1,8 +1,9 @@
 package main
 
-"crypto/subtle"
+import (
+	"crypto/subtle"
+	"fmt"
+)
 
-"fmt"
-
-func runSubtle() () {
+func runSubtle() {
 }

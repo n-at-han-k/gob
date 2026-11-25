@@ -1,16 +1,13 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/ast"
+	"go/doc"
+	"go/parser"
+	"go/token"
+	"log"
+)
 
-"go/ast"
-
-"go/doc"
-
-"go/parser"
-
-"go/token"
-
-"log"
-
-func runDoc() () {
+func runDoc() {
 }

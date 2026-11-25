@@ -1,8 +1,9 @@
 package main
 
-"encoding"
+import (
+	"encoding"
+	"fmt"
+)
 
-"fmt"
-
-func runEncoding() () {
+func runEncoding() {
 }

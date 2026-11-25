@@ -1,10 +1,10 @@
 package main
 
-"fmt"
+import (
+	"fmt"
+	"go/constant"
+	"go/token"
+)
 
-"go/constant"
-
-"go/token"
-
-func runConstant() () {
+func runConstant() {
 }

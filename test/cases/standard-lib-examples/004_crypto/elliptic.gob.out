@@ -1,8 +1,9 @@
 package main
 
-"crypto/elliptic"
+import (
+	"crypto/elliptic"
+	"fmt"
+)
 
-"fmt"
-
-func runElliptic() () {
+func runElliptic() {
 }
