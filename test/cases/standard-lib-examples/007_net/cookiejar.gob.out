@@ -13,5 +13,5 @@ func runCookieJar() {
 	fmt.Println("cookies for sibling site:", nil)
 }
 
-func mustURL(s string) *url.URL {
+func mustURL(s any) {
 }

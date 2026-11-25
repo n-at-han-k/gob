@@ -45,12 +45,12 @@ module Gob
           comment =
             comments.map(&:value).find { |value| value.match?(/^\s*#\s*\(/) }
 
-          groups =
-            comment.to_s.scan(/\(([^)]*)\)/).flatten.map do |text|
-              text.split(",").map(&:strip).reject(&:empty?)
-            end
+          match =
+            comment&.match(
+              /^\s*#\s*\((?<types>[^)]*)\)\s*->\s*\(?(?<returns>[^)]+)\)?$/
+            )
 
-          groups.empty? ? [[], []] : groups
+          match ? [match[:types], match[:returns]].map { |text| text.split(",").map(&:strip).reject(&:empty?) } : [[], []]
         end
 
         def Function(name:, signature:, body:)
@@ -97,160 +97,8 @@ module Gob
       module StatementNodes
         def Statements(node)
           case node
-          in {
-            message: { value: "require" },
-            arguments: { parts: [{ parts: [{ value: path }] }] }
-          }
-            SyntaxTree::Go::GenDecl.new(
-              tok: :import,
-              specs: [
-                SyntaxTree::Go::ImportSpec.new(
-                  path: SyntaxTree::Go::BasicLit.new(
-                    kind: :STRING,
-                    value: %("#{path}")
-                  )
-                )
-              ]
-            )
-
           in SyntaxTree::VoidStmt
             nil
-
-          in SyntaxTree::Assign[
-            target: { value: target },
-            value: value
-          ]
-            rhs =
-              case value
-              in { parts: [{ value: text }] }
-                SyntaxTree::Go::BasicLit.new(
-                  kind: :STRING,
-                  value: %("#{text}")
-                )
-
-              in { value: token }
-                Variable(token)
-
-              in {
-                receiver: receiver,
-                operator: { value: "." },
-                message: { value: name },
-                arguments: arguments
-              }
-                parts =
-                  case arguments
-                  in { arguments: { parts: values } }
-                    values
-                  in { parts: values }
-                    values
-                  else
-                    []
-                  end
-
-                args =
-                  parts.map do |part|
-                    case part
-                    in { parts: [{ value: text }] }
-                      SyntaxTree::Go::BasicLit.new(
-                        kind: :STRING,
-                        value: %("#{text}")
-                      )
-                    in { value: token }
-                      Variable(token)
-                    else
-                      SyntaxTree::Go::Ident.new(name: "nil")
-                    end
-                  end
-
-                fun =
-                  case receiver
-                  in { value: { value: text } }
-                    SyntaxTree::Go::Ident.new(name: text)
-                  in { value: token }
-                    Variable(token)
-                  else
-                    SyntaxTree::Go::Ident.new(name: "nil")
-                  end
-
-                SyntaxTree::Go::CallExpr.new(
-                  fun: SyntaxTree::Go::SelectorExpr.new(
-                    x: fun,
-                    sel: SyntaxTree::Go::Ident.new(name: name)
-                  ),
-                  args: args
-                )
-
-              else
-                SyntaxTree::Go::Ident.new(name: "nil")
-              end
-
-            SyntaxTree::Go::AssignStmt.new(
-              lhs: [Variable(target)],
-              tok: "=",
-              rhs: [rhs]
-            )
-
-          in {
-            receiver: receiver,
-            operator: { value: "." },
-            message: { value: name },
-            arguments: arguments
-          }
-            fun =
-              case receiver
-              in { value: { value: value } }
-                SyntaxTree::Go::Ident.new(name: value)
-              in { value: value }
-                Variable(value)
-              else
-                SyntaxTree::Go::Ident.new(name: "nil")
-              end
-
-            parts =
-              case arguments
-              in { arguments: { parts: values } }
-                values
-              in { parts: values }
-                values
-              else
-                []
-              end
-
-            args =
-              parts.map do |part|
-                case part
-                in { parts: [{ value: value }] }
-                  SyntaxTree::Go::BasicLit.new(
-                    kind: :STRING,
-                    value: %("#{value}")
-                  )
-                in { value: { value: value } }
-                  SyntaxTree::Go::Ident.new(name: value)
-                in { value: value }
-                  Variable(value)
-                else
-                  SyntaxTree::Go::Ident.new(name: "nil")
-                end
-              end
-
-            SyntaxTree::Go::ExprStmt.new(
-              x: SyntaxTree::Go::CallExpr.new(
-                fun: SyntaxTree::Go::SelectorExpr.new(
-                  x: fun,
-                  sel: SyntaxTree::Go::Ident.new(name: name)
-                ),
-                args: args
-              )
-            )
-
-          in { parts: [{ value: value }] }
-            SyntaxTree::Go::ExprStmt.new(
-              x: SyntaxTree::Go::BasicLit.new(
-                kind: :STRING,
-                value: %("#{value}")
-              )
-            )
-
           else
             nil
           end
