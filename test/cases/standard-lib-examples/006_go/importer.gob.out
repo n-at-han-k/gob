@@ -8,7 +8,7 @@ import (
 
 func runImporter() () {
 	pkg, err := importer.Default().Import("fmt")
-	fmt.Println("package:", #<SyntaxTree::Ident:0x00007e5e9406c180>.Path())
-	fmt.Println("name:   ", #<SyntaxTree::Ident:0x00007e5e9406b668>.Name())
+	fmt.Println("package:", #<SyntaxTree::Ident:0x00007d6a9e448ca8>.Path())
+	fmt.Println("name:   ", #<SyntaxTree::Ident:0x00007d6a9e447650>.Name())
 	fmt.Println("first 5 exported names:")
 }

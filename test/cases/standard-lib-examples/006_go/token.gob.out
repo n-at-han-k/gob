@@ -7,8 +7,8 @@ import (
 
 func runToken() () {
 	fset := token.NewFileSet()
-	f := #<SyntaxTree::Ident:0x00007e5e94026338>.AddFile("demo.go", #<SyntaxTree::Ident:0x00007e5e94025d48>.Base(), 100)
-	#<SyntaxTree::Ident:0x00007e5e94025690>.SetLinesForContent(#<SyntaxTree::Const:0x00007e5e94025488>[byte].new("line one\nline two\nline three"))
-	pos := #<SyntaxTree::Ident:0x00007e5e94024740>.Pos(10)
-	fmt.Println("offset 10 is at", #<SyntaxTree::Ident:0x00007e5e94023b88>.Position(#<SyntaxTree::Ident:0x00007e5e94023958>))
+	f := #<SyntaxTree::Ident:0x00007d6a4a65d560>.AddFile("demo.go", #<SyntaxTree::Ident:0x00007d6a4a65cf70>.Base(), 100)
+	#<SyntaxTree::Ident:0x00007d6a4a65c8b8>.SetLinesForContent(#<SyntaxTree::Const:0x00007d6a4a65c6b0>[byte].new("line one\nline two\nline three"))
+	pos := #<SyntaxTree::Ident:0x00007d6a4a65b9b8>.Pos(10)
+	fmt.Println("offset 10 is at", #<SyntaxTree::Ident:0x00007d6a4a65ae28>.Position(#<SyntaxTree::Ident:0x00007d6a4a65abf8>))
 }

@@ -12,7 +12,7 @@ func runRuntime() () {
 	fmt.Println("NumGoroutine:", runtime.NumGoroutine())
 	fmt.Println("GOMAXPROCS:  ", runtime.GOMAXPROCS(0))
 	pc, file, line, _ := runtime.Caller(0)
-	fmt.Printf("here: %s:%d (%s)\n", #<SyntaxTree::Ident:0x00007e5e9404fc88>, #<SyntaxTree::Ident:0x00007e5e9404faf8>, runtime.FuncForPC(#<SyntaxTree::Ident:0x00007e5e9404f710>).Name())
-	runtime.ReadMemStats(#<SyntaxTree::IVar:0x00007e5e9404e680>)
+	fmt.Printf("here: %s:%d (%s)\n", #<SyntaxTree::Ident:0x00007d6a9df1d788>, #<SyntaxTree::Ident:0x00007d6a9df1d558>, runtime.FuncForPC(#<SyntaxTree::Ident:0x00007d6a9df1d0d0>).Name())
+	runtime.ReadMemStats(#<SyntaxTree::IVar:0x00007d6a9df1b280>)
 	fmt.Printf("heap alloc: %d KiB, sys: %d KiB, num GC: %d\n", m.HeapAlloc / 1024, m.Sys / 1024, m.NumGC)
 }

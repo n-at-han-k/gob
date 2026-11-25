@@ -6,7 +6,7 @@ import (
 )
 
 func runSHA512() () {
-	fmt.Printf("Sum384:     %x\n", sha512.Sum384(#<SyntaxTree::Const:0x00007e5ee3956d00>[byte].new("hello")))
-	fmt.Printf("Sum512:     %x\n", sha512.Sum512(#<SyntaxTree::Const:0x00007e5ee396b818>[byte].new("hello")))
-	fmt.Printf("Sum512_256: %x\n", sha512.Sum512_256(#<SyntaxTree::Const:0x00007e5ee3961020>[byte].new("hello")))
+	fmt.Printf("Sum384:     %x\n", sha512.Sum384(#<SyntaxTree::Const:0x00007d6a9e2b0878>[byte].new("hello")))
+	fmt.Printf("Sum512:     %x\n", sha512.Sum512(#<SyntaxTree::Const:0x00007d6a9e2dabc8>[byte].new("hello")))
+	fmt.Printf("Sum512_256: %x\n", sha512.Sum512_256(#<SyntaxTree::Const:0x00007d6a9e2d3f58>[byte].new("hello")))
 }

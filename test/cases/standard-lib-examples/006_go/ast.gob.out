@@ -15,5 +15,5 @@ func Add(a, b int) int { return a + b }
 var Answer = 42
 `
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(#<SyntaxTree::Ident:0x00007e5e8c91d890>, "example.go", #<SyntaxTree::Ident:0x00007e5e8c91d340>, parser.ParseComments)
+	file, err := parser.ParseFile(#<SyntaxTree::Ident:0x00007d6a4839bc98>, "example.go", #<SyntaxTree::Ident:0x00007d6a4839b748>, parser.ParseComments)
 }

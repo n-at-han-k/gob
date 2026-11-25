@@ -8,8 +8,8 @@ import (
 
 func runBuild() () {
 	pkg, err := build.Default.Import("fmt", "", 0)
-	fmt.Println("import path:", #<SyntaxTree::Ident:0x00007e5e8c928b28>.ImportPath)
-	fmt.Println("directory:  ", #<SyntaxTree::Ident:0x00007e5e8c9280b0>.Dir)
-	fmt.Println("go files:   ", #<SyntaxTree::Ident:0x00007e5e8c9276d8>.GoFiles)
-	fmt.Println("imports:    ", #<SyntaxTree::Ident:0x00007e5e8c926bc0>.Imports)
+	fmt.Println("import path:", #<SyntaxTree::Ident:0x00007d6a483d1d98>.ImportPath)
+	fmt.Println("directory:  ", #<SyntaxTree::Ident:0x00007d6a483d1398>.Dir)
+	fmt.Println("go files:   ", #<SyntaxTree::Ident:0x00007d6a483d0970>.GoFiles)
+	fmt.Println("imports:    ", #<SyntaxTree::Ident:0x00007d6a4a67ff20>.Imports)
 }

@@ -9,11 +9,11 @@ import (
 	"log"
 )
 
-func runECDSA() {
+func runECDSA() () {
 	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	digest := sha256.Sum256([]byte("attack at dawn"))
-	sig, _ := ecdsa.SignASN1(rand.Reader, priv, digest[:])
-	ok := ecdsa.VerifyASN1(&priv.PublicKey, digest[:], sig)
-	fmt.Printf("signature (%d B): %x\n", len(sig), sig)
-	fmt.Println("valid:", ok)
+	digest := sha256.Sum256(#<SyntaxTree::Const:0x00007d6a9c6ff430>[byte].new("attack at dawn"))
+	sig, _ := ecdsa.SignASN1(rand.Reader, #<SyntaxTree::Ident:0x00007d6a9c6f5278>, nil)
+	ok := ecdsa.VerifyASN1(#<SyntaxTree::IVar:0x00007d6a9c6f27f8>.PublicKey, nil, #<SyntaxTree::Ident:0x00007d6a9c6f1d08>)
+	fmt.Printf("signature (%d B): %x\n", len(#<SyntaxTree::Ident:0x00007d6a9c6f0a70>), #<SyntaxTree::Ident:0x00007d6a9c6f03e0>)
+	fmt.Println("valid:", #<SyntaxTree::Ident:0x00007d6a9deff648>)
 }

@@ -9,8 +9,8 @@ import (
 
 func runRPC() () {
 	srv := rpc.NewServer()
-	#<SyntaxTree::Ident:0x00007e5ee39db320>.Register(#<SyntaxTree::Const:0x00007e5ee39db0c8>.new())
+	#<SyntaxTree::Ident:0x00007d6a9e2b00a8>.Register(#<SyntaxTree::Const:0x00007d6a9e2df998>.new())
 	l, err := net.Listen("tcp", "127.0.0.1:0")
-	client, err := rpc.Dial("tcp", #<SyntaxTree::Ident:0x00007e5ee39d7900>.Addr().String())
+	client, err := rpc.Dial("tcp", #<SyntaxTree::Ident:0x00007d6a9e3fa260>.Addr().String())
 	fmt.Println("6 * 7 =", result)
 }

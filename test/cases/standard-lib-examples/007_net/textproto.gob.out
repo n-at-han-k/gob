@@ -10,7 +10,7 @@ import (
 
 func runTextproto() () {
 	raw := "Host: example.com\r\n" + "Content-Type: text/plain;\r\n charset=utf-8\r\n" + "X-Trace: abc\r\n" + "\r\n"
-	r := textproto.NewReader(bufio.NewReader(strings.NewReader(#<SyntaxTree::Ident:0x00007e5ee34448d0>)))
-	hdr, err := #<SyntaxTree::Ident:0x00007e5ee3443458>.ReadMIMEHeader()
+	r := textproto.NewReader(bufio.NewReader(strings.NewReader(#<SyntaxTree::Ident:0x00007d6a4a678a40>)))
+	hdr, err := #<SyntaxTree::Ident:0x00007d6a4a677f28>.ReadMIMEHeader()
 	fmt.Println("canonical:", textproto.CanonicalMIMEHeaderKey("x-trace"))
 }

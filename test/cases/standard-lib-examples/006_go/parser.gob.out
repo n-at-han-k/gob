@@ -9,7 +9,7 @@ import (
 
 func runParser() () {
 	expr, err := parser.ParseExpr("1 + 2*3")
-	fmt.Printf("expression AST: %#v\n\n", #<SyntaxTree::Ident:0x00007e5e8c950588>)
+	fmt.Printf("expression AST: %#v\n\n", #<SyntaxTree::Ident:0x00007d6a9e461910>)
 	src := `package p
 import (
 	"fmt"
@@ -17,5 +17,5 @@ import (
 )
 `
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(#<SyntaxTree::Ident:0x00007e5e8c9de7c0>, "p.go", #<SyntaxTree::Ident:0x00007e5e8c9ddbb8>, parser.ImportsOnly)
+	file, err := parser.ParseFile(#<SyntaxTree::Ident:0x00007d6a9e4604e8>, "p.go", #<SyntaxTree::Ident:0x00007d6a9e468ff8>, parser.ImportsOnly)
 }

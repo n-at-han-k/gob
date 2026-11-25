@@ -6,7 +6,9 @@ import (
 	"sort"
 )
 
-var demos = {"net": runNet, "http": runHTTP, "cgi": runCGI, "cookiejar": runCookieJar, "fcgi": runFCGI, "httptest": runHTTPTest, "httptrace": runHTTPTrace, "httputil": runHTTPUtil, "pprof": runPProf, "mail": runMail, "netip": runNetip, "rpc": runRPC, "jsonrpc": runJSONRPC, "smtp": runSMTP, "textproto": runTextproto, "url": runURL}
+demos := 
+
+# ()
 
 func main() () {
 	demo, ok := demos[os.Args[1]]

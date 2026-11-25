@@ -6,10 +6,10 @@ import (
 )
 
 func runMD5() () {
-	sum := md5.Sum(#<SyntaxTree::Const:0x00007e5e8c9de158>[byte].new("hello"))
-	fmt.Printf("md5: %x\n", #<SyntaxTree::Ident:0x00007e5e8c9dce98>)
+	sum := md5.Sum(#<SyntaxTree::Const:0x00007d6a50542d28>[byte].new("hello"))
+	fmt.Printf("md5: %x\n", #<SyntaxTree::Ident:0x00007d6a505413d8>)
 	h := md5.New()
-	#<SyntaxTree::Ident:0x00007e5e8c9dc628>.Write(#<SyntaxTree::Const:0x00007e5e8c9dc3f8>[byte].new("hel"))
-	#<SyntaxTree::Ident:0x00007e5e8c9db7f0>.Write(#<SyntaxTree::Const:0x00007e5e8c9db570>[byte].new("lo"))
-	fmt.Printf("streamed: %x\n", #<SyntaxTree::Ident:0x00007e5e8c9da378>.Sum(#<SyntaxTree::Kw:0x00007e5ee3479030>))
+	#<SyntaxTree::Ident:0x00007d6a50540b68>.Write(#<SyntaxTree::Const:0x00007d6a50540938>[byte].new("hel"))
+	#<SyntaxTree::Ident:0x00007d6a5057fc00>.Write(#<SyntaxTree::Const:0x00007d6a5057f930>[byte].new("lo"))
+	fmt.Printf("streamed: %x\n", #<SyntaxTree::Ident:0x00007d6a5057d680>.Sum(#<SyntaxTree::Kw:0x00007d6a48387590>))
 }

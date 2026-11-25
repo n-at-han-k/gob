@@ -6,9 +6,9 @@ import (
 	"log"
 )
 
-func runConstraint() {
+func runConstraint() () {
 	line := "//go:build linux && (amd64 || arm64)"
-	expr, err := constraint.Parse(line)
-	fmt.Println("expr:", expr)
-	envs := nil
+	expr, err := constraint.Parse(#<SyntaxTree::Ident:0x00007d6a5002d630>)
+	fmt.Println("expr:", #<SyntaxTree::Ident:0x00007d6a5002c028>)
+	envs := #<SyntaxTree::Const:0x00007d6a5002bb50>[nil].new(nil, nil, nil)
 }

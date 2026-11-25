@@ -7,8 +7,8 @@ import (
 
 func runEncoding() () {
 	txt, _ := m.MarshalText()
-	fmt.Printf("marshalled: %s\n", #<SyntaxTree::Ident:0x00007e5ee043a900>)
-	u := #<SyntaxTree::IVar:0x00007e5ee0437ef8>
-	_ := #<SyntaxTree::Ident:0x00007e5ee04368f0>.UnmarshalText(#<SyntaxTree::Const:0x00007e5ee0435c70>[byte].new("#0080ff"))
+	fmt.Printf("marshalled: %s\n", #<SyntaxTree::Ident:0x00007d6a4a676880>)
+	u := #<SyntaxTree::IVar:0x00007d6a4a6756d8>
+	_ := #<SyntaxTree::Ident:0x00007d6a4a6753e0>.UnmarshalText(#<SyntaxTree::Const:0x00007d6a4a6751b0>[byte].new("#0080ff"))
 	fmt.Printf("parsed:     %+v\n", back)
 }

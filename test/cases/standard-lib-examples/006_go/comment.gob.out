@@ -19,6 +19,6 @@ See [example.com] for details.
 
 [example.com]: https://example.com
 `
-	doc := p.Parse(#<SyntaxTree::Ident:0x00007e5ee043acc0>)
-	fmt.Print(string(pr.Markdown(#<SyntaxTree::Ident:0x00007e5ee0439488>)))
+	doc := p.Parse(#<SyntaxTree::Ident:0x00007d6a9c6f75c8>)
+	fmt.Print(string(pr.Markdown(#<SyntaxTree::Ident:0x00007d6a9c6f2370>)))
 }

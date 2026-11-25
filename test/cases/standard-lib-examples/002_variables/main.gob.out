@@ -2,42 +2,42 @@ package main
 
 import "fmt"
 
-var PI = 3.14159
+PI := 3.14159
 
-var STATUS_ACTIVE = "active"
+STATUS_ACTIVE := "active"
 
-var STATUS_INACTIVE = "inactive"
+STATUS_INACTIVE := "inactive"
 
-var packageLevel = "I live at package scope"
+packageLevel := "I live at package scope"
 
-func main() {
+func main() () {
 	fmt.Println("zero values:", a, b, c, d)
 	fmt.Println(name, age)
 	city := "Wellington"
 	country := "New Zealand"
-	fmt.Println(city, country)
-	x, y, z := 1, 2.5, "three"
-	fmt.Println(x, y, z)
-	x, y := 10, 20.5
-	fmt.Println(x, y)
+	fmt.Println(#<SyntaxTree::Ident:0x00007d6a4a6501a8>, #<SyntaxTree::Ident:0x00007d6a4a6cff98>)
+	x, y, z := 
+	fmt.Println(#<SyntaxTree::Ident:0x00007d6a4a6cec88>, #<SyntaxTree::Ident:0x00007d6a4a6cea58>, #<SyntaxTree::Ident:0x00007d6a4a6ce8c8>)
+	x, y := 
+	fmt.Println(#<SyntaxTree::Ident:0x00007d6a4a6cdba8>, #<SyntaxTree::Ident:0x00007d6a4a6cd978>)
 	host := "localhost"
 	port := 8080
-	enabled := true
-	fmt.Println(host, port, enabled)
+	enabled := #<SyntaxTree::Kw:0x00007d6a4a6482a0>
+	fmt.Println(#<SyntaxTree::Ident:0x00007d6a4a6cc9d8>, #<SyntaxTree::Ident:0x00007d6a4a6cc7a8>, #<SyntaxTree::Ident:0x00007d6a4a6cc618>)
 	fmt.Println(big)
-	fmt.Println(greeting, PI, STATUS_ACTIVE, STATUS_INACTIVE)
+	fmt.Println(greeting, #<SyntaxTree::Const:0x00007d6a4a6c9df0>, #<SyntaxTree::Const:0x00007d6a4a6c9c60>, #<SyntaxTree::Const:0x00007d6a4a6c9ad0>)
 	fmt.Println(packageLevel)
 	shadow := "outer"
 	{
 		shadow := "inner"
-		fmt.Println(shadow)
+		fmt.Println(#<SyntaxTree::Ident:0x00007d6a4a6c8518>)
 	}
-	fmt.Println(shadow)
-	swap1, swap2 := "first", "second"
-	swap1, swap2 := swap2, swap1
-	fmt.Println(swap1, swap2)
+	fmt.Println(#<SyntaxTree::Ident:0x00007d6a4a6c7c80>)
+	swap1, swap2 := 
+	swap1, swap2 := 
+	fmt.Println(#<SyntaxTree::Ident:0x00007d6a4a6c6268>, #<SyntaxTree::Ident:0x00007d6a4a6c6038>)
 	_, kept := ignoreOne()
-	fmt.Println(kept)
+	fmt.Println(#<SyntaxTree::Ident:0x00007d6a4a6c5408>)
 }
 
 func ignoreOne() (string, string) {

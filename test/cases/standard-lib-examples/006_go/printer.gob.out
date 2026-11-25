@@ -8,9 +8,9 @@ import (
 	"os"
 )
 
-func runPrinter() {
+func runPrinter() () {
 	src := `package p; func Hi(){println("hi")}`
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(fset, "p.go", src, 0)
-	cfg := nil
+	file, err := parser.ParseFile(#<SyntaxTree::Ident:0x00007d6a9e1b4cd0>, "p.go", #<SyntaxTree::Ident:0x00007d6a9e1b45a0>, 0)
+	cfg := printer.Config.new(nil)
 }

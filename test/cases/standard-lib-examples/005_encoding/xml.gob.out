@@ -6,9 +6,9 @@ import (
 	"log"
 )
 
-func runXML() {
-	b := nil
-	data, err := xml.MarshalIndent(b, "", "  ")
-	fmt.Println(xml.Header + string(data))
+func runXML() () {
+	b := book.new(nil)
+	data, err := xml.MarshalIndent(#<SyntaxTree::Ident:0x00007d6a4a67dfb8>, "", "  ")
+	fmt.Println(xml.Header + string(#<SyntaxTree::Ident:0x00007d6a4a67c5a0>))
 	fmt.Printf("parsed: %+v\n", back)
 }

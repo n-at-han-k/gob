@@ -7,12 +7,12 @@ import (
 )
 
 func runBase64() () {
-	src := #<SyntaxTree::Const:0x00007e5e94065b00>[byte].new("hello base64+/=?")
-	std := base64.StdEncoding.EncodeToString(#<SyntaxTree::Ident:0x00007e5e94064ae8>)
-	fmt.Println("std:", #<SyntaxTree::Ident:0x00007e5e94064110>)
-	url := base64.URLEncoding.EncodeToString(#<SyntaxTree::Ident:0x00007e5e940638c8>)
-	fmt.Println("url:", #<SyntaxTree::Ident:0x00007e5e94062f40>)
-	fmt.Println("raw:", base64.RawURLEncoding.EncodeToString(#<SyntaxTree::Ident:0x00007e5e940621f8>))
-	back, err := base64.StdEncoding.DecodeString(#<SyntaxTree::Ident:0x00007e5e94061640>)
-	fmt.Printf("decoded: %s\n", #<SyntaxTree::Ident:0x00007e5e94060060>)
+	src := #<SyntaxTree::Const:0x00007d6a5054e150>[byte].new("hello base64+/=?")
+	std := base64.StdEncoding.EncodeToString(#<SyntaxTree::Ident:0x00007d6a5054af50>)
+	fmt.Println("std:", #<SyntaxTree::Ident:0x00007d6a50549678>)
+	url := base64.URLEncoding.EncodeToString(#<SyntaxTree::Ident:0x00007d6a50548a48>)
+	fmt.Println("url:", #<SyntaxTree::Ident:0x00007d6a50547440>)
+	fmt.Println("raw:", base64.RawURLEncoding.EncodeToString(#<SyntaxTree::Ident:0x00007d6a50546220>))
+	back, err := base64.StdEncoding.DecodeString(#<SyntaxTree::Ident:0x00007d6a505453c0>)
+	fmt.Printf("decoded: %s\n", #<SyntaxTree::Ident:0x00007d6a50543840>)
 }

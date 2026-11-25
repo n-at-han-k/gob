@@ -10,5 +10,5 @@ import (
 )
 
 func runCrypto() () {
-	hashes := #<SyntaxTree::Const:0x00007e5ee37140d8>[crypto.Hash].new(crypto.MD5, crypto.SHA1, crypto.SHA256, crypto.SHA512)
+	hashes := #<SyntaxTree::Const:0x00007d6a9e466780>[crypto.Hash].new(crypto.MD5, crypto.SHA1, crypto.SHA256, crypto.SHA512)
 }

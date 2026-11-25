@@ -6,5 +6,7 @@ import (
 )
 
 func runTLS() () {
-	cfg := 
+	cfg := #<SyntaxTree::IVar:0x00007d6a5054b6a8>.Config.new(nil)
+	fmt.Printf("min version: 0x%04x (TLS 1.2)\n", #<SyntaxTree::Ident:0x00007d6a50547698>.MinVersion)
+	fmt.Println("ALPN offers:", #<SyntaxTree::Ident:0x00007d6a505465e0>.NextProtos)
 }

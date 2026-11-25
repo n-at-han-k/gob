@@ -8,10 +8,10 @@ import (
 	"log"
 )
 
-func runDSA() {
-	priv := &dsa.PrivateKey{PublicKey: dsa.PublicKey{Parameters: params}}
-	digest := sha256.Sum256([]byte("hello"))
-	r, s, err := dsa.Sign(rand.Reader, priv, digest[:])
-	ok := dsa.Verify(&priv.PublicKey, digest[:], r, s)
-	fmt.Println("signature valid:", ok)
+func runDSA() () {
+	priv := #<SyntaxTree::IVar:0x00007d6a9e1c4770>.PrivateKey.new(nil)
+	digest := sha256.Sum256(#<SyntaxTree::Const:0x00007d6a9e1c1bb0>[byte].new("hello"))
+	r, s, err := dsa.Sign(rand.Reader, #<SyntaxTree::Ident:0x00007d6a9e1c0080>, nil)
+	ok := dsa.Verify(#<SyntaxTree::IVar:0x00007d6a9e1dafc0>.PublicKey, nil, #<SyntaxTree::Ident:0x00007d6a9e1d98f0>, #<SyntaxTree::Ident:0x00007d6a9e1d9328>)
+	fmt.Println("signature valid:", #<SyntaxTree::Ident:0x00007d6a9e1d72d0>)
 }

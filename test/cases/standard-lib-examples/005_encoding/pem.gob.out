@@ -6,10 +6,10 @@ import (
 	"os"
 )
 
-func runPEM() {
-	block := nil
-	pem.Encode(os.Stdout, block)
-	encoded := pem.EncodeToMemory(block)
-	got, rest := pem.Decode(encoded)
-	fmt.Printf("type=%s bytes=%q leftover=%d\n", got.Type, got.Bytes, len(rest))
+func runPEM() () {
+	block := #<SyntaxTree::IVar:0x00007d6a9e1e1bb8>.Block.new(nil)
+	pem.Encode(os.Stdout, #<SyntaxTree::Ident:0x00007d6a9e22cc30>)
+	encoded := pem.EncodeToMemory(#<SyntaxTree::Ident:0x00007d6a9e228f90>)
+	got, rest := pem.Decode(#<SyntaxTree::Ident:0x00007d6a9e2245d0>)
+	fmt.Printf("type=%s bytes=%q leftover=%d\n", #<SyntaxTree::Ident:0x00007d6a9e15f870>.Type, #<SyntaxTree::Ident:0x00007d6a9e15eba0>.Bytes, len(#<SyntaxTree::Ident:0x00007d6a9e15dbd8>))
 }

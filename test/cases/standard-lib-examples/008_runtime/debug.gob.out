@@ -6,8 +6,8 @@ import (
 )
 
 func runDebug() () {
-	debug.ReadGCStats(#<SyntaxTree::IVar:0x00007e5e94068530>)
+	debug.ReadGCStats(#<SyntaxTree::IVar:0x00007d6a9e3bc7d0>)
 	fmt.Printf("gc runs: %d, total pause: %v\n", stats.NumGC, stats.PauseTotal)
 	stack := debug.Stack()
-	fmt.Print("stack:\n", string(#<SyntaxTree::Ident:0x00007e5e94065880>), "...\n")
+	fmt.Print("stack:\n", string(#<SyntaxTree::Ident:0x00007d6a9e3ebff8>), "...\n")
 }

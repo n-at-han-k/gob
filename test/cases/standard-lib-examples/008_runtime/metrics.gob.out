@@ -6,6 +6,8 @@ import (
 )
 
 func runMetrics() () {
-	samples := 
-	all := 
+	samples := #<SyntaxTree::Const:0x00007d6a9e2baeb8>[metrics.Sample].new(nil, nil, nil)
+	metrics.Read(#<SyntaxTree::Ident:0x00007d6a9e2b4860>)
+	all := metrics.All()
+	fmt.Printf("\n%d metrics available; first 5 names:\n", len(#<SyntaxTree::Ident:0x00007d6a9e309db0>))
 }

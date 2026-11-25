@@ -20,8 +20,8 @@ func Add(a, b int) int { return a + b }
 func Sub(a, b int) int { return a - b }
 `
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(#<SyntaxTree::Ident:0x00007e5e8c928538>, "math2.go", #<SyntaxTree::Ident:0x00007e5e8c927f98>, parser.ParseComments)
-	p, err := doc.NewFromFiles(#<SyntaxTree::Ident:0x00007e5e8c9261e8>, #<SyntaxTree::Const:0x00007e5e8c925db0>[#<SyntaxTree::IVar:0x00007e5e8c925bf8>.File].new(#<SyntaxTree::Ident:0x00007e5e8c925540>), "example.com/math2")
-	fmt.Println("package:", #<SyntaxTree::Ident:0x00007e5e8c923ab0>.Name)
-	fmt.Println("synopsis:", doc.Synopsis(#<SyntaxTree::Ident:0x00007e5e8c922d90>.Doc))
+	file, err := parser.ParseFile(#<SyntaxTree::Ident:0x00007d6a4839c800>, "math2.go", #<SyntaxTree::Ident:0x00007d6a4839c2b0>, parser.ParseComments)
+	p, err := doc.NewFromFiles(#<SyntaxTree::Ident:0x00007d6a4839aaf0>, #<SyntaxTree::Const:0x00007d6a4839a8c0>[#<SyntaxTree::IVar:0x00007d6a4839a758>.File].new(#<SyntaxTree::Ident:0x00007d6a4839a258>), "example.com/math2")
+	fmt.Println("package:", #<SyntaxTree::Ident:0x00007d6a48398840>.Name)
+	fmt.Println("synopsis:", doc.Synopsis(#<SyntaxTree::Ident:0x00007d6a48397be8>.Doc))
 }

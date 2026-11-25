@@ -6,9 +6,9 @@ import (
 )
 
 func runSubtle() () {
-	a := #<SyntaxTree::Const:0x00007e5e8c8e1778>[byte].new("expected-token")
-	b := #<SyntaxTree::Const:0x00007e5e8c8e0b70>[byte].new("expected-token")
-	c := #<SyntaxTree::Const:0x00007e5e8c95ffd8>[byte].new("wrong-token   ")
-	fmt.Println("equal (constant time):", subtle.ConstantTimeCompare(#<SyntaxTree::Ident:0x00007e5e8c95ede0>, #<SyntaxTree::Ident:0x00007e5e8c95ebb0>) == 1)
-	fmt.Println("not equal:            ", subtle.ConstantTimeCompare(#<SyntaxTree::Ident:0x00007e5e8c95de68>, #<SyntaxTree::Ident:0x00007e5e8c95dc38>) == 1)
+	a := #<SyntaxTree::Const:0x00007d6a4a6e6fe0>[byte].new("expected-token")
+	b := #<SyntaxTree::Const:0x00007d6a4a6e63d8>[byte].new("expected-token")
+	c := #<SyntaxTree::Const:0x00007d6a4a6e57f8>[byte].new("wrong-token   ")
+	fmt.Println("equal (constant time):", subtle.ConstantTimeCompare(#<SyntaxTree::Ident:0x00007d6a4a6e45d8>, #<SyntaxTree::Ident:0x00007d6a4a6e4380>) == 1)
+	fmt.Println("not equal:            ", subtle.ConstantTimeCompare(#<SyntaxTree::Ident:0x00007d6a4a6e3638>, #<SyntaxTree::Ident:0x00007d6a4a6e3408>) == 1)
 }

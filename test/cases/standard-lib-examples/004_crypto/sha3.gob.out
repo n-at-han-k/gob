@@ -6,11 +6,11 @@ import (
 )
 
 func runSHA3() () {
-	fmt.Printf("Sum256: %x\n", sha3.Sum256(#<SyntaxTree::Const:0x00007e5ee3bdadd8>[byte].new("hello")))
-	fmt.Printf("Sum512: %x\n", sha3.Sum512(#<SyntaxTree::Const:0x00007e5ee3bd5ef0>[byte].new("hello")))
+	fmt.Printf("Sum256: %x\n", sha3.Sum256(#<SyntaxTree::Const:0x00007d6a9e1e0d08>[byte].new("hello")))
+	fmt.Printf("Sum512: %x\n", sha3.Sum512(#<SyntaxTree::Const:0x00007d6a9e214dd8>[byte].new("hello")))
 	shake := sha3.NewSHAKE128()
-	#<SyntaxTree::Ident:0x00007e5ee3bd25e8>.Write(#<SyntaxTree::Const:0x00007e5ee3bd1fa8>[byte].new("hello"))
-	out := make(#<SyntaxTree::Const:0x00007e5ee38c9180>[byte], 42)
-	#<SyntaxTree::Ident:0x00007e5ee38c5148>.Read(#<SyntaxTree::Ident:0x00007e5ee38c4630>)
-	fmt.Printf("shake128 (42 B): %x\n", #<SyntaxTree::Ident:0x00007e5ee38c10c0>)
+	#<SyntaxTree::Ident:0x00007d6a9e22a390>.Write(#<SyntaxTree::Const:0x00007d6a9e229288>[byte].new("hello"))
+	out := make(#<SyntaxTree::Const:0x00007d6a9e221f88>[byte], 42)
+	#<SyntaxTree::Ident:0x00007d6a9e15ea38>.Read(#<SyntaxTree::Ident:0x00007d6a9e15e0d8>)
+	fmt.Printf("shake128 (42 B): %x\n", #<SyntaxTree::Ident:0x00007d6a9e15b900>)
 }

@@ -5,5 +5,12 @@ import (
 	"runtime/cgo"
 )
 
-func runCGO() {
+func runCGO() () {
+	original := nil.new(nil)
+	h := cgo.NewHandle(#<SyntaxTree::Ident:0x00007d6a4a67c1e0>)
+	got := 
+	fmt.Printf("handle: %d\n", uintptr(#<SyntaxTree::Ident:0x00007d6a4a67a390>))
+	fmt.Printf("value:  %v\n", #<SyntaxTree::Ident:0x00007d6a4a6798c8>)
+	 := 99
+	fmt.Printf("mutation visible on original: %v\n", #<SyntaxTree::Ident:0x00007d6a4a678838>["answer"] == 99)
 }

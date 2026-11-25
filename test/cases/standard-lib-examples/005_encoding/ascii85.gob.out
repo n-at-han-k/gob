@@ -5,13 +5,13 @@ import (
 	"fmt"
 )
 
-func runAscii85() {
-	src := []byte("hello ascii85")
-	dst := make([]byte, ascii85.MaxEncodedLen(len(src)))
-	n := ascii85.Encode(dst, src)
-	dst := dst[:n]
-	fmt.Printf("encoded: %s\n", dst)
-	back := make([]byte, len(src))
-	ndst, _, err := ascii85.Decode(back, dst, true)
-	fmt.Printf("decoded: %s\n", back[:ndst])
+func runAscii85() () {
+	src := #<SyntaxTree::Const:0x00007d6a4a6eee98>[byte].new("hello ascii85")
+	dst := make(#<SyntaxTree::Const:0x00007d6a4a6ee150>[byte], ascii85.MaxEncodedLen(len(#<SyntaxTree::Ident:0x00007d6a4a6ed8e0>)))
+	n := ascii85.Encode(#<SyntaxTree::Ident:0x00007d6a4a6ece40>, #<SyntaxTree::Ident:0x00007d6a4a6ecc10>)
+	dst := #<SyntaxTree::Ident:0x00007d6a4a6ec7b0>[nil]
+	fmt.Printf("encoded: %s\n", #<SyntaxTree::Ident:0x00007d6a4a6ebbd0>)
+	back := make(#<SyntaxTree::Const:0x00007d6a4a6eb658>[byte], len(#<SyntaxTree::Ident:0x00007d6a4a6eb068>))
+	ndst, _, err := ascii85.Decode(#<SyntaxTree::Ident:0x00007d6a4a6ea460>, #<SyntaxTree::Ident:0x00007d6a4a6ea140>, #<SyntaxTree::Kw:0x00007d6a4a6b8e38>)
+	fmt.Printf("decoded: %s\n", #<SyntaxTree::Ident:0x00007d6a4a6e8610>[nil])
 }

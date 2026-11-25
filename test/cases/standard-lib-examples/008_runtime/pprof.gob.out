@@ -8,11 +8,11 @@ import (
 )
 
 func runPProf() () {
-	junk := make(#<SyntaxTree::Const:0x00007e5e94069958>[#<SyntaxTree::Const:0x00007e5e940697f0>[byte]], 0, 100)
+	junk := make(#<SyntaxTree::Const:0x00007d6a4a6741e8>[#<SyntaxTree::Const:0x00007d6a4a6740a8>[byte]], 0, 100)
 	runtime.GC()
 	f, err := os.CreateTemp("", "heap-*.prof")
-	info, _ := #<SyntaxTree::Ident:0x00007e5e940621d0>.Stat()
-	fmt.Printf("wrote heap profile: %s (%d bytes)\n", #<SyntaxTree::Ident:0x00007e5e940617f8>.Name(), #<SyntaxTree::Ident:0x00007e5e94061410>.Size())
-	fmt.Println("view with: go tool pprof", #<SyntaxTree::Ident:0x00007e5e94060948>.Name())
-	_ := #<SyntaxTree::Ident:0x00007e5e94060218>
+	info, _ := #<SyntaxTree::Ident:0x00007d6a4a6acb10>.Stat()
+	fmt.Printf("wrote heap profile: %s (%d bytes)\n", #<SyntaxTree::Ident:0x00007d6a4a6ac138>.Name(), #<SyntaxTree::Ident:0x00007d6a4a6abd50>.Size())
+	fmt.Println("view with: go tool pprof", #<SyntaxTree::Ident:0x00007d6a4a6ab198>.Name())
+	_ := #<SyntaxTree::Ident:0x00007d6a4a6aaa90>
 }

@@ -8,11 +8,11 @@ import (
 func runSMTP() () {
 	auth := smtp.PlainAuth("", "alice@example.com", "hunter2", "smtp.example.com")
 	from := "alice@example.com"
-	to := #<SyntaxTree::Const:0x00007e5e8c8b0b78>[string].new("bob@example.org")
-	body := #<SyntaxTree::Const:0x00007e5e8c8e2d30>[byte].new("Subject: hello\r\n\r\nsent by net/smtp\r\n")
-	fmt.Printf("auth:  %T\n", #<SyntaxTree::Ident:0x00007e5e8c8eeea0>)
-	fmt.Println("from:  ", #<SyntaxTree::Ident:0x00007e5e8c8ee5b8>)
-	fmt.Println("to:    ", #<SyntaxTree::Ident:0x00007e5e8c8edcf8>)
-	fmt.Printf("body:\n%s", #<SyntaxTree::Ident:0x00007e5e8c8ed438>)
+	to := #<SyntaxTree::Const:0x00007d6a483d4c28>[string].new("bob@example.org")
+	body := #<SyntaxTree::Const:0x00007d6a483d4098>[byte].new("Subject: hello\r\n\r\nsent by net/smtp\r\n")
+	fmt.Printf("auth:  %T\n", #<SyntaxTree::Ident:0x00007d6a483d3080>)
+	fmt.Println("from:  ", #<SyntaxTree::Ident:0x00007d6a483d27c0>)
+	fmt.Println("to:    ", #<SyntaxTree::Ident:0x00007d6a483d1f00>)
+	fmt.Printf("body:\n%s", #<SyntaxTree::Ident:0x00007d6a483d1618>)
 	fmt.Println("(smtp.SendMail would dial smtp.example.com:25 and deliver this)")
 }

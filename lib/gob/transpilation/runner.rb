@@ -46,7 +46,7 @@ module Gob
             }
             results = output.map { |result|
               SyntaxTree::Go::Field.new(
-                names: [ SyntaxTree::Go::Ident.new(name: result.value) ],
+                names: [ SyntaxTree::Go::Ident.new(name: result) ],
               )
             }
 
@@ -64,7 +64,7 @@ module Gob
             params = []
             results = output.map { |result|
               SyntaxTree::Go::Field.new(
-                names: [ SyntaxTree::Go::Ident.new(name: result.value) ],
+                names: [ SyntaxTree::Go::Ident.new(name: result) ],
               )
             }
 
@@ -117,6 +117,9 @@ module Gob
 
           in { value: name }
             SyntaxTree::Go::Ident.new(name: name)
+
+          else
+            nil
           end
         end
 

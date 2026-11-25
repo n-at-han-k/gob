@@ -7,10 +7,10 @@ import (
 )
 
 func runBase32() () {
-	src := #<SyntaxTree::Const:0x00007e5e8c95ac18>[byte].new("hello base32")
-	encoded := base32.StdEncoding.EncodeToString(#<SyntaxTree::Ident:0x00007e5e8c959bb0>)
-	fmt.Println("std:  ", #<SyntaxTree::Ident:0x00007e5e8c959228>)
-	decoded, err := base32.StdEncoding.DecodeString(#<SyntaxTree::Ident:0x00007e5e8c958850>)
-	fmt.Printf("decoded: %s\n", #<SyntaxTree::Ident:0x00007e5e8c957338>)
-	fmt.Println("hex:  ", base32.HexEncoding.EncodeToString(#<SyntaxTree::Ident:0x00007e5e8c9566b8>))
+	src := #<SyntaxTree::Const:0x00007d6a9df1ffb0>[byte].new("hello base32")
+	encoded := base32.StdEncoding.EncodeToString(#<SyntaxTree::Ident:0x00007d6a9df1e1d8>)
+	fmt.Println("std:  ", #<SyntaxTree::Ident:0x00007d6a9df1d490>)
+	decoded, err := base32.StdEncoding.DecodeString(#<SyntaxTree::Ident:0x00007d6a9df1c248>)
+	fmt.Printf("decoded: %s\n", #<SyntaxTree::Ident:0x00007d6a9df19a98>)
+	fmt.Println("hex:  ", base32.HexEncoding.EncodeToString(#<SyntaxTree::Ident:0x00007d6a9df183f0>))
 }
