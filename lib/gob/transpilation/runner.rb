@@ -44,7 +44,11 @@ module Gob
                 type: SyntaxTree::Go::Ident.new(name: input.shift)
               )
             }
-            results = output
+            results = output.map { |result|
+              SyntaxTree::Go::Field.new(
+                names: [ SyntaxTree::Go::Ident.new(name: result.value) ],
+              )
+            }
 
           in { contents: SyntaxTree::Params[requireds: args] }
             params = args.map { |arg|
@@ -53,17 +57,20 @@ module Gob
                 type: SyntaxTree::Go::Ident.new(name: input.shift)
               )
             }
-            params = []
-            results = {}
+            results = []
 
           in { comments: [SyntaxTree::Comment[value: types], *] }
-            input, output = parse_signature_comment(types).values_at(:params, :returns)
+            _, output = parse_signature_comment(types).values_at(:params, :returns)
             params = []
-            results = output
+            results = output.map { |result|
+              SyntaxTree::Go::Field.new(
+                names: [ SyntaxTree::Go::Ident.new(name: result.value) ],
+              )
+            }
 
           else
             params = []
-            results = {}
+            results = []
 
           end
 
@@ -72,7 +79,7 @@ module Gob
             type: SyntaxTree::Go::FuncType.new(
               type_params: nil,
               params: SyntaxTree::Go::FieldList.new(list: params),
-              results: nil 
+              results: SyntaxTree::Go::FieldList.new(list: results),
             ),
             body: SyntaxTree::Go::BlockStmt.new(list: body)
           )
