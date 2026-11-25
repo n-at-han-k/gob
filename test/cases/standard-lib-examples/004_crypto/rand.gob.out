@@ -1,18 +1,1 @@
-package main
-
-import (
-	"crypto/rand"
-	"fmt"
-	"log"
-	"math/big"
-)
-
-func runRand() {
-	buf := make([]byte, 16)
-	if _, err := rand.Read(buf); err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("random bytes: %x\n", buf)
-	n, _ := rand.Int(rand.Reader, big.NewInt(1_000_000))
-	fmt.Println("random int  :", n)
-}
+/* unsupported: Array */

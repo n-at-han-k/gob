@@ -8,33 +8,68 @@
 
 module Gob
   module Transpilation
+    Hoist = Struct.new(:nodes)
+
     class Context
-      attr_reader :node
+      attr_reader :body, :children, :tree, :state
 
-      def initialize(node)
-        @node = node
+      protected
+
+      attr_reader :before_callback, :after_callback, :iterate_callback
+
+      def inherit_callbacks_from(context)
+        @before_callback = context.before_callback
+        @after_callback = context.after_callback
+        @iterate_callback = context.iterate_callback
       end
 
-      def children
-        []
+      public
+
+      def initialize(body, state: nil)
+        @body = body
+        @state = state
+        @children = []
+        @tree = []
       end
 
-      def descend(node)
-        # shuld create a enw context object with the
-        # same callbacks and run it wiht .match
+      def descend(body)
+        child_context = self.class.new(body, state: state)
+        child_context.inherit_callbacks_from(self)
+
+        @children << child_context
+
+        child_context
       end
 
-      def match_each_child(&block)
-        yield.then do
-          @before_callback.call
+      def match(&block)
+        instance_exec(self, &block) if block
 
-          children.each do |node|
-            @iterate_callback.call(node)
+        before_callback&.call(self)
+
+        Array(body).each do |node|
+          result = iterate_callback&.call(self, node)
+
+          case result
+          when Hoist
+            result.nodes.each do |hoisted_node|
+              hoisted = iterate_callback&.call(self, hoisted_node)
+              @tree << hoisted if hoisted
+            end
+          when nil
+            # dropped
+          else
+            @tree << result
           end
-
-          @after_callback.call
         end
+
+        children.each(&:match)
+
+        after_callback&.call(self)
+
+        self
       end
+
+      alias match_each_child match
 
       def before(&block)
         @before_callback = block

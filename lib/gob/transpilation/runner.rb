@@ -6,30 +6,37 @@
 # Distributed under terms of the MIT license.
 #
 
-require "ostruct"
-
 module Gob
   module Transpilation
     class Runner
-      def call(tree)
-        state = OpenStruct.new
+      module Nodes
+        File = Struct.new(:children)
+        Module = Struct.new(:children)
+        Function = Struct.new(:children)
+        Block = Struct.new(:children)
+        Logic = Struct.new(:node)
+        Comment = Struct.new(:node)
+        Statement = Struct.new(:node)
+      end
 
-        Context.new(tree.root).match do
+      def call(node)
+        context = Context.new(node.statements.body)
+
+        context.match do
           before do |ctx|
           end
 
           iterate do |ctx, node|
             case node
             in SyntaxTree::ModuleDeclaration[
-              constant: SyntaxTree::ConstRef[ constant: SyntaxTree::Const[value: value] ],
-              bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[body: body] ]
+              constant: SyntaxTree::ConstRef[
+                constant: SyntaxTree::Const[value: "Main"]
+              ],
+              bodystmt: SyntaxTree::BodyStmt[
+                statements: SyntaxTree::Statements[body: body]
+              ]
             ]
-              ctx.descend(body).then do |children|
-                options = {
-                  children: children
-                }
-                Module(**options)
-              end
+              Hoist.new(body)
 
             in SyntaxTree::DefNode[
               target: nil,
@@ -87,6 +94,40 @@ module Gob
           after do |ctx|
           end
         end
+
+        context.tree
+      end
+    end
+
+    class Context
+      private
+
+      def File(children:)
+        Runner::Nodes::File.new(children)
+      end
+
+      def Module(children:)
+        Runner::Nodes::Module.new(children)
+      end
+
+      def Function(children:)
+        Runner::Nodes::Function.new(children)
+      end
+
+      def Block(children:)
+        Runner::Nodes::Block.new(children)
+      end
+
+      def Logic(node)
+        Runner::Nodes::Logic.new(node)
+      end
+
+      def Comment(node)
+        Runner::Nodes::Comment.new(node)
+      end
+
+      def Statement(node)
+        Runner::Nodes::Statement.new(node)
       end
     end
   end
