@@ -19,6 +19,11 @@ module Gob
         []
       end
 
+      def descend(node)
+        # shuld create a enw context object with the
+        # same callbacks and run it wiht .match
+      end
+
       def match_each_child(&block)
         yield.then do
           @before_callback.call

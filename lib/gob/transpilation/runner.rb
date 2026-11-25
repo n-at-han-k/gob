@@ -6,6 +6,8 @@
 # Distributed under terms of the MIT license.
 #
 
+require "ostruct"
+
 module Gob
   module Transpilation
     class Runner
