@@ -4,15 +4,9 @@ import "encoding"
 
 import "fmt"
 
-nil
-
 func runEncoding() {
-	nil
-	nil
 	fmt.Printf("marshalled: %s\n", txt)
-	nil
-	nil
-	nil
-	nil
+	u = @back
+	_ = u.UnmarshalText(nil)
 	fmt.Printf("parsed:     %+v\n", back)
 }

@@ -11,12 +11,7 @@ import "net/http"
 import "net/http/httptest"
 
 func runHTTP() {
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	fmt.Println("status:", resp.Status())
+	srv = httptest.NewServer(nil)
+	fmt.Println("status:", nil)
 	fmt.Print("body:  ", nil)
 }

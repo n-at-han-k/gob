@@ -7,13 +7,11 @@ import "fmt"
 import "log"
 
 func runDES() {
-	nil
-	nil
-	nil
-	nil
-	nil
+	key = nil.new("8bytekey")
+	plaintext = nil.new("blockdat")
+	ct = nil
 	block.Encrypt(ct, plaintext)
-	nil
+	pt = nil
 	block.Decrypt(pt, ct)
-	fmt.Printf("block size: %d\nct: %x\npt: %s\n", block.BlockSize(), ct, pt)
+	fmt.Printf("block size: %d\nct: %x\npt: %s\n", nil, ct, pt)
 }

@@ -5,9 +5,9 @@ import "crypto/subtle"
 import "fmt"
 
 func runSubtle() {
-	nil
-	nil
-	nil
+	a = nil.new("expected-token")
+	b = nil.new("expected-token")
+	c = nil.new("wrong-token   ")
 	fmt.Println("equal (constant time):", nil)
 	fmt.Println("not equal:            ", nil)
 }

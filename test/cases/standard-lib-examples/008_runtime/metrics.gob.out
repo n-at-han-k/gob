@@ -5,8 +5,8 @@ import "fmt"
 import "runtime/metrics"
 
 func runMetrics() {
-	nil
+	samples = nil.new(nil, nil, nil)
 	metrics.Read(samples)
-	nil
+	all = metrics.All()
 	fmt.Printf("\n%d metrics available; first 5 names:\n", nil)
 }

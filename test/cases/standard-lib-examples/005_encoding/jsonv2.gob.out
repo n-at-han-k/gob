@@ -6,14 +6,8 @@ import "fmt"
 
 import "log"
 
-nil
-
 func runJSONv2() {
-	nil
-	nil
-	nil
+	a = v2article.new(nil)
 	fmt.Println("marshalled:", nil)
-	nil
-	nil
 	fmt.Printf("parsed: %+v\n", back)
 }

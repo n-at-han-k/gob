@@ -13,13 +13,9 @@ import "net/http/pprof"
 # ()
 
 func runPProf() {
-	nil
-	nil
-	nil
-	nil
-	resp.Body().Close()
-	fmt.Println("status:", resp.Status())
-	nil
-	nil
+	srv = httptest.NewServer(nil)
+	nil.Close()
+	fmt.Println("status:", nil)
+	snippet = nil
 	fmt.Println(snippet)
 }

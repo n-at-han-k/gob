@@ -1,1 +1,17 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "net/http"
+
+import "net/http/cookiejar"
+
+import "net/url"
+
+func runCookieJar() {
+	jar.SetCookies(u, nil)
+	fmt.Println("cookies for sibling site:", nil)
+}
+
+func mustURL(s string) *url.URL {
+}

@@ -9,15 +9,14 @@ import "crypto/rand"
 import "fmt"
 
 func runCipher() {
-	nil
+	key = nil
 	rand.Read(key)
-	nil
-	nil
+	iv = nil
 	rand.Read(iv)
-	nil
-	nil
-	cipher.NewCTR(block, iv).XORKeyStream(ct, plaintext)
-	nil
-	cipher.NewCTR(block, iv).XORKeyStream(pt, ct)
+	plaintext = nil.new("streaming plaintext")
+	ct = nil
+	nil.XORKeyStream(ct, plaintext)
+	pt = nil
+	nil.XORKeyStream(pt, ct)
 	fmt.Printf("ct: %x\npt: %s\n", ct, pt)
 }

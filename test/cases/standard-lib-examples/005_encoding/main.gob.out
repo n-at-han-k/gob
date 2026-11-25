@@ -6,11 +6,5 @@ import "os"
 
 import "sort"
 
-nil
-
 func main() {
-	nil
-	nil
-	nil
-	nil
 }

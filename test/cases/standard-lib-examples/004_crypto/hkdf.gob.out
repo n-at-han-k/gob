@@ -9,10 +9,8 @@ import "fmt"
 import "log"
 
 func runHKDF() {
-	nil
-	nil
-	nil
-	nil
-	nil
+	secret = nil.new("some shared secret bytes")
+	salt = nil.new("optional salt")
+	info = nil.new("app: session key v1")
 	fmt.Printf("derived 32-byte key: %x\n", key)
 }

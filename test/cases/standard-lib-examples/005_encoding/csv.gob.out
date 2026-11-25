@@ -11,11 +11,9 @@ import "os"
 import "strings"
 
 func runCSV() {
-	nil
-	w.WriteAll(nil.new(nil, nil, nil))
+	w = csv.NewWriter(nil)
+	w.WriteAll(nil)
 	w.Flush()
-	nil
-	nil
-	nil
-	nil
+	input = "id,label\n1,apple\n2,orange\n3,pear\n"
+	r = csv.NewReader(nil)
 }

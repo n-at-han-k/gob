@@ -8,19 +8,12 @@ import "log"
 
 import "strings"
 
-nil
-
 func runJSON() {
-	nil
-	nil
-	nil
+	a = article.new(nil)
 	fmt.Println("compact:", nil)
-	nil
 	fmt.Println(nil)
-	nil
-	json.Unmarshal(data, &back)
+	json.Unmarshal(data, @back)
 	fmt.Printf("parsed: %+v\n", back)
-	nil
-	nil
-	nil
+	stream = "{"n":1}{"n":2}{"n":3}"
+	dec = json.NewDecoder(nil)
 }

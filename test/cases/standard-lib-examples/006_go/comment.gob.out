@@ -5,9 +5,19 @@ import "fmt"
 import "go/doc/comment"
 
 func runComment() {
-	nil
-	nil
-	nil
-	nil
+	src = "Package widget draws widgets.
+
+# Overview
+
+Widgets come in three sizes:
+  - small
+  - medium
+  - large
+
+See [example.com] for details.
+
+[example.com]: https://example.com
+"
+	doc = p.Parse(src)
 	fmt.Print(nil)
 }

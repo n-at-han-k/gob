@@ -7,14 +7,12 @@ import "log"
 import "net/netip"
 
 func runNetip() {
-	nil
-	nil
 	fmt.Println("addr:      ", addr)
-	fmt.Println("is v6?     ", addr.Is6())
-	fmt.Println("is private?", addr.IsPrivate())
-	nil
+	fmt.Println("is v6?     ", nil)
+	fmt.Println("is private?", nil)
+	prefix = netip.MustParsePrefix("10.0.0.0/8")
 	fmt.Println("prefix:    ", prefix)
-	fmt.Println("contains 10.1.2.3?", prefix.Contains(netip.MustParseAddr("10.1.2.3")))
-	nil
+	fmt.Println("contains 10.1.2.3?", nil)
+	seen = nil.new(nil)
 	fmt.Println("map:       ", seen)
 }

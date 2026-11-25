@@ -11,14 +11,9 @@ import "net/mail"
 import "strings"
 
 func runMail() {
-	nil
-	nil
-	nil
-	nil
-	nil
+	raw = nil
 	fmt.Println("from:   ", from)
 	fmt.Println("to:     ", to)
-	fmt.Println("subject:", msg.Header().Get("Subject"))
-	nil
+	fmt.Println("subject:", nil)
 	fmt.Print("body:   ", nil)
 }

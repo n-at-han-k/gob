@@ -19,14 +19,9 @@ import "math/big"
 import "time"
 
 func runX509() {
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	fmt.Println("subject:  ", cert.Subject())
-	fmt.Println("issuer:   ", cert.Issuer())
-	fmt.Println("not after:", cert.NotAfter().Format(time.RFC3339()))
-	fmt.Println("is CA:    ", cert.IsCA())
+	tmpl = nil.new(nil)
+	fmt.Println("subject:  ", nil)
+	fmt.Println("issuer:   ", nil)
+	fmt.Println("not after:", nil)
+	fmt.Println("is CA:    ", nil)
 }

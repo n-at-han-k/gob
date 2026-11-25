@@ -13,11 +13,8 @@ import "fmt"
 import "log"
 
 func runECDSA() {
-	nil
-	nil
-	nil
-	nil
-	nil
+	digest = sha256.Sum256(nil)
+	ok = ecdsa.VerifyASN1(nil, nil, sig)
 	fmt.Printf("signature (%d B): %x\n", nil, sig)
 	fmt.Println("valid:", ok)
 }

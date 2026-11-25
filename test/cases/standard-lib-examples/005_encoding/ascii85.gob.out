@@ -5,13 +5,11 @@ import "encoding/ascii85"
 import "fmt"
 
 func runAscii85() {
-	nil
-	nil
-	nil
-	nil
+	src = nil.new("hello ascii85")
+	dst = nil
+	n = ascii85.Encode(dst, src)
+	dst = nil
 	fmt.Printf("encoded: %s\n", dst)
-	nil
-	nil
-	nil
+	back = nil
 	fmt.Printf("decoded: %s\n", nil)
 }

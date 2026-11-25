@@ -5,10 +5,10 @@ import "fmt"
 import "net/smtp"
 
 func runSMTP() {
-	nil
-	nil
-	nil
-	nil
+	auth = smtp.PlainAuth(nil, "alice@example.com", "hunter2", "smtp.example.com")
+	from = "alice@example.com"
+	to = nil.new("bob@example.org")
+	body = nil.new("Subject: hello\r\n\r\nsent by net/smtp\r\n")
 	fmt.Printf("auth:  %T\n", auth)
 	fmt.Println("from:  ", from)
 	fmt.Println("to:    ", to)

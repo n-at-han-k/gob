@@ -9,11 +9,9 @@ import "fmt"
 import "log"
 
 func runED25519() {
-	nil
-	nil
-	nil
-	nil
+	msg = nil.new("sign me")
+	sig = ed25519.Sign(priv, msg)
 	fmt.Printf("public key (%d B): %x\n", nil, pub)
 	fmt.Printf("signature (%d B): %x\n", nil, sig)
-	fmt.Println("valid:", ed25519.Verify(pub, msg, sig))
+	fmt.Println("valid:", nil)
 }

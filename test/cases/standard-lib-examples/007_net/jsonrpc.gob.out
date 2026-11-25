@@ -11,17 +11,8 @@ import "net/rpc"
 import "net/rpc/jsonrpc"
 
 func runJSONRPC() {
-	nil
-	srv.Register(Arith.new())
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
+	srv = rpc.NewServer()
+	srv.Register(nil)
+	client = rpc.NewClientWithCodec(nil)
 	fmt.Println("9 * 9 =", result)
 }

@@ -7,13 +7,11 @@ import "fmt"
 import "log"
 
 func runBase64() {
-	nil
-	nil
+	src = nil.new("hello base64+/=?")
+	std = nil.EncodeToString(src)
 	fmt.Println("std:", std)
-	nil
+	url = nil.EncodeToString(src)
 	fmt.Println("url:", url)
-	fmt.Println("raw:", base64.RawURLEncoding().EncodeToString(src))
-	nil
-	nil
+	fmt.Println("raw:", nil)
 	fmt.Printf("decoded: %s\n", back)
 }

@@ -11,9 +11,7 @@ import "fmt"
 import "log"
 
 func runPBKDF2() {
-	nil
+	salt = nil
 	rand.Read(salt)
-	nil
-	nil
 	fmt.Printf("salt: %x\nkey:  %x\n", salt, key)
 }

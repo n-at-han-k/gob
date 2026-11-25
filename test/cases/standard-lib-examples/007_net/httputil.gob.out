@@ -11,12 +11,7 @@ import "net/http/httputil"
 import "net/url"
 
 func runHTTPUtil() {
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
+	upstream = httptest.NewServer(nil)
+	proxy = httptest.NewServer(nil)
 	fmt.Print(nil)
 }

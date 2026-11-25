@@ -9,16 +9,9 @@ import "runtime"
 import "runtime/pprof"
 
 func runPProf() {
-	nil
-	nil
+	junk = nil
 	runtime.GC()
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	fmt.Printf("wrote heap profile: %s (%d bytes)\n", f.Name(), info.Size())
-	fmt.Println("view with: go tool pprof", f.Name())
-	nil
+	fmt.Printf("wrote heap profile: %s (%d bytes)\n", nil, nil)
+	fmt.Println("view with: go tool pprof", nil)
+	_ = junk
 }

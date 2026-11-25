@@ -13,5 +13,5 @@ import "crypto/sha512"
 import "fmt"
 
 func runCrypto() {
-	nil
+	hashes = nil.new(nil, nil, nil, nil)
 }

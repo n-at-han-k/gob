@@ -1,1 +1,14 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "go/scanner"
+
+import "go/token"
+
+func runScanner() {
+	src = nil.new("x := 1 + 2 // trailing comment")
+	fset = token.NewFileSet()
+	file = fset.AddFile("snippet.go", nil, nil)
+	s.Init(file, src, nil, nil)
+}

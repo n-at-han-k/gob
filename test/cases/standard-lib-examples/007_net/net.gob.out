@@ -5,11 +5,8 @@ import "fmt"
 import "net"
 
 func runNet() {
-	nil
-	fmt.Println("ip:", ip, "loopback:", ip.IsLoopback(), "private:", ip.IsPrivate())
-	nil
+	ip = net.ParseIP("192.168.1.42")
+	fmt.Println("ip:", ip, "loopback:", nil, "private:", nil)
 	fmt.Println("addr:", addr, "network:", network)
-	nil
 	fmt.Println("host:", host, "port:", port)
-	nil
 }

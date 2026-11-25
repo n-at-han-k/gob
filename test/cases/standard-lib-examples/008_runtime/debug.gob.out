@@ -5,11 +5,8 @@ import "fmt"
 import "runtime/debug"
 
 func runDebug() {
-	nil
-	nil
-	debug.ReadGCStats(&stats)
-	fmt.Printf("gc runs: %d, total pause: %v\n", stats.NumGC(), stats.PauseTotal())
-	nil
-	nil
+	debug.ReadGCStats(@stats)
+	fmt.Printf("gc runs: %d, total pause: %v\n", nil, nil)
+	stack = debug.Stack()
 	fmt.Print("stack:\n", nil, "...\n")
 }

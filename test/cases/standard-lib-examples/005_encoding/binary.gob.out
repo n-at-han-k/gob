@@ -9,18 +9,12 @@ import "fmt"
 import "log"
 
 func runBinary() {
-	nil
-	binary.Write(&buf, binary.BigEndian(), nil)
-	binary.Write(&buf, binary.LittleEndian(), nil)
-	fmt.Printf("bytes: %x\n", buf.Bytes())
-	nil
-	nil
-	nil
-	binary.Read(&buf, binary.LittleEndian(), &b)
+	binary.Write(@buf, nil, nil)
+	binary.Write(@buf, nil, nil)
+	fmt.Printf("bytes: %x\n", nil)
+	binary.Read(@buf, nil, @b)
 	fmt.Printf("a=%#x b=%#x\n", a, b)
-	nil
-	nil
+	n = binary.PutVarint(nil, nil)
 	fmt.Printf("varint(-12345) = %x (%d bytes)\n", nil, n)
-	nil
 	fmt.Println("decoded:", v)
 }

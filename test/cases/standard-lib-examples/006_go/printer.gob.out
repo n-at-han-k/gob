@@ -11,10 +11,7 @@ import "log"
 import "os"
 
 func runPrinter() {
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
+	src = "package p; func Hi(){println("hi")}"
+	fset = token.NewFileSet()
+	cfg = nil.new(nil)
 }

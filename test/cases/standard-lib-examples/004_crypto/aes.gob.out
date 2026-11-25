@@ -11,17 +11,12 @@ import "fmt"
 import "log"
 
 func runAES() {
-	nil
+	key = nil
 	rand.Read(key)
-	nil
-	nil
-	nil
-	nil
+	nonce = nil
 	rand.Read(nonce)
-	nil
-	nil
-	nil
-	nil
+	plaintext = nil.new("secret message")
+	ct = gcm.Seal(nil, nonce, plaintext, nil)
 	fmt.Printf("ciphertext (%d bytes): %x\n", nil, ct)
 	fmt.Printf("decrypted: %s\n", pt)
 }

@@ -9,6 +9,6 @@ import "io"
 import "strings"
 
 func runJSONText() {
-	nil
-	nil
+	src = "{"name":"Nathan","tags":["go","stdlib"],"count":3}"
+	dec = jsontext.NewDecoder(nil)
 }

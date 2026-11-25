@@ -1,1 +1,14 @@
-/* unsupported: Array */
+package main
+
+import "crypto/sha256"
+
+import "fmt"
+
+func runSHA256() {
+	fmt.Printf("Sum256:   %x\n", nil)
+	fmt.Printf("Sum224:   %x\n", nil)
+	h = sha256.New()
+	h.Write(nil)
+	h.Write(nil)
+	fmt.Printf("streamed: %x\n", nil)
+}

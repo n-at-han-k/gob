@@ -11,12 +11,7 @@ import "fmt"
 import "log"
 
 func runECDH() {
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
+	curve = ecdh.P256()
 	fmt.Printf("shared secret (%d B): %x\n", nil, shareA)
-	fmt.Println("both sides agree:", bytes.Equal(shareA, shareB))
+	fmt.Println("both sides agree:", nil)
 }

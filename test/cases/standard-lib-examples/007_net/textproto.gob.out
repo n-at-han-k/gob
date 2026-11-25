@@ -11,9 +11,7 @@ import "net/textproto"
 import "strings"
 
 func runTextproto() {
-	nil
-	nil
-	nil
-	nil
-	fmt.Println("canonical:", textproto.CanonicalMIMEHeaderKey("x-trace"))
+	raw = nil
+	r = textproto.NewReader(nil)
+	fmt.Println("canonical:", nil)
 }

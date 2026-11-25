@@ -16,9 +16,8 @@ func runCGI() {
 	os.Setenv("HTTP_HOST", "example.local")
 	os.Setenv("PATH_INFO", "/hello")
 	os.Setenv("QUERY_STRING", "who=world")
-	nil
-	nil
-	nil
+	rec = httptest.NewRecorder()
+	handler = http.HandlerFunc(nil)
 	handler.ServeHTTP(rec, req)
-	fmt.Print(rec.Body().String())
+	fmt.Print(nil)
 }

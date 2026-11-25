@@ -15,13 +15,13 @@ import "go/types"
 import "log"
 
 func runTypes() {
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	fmt.Println("package:", pkg.Name())
+	src = "package p
+import "fmt"
+func Greet(name string) { fmt.Println("hi", name) }
+var Answer = 21 * 2
+"
+	fset = token.NewFileSet()
+	conf = nil.new(nil)
+	info = nil.new(nil)
+	fmt.Println("package:", nil)
 }

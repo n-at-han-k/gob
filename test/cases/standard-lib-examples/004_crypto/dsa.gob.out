@@ -11,13 +11,8 @@ import "fmt"
 import "log"
 
 func runDSA() {
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
+	priv = nil.new(nil)
+	digest = sha256.Sum256(nil)
+	ok = dsa.Verify(nil, nil, r, s)
 	fmt.Println("signature valid:", ok)
 }

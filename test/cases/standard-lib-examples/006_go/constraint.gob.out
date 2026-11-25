@@ -7,9 +7,7 @@ import "go/build/constraint"
 import "log"
 
 func runConstraint() {
-	nil
-	nil
-	nil
+	line = "//go:build linux && (amd64 || arm64)"
 	fmt.Println("expr:", expr)
-	nil
+	envs = nil.new(nil, nil, nil)
 }

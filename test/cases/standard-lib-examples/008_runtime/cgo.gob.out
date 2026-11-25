@@ -5,12 +5,10 @@ import "fmt"
 import "runtime/cgo"
 
 func runCGO() {
-	nil
-	nil
-	nil
-	nil
+	original = nil.new(nil)
+	h = cgo.NewHandle(original)
+	got = nil
 	fmt.Printf("handle: %d\n", nil)
 	fmt.Printf("value:  %v\n", got)
-	nil
 	fmt.Printf("mutation visible on original: %v\n", nil)
 }

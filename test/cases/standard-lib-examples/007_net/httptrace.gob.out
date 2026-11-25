@@ -9,12 +9,9 @@ import "net/http/httptest"
 import "net/http/httptrace"
 
 func runHTTPTrace() {
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	resp.Body().Close()
-	fmt.Println("status:", resp.Status())
+	srv = httptest.NewServer(nil)
+	trace = nil.new(nil)
+	req = req.WithContext(nil)
+	nil.Close()
+	fmt.Println("status:", nil)
 }

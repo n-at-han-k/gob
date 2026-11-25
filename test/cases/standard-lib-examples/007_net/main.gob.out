@@ -6,13 +6,9 @@ import "os"
 
 import "sort"
 
-nil
+demos = nil
 
 # ()
 
 func main() {
-	nil
-	nil
-	nil
-	nil
 }

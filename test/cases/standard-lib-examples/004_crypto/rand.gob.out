@@ -9,9 +9,7 @@ import "log"
 import "math/big"
 
 func runRand() {
-	nil
-	nil
+	buf = nil
 	fmt.Printf("random bytes: %x\n", buf)
-	nil
 	fmt.Println("random int  :", n)
 }

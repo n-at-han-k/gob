@@ -7,9 +7,8 @@ import "fmt"
 import "os"
 
 func runPEM() {
-	nil
-	pem.Encode(os.Stdout(), block)
-	nil
-	nil
-	fmt.Printf("type=%s bytes=%q leftover=%d\n", got.Type(), got.Bytes(), nil)
+	block = nil.new(nil)
+	pem.Encode(nil, block)
+	encoded = pem.EncodeToMemory(block)
+	fmt.Printf("type=%s bytes=%q leftover=%d\n", nil, nil, nil)
 }

@@ -8,21 +8,8 @@ import "net"
 
 import "net/rpc"
 
-nil
-
-nil
-
 func runRPC() {
-	nil
-	srv.Register(Arith.new())
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
+	srv = rpc.NewServer()
+	srv.Register(nil)
 	fmt.Println("6 * 7 =", result)
 }

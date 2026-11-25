@@ -9,12 +9,7 @@ import "fmt"
 import "log"
 
 func runMLKEM() {
-	nil
-	nil
-	nil
-	nil
-	nil
-	nil
+	ek = dk.EncapsulationKey()
 	fmt.Printf("shared secret (%d B): %x\n", nil, shared1)
-	fmt.Println("both sides agree:", bytes.Equal(shared1, shared2))
+	fmt.Println("both sides agree:", nil)
 }

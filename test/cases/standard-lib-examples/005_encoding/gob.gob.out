@@ -8,14 +8,8 @@ import "fmt"
 
 import "log"
 
-nil
-
 func runGob() {
-	nil
-	nil
-	nil
-	fmt.Printf("encoded %d bytes\n", buf.Len())
-	nil
-	nil
+	enc = gob.NewEncoder(@buf)
+	fmt.Printf("encoded %d bytes\n", nil)
 	fmt.Printf("decoded: %+v\n", back)
 }

@@ -1,1 +1,14 @@
-/* unsupported: Array */
+package main
+
+import "crypto/md5"
+
+import "fmt"
+
+func runMD5() {
+	sum = md5.Sum(nil)
+	fmt.Printf("md5: %x\n", sum)
+	h = md5.New()
+	h.Write(nil)
+	h.Write(nil)
+	fmt.Printf("streamed: %x\n", nil)
+}

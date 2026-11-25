@@ -5,6 +5,6 @@ import "crypto/sha1"
 import "fmt"
 
 func runSHA1() {
-	nil
+	sum = sha1.Sum(nil)
 	fmt.Printf("sha1: %x\n", sum)
 }

@@ -7,10 +7,8 @@ import "go/build"
 import "log"
 
 func runBuild() {
-	nil
-	nil
-	fmt.Println("import path:", pkg.ImportPath())
-	fmt.Println("directory:  ", pkg.Dir())
-	fmt.Println("go files:   ", pkg.GoFiles())
-	fmt.Println("imports:    ", pkg.Imports())
+	fmt.Println("import path:", nil)
+	fmt.Println("directory:  ", nil)
+	fmt.Println("go files:   ", nil)
+	fmt.Println("imports:    ", nil)
 }

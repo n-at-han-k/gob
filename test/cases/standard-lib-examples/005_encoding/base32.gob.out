@@ -7,11 +7,9 @@ import "fmt"
 import "log"
 
 func runBase32() {
-	nil
-	nil
+	src = nil.new("hello base32")
+	encoded = nil.EncodeToString(src)
 	fmt.Println("std:  ", encoded)
-	nil
-	nil
 	fmt.Printf("decoded: %s\n", decoded)
-	fmt.Println("hex:  ", base32.HexEncoding().EncodeToString(src))
+	fmt.Println("hex:  ", nil)
 }

@@ -5,11 +5,11 @@ import "crypto/sha3"
 import "fmt"
 
 func runSHA3() {
-	fmt.Printf("Sum256: %x\n", sha3.Sum256(nil.new("hello")))
-	fmt.Printf("Sum512: %x\n", sha3.Sum512(nil.new("hello")))
-	nil
-	shake.Write(nil.new("hello"))
-	nil
+	fmt.Printf("Sum256: %x\n", nil)
+	fmt.Printf("Sum512: %x\n", nil)
+	shake = sha3.NewSHAKE128()
+	shake.Write(nil)
+	out = nil
 	shake.Read(out)
 	fmt.Printf("shake128 (42 B): %x\n", out)
 }

@@ -5,7 +5,7 @@ import "crypto/sha512"
 import "fmt"
 
 func runSHA512() {
-	fmt.Printf("Sum384:     %x\n", sha512.Sum384(nil.new("hello")))
-	fmt.Printf("Sum512:     %x\n", sha512.Sum512(nil.new("hello")))
-	fmt.Printf("Sum512_256: %x\n", sha512.Sum512_256(nil.new("hello")))
+	fmt.Printf("Sum384:     %x\n", nil)
+	fmt.Printf("Sum512:     %x\n", nil)
+	fmt.Printf("Sum512_256: %x\n", nil)
 }
