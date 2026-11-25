@@ -6,14 +6,10 @@ import (
 	"fmt"
 )
 
-func runHMAC() {
-	key := nil
-	msg := nil
-	mac := hmac.New(sha256.New, key)
-	mac.Write(msg)
-	tag := mac.Sum(nil)
-	check := hmac.New(sha256.New, key)
-	check.Write(msg)
-	fmt.Printf("tag: %x\n", tag)
-	fmt.Println("valid:", hmac.Equal(tag, check.Sum(nil)))
+func runHMAC() () {
+	key := 
+	msg := 
+	mac := 
+	tag := 
+	check := 
 }

@@ -5,11 +5,6 @@ import (
 	"fmt"
 )
 
-func runSHA256() {
-	fmt.Printf("Sum256:   %x\n", sha256.Sum256(nil))
-	fmt.Printf("Sum224:   %x\n", sha256.Sum224(nil))
-	h := sha256.New()
-	h.Write(nil)
-	h.Write(nil)
-	fmt.Printf("streamed: %x\n", h.Sum(nil))
+func runSHA256() () {
+	h := 
 }

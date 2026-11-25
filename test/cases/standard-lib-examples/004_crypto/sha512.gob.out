@@ -6,7 +6,4 @@ import (
 )
 
 func runSHA512() {
-	nil
-	nil
-	nil
 }

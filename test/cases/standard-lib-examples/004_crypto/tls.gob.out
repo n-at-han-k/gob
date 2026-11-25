@@ -5,8 +5,6 @@ import (
 	"fmt"
 )
 
-func runTLS() {
-	cfg := nil
-	fmt.Printf("min version: 0x%04x (TLS 1.2)\n", cfg.MinVersion)
-	fmt.Println("ALPN offers:", cfg.NextProtos)
+func runTLS() () {
+	cfg := 
 }

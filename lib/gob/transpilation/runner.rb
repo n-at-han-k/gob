@@ -167,55 +167,43 @@ module Gob
           case node
           in SyntaxTree::CallNode
             Call(node)
+
           in SyntaxTree::MLHS[parts: parts]
             parts.map { |part| LeftHand(part) }
+
           in SyntaxTree::Int[value: text]
             IntLiteral(text)
-          in SyntaxTree::FloatLiteral[value: text]
+
+          in SyntaxTree::Float[value: text]
             FloatLiteral(text)
+
           in SyntaxTree::Binary[left: left, operator: operator, right: right]
-            Binary(left, operator, right)
-          in SyntaxTree::ARef[ collection: collection, index: SyntaxTree::Args[parts: [index]]]
-            nil
-          in SyntaxTree::VarField[value: value]
-            nil
+            Binary(LeftHand(left), operator, LeftHand(right))
+
+          in SyntaxTree::ARef[collection: collection, index: SyntaxTree::Args[parts: [index]]]
+            SyntaxTree::Go::IndexExpr.new(
+              x: LeftHand(collection),
+              index: LeftHand(index)
+            )
+
+          in SyntaxTree::VarField[value: value] | SyntaxTree::VCall[value: value]
+            LeftHand(value)
+
           in SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
-            nil
+            StringLiteral(text)
+
           in SyntaxTree::StringLiteral[parts: []]
-            nil
+            StringLiteral("")
+
           in SyntaxTree::XStringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
-            nil
+            RawStringLiteral(text)
+
           else
-            nil
+            Variable(node)
           end
         end
 
-        def RightHand(node)
-          case node
-          in SyntaxTree::CallNode
-            Call(node)
-          in SyntaxTree::MRHS[parts: parts]
-            parts.map { |part| RightHand(part) }
-          in SyntaxTree::Int[value: text]
-            IntLiteral(text)
-          in SyntaxTree::FloatLiteral[value: text]
-            FloatLiteral(text)
-          in SyntaxTree::Binary[left: left, operator: operator, right: right]
-            Binary(left, operator, right)
-          in SyntaxTree::ARef[ collection: collection, index: SyntaxTree::Args[parts: [index]]]
-            nil
-          in SyntaxTree::VarField[value: value]
-            nil
-          in SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
-            nil
-          in SyntaxTree::StringLiteral[parts: []]
-            nil
-          in SyntaxTree::XStringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
-            nil
-          else
-            nil
-          end
-        end
+        def RightHand(node) = LeftHand(node)
 
         def Command(name, args)
           case [name, args]
@@ -290,10 +278,10 @@ module Gob
 
           in SyntaxTree::Assign[target: target, value: value]
             SyntaxTree::Go::AssignStmt.new(
-              lhs:     LeftHand(target),
+              lhs:     Array(LeftHand(target)),
               tok_pos: nil,
               tok:     ":=",
-              rhs:     RightHand(value)
+              rhs:     Array(RightHand(value))
             )
 
           in SyntaxTree::MAssign[target: target, value: value]

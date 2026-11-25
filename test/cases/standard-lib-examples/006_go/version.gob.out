@@ -5,8 +5,6 @@ import (
 	"go/version"
 )
 
-func runVersion() {
-	vs := nil
-	fmt.Println("go1.21 <  go1.22:", version.Compare("go1.21", "go1.22") < 0)
-	fmt.Println("go1.22 >= go1.22rc2:", version.Compare("go1.22", "go1.22rc2") >= 0)
+func runVersion() () {
+	vs := 
 }

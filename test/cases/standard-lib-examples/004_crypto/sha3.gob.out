@@ -5,12 +5,7 @@ import (
 	"fmt"
 )
 
-func runSHA3() {
-	fmt.Printf("Sum256: %x\n", sha3.Sum256(nil))
-	fmt.Printf("Sum512: %x\n", sha3.Sum512(nil))
-	shake := sha3.NewSHAKE128()
-	shake.Write(nil)
-	out := make(nil, 42)
-	shake.Read(out)
-	fmt.Printf("shake128 (42 B): %x\n", out)
+func runSHA3() () {
+	shake := 
+	out := 
 }

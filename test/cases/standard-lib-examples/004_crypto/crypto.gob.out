@@ -9,6 +9,6 @@ import (
 	"fmt"
 )
 
-func runCrypto() {
-	hashes := nil
+func runCrypto() () {
+	hashes := 
 }
