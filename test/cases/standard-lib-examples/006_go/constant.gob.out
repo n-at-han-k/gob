@@ -6,10 +6,10 @@ import (
 	"go/token"
 )
 
-func runConstant() () {
+func runConstant() {
 	big := constant.Shift(constant.MakeInt64(1), token.SHL, 100)
-	fmt.Println("1 << 100 =", #<SyntaxTree::Ident:0x00007d6a50021fb0>)
+	fmt.Println("1 << 100 =", big)
 	sum := constant.BinaryOp(constant.MakeFloat64(1.5), token.ADD, constant.MakeInt64(2))
-	fmt.Println("1.5 + 2 =", #<SyntaxTree::Ident:0x00007d6a500201b0>, "(kind:", #<SyntaxTree::Ident:0x00007d6a4a6efcd0>.Kind(), ")")
-	fmt.Println("1<<100 > 1e30?", constant.Compare(#<SyntaxTree::Ident:0x00007d6a4a6eebc8>, token.GTR, constant.MakeFloat64(1e30)))
+	fmt.Println("1.5 + 2 =", sum, "(kind:", sum.Kind(), ")")
+	fmt.Println("1<<100 > 1e30?", constant.Compare(big, token.GTR, constant.MakeFloat64(1e30)))
 }

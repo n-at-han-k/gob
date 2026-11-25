@@ -7,13 +7,13 @@ import (
 	"net/url"
 )
 
-func runCookieJar() () {
-	jar, _ := cookiejar.New(#<SyntaxTree::Kw:0x00007d6a9e45d7c0>)
+func runCookieJar() {
+	jar, _ := cookiejar.New(nil)
 	u, _ := url.Parse("https://example.com/")
-	#<SyntaxTree::Ident:0x00007d6a9e465e48>.SetCookies(#<SyntaxTree::Ident:0x00007d6a9e465bf0>, #<SyntaxTree::Const:0x00007d6a9e4659c0>[#<SyntaxTree::IVar:0x00007d6a9e465858>.Cookie].new(nil, nil))
-	fmt.Println("cookies for sibling site:", #<SyntaxTree::Ident:0x00007d6a9e461938>.Cookies(mustURL("https://other.example.org/")))
+	jar.SetCookies(u, []*http.Cookie{Name: "session", Value: "abc123", Name: "theme", Value: "dark"})
+	fmt.Println("cookies for sibling site:", jar.Cookies(mustURL("https://other.example.org/")))
 }
 
-func mustURL(s string) (*url.URL) {
-	u, err := url.Parse(#<SyntaxTree::Ident:0x00007d6a9e460088>)
+func mustURL(s string) *url.URL {
+	u, err := url.Parse(s)
 }

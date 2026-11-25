@@ -8,12 +8,12 @@ import (
 	"log"
 )
 
-func runAST() () {
+func runAST() {
 	src := `package p
 // Add returns a+b.
 func Add(a, b int) int { return a + b }
 var Answer = 42
 `
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(#<SyntaxTree::Ident:0x00007d6a4839bc98>, "example.go", #<SyntaxTree::Ident:0x00007d6a4839b748>, parser.ParseComments)
+	file, err := parser.ParseFile(fset, "example.go", src, parser.ParseComments)
 }

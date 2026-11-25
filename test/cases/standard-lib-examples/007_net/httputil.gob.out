@@ -8,11 +8,11 @@ import (
 	"net/url"
 )
 
-func runHTTPUtil() () {
+func runHTTPUtil() {
 	upstream := httptest.NewServer(http.HandlerFunc(nil))
-	target, _ := url.Parse(#<SyntaxTree::Ident:0x00007d6a9e227398>.URL)
-	proxy := httptest.NewServer(httputil.NewSingleHostReverseProxy(#<SyntaxTree::Ident:0x00007d6a9e221c90>))
-	resp, _ := http.Get(#<SyntaxTree::Ident:0x00007d6a9e15c120>.URL + "/echo")
-	dump, _ := httputil.DumpResponse(#<SyntaxTree::Ident:0x00007d6a9e1572b0>, #<SyntaxTree::Kw:0x00007d6a9df29bf0>)
-	fmt.Print(string(#<SyntaxTree::Ident:0x00007d6a9e152d50>))
+	target, _ := url.Parse(upstream.URL)
+	proxy := httptest.NewServer(httputil.NewSingleHostReverseProxy(target))
+	resp, _ := http.Get(proxy.URL + "/echo")
+	dump, _ := httputil.DumpResponse(resp, true)
+	fmt.Print(string(dump))
 }

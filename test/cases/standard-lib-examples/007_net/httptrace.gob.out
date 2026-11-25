@@ -7,12 +7,12 @@ import (
 	"net/http/httptrace"
 )
 
-func runHTTPTrace() () {
+func runHTTPTrace() {
 	srv := httptest.NewServer(http.HandlerFunc(nil))
-	trace := #<SyntaxTree::IVar:0x00007d6a4a62efd0>.ClientTrace.new(nil)
-	req, _ := http.NewRequest("GET", #<SyntaxTree::Ident:0x00007d6a4a62a1d8>.URL, #<SyntaxTree::Kw:0x00007d6a483e9150>)
-	req := #<SyntaxTree::Ident:0x00007d6a4a629a80>.WithContext(httptrace.WithClientTrace(#<SyntaxTree::Ident:0x00007d6a4a6295a8>.Context(), #<SyntaxTree::Ident:0x00007d6a4a6290a8>))
-	resp, _ := http.DefaultTransport.RoundTrip(#<SyntaxTree::Ident:0x00007d6a4a6284c8>)
-	#<SyntaxTree::Ident:0x00007d6a4a6280b8>.Body.Close()
-	fmt.Println("status:", #<SyntaxTree::Ident:0x00007d6a4a6275f0>.Status)
+	trace := *httptrace.ClientTrace.new(nil)
+	req, _ := http.NewRequest("GET", srv.URL, nil)
+	req := req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
+	resp, _ := http.DefaultTransport.RoundTrip(req)
+	resp.Body.Close()
+	fmt.Println("status:", resp.Status)
 }

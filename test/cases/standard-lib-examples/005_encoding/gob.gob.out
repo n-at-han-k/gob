@@ -7,8 +7,8 @@ import (
 	"log"
 )
 
-func runGob() () {
-	enc := gob.NewEncoder(#<SyntaxTree::IVar:0x00007d6a4a6efd48>)
+func runGob() {
+	enc := gob.NewEncoder(&buf)
 	fmt.Printf("encoded %d bytes\n", buf.Len())
 	fmt.Printf("decoded: %+v\n", back)
 }

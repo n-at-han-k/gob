@@ -7,9 +7,9 @@ import (
 	"math/big"
 )
 
-func runRand() () {
-	buf := make(#<SyntaxTree::Const:0x00007d6a483918b0>[byte], 16)
-	fmt.Printf("random bytes: %x\n", #<SyntaxTree::Ident:0x00007d6a9e29da70>)
+func runRand() {
+	buf := make(Array[byte], 16)
+	fmt.Printf("random bytes: %x\n", buf)
 	n, _ := rand.Int(rand.Reader, big.NewInt(1_000_000))
-	fmt.Println("random int  :", #<SyntaxTree::Ident:0x00007d6a9e299ec0>)
+	fmt.Println("random int  :", n)
 }

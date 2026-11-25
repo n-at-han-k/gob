@@ -8,11 +8,11 @@ import (
 	"strings"
 )
 
-func runCSV() () {
+func runCSV() {
 	w := csv.NewWriter(os.Stdout)
-	#<SyntaxTree::Ident:0x00007d6a9e44b0c0>.WriteAll(#<SyntaxTree::Const:0x00007d6a9e44acd8>[#<SyntaxTree::Const:0x00007d6a9e44aaf8>[string]].new(nil, nil, nil))
-	#<SyntaxTree::Ident:0x00007d6a9e444900>.Flush()
+	w.WriteAll([]Array[string]{nil, nil, nil})
+	w.Flush()
 	input := "id,label\n1,apple\n2,orange\n3,pear\n"
-	r := csv.NewReader(strings.NewReader(#<SyntaxTree::Ident:0x00007d6a9e442b28>))
-	records, err := #<SyntaxTree::Ident:0x00007d6a9e441ac0>.ReadAll()
+	r := csv.NewReader(strings.NewReader(input))
+	records, err := r.ReadAll()
 }

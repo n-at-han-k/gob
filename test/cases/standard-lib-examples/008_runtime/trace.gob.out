@@ -9,11 +9,11 @@ import (
 	"time"
 )
 
-func runTrace() () {
+func runTrace() {
 	f, _ := os.CreateTemp("", "trace-*.out")
 	wg.Wait()
 	trace.Stop()
-	info, _ := #<SyntaxTree::Ident:0x00007d6a50571178>.Stat()
-	fmt.Printf("wrote trace: %s (%d bytes)\n", #<SyntaxTree::Ident:0x00007d6a50570480>.Name(), #<SyntaxTree::Ident:0x00007d6a4a6cfc50>.Size())
-	fmt.Println("view with: go tool trace", #<SyntaxTree::Ident:0x00007d6a4a6cf110>.Name())
+	info, _ := f.Stat()
+	fmt.Printf("wrote trace: %s (%d bytes)\n", f.Name(), info.Size())
+	fmt.Println("view with: go tool trace", f.Name())
 }

@@ -6,16 +6,16 @@ import (
 	"net/url"
 )
 
-func runURL() () {
+func runURL() {
 	u, err := url.Parse("https://user:pw@example.com:8443/api/v1/items?tag=go&tag=stdlib&limit=10#top")
-	fmt.Println("scheme:  ", #<SyntaxTree::Ident:0x00007d6a483ce418>.Scheme)
-	fmt.Println("host:    ", #<SyntaxTree::Ident:0x00007d6a483cda18>.Host)
-	fmt.Println("user:    ", #<SyntaxTree::Ident:0x00007d6a483cd018>.User)
-	fmt.Println("path:    ", #<SyntaxTree::Ident:0x00007d6a483cc618>.Path)
-	fmt.Println("fragment:", #<SyntaxTree::Ident:0x00007d6a483cbc40>.Fragment)
-	q := #<SyntaxTree::Ident:0x00007d6a483cb6a0>.Query()
-	fmt.Println("tags:    ", #<SyntaxTree::Ident:0x00007d6a483cacc8>["tag"])
-	built := #<SyntaxTree::IVar:0x00007d6a483ca368>.URL.new(nil)
-	 := url.Values.new(nil).Encode()
-	fmt.Println("built:   ", #<SyntaxTree::Ident:0x00007d6a483c76e0>)
+	fmt.Println("scheme:  ", u.Scheme)
+	fmt.Println("host:    ", u.Host)
+	fmt.Println("user:    ", u.User)
+	fmt.Println("path:    ", u.Path)
+	fmt.Println("fragment:", u.Fragment)
+	q := u.Query()
+	fmt.Println("tags:    ", q["tag"])
+	built := *url.URL.new(nil)
+	built.RawQuery := url.Values.new(nil).Encode()
+	fmt.Println("built:   ", built)
 }

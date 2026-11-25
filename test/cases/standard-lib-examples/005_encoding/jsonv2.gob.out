@@ -6,9 +6,9 @@ import (
 	"log"
 )
 
-func runJSONv2() () {
+func runJSONv2() {
 	a := v2article.new(nil)
-	data, err := json.Marshal(#<SyntaxTree::Ident:0x00007d6a500262b8>)
-	fmt.Println("marshalled:", string(#<SyntaxTree::Ident:0x00007d6a50024b98>))
+	data, err := json.Marshal(a)
+	fmt.Println("marshalled:", string(data))
 	fmt.Printf("parsed: %+v\n", back)
 }

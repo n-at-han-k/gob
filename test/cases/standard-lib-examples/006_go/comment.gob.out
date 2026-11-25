@@ -5,7 +5,7 @@ import (
 	"go/doc/comment"
 )
 
-func runComment() () {
+func runComment() {
 	src := `Package widget draws widgets.
 
 # Overview
@@ -19,6 +19,6 @@ See [example.com] for details.
 
 [example.com]: https://example.com
 `
-	doc := p.Parse(#<SyntaxTree::Ident:0x00007d6a9c6f75c8>)
-	fmt.Print(string(pr.Markdown(#<SyntaxTree::Ident:0x00007d6a9c6f2370>)))
+	doc := p.Parse(src)
+	fmt.Print(string(pr.Markdown(doc)))
 }

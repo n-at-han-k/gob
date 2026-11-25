@@ -5,12 +5,12 @@ import (
 	"net"
 )
 
-func runNet() () {
+func runNet() {
 	ip := net.ParseIP("192.168.1.42")
-	fmt.Println("ip:", #<SyntaxTree::Ident:0x00007d6a4a6e5730>, "loopback:", #<SyntaxTree::Ident:0x00007d6a4a6e5280>.IsLoopback(), "private:", #<SyntaxTree::Ident:0x00007d6a4a6e4b50>.IsPrivate())
+	fmt.Println("ip:", ip, "loopback:", ip.IsLoopback(), "private:", ip.IsPrivate())
 	addr, network, _ := net.ParseCIDR("10.0.0.5/24")
-	fmt.Println("addr:", #<SyntaxTree::Ident:0x00007d6a4a6e3188>, "network:", #<SyntaxTree::Ident:0x00007d6a4a6e2cd8>)
+	fmt.Println("addr:", addr, "network:", network)
 	host, port, _ := net.SplitHostPort("example.com:8080")
-	fmt.Println("host:", #<SyntaxTree::Ident:0x00007d6a4a6e1798>, "port:", #<SyntaxTree::Ident:0x00007d6a4a6e12c0>)
+	fmt.Println("host:", host, "port:", port)
 	ifs, _ := net.Interfaces()
 }

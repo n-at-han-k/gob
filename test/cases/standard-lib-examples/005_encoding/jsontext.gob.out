@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func runJSONText() () {
+func runJSONText() {
 	src := `{"name":"Nathan","tags":["go","stdlib"],"count":3}`
-	dec := jsontext.NewDecoder(strings.NewReader(#<SyntaxTree::Ident:0x00007d6a9e3de150>))
+	dec := jsontext.NewDecoder(strings.NewReader(src))
 }

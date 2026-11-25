@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
-func runMail() () {
+func runMail() {
 	raw := "From: Alice <alice@example.com>\r\n" + "To: Bob <bob@example.org>, carol@example.net\r\n" + "Subject: hi\r\n" + "Date: Mon, 01 Jan 2024 09:00:00 +0000\r\n" + "\r\n" + "hello there\r\n"
-	msg, err := mail.ReadMessage(strings.NewReader(#<SyntaxTree::Ident:0x00007d6a4a6e5cd0>))
-	from, _ := mail.ParseAddress(#<SyntaxTree::Ident:0x00007d6a4a6e45b0>.Header.Get("From"))
-	to, _ := mail.ParseAddressList(#<SyntaxTree::Ident:0x00007d6a4a6e3548>.Header.Get("To"))
-	fmt.Println("from:   ", #<SyntaxTree::Ident:0x00007d6a4a6e2468>)
-	fmt.Println("to:     ", #<SyntaxTree::Ident:0x00007d6a4a6e1ba8>)
-	fmt.Println("subject:", #<SyntaxTree::Ident:0x00007d6a4a6e12e8>.Header.Get("Subject"))
-	body, _ := io.ReadAll(#<SyntaxTree::Ident:0x00007d6a4a6e0370>.Body)
-	fmt.Print("body:   ", string(#<SyntaxTree::Ident:0x00007d6a4a6cf728>))
+	msg, err := mail.ReadMessage(strings.NewReader(raw))
+	from, _ := mail.ParseAddress(msg.Header.Get("From"))
+	to, _ := mail.ParseAddressList(msg.Header.Get("To"))
+	fmt.Println("from:   ", from)
+	fmt.Println("to:     ", to)
+	fmt.Println("subject:", msg.Header.Get("Subject"))
+	body, _ := io.ReadAll(msg.Body)
+	fmt.Print("body:   ", string(body))
 }

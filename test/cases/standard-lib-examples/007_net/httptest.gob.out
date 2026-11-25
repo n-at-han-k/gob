@@ -6,13 +6,13 @@ import (
 	"net/http/httptest"
 )
 
-func runHTTPTest() () {
+func runHTTPTest() {
 	handler := http.HandlerFunc(nil)
-	req := httptest.NewRequest(http.MethodGet, "/kettle", #<SyntaxTree::Kw:0x00007d6a4a6b6188>)
+	req := httptest.NewRequest(http.MethodGet, "/kettle", nil)
 	rec := httptest.NewRecorder()
-	#<SyntaxTree::Ident:0x00007d6a4a6a60d0>.ServeHTTP(#<SyntaxTree::Ident:0x00007d6a4a6a5ea0>, #<SyntaxTree::Ident:0x00007d6a4a6a5c70>)
-	resp := #<SyntaxTree::Ident:0x00007d6a4a6a57e8>.Result()
-	fmt.Println("status:", #<SyntaxTree::Ident:0x00007d6a4a6a4e10>.Status)
-	fmt.Println("header:", #<SyntaxTree::Ident:0x00007d6a4a6a4438>.Header.Get("X-Test"))
-	fmt.Print("body:  ", #<SyntaxTree::Ident:0x00007d6a4a6a3498>.Body.String())
+	handler.ServeHTTP(rec, req)
+	resp := rec.Result()
+	fmt.Println("status:", resp.Status)
+	fmt.Println("header:", resp.Header.Get("X-Test"))
+	fmt.Print("body:  ", rec.Body.String())
 }

@@ -6,9 +6,9 @@ import (
 	"go/token"
 )
 
-func runScanner() () {
-	src := #<SyntaxTree::Const:0x00007d6a505485e8>[byte].new(`x := 1 + 2 // trailing comment`)
+func runScanner() {
+	src := []byte{`x := 1 + 2 // trailing comment`}
 	fset := token.NewFileSet()
-	file := #<SyntaxTree::Ident:0x00007d6a505464c8>.AddFile("snippet.go", #<SyntaxTree::Ident:0x00007d6a50545de8>.Base(), len(#<SyntaxTree::Ident:0x00007d6a505458e8>))
-	s.Init(#<SyntaxTree::Ident:0x00007d6a50544600>, #<SyntaxTree::Ident:0x00007d6a505443d0>, #<SyntaxTree::Kw:0x00007d6a50552048>, scanner.ScanComments)
+	file := fset.AddFile("snippet.go", fset.Base(), len(src))
+	s.Init(file, src, nil, scanner.ScanComments)
 }

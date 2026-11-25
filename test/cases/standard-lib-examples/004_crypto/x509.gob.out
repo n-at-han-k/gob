@@ -12,13 +12,13 @@ import (
 	"time"
 )
 
-func runX509() () {
+func runX509() {
 	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	tmpl := #<SyntaxTree::IVar:0x00007d6a4a6a1440>.Certificate.new(nil)
-	der, err := x509.CreateCertificate(rand.Reader, #<SyntaxTree::Ident:0x00007d6a4839cf08>, #<SyntaxTree::Ident:0x00007d6a4839cd50>, #<SyntaxTree::IVar:0x00007d6a4839cb98>.PublicKey, #<SyntaxTree::Ident:0x00007d6a4839c8c8>)
-	cert, _ := x509.ParseCertificate(#<SyntaxTree::Ident:0x00007d6a4839b360>)
-	fmt.Println("subject:  ", #<SyntaxTree::Ident:0x00007d6a4839a910>.Subject)
-	fmt.Println("issuer:   ", #<SyntaxTree::Ident:0x00007d6a48399f10>.Issuer)
-	fmt.Println("not after:", #<SyntaxTree::Ident:0x00007d6a483994e8>.NotAfter.Format(time.RFC3339))
-	fmt.Println("is CA:    ", #<SyntaxTree::Ident:0x00007d6a48398570>.IsCA)
+	tmpl := *x509.Certificate.new(nil)
+	der, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, *priv.PublicKey, priv)
+	cert, _ := x509.ParseCertificate(der)
+	fmt.Println("subject:  ", cert.Subject)
+	fmt.Println("issuer:   ", cert.Issuer)
+	fmt.Println("not after:", cert.NotAfter.Format(time.RFC3339))
+	fmt.Println("is CA:    ", cert.IsCA)
 }

@@ -6,14 +6,14 @@ import (
 	"fmt"
 )
 
-func runHMAC() () {
-	key := #<SyntaxTree::Const:0x00007d6a9e4491a8>[byte].new("shared secret")
-	msg := #<SyntaxTree::Const:0x00007d6a9e4485a0>[byte].new("transfer $100")
-	mac := hmac.New(sha256.New, #<SyntaxTree::Ident:0x00007d6a9e4473f8>)
-	#<SyntaxTree::Ident:0x00007d6a9e447100>.Write(#<SyntaxTree::Ident:0x00007d6a9e446ea8>)
-	tag := #<SyntaxTree::Ident:0x00007d6a9e4469d0>.Sum(#<SyntaxTree::Kw:0x00007d6a9e43f298>)
-	check := hmac.New(sha256.New, #<SyntaxTree::Ident:0x00007d6a9e445cd8>)
-	#<SyntaxTree::Ident:0x00007d6a9e4459e0>.Write(#<SyntaxTree::Ident:0x00007d6a9e4457b0>)
-	fmt.Printf("tag: %x\n", #<SyntaxTree::Ident:0x00007d6a9e444e50>)
-	fmt.Println("valid:", hmac.Equal(#<SyntaxTree::Ident:0x00007d6a9e444338>, #<SyntaxTree::Ident:0x00007d6a9e444108>.Sum(#<SyntaxTree::Kw:0x00007d6a9e43d448>)))
+func runHMAC() {
+	key := []byte("shared secret")
+	msg := []byte("transfer $100")
+	mac := hmac.New(sha256.New, key)
+	mac.Write(msg)
+	tag := mac.Sum(nil)
+	check := hmac.New(sha256.New, key)
+	check.Write(msg)
+	fmt.Printf("tag: %x\n", tag)
+	fmt.Println("valid:", hmac.Equal(tag, check.Sum(nil)))
 }

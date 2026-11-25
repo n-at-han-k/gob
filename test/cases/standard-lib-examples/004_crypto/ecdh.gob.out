@@ -8,12 +8,12 @@ import (
 	"log"
 )
 
-func runECDH() () {
+func runECDH() {
 	curve := ecdh.P256()
-	alice, err := #<SyntaxTree::Ident:0x00007d6a4a62a250>.GenerateKey(rand.Reader)
-	bob, _ := #<SyntaxTree::Ident:0x00007d6a4a628bf8>.GenerateKey(rand.Reader)
-	shareA, _ := #<SyntaxTree::Ident:0x00007d6a4a6280b8>.ECDH(#<SyntaxTree::Ident:0x00007d6a4a627e60>.PublicKey())
-	shareB, _ := #<SyntaxTree::Ident:0x00007d6a4a627488>.ECDH(#<SyntaxTree::Ident:0x00007d6a4a627258>.PublicKey())
-	fmt.Printf("shared secret (%d B): %x\n", len(#<SyntaxTree::Ident:0x00007d6a4a6264c0>), #<SyntaxTree::Ident:0x00007d6a4a626128>)
-	fmt.Println("both sides agree:", bytes.Equal(#<SyntaxTree::Ident:0x00007d6a4a6256b0>, #<SyntaxTree::Ident:0x00007d6a4a625480>))
+	alice, err := curve.GenerateKey(rand.Reader)
+	bob, _ := curve.GenerateKey(rand.Reader)
+	shareA, _ := alice.ECDH(bob.PublicKey())
+	shareB, _ := bob.ECDH(alice.PublicKey())
+	fmt.Printf("shared secret (%d B): %x\n", len(shareA), shareA)
+	fmt.Println("both sides agree:", bytes.Equal(shareA, shareB))
 }

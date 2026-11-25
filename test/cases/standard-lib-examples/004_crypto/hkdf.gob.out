@@ -7,10 +7,10 @@ import (
 	"log"
 )
 
-func runHKDF() () {
-	secret := #<SyntaxTree::Const:0x00007d6a483df830>[byte].new("some shared secret bytes")
-	salt := #<SyntaxTree::Const:0x00007d6a483dec78>[byte].new("optional salt")
-	info := #<SyntaxTree::Const:0x00007d6a483de070>[byte].new("app: session key v1")
-	key, err := hkdf.Key(sha256.New, #<SyntaxTree::Ident:0x00007d6a483dcd60>, #<SyntaxTree::Ident:0x00007d6a483dcbd0>, string(#<SyntaxTree::Ident:0x00007d6a483dc950>), 32)
-	fmt.Printf("derived 32-byte key: %x\n", #<SyntaxTree::Ident:0x00007d6a483db0c8>)
+func runHKDF() {
+	secret := []byte("some shared secret bytes")
+	salt := []byte("optional salt")
+	info := []byte("app: session key v1")
+	key, err := hkdf.Key(sha256.New, secret, salt, string(info), 32)
+	fmt.Printf("derived 32-byte key: %x\n", key)
 }

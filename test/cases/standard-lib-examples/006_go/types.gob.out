@@ -10,16 +10,16 @@ import (
 	"log"
 )
 
-func runTypes() () {
+func runTypes() {
 	src := `package p
 import "fmt"
 func Greet(name string) { fmt.Println("hi", name) }
 var Answer = 21 * 2
 `
 	fset := token.NewFileSet()
-	file, err := parser.ParseFile(#<SyntaxTree::Ident:0x00007d6a9e469160>, "p.go", #<SyntaxTree::Ident:0x00007d6a9e468c10>, 0)
+	file, err := parser.ParseFile(fset, "p.go", src, 0)
 	conf := types.Config.new(nil)
-	info := #<SyntaxTree::IVar:0x00007d6a9e466d98>.Info.new(nil)
-	pkg, err := #<SyntaxTree::Ident:0x00007d6a9e464ca0>.Check("p", #<SyntaxTree::Ident:0x00007d6a9e464570>, #<SyntaxTree::Const:0x00007d6a9e4643e0>[#<SyntaxTree::IVar:0x00007d6a9e464278>.File].new(#<SyntaxTree::Ident:0x00007d6a9e463d78>), #<SyntaxTree::Ident:0x00007d6a9e4639e0>)
-	fmt.Println("package:", #<SyntaxTree::Ident:0x00007d6a9e4624c8>.Name())
+	info := *types.Info.new(nil)
+	pkg, err := conf.Check("p", fset, []*ast.File{file}, info)
+	fmt.Println("package:", pkg.Name())
 }

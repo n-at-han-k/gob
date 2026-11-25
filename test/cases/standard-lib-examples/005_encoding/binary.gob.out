@@ -7,14 +7,14 @@ import (
 	"log"
 )
 
-func runBinary() () {
-	binary.Write(#<SyntaxTree::IVar:0x00007d6a9df1be60>, binary.BigEndian, uint32(0xdeadbeef))
-	binary.Write(#<SyntaxTree::IVar:0x00007d6a9df1aa10>, binary.LittleEndian, uint16(0x1234))
+func runBinary() {
+	binary.Write(&buf, binary.BigEndian, uint32(0xdeadbeef))
+	binary.Write(&buf, binary.LittleEndian, uint16(0x1234))
 	fmt.Printf("bytes: %x\n", buf.Bytes())
-	binary.Read(#<SyntaxTree::IVar:0x00007d6a9df14750>, binary.LittleEndian, #<SyntaxTree::IVar:0x00007d6a9df13e18>)
+	binary.Read(&buf, binary.LittleEndian, &b)
 	fmt.Printf("a=%#x b=%#x\n", a, b)
 	n := binary.PutVarint(nil, nil)
-	fmt.Printf("varint(-12345) = %x (%d bytes)\n", vbuf[nil], #<SyntaxTree::Ident:0x00007d6a9e46f498>)
+	fmt.Printf("varint(-12345) = %x (%d bytes)\n", vbuf[nil], n)
 	v, _ := binary.Varint(vbuf[nil])
-	fmt.Println("decoded:", #<SyntaxTree::Ident:0x00007d6a9e46deb8>)
+	fmt.Println("decoded:", v)
 }

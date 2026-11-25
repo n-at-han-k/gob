@@ -5,10 +5,10 @@ import (
 	"go/token"
 )
 
-func runToken() () {
+func runToken() {
 	fset := token.NewFileSet()
-	f := #<SyntaxTree::Ident:0x00007d6a4a65d560>.AddFile("demo.go", #<SyntaxTree::Ident:0x00007d6a4a65cf70>.Base(), 100)
-	#<SyntaxTree::Ident:0x00007d6a4a65c8b8>.SetLinesForContent(#<SyntaxTree::Const:0x00007d6a4a65c6b0>[byte].new("line one\nline two\nline three"))
-	pos := #<SyntaxTree::Ident:0x00007d6a4a65b9b8>.Pos(10)
-	fmt.Println("offset 10 is at", #<SyntaxTree::Ident:0x00007d6a4a65ae28>.Position(#<SyntaxTree::Ident:0x00007d6a4a65abf8>))
+	f := fset.AddFile("demo.go", fset.Base(), 100)
+	f.SetLinesForContent([]byte("line one\nline two\nline three"))
+	pos := f.Pos(10)
+	fmt.Println("offset 10 is at", fset.Position(pos))
 }

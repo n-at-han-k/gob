@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 )
 
-func runHTTP() () {
+func runHTTP() {
 	srv := httptest.NewServer(http.HandlerFunc(nil))
-	resp, err := http.Get(#<SyntaxTree::Ident:0x00007d6a50579350>.URL + "/greet")
-	body, _ := io.ReadAll(#<SyntaxTree::Ident:0x00007d6a50575020>.Body)
-	fmt.Println("status:", #<SyntaxTree::Ident:0x00007d6a50574210>.Status)
-	fmt.Print("body:  ", string(#<SyntaxTree::Ident:0x00007d6a50573608>))
+	resp, err := http.Get(srv.URL + "/greet")
+	body, _ := io.ReadAll(resp.Body)
+	fmt.Println("status:", resp.Status)
+	fmt.Print("body:  ", string(body))
 }

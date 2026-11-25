@@ -7,14 +7,14 @@ import (
 	"strings"
 )
 
-func runJSON() () {
+func runJSON() {
 	a := article.new(nil)
-	data, err := json.Marshal(#<SyntaxTree::Ident:0x00007d6a9df1cc20>)
-	fmt.Println("compact:", string(#<SyntaxTree::Ident:0x00007d6a9df1a060>))
-	pretty, _ := json.MarshalIndent(#<SyntaxTree::Ident:0x00007d6a9df18e90>, "", "  ")
-	fmt.Println(string(#<SyntaxTree::Ident:0x00007d6a9df179f0>))
-	json.Unmarshal(#<SyntaxTree::Ident:0x00007d6a9df16050>, #<SyntaxTree::IVar:0x00007d6a9df15df8>)
+	data, err := json.Marshal(a)
+	fmt.Println("compact:", string(data))
+	pretty, _ := json.MarshalIndent(a, "", "  ")
+	fmt.Println(string(pretty))
+	json.Unmarshal(data, &back)
 	fmt.Printf("parsed: %+v\n", back)
 	stream := `{"n":1}{"n":2}{"n":3}`
-	dec := json.NewDecoder(strings.NewReader(#<SyntaxTree::Ident:0x00007d6a9df138c8>))
+	dec := json.NewDecoder(strings.NewReader(stream))
 }

@@ -7,11 +7,11 @@ import (
 	"log"
 )
 
-func runMLKEM() () {
+func runMLKEM() {
 	dk, err := mlkem.GenerateKey768()
-	ek := #<SyntaxTree::Ident:0x00007d6a5002bf88>.EncapsulationKey()
-	shared1, ct := #<SyntaxTree::Ident:0x00007d6a5002b7e0>.Encapsulate()
-	shared2, err := #<SyntaxTree::Ident:0x00007d6a5002afe8>.Decapsulate(#<SyntaxTree::Ident:0x00007d6a5002ad90>)
-	fmt.Printf("shared secret (%d B): %x\n", len(#<SyntaxTree::Ident:0x00007d6a500297b0>), #<SyntaxTree::Ident:0x00007d6a50029418>)
-	fmt.Println("both sides agree:", bytes.Equal(#<SyntaxTree::Ident:0x00007d6a500289a0>, #<SyntaxTree::Ident:0x00007d6a50028770>))
+	ek := dk.EncapsulationKey()
+	shared1, ct := ek.Encapsulate()
+	shared2, err := dk.Decapsulate(ct)
+	fmt.Printf("shared secret (%d B): %x\n", len(shared1), shared1)
+	fmt.Println("both sides agree:", bytes.Equal(shared1, shared2))
 }

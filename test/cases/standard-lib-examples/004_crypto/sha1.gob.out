@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func runSHA1() () {
-	sum := sha1.Sum(#<SyntaxTree::Const:0x00007d6a483c2730>[byte].new("hello"))
-	fmt.Printf("sha1: %x\n", #<SyntaxTree::Ident:0x00007d6a483c1498>)
+func runSHA1() {
+	sum := sha1.Sum([]byte("hello"))
+	fmt.Printf("sha1: %x\n", sum)
 }

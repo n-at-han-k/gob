@@ -6,9 +6,9 @@ import (
 	"log"
 )
 
-func runASN1() () {
+func runASN1() {
 	p := person.new(nil)
-	der, err := asn1.Marshal(#<SyntaxTree::Ident:0x00007d6a4a6c70f0>)
-	fmt.Printf("DER (%d bytes): %x\n", len(#<SyntaxTree::Ident:0x00007d6a4a6c5a98>), #<SyntaxTree::Ident:0x00007d6a4a6c56d8>)
+	der, err := asn1.Marshal(p)
+	fmt.Printf("DER (%d bytes): %x\n", len(der), der)
 	fmt.Printf("parsed: %+v\n", back)
 }

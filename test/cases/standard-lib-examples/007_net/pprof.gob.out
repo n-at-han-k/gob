@@ -8,14 +8,14 @@ import (
 	"net/http/pprof"
 )
 
-# ()
+// ()
 
-func runPProf() () {
+func runPProf() {
 	srv := httptest.NewServer(http.DefaultServeMux)
-	resp, _ := http.Get(#<SyntaxTree::Ident:0x00007d6a5058d620>.URL + "/debug/pprof/")
-	body, _ := io.ReadAll(#<SyntaxTree::Ident:0x00007d6a5058c1d0>.Body)
-	#<SyntaxTree::Ident:0x00007d6a5058b9b0>.Body.Close()
-	fmt.Println("status:", #<SyntaxTree::Ident:0x00007d6a5058ab78>.Status)
-	snippet := string(#<SyntaxTree::Ident:0x00007d6a5058a3a8>)
-	fmt.Println(#<SyntaxTree::Ident:0x00007d6a50588760>)
+	resp, _ := http.Get(srv.URL + "/debug/pprof/")
+	body, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	fmt.Println("status:", resp.Status)
+	snippet := string(body)
+	fmt.Println(snippet)
 }
