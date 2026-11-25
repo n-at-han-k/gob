@@ -20,17 +20,41 @@ module Gob
 
       module FunctionNodes
         def Function(name:, params:, body:)
+
+          parse_types = lambda { |string| string }
+
+          case params
+          in { contents: { requireds: args }, comments: { value: types } }
+            input, output = parse_types.call(types)
+            params = args.map { |arg|
+              SyntaxTree::Go::Field.new(
+                names: [ SyntaxTree::Go::Ident.new(name: arg) ],
+                type: SyntaxTree::Go::Ident.new(name: input.shift)
+              )
+            }
+            results = output
+
+          in { contents: { requireds: args } }
+            params = []
+            results = {}
+
+          in { comments: { value: types } }
+            input, output = parse_types.call(types)
+            params = []
+            results = output
+
+          else
+            #params = []
+            #results = {}
+
+          end
+
           SyntaxTree::Go::FuncDecl.new(
             name: SyntaxTree::Go::Ident.new(name: "main"),
             type: SyntaxTree::Go::FuncType.new(
               type_params: nil,
-              params: SyntaxTree::Go::FieldList.new(list: [
-                SyntaxTree::Go::Field.new(
-                  names: [ SyntaxTree::Go::Ident.new(name: "yehmam") ],
-                  type: SyntaxTree::Go::Ident.new(name: "eyup")
-                )
-              ]),
-              results: nil
+              params: SyntaxTree::Go::FieldList.new(list: params),
+              results: nil 
             ),
             body: SyntaxTree::Go::BlockStmt.new(list: body)
           )
@@ -102,8 +126,6 @@ module Gob
                 #contents: SyntaxTree::Params[requireds: _parameters],
                 #comments: [SyntaxTree::Comment[value: /^#\s*\(/ => signature]]
             in SyntaxTree::DefNode[
-              target: nil,
-              operator: nil,
               name: name,
               params: params,
               bodystmt: SyntaxTree::BodyStmt[
