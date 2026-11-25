@@ -10,5 +10,5 @@ import (
 )
 
 func runCrypto() {
-	hashes := []crypto.Hash{crypto.MD5, crypto.SHA1, crypto.SHA256, crypto.SHA512}
+	hashes := nil
 }

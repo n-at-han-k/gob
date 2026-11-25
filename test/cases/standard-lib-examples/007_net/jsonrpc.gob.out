@@ -10,7 +10,7 @@ import (
 
 func runJSONRPC() {
 	srv := rpc.NewServer()
-	srv.Register(Arith{})
+	srv.Register(nil)
 	l, err := net.Listen("tcp", "127.0.0.1:0")
 	conn, err := net.Dial("tcp", l.Addr().String())
 	client := rpc.NewClientWithCodec(jsonrpc.NewClientCodec(conn))

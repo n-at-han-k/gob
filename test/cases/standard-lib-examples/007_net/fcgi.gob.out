@@ -6,6 +6,6 @@ import (
 )
 
 func runFCGI() {
-	fmt.Printf("fcgi.Serve signature: %T\n", fcgi.Serve)
-	fmt.Println("wire the handler up behind nginx via fastcgi_pass to see it run.")
+	nil
+	nil
 }

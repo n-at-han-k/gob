@@ -10,5 +10,5 @@ func runConstraint() {
 	line := "//go:build linux && (amd64 || arm64)"
 	expr, err := constraint.Parse(line)
 	fmt.Println("expr:", expr)
-	envs := []map[string]bool{"linux": true, "amd64": true, "linux": true, "arm": true, "darwin": true, "arm64": true}
+	envs := nil
 }

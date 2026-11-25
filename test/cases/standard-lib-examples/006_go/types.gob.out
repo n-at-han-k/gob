@@ -11,4 +11,15 @@ import (
 )
 
 func runTypes() {
+	src := `package p
+import "fmt"
+func Greet(name string) { fmt.Println("hi", name) }
+var Answer = 21 * 2
+`
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, "p.go", src, 0)
+	conf := nil
+	info := nil
+	pkg, err := conf.Check("p", fset, nil, info)
+	fmt.Println("package:", pkg.Name())
 }

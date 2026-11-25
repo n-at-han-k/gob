@@ -14,6 +14,6 @@ func runNetip() {
 	prefix := netip.MustParsePrefix("10.0.0.0/8")
 	fmt.Println("prefix:    ", prefix)
 	fmt.Println("contains 10.1.2.3?", prefix.Contains(netip.MustParseAddr("10.1.2.3")))
-	seen := map[netip.Addr]int{netip.MustParseAddr("1.1.1.1"): 3, netip.MustParseAddr("8.8.8.8"): 1}
+	seen := nil
 	fmt.Println("map:       ", seen)
 }

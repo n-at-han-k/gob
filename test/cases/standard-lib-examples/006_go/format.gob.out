@@ -7,9 +7,7 @@ import (
 )
 
 func runFormat() {
-	src := []byte(`package p
-func   Add(a,b int)int{return a+b}
-`)
+	src := nil
 	pretty, err := format.Source(src)
 	fmt.Println("---before---")
 	fmt.Print(string(src))

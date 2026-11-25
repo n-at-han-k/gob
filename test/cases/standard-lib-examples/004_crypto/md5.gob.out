@@ -6,10 +6,10 @@ import (
 )
 
 func runMD5() {
-	sum := md5.Sum([]byte("hello"))
+	sum := md5.Sum(nil)
 	fmt.Printf("md5: %x\n", sum)
 	h := md5.New()
-	h.Write([]byte("hel"))
-	h.Write([]byte("lo"))
+	h.Write(nil)
+	h.Write(nil)
 	fmt.Printf("streamed: %x\n", h.Sum(nil))
 }

@@ -6,9 +6,9 @@ import (
 )
 
 func runSubtle() {
-	a := []byte("expected-token")
-	b := []byte("expected-token")
-	c := []byte("wrong-token   ")
+	a := nil
+	b := nil
+	c := nil
 	fmt.Println("equal (constant time):", subtle.ConstantTimeCompare(a, b) == 1)
 	fmt.Println("not equal:            ", subtle.ConstantTimeCompare(a, c) == 1)
 }

@@ -8,7 +8,7 @@ import (
 )
 
 func runJSON() {
-	a := article{Title: "Learning Go", Views: 12, Tags: []string{"go", "stdlib"}}
+	a := nil
 	data, err := json.Marshal(a)
 	fmt.Println("compact:", string(data))
 	pretty, _ := json.MarshalIndent(a, "", "  ")

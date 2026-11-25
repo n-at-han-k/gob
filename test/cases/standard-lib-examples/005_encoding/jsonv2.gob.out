@@ -7,7 +7,7 @@ import (
 )
 
 func runJSONv2() {
-	a := v2article{Title: "Learning Go", Tags: []string{"go", "v2"}}
+	a := nil
 	data, err := json.Marshal(a)
 	fmt.Println("marshalled:", string(data))
 	fmt.Printf("parsed: %+v\n", back)

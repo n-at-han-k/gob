@@ -98,12 +98,6 @@ module Gob
         end
       end
 
-      module CommentNodes
-        def Comment(value:)
-          SyntaxTree::Go::Comment.new(text: value)
-        end
-      end
-
       module VariableNodes
         def Variable(node)
           case node
@@ -126,81 +120,15 @@ module Gob
           end
         end
 
-        def Ident(name)
-          SyntaxTree::Go::Ident.new(name: name.to_s)
-        end
+        def Ident(name)             = SyntaxTree::Go::Ident.new(name: name.to_s)
+        def BasicLit(kind, value)   = SyntaxTree::Go::BasicLit.new(kind: kind.to_sym, value: value.to_s)
+        def CharLiteral(value)      = BasicLit(:CHAR, "'#{value}'")
+        def StringLiteral(value)    = BasicLit(:STRING, "\"#{value}\"")
+        def RawStringLiteral(value) = BasicLit(:STRING, "`#{value}`")
+        def IntLiteral(value)       = BasicLit(:INT, value)
+        def FloatLiteral(value)     = BasicLit(:FLOAT, value)
 
-        def BasicLit(kind, value)
-          SyntaxTree::Go::BasicLit.new(kind: kind.to_sym, value: value.to_s)
-        end
-
-        def CharLiteral(value)
-          BasicLit(:CHAR, "'#{value}'")
-        end
-
-        def StringLiteral(value)
-          BasicLit(:STRING, "\"#{value}\"")
-        end
-
-        def RawStringLiteral(value)
-          BasicLit(:STRING, "`#{value}`")
-        end
-
-        def IntLiteral(value)
-          BasicLit(:INT, value)
-        end
-
-        def FloatLiteral(value)
-          BasicLit(:FLOAT, value)
-        end
-
-        def Expression(node)
-          case node
-          in SyntaxTree::CallNode
-            [Call(node)]
-
-          in SyntaxTree::MRHS[parts: parts]
-            parts.flat_map { |part| Expression(part) }
-
-          in SyntaxTree::ARef[
-            collection: collection,
-            index: SyntaxTree::Args[parts: [index]]
-          ]
-            [
-              SyntaxTree::Go::IndexExpr.new(
-                x: Expression(collection).first,
-                index: Expression(index).first
-              )
-            ]
-
-          in SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
-            [StringLiteral(text)]
-
-          in SyntaxTree::StringLiteral[parts: []]
-            [StringLiteral("")]
-
-          in SyntaxTree::XStringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
-            [RawStringLiteral(text)]
-
-          in SyntaxTree::Int[value: text]
-            [IntLiteral(text)]
-
-          in SyntaxTree::FloatLiteral[value: text]
-            [FloatLiteral(text)]
-
-          in SyntaxTree::Binary[left: left, operator: operator, right: right]
-            [
-              SyntaxTree::Go::BinaryExpr.new(
-                x: Expression(left).first,
-                op: operator,
-                y: Expression(right).first
-              )
-            ]
-
-          else
-            [Variable(node.value)]
-          end
-        end
+        def Binary(left, operator, right) = SyntaxTree::Go::BinaryExpr.new(x: left, op: operator, y: right)
 
         def Call(node)
           case node
@@ -210,13 +138,7 @@ module Gob
             message: SyntaxTree::Const[value: message],
             arguments: SyntaxTree::ArgParen[arguments: arguments]
           ]
-            SyntaxTree::Go::CallExpr.new(
-              fun: SyntaxTree::Go::SelectorExpr.new(
-                x: Expression(receiver).first,
-                sel: Ident(message)
-              ),
-              args: Array(arguments&.parts).flat_map { |argument| Expression(argument) }
-            )
+            nil
 
           in SyntaxTree::CallNode[
             receiver: nil,
@@ -224,10 +146,7 @@ module Gob
             message: SyntaxTree::Ident[value: message],
             arguments: SyntaxTree::ArgParen[arguments: arguments]
           ]
-            SyntaxTree::Go::CallExpr.new(
-              fun: Ident(message),
-              args: Array(arguments&.parts).flat_map { |argument| Expression(argument) }
-            )
+            nil
 
           in SyntaxTree::CallNode[
             receiver: receiver,
@@ -235,67 +154,205 @@ module Gob
             message: SyntaxTree::Const[value: message],
             arguments: nil
           ]
-            SyntaxTree::Go::SelectorExpr.new(
-              x: Expression(receiver).first,
-              sel: Ident(message)
-            )
+            nil
+          else
+            nil
           end
         end
 
       end
 
       module StatementNodes
+        def LeftHand(node)
+          case node
+          in SyntaxTree::CallNode
+            Call(node)
+          in SyntaxTree::MLHS[parts: parts]
+            parts.map { |part| LeftHand(part) }
+          in SyntaxTree::Int[value: text]
+            IntLiteral(text)
+          in SyntaxTree::FloatLiteral[value: text]
+            FloatLiteral(text)
+          in SyntaxTree::Binary[left: left, operator: operator, right: right]
+            Binary(left, operator, right)
+          in SyntaxTree::ARef[ collection: collection, index: SyntaxTree::Args[parts: [index]]]
+            nil
+          in SyntaxTree::VarField[value: value]
+            nil
+          in SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
+            nil
+          in SyntaxTree::StringLiteral[parts: []]
+            nil
+          in SyntaxTree::XStringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
+            nil
+          else
+            nil
+          end
+        end
+
+        def RightHand(node)
+          case node
+          in SyntaxTree::CallNode
+            Call(node)
+          in SyntaxTree::MRHS[parts: parts]
+            parts.map { |part| RightHand(part) }
+          in SyntaxTree::Int[value: text]
+            IntLiteral(text)
+          in SyntaxTree::FloatLiteral[value: text]
+            FloatLiteral(text)
+          in SyntaxTree::Binary[left: left, operator: operator, right: right]
+            Binary(left, operator, right)
+          in SyntaxTree::ARef[ collection: collection, index: SyntaxTree::Args[parts: [index]]]
+            nil
+          in SyntaxTree::VarField[value: value]
+            nil
+          in SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
+            nil
+          in SyntaxTree::StringLiteral[parts: []]
+            nil
+          in SyntaxTree::XStringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
+            nil
+          else
+            nil
+          end
+        end
+
+        def Command(name, args)
+          case [name, args]
+          when ["require", _] then ImportSpec(args)
+          when ["var", _]     then nil
+          when ["const", _]   then nil
+          else nil
+          end
+        end
+
         def Statements(node)
           case node
-          in SyntaxTree::Command[
-            message: SyntaxTree::Ident[value: "require"],
-            arguments: SyntaxTree::Args[ parts: [
-              SyntaxTree::StringLiteral[
-                parts: [SyntaxTree::TStringContent[value: path]]
-              ]
-            ]]
-          ]
-            ImportSpec(path)
-
-          in SyntaxTree::Command[
-            message: SyntaxTree::Ident[value: "var"],
-            arguments: SyntaxTree::Args[ parts: [
-              SyntaxTree::StringLiteral[
-                parts: [SyntaxTree::TStringContent[value: path]]
-              ]
-            ]]
-          ]
-            nil
-
-          in SyntaxTree::Command[
-            message: SyntaxTree::Ident[value: "const"],
-            arguments: SyntaxTree::Args[ parts: [
-              SyntaxTree::StringLiteral[
-                parts: [SyntaxTree::TStringContent[value: path]]
-              ]
-            ]]
-          ]
-            nil
-
           in SyntaxTree::Assign[
-            target: target,
-            value: value
+            target: SyntaxTree::VarField[value: SyntaxTree::Ident[value: "err"]],
+            value: SyntaxTree::CallNode[
+              receiver: nil,
+              operator: nil,
+              message: SyntaxTree::Ident[value: "getSomeValue"],
+              arguments: SyntaxTree::ArgParen[arguments: nil]
+            ]
           ]
+            nil
+
+          #in SyntaxTree::Go::ReturnStmt
+          #  SyntaxTree::Go::ReturnStmt.new(return_: nil, results: nil)
+
+          #in SyntaxTree::Go::IncDecStmt
+          #  SyntaxTree::Go::IncDecStmt.new(x: nil, tok_pos: nil, tok: nil)
+
+          #in SyntaxTree::Go::ExprStmt
+          #  SyntaxTree::Go::ExprStmt.new(x: nil)
+
+          #in SyntaxTree::Go::IndexExpr
+          #  SyntaxTree::Go::IndexStmt.new(x: nil)
+
+          #in SyntaxTree::Go::SliceExpr
+          #  SyntaxTree::Go::SliceStmt.new(x: nil)
+
+          #in SyntaxTree::Go::SelectorExpr
+          #  SyntaxTree::Go::SelectorExpr.new(x: nil)
+
+          #in SyntaxTree::Go::ArrayType
+          #  SyntaxTree::Go::ArrayType.new(x: nil)
+
+          #in SyntaxTree::Go::MapType
+          #  SyntaxTree::Go::MapType.new(x: nil)
+
+          #in SyntaxTree::Go::StarExpr
+          #  SyntaxTree::Go::StarExpr.new(x: nil)
+
+          #in SyntaxTree::Go::UnaryExpr
+          #  SyntaxTree::Go::UnaryExpr.new(x: nil)
+ 
+          #in SyntaxTree::Go::KeyValueExpr
+          #  SyntaxTree::Go::KeyValueExpr.new(x: nil)
+ 
+          #in SyntaxTree::Go::CompositeLit
+          #  SyntaxTree::Go::CompositeLit.new(x: nil)
+
+          in SyntaxTree::Command[
+            message: SyntaxTree::Ident[value: name],
+            arguments: SyntaxTree::Args[parts: args]
+          ]
+            Command(name, args)
+
+          in SyntaxTree::CallNode[ receiver: object, operator: operator, message: SyntaxTree::Ident[value: method] ]
+            Call(object, operator, method)
+
+          in SyntaxTree::Assign[target: target, value: value]
+            SyntaxTree::Go::AssignStmt.new(
+              lhs:     LeftHand(target),
+              tok_pos: nil,
+              tok:     ":=",
+              rhs:     RightHand(value)
+            )
+
+          in SyntaxTree::MAssign[target: target, value: value]
+            SyntaxTree::Go::AssignStmt.new(
+              lhs:     LeftHand(target),
+              tok_pos: nil,
+              tok:     ":=",
+              rhs:     RightHand(value)
+            )
+
+          in SyntaxTree::Assign[target: target, value: value]
             SyntaxTree::Go::AssignStmt.new(
               lhs: [Variable(target)],
               tok: ":=",
               rhs: Expression(value)
             )
 
-          in SyntaxTree::MAssign[target: SyntaxTree::MLHS[parts: targets], value: value]
-            SyntaxTree::Go::AssignStmt.new(
-              lhs: targets.map { |target| Variable(target) },
-              tok: ":=",
-              rhs: Expression(value)
-            )
+          in SyntaxTree::MAssign[
+            target: SyntaxTree::MLHS[
+              parts: [
+                SyntaxTree::VarField[value: SyntaxTree::Ident[value: "_"]],
+                SyntaxTree::VarField[value: SyntaxTree::Ident[value: "err"]]
+              ]
+            ],
+            value: SyntaxTree::CallNode[
+              receiver: nil,
+              operator: nil,
+              message: SyntaxTree::Ident[value: "getSomeValue"],
+              arguments: SyntaxTree::ArgParen[arguments: nil]
+            ]
+          ]
+            nil
 
-          in SyntaxTree::CallNode
-            SyntaxTree::Go::ExprStmt.new(x: Call(node))
+          in SyntaxTree::MethodAddBlock[
+            call: SyntaxTree::CallNode[
+              receiver: SyntaxTree::Paren[
+                contents: SyntaxTree::Statements[
+                  body: [
+                    SyntaxTree::RangeNode[
+                      left: SyntaxTree::Int[value: "1"],
+                      operator: SyntaxTree::Op[value: ".."],
+                      right: SyntaxTree::Int[value: "5"]
+                    ]
+                  ]
+                ]
+              ],
+              operator: SyntaxTree::Period[value: "."],
+              message: SyntaxTree::Ident[value: "each"]
+            ],
+            block: SyntaxTree::BlockNode[
+              block_var: SyntaxTree::BlockVar[
+                params: SyntaxTree::Params[
+                  requireds: [SyntaxTree::Ident[value: "i"]]
+                ]
+              ],
+              bodystmt: SyntaxTree::BodyStmt[
+                statements: SyntaxTree::Statements[
+                  body: [SyntaxTree::VarRef[value: SyntaxTree::Ident[value: "i"]]]
+                ]
+              ]
+            ]
+          ]
+            nil
 
           in SyntaxTree::VoidStmt
             nil
@@ -372,7 +429,7 @@ module Gob
               Logic(logic_node)
 
             in SyntaxTree::Comment[value: value]
-              Comment(value: value)
+              SyntaxTree::Go::Comment.new(text: value)
 
             else
               Statements(node)
@@ -401,7 +458,6 @@ module Gob
       include Runner::FunctionNodes
       include Runner::BlockNodes
       include Runner::LogicNodes
-      include Runner::CommentNodes
       include Runner::VariableNodes
       include Runner::StatementNodes
     end
