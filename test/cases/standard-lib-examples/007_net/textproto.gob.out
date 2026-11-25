@@ -9,4 +9,5 @@ import (
 )
 
 func runTextproto() {
+	hdr, err := r.ReadMIMEHeader()
 }

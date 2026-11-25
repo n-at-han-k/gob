@@ -9,4 +9,7 @@ import (
 )
 
 func runAES() {
+	block, err := aes.NewCipher(key)
+	gcm, _ := cipher.NewGCM(block)
+	pt, err := gcm.Open(nil, nonce, ct, nil)
 }

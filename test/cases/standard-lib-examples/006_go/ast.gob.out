@@ -9,4 +9,5 @@ import (
 )
 
 func runAST() {
+	file, err := parser.ParseFile(fset, "example.go", src, parser.ParseComments)
 }

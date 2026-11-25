@@ -11,4 +11,6 @@ import (
 # ()
 
 func runPProf() () {
+	resp, _ := http.Get(srv.URL + "/debug/pprof/")
+	body, _ := io.ReadAll(resp.Body)
 }

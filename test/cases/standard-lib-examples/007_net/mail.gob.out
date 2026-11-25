@@ -9,4 +9,8 @@ import (
 )
 
 func runMail() {
+	msg, err := mail.ReadMessage(strings.NewReader(raw))
+	from, _ := mail.ParseAddress(msg.Header.Get("From"))
+	to, _ := mail.ParseAddressList(msg.Header.Get("To"))
+	body, _ := io.ReadAll(msg.Body)
 }

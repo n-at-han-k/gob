@@ -7,4 +7,5 @@ import (
 )
 
 func runDES() {
+	block, err := des.NewCipher(key)
 }

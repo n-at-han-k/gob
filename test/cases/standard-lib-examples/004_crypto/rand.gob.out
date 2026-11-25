@@ -8,4 +8,5 @@ import (
 )
 
 func runRand() {
+	n, _ := rand.Int(rand.Reader, big.NewInt(1_000_000))
 }

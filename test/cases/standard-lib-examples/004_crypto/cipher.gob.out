@@ -8,4 +8,5 @@ import (
 )
 
 func runCipher() {
+	block, _ := aes.NewCipher(key)
 }

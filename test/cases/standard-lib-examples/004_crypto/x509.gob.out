@@ -12,5 +12,8 @@ import (
 	"time"
 )
 
-func runX509() {
+func runX509() () {
+	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	der, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, @priv.PublicKey, priv)
+	cert, _ := x509.ParseCertificate(der)
 }

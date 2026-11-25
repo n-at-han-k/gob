@@ -7,4 +7,5 @@ import (
 )
 
 func runBase32() {
+	decoded, err := base32.StdEncoding.DecodeString(encoded)
 }

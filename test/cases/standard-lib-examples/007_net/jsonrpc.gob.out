@@ -9,4 +9,6 @@ import (
 )
 
 func runJSONRPC() {
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	conn, err := net.Dial("tcp", l.Addr().String())
 }

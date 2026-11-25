@@ -6,4 +6,7 @@ import (
 )
 
 func runNet() {
+	addr, network, _ := net.ParseCIDR("10.0.0.5/24")
+	host, port, _ := net.SplitHostPort("example.com:8080")
+	ifs, _ := net.Interfaces()
 }

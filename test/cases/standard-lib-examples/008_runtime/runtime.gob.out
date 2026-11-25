@@ -6,4 +6,5 @@ import (
 )
 
 func runRuntime() {
+	pc, file, line, _ := runtime.Caller(0)
 }

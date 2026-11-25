@@ -6,4 +6,5 @@ import (
 )
 
 func runEncoding() {
+	txt, _ := m.MarshalText()
 }

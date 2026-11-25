@@ -145,6 +145,91 @@ module Gob
           BasicLit(:FLOAT, value)
         end
 
+        def Expression(node)
+          case node
+          in SyntaxTree::CallNode
+            [Call(node)]
+
+          in SyntaxTree::MRHS[parts: parts]
+            parts.flat_map { |part| Expression(part) }
+
+          in SyntaxTree::ARef[
+            collection: collection,
+            index: SyntaxTree::Args[parts: [index]]
+          ]
+            [
+              SyntaxTree::Go::IndexExpr.new(
+                x: Expression(collection).first,
+                index: Expression(index).first
+              )
+            ]
+
+          in SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
+            [StringLiteral(text)]
+
+          in SyntaxTree::StringLiteral[parts: []]
+            [StringLiteral("")]
+
+          in SyntaxTree::Int[value: text]
+            [IntLiteral(text)]
+
+          in SyntaxTree::FloatLiteral[value: text]
+            [FloatLiteral(text)]
+
+          in SyntaxTree::Binary[left: left, operator: operator, right: right]
+            [
+              SyntaxTree::Go::BinaryExpr.new(
+                x: Expression(left).first,
+                op: operator,
+                y: Expression(right).first
+              )
+            ]
+
+          else
+            [Variable(node.value)]
+          end
+        end
+
+        def Call(node)
+          case node
+          in SyntaxTree::CallNode[
+            receiver: receiver,
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Const[value: message],
+            arguments: SyntaxTree::ArgParen[arguments: arguments]
+          ]
+            SyntaxTree::Go::CallExpr.new(
+              fun: SyntaxTree::Go::SelectorExpr.new(
+                x: Expression(receiver).first,
+                sel: Ident(message)
+              ),
+              args: Array(arguments&.parts).flat_map { |argument| Expression(argument) }
+            )
+
+          in SyntaxTree::CallNode[
+            receiver: nil,
+            operator: nil,
+            message: SyntaxTree::Ident[value: message],
+            arguments: SyntaxTree::ArgParen[arguments: arguments]
+          ]
+            SyntaxTree::Go::CallExpr.new(
+              fun: Ident(message),
+              args: Array(arguments&.parts).flat_map { |argument| Expression(argument) }
+            )
+
+          in SyntaxTree::CallNode[
+            receiver: receiver,
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Const[value: message],
+            arguments: nil
+          ]
+            SyntaxTree::Go::SelectorExpr.new(
+              x: Expression(receiver).first,
+              sel: Ident(message)
+            )
+          end
+        end
+
       end
 
       module StatementNodes
@@ -179,6 +264,13 @@ module Gob
             ]]
           ]
             nil
+
+          in SyntaxTree::MAssign[target: SyntaxTree::MLHS[parts: targets], value: value]
+            SyntaxTree::Go::AssignStmt.new(
+              lhs: targets.map { |target| Variable(target.value) },
+              tok: ":=",
+              rhs: Expression(value)
+            )
 
           in SyntaxTree::VoidStmt
             nil

@@ -7,4 +7,5 @@ import (
 )
 
 func runASN1() {
+	der, err := asn1.Marshal(p)
 }

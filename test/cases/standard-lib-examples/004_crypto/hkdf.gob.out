@@ -8,4 +8,5 @@ import (
 )
 
 func runHKDF() {
+	key, err := hkdf.Key(sha256.New, secret, salt, string(info), 32)
 }

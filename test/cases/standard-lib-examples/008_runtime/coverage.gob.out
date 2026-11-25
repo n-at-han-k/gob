@@ -7,4 +7,5 @@ import (
 )
 
 func runCoverage() {
+	dir, _ := os.MkdirTemp("", "cover-")
 }

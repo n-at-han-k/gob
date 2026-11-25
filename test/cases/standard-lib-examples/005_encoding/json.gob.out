@@ -8,4 +8,6 @@ import (
 )
 
 func runJSON() {
+	data, err := json.Marshal(a)
+	pretty, _ := json.MarshalIndent(a, "", "  ")
 }

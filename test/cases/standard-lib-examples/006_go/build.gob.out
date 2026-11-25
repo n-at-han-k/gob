@@ -7,4 +7,5 @@ import (
 )
 
 func runBuild() {
+	pkg, err := build.Default.Import("fmt", "", 0)
 }

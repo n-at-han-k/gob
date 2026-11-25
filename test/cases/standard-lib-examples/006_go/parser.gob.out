@@ -8,4 +8,6 @@ import (
 )
 
 func runParser() {
+	expr, err := parser.ParseExpr("1 + 2*3")
+	file, err := parser.ParseFile(fset, "p.go", src, parser.ImportsOnly)
 }

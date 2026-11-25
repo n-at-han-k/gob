@@ -9,4 +9,6 @@ import (
 )
 
 func runHTTP() {
+	resp, err := http.Get(srv.URL + "/greet")
+	body, _ := io.ReadAll(resp.Body)
 }

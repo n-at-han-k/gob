@@ -8,4 +8,6 @@ import (
 )
 
 func runPProf() {
+	f, err := os.CreateTemp("", "heap-*.prof")
+	info, _ := f.Stat()
 }

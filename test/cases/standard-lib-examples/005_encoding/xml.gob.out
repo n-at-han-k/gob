@@ -7,4 +7,5 @@ import (
 )
 
 func runXML() {
+	data, err := xml.MarshalIndent(b, "", "  ")
 }

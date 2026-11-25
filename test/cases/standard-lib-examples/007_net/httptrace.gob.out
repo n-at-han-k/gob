@@ -8,4 +8,6 @@ import (
 )
 
 func runHTTPTrace() {
+	req, _ := http.NewRequest("GET", srv.URL, nil)
+	resp, _ := http.DefaultTransport.RoundTrip(req)
 }

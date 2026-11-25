@@ -9,4 +9,5 @@ import (
 )
 
 func runPBKDF2() {
+	key, err := pbkdf2.Key(sha256.New, "hunter2", salt, 100_000, 32)
 }

@@ -9,4 +9,5 @@ import (
 # ()
 
 func main() () {
+	demo, ok := demos[os.Args[1]]
 }

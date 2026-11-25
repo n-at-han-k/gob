@@ -7,4 +7,5 @@ import (
 )
 
 func runHex() {
+	back, err := hex.DecodeString(encoded)
 }

@@ -7,4 +7,5 @@ import (
 )
 
 func runConstraint() {
+	expr, err := constraint.Parse(line)
 }

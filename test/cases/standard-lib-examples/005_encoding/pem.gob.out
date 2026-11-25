@@ -7,4 +7,5 @@ import (
 )
 
 func runPEM() {
+	got, rest := pem.Decode(encoded)
 }

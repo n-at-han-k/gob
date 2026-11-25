@@ -7,4 +7,5 @@ import (
 )
 
 func runImporter() {
+	pkg, err := importer.Default().Import("fmt")
 }

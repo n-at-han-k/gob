@@ -8,4 +8,7 @@ import (
 )
 
 func runMLKEM() {
+	dk, err := mlkem.GenerateKey768()
+	shared1, ct := ek.Encapsulate()
+	shared2, err := dk.Decapsulate(ct)
 }

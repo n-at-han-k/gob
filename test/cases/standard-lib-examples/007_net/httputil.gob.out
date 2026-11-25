@@ -9,4 +9,7 @@ import (
 )
 
 func runHTTPUtil() {
+	target, _ := url.Parse(upstream.URL)
+	resp, _ := http.Get(proxy.URL + "/echo")
+	dump, _ := httputil.DumpResponse(resp, true)
 }

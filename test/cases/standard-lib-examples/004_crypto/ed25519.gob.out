@@ -8,4 +8,5 @@ import (
 )
 
 func runED25519() {
+	pub, priv, err := ed25519.GenerateKey(rand.Reader)
 }

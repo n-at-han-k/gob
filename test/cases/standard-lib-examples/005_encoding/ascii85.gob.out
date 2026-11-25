@@ -6,4 +6,5 @@ import (
 )
 
 func runAscii85() {
+	ndst, _, err := ascii85.Decode(back, dst, true)
 }

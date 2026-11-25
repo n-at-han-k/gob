@@ -9,4 +9,8 @@ import (
 )
 
 func runECDH() {
+	alice, err := curve.GenerateKey(rand.Reader)
+	bob, _ := curve.GenerateKey(rand.Reader)
+	shareA, _ := alice.ECDH(bob.PublicKey())
+	shareB, _ := bob.ECDH(alice.PublicKey())
 }

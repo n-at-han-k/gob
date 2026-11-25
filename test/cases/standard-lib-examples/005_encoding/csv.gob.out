@@ -9,4 +9,5 @@ import (
 )
 
 func runCSV() {
+	records, err := r.ReadAll()
 }

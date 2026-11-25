@@ -7,4 +7,5 @@ import (
 )
 
 func runJSONv2() {
+	data, err := json.Marshal(a)
 }

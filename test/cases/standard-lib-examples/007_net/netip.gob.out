@@ -7,4 +7,5 @@ import (
 )
 
 func runNetip() {
+	addr, err := netip.ParseAddr("2001:db8::1")
 }
