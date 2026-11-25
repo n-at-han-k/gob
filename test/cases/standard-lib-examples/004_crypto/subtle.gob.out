@@ -5,10 +5,10 @@ import (
 	"fmt"
 )
 
-func runSubtle() {
-	a := []byte("expected-token")
-	b := []byte("expected-token")
-	c := []byte("wrong-token   ")
+func runSubtle() () {
+	a := 
+	b := 
+	c := 
 	fmt.Println("equal (constant time):", subtle.ConstantTimeCompare(a, b) == 1)
 	fmt.Println("not equal:            ", subtle.ConstantTimeCompare(a, c) == 1)
 }

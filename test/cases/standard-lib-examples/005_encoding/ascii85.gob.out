@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-func runAscii85() {
-	src := []byte("hello ascii85")
+func runAscii85() () {
+	src := 
 	dst := make(Array[byte], ascii85.MaxEncodedLen(len(src)))
 	n := ascii85.Encode(dst, src)
 	dst := dst[nil]

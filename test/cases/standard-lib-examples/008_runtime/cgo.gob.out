@@ -5,10 +5,10 @@ import (
 	"runtime/cgo"
 )
 
-func runCGO() {
-	original := map[string]int{"answer": 42}
+func runCGO() () {
+	original := 
 	h := cgo.NewHandle(original)
-	got := h.Value().(map[string]int)
+	got := 
 	fmt.Printf("handle: %d\n", uintptr(h))
 	fmt.Printf("value:  %v\n", got)
 	got["answer"] := 99

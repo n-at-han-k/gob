@@ -7,13 +7,13 @@ import (
 	"fmt"
 )
 
-func runCipher() {
+func runCipher() () {
 	key := make(Array[byte], 16)
 	rand.Read(key)
 	block, _ := aes.NewCipher(key)
 	iv := make(Array[byte], block.BlockSize())
 	rand.Read(iv)
-	plaintext := []byte("streaming plaintext")
+	plaintext := 
 	ct := make(Array[byte], len(plaintext))
 	cipher.NewCTR(block, iv).XORKeyStream(ct, plaintext)
 	pt := make(Array[byte], len(ct))

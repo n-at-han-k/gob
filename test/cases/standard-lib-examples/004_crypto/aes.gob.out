@@ -8,14 +8,14 @@ import (
 	"log"
 )
 
-func runAES() {
+func runAES() () {
 	key := make(Array[byte], 32)
 	rand.Read(key)
 	block, err := aes.NewCipher(key)
 	gcm, _ := cipher.NewGCM(block)
 	nonce := make(Array[byte], gcm.NonceSize())
 	rand.Read(nonce)
-	plaintext := []byte("secret message")
+	plaintext := 
 	ct := gcm.Seal(nil, nonce, plaintext, nil)
 	pt, err := gcm.Open(nil, nonce, ct, nil)
 	fmt.Printf("ciphertext (%d bytes): %x\n", len(ct), ct)

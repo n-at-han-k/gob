@@ -9,6 +9,6 @@ func runEncoding() {
 	txt, _ := m.MarshalText()
 	fmt.Printf("marshalled: %s\n", txt)
 	u := &back
-	_ := u.UnmarshalText([]byte("#0080ff"))
+	_ := u.UnmarshalText(nil)
 	fmt.Printf("parsed:     %+v\n", back)
 }

@@ -141,72 +141,28 @@ module Gob
 
         def Call(node)
           case node
-          in SyntaxTree::CallNode[
-            receiver: receiver,
-            operator: SyntaxTree::Period[value: "."],
-            message: :call,
-            arguments: SyntaxTree::ArgParen[arguments: SyntaxTree::Args[parts: [type]]]
-          ]
-            SyntaxTree::Go::TypeAssertExpr.new(
-              x: LeftHand(receiver),
-              type:
-                case type
-                in SyntaxTree::ARef[
-                  collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Array"]],
-                  index: SyntaxTree::Args[parts: [elt]]
-                ]
-                  SyntaxTree::Go::ArrayType.new(elt: LeftHand(elt))
-                in SyntaxTree::ARef[
-                  collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Hash" | "Map"]],
-                  index: SyntaxTree::Args[parts: [key, value]]
-                ]
-                  SyntaxTree::Go::MapType.new(key: LeftHand(key), value: LeftHand(value))
-                else
-                  LeftHand(type)
-                end
-            )
 
-          in SyntaxTree::CallNode[
-            receiver: SyntaxTree::ARef[
-              collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: name]],
-              index: SyntaxTree::Args[parts: types]
-            ],
+          # Array[].new()
+          in SyntaxTree::CallNode[ receiver: SyntaxTree::ARef[collection: SyntaxTree::VarRef[
+            value: SyntaxTree::Const[value: "Array"] ],
+            index: SyntaxTree::Args[ parts: args ] ],
             operator: SyntaxTree::Period[value: "."],
             message: SyntaxTree::Ident[value: "new"],
-            arguments: SyntaxTree::ArgParen[arguments: arguments]
-          ] if ["Array", "Hash", "Map"].include?(name)
-            type =
-              case name
-              when "Array"
-                SyntaxTree::Go::ArrayType.new(elt: LeftHand(types.first))
-              else
-                SyntaxTree::Go::MapType.new(key: LeftHand(types[0]), value: LeftHand(types[1]))
-              end
+            arguments: SyntaxTree::ArgParen[
+            arguments: SyntaxTree::Args[ parts: items ]
+          ]]
+            nil
 
-            parts = Array(arguments&.parts)
-
-            if name == "Array" && parts.length == 1 && parts.first.is_a?(SyntaxTree::StringLiteral)
-              SyntaxTree::Go::CallExpr.new(fun: type, args: parts.map { |part| LeftHand(part) })
-            else
-              elts = parts.flat_map { |part|
-                case part
-                in SyntaxTree::BareAssocHash | SyntaxTree::HashLiteral
-                  part.assocs.map { |assoc|
-                    case assoc
-                    in SyntaxTree::Assoc[key: SyntaxTree::Label[value: key], value: value]
-                      SyntaxTree::Go::KeyValueExpr.new(key: StringLiteral(key.delete_suffix(":")), value: LeftHand(value))
-                    in SyntaxTree::Assoc[key: SyntaxTree::DynaSymbol[parts: [SyntaxTree::TStringContent[value: key]]], value: value]
-                      SyntaxTree::Go::KeyValueExpr.new(key: StringLiteral(key), value: LeftHand(value))
-                    in SyntaxTree::Assoc[key: key, value: value]
-                      SyntaxTree::Go::KeyValueExpr.new(key: LeftHand(key), value: LeftHand(value))
-                    end
-                  }
-                else
-                  LeftHand(part)
-                end
-              }
-              SyntaxTree::Go::CompositeLit.new(type: type, elts: elts)
-            end
+          # Hash[].new()
+          in SyntaxTree::CallNode[ receiver: SyntaxTree::ARef[collection: SyntaxTree::VarRef[
+            value: SyntaxTree::Const[value: "Hash"] ],
+            index: SyntaxTree::Args[ parts: args ] ],
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Ident[value: "new"],
+            arguments: SyntaxTree::ArgParen[
+            arguments: SyntaxTree::Args[ parts: items ]
+          ]]
+            nil
 
           in SyntaxTree::CallNode[
             receiver: receiver,
@@ -336,6 +292,53 @@ module Gob
               operator: nil,
               message: SyntaxTree::Ident[value: "getSomeValue"],
               arguments: SyntaxTree::ArgParen[arguments: nil]
+            ]
+          ]
+            nil
+
+          # Array[string, 9] -> [9]string
+          in SyntaxTree::ARef[
+            collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Array" ]],
+            index: SyntaxTree::Args[
+              parts: [
+                SyntaxTree::VCall[value: SyntaxTree::Ident[value: "string"]],
+                SyntaxTree::Int[value: size]
+              ]
+            ]
+          ]
+            nil
+
+          # Array[Array[string, 8]] -> [][8]string
+          in SyntaxTree::ARef[
+            collection: SyntaxTree::VarRef[
+              value: SyntaxTree::Const[value: "Array"]
+            ],
+            index: SyntaxTree::Args[
+              parts: [
+                SyntaxTree::ARef[
+                  collection: SyntaxTree::VarRef[
+                    value: SyntaxTree::Const[value: "Array"]
+                  ],
+                  index: SyntaxTree::Args[
+                    parts: [
+                      SyntaxTree::VCall[value: SyntaxTree::Ident[value: "string"]],
+                      SyntaxTree::Int[value: "8"]
+                    ]
+                  ]
+                ]
+              ]
+            ]
+          ]
+            nil
+
+          # Hash[string, bool] -> map[string]bool
+          in SyntaxTree::ARef[
+            collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Hash"]],
+            index: SyntaxTree::Args[
+              parts: [
+                SyntaxTree::VCall[value: SyntaxTree::Ident[value: "string"]],
+                SyntaxTree::VCall[value: SyntaxTree::Ident[value: "string"]]
+              ]
             ]
           ]
             nil

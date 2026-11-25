@@ -6,8 +6,8 @@ import (
 	"log"
 )
 
-func runBase32() {
-	src := []byte("hello base32")
+func runBase32() () {
+	src := 
 	encoded := base32.StdEncoding.EncodeToString(src)
 	fmt.Println("std:  ", encoded)
 	decoded, err := base32.StdEncoding.DecodeString(encoded)

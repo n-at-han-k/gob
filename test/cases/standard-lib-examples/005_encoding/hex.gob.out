@@ -6,8 +6,8 @@ import (
 	"log"
 )
 
-func runHex() {
-	src := []byte("hello hex")
+func runHex() () {
+	src := 
 	encoded := hex.EncodeToString(src)
 	fmt.Println("encoded:", encoded)
 	back, err := hex.DecodeString(encoded)

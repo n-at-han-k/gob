@@ -6,10 +6,10 @@ import (
 )
 
 func runSHA256() {
-	fmt.Printf("Sum256:   %x\n", sha256.Sum256([]byte("hello")))
-	fmt.Printf("Sum224:   %x\n", sha256.Sum224([]byte("hello")))
+	fmt.Printf("Sum256:   %x\n", sha256.Sum256(nil))
+	fmt.Printf("Sum224:   %x\n", sha256.Sum224(nil))
 	h := sha256.New()
-	h.Write([]byte("hel"))
-	h.Write([]byte("lo"))
+	h.Write(nil)
+	h.Write(nil)
 	fmt.Printf("streamed: %x\n", h.Sum(nil))
 }

@@ -6,6 +6,6 @@ import (
 )
 
 func runSHA1() {
-	sum := sha1.Sum([]byte("hello"))
+	sum := sha1.Sum(nil)
 	fmt.Printf("sha1: %x\n", sum)
 }

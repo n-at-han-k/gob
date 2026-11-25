@@ -6,10 +6,10 @@ import (
 	"log"
 )
 
-func runDES() {
-	key := []byte("8bytekey")
+func runDES() () {
+	key := 
 	block, err := des.NewCipher(key)
-	plaintext := []byte("blockdat")
+	plaintext := 
 	ct := make(Array[byte], des.BlockSize)
 	block.Encrypt(ct, plaintext)
 	pt := make(Array[byte], des.BlockSize)
