@@ -107,6 +107,15 @@ module Gob
       module VariableNodes
         def Variable(node)
           case node
+          in SyntaxTree::VarField[value: value]
+            Variable(value)
+
+          in SyntaxTree::IVar[value: name]
+            SyntaxTree::Go::UnaryExpr.new(
+              op: :&,
+              x: SyntaxTree::Go::Ident.new(name: name.delete_prefix("@"))
+            )
+
           in SyntaxTree::CVar[value: name]
             SyntaxTree::Go::StarExpr.new(
               x: SyntaxTree::Go::Ident.new(name: name.delete_prefix("@@"))
@@ -265,12 +274,25 @@ module Gob
           ]
             nil
 
-          in SyntaxTree::MAssign[target: SyntaxTree::MLHS[parts: targets], value: value]
+          in SyntaxTree::Assign[
+            target: target,
+            value: value
+          ]
             SyntaxTree::Go::AssignStmt.new(
-              lhs: targets.map { |target| Variable(target.value) },
+              lhs: [Variable(target)],
               tok: ":=",
               rhs: Expression(value)
             )
+
+          in SyntaxTree::MAssign[target: SyntaxTree::MLHS[parts: targets], value: value]
+            SyntaxTree::Go::AssignStmt.new(
+              lhs: targets.map { |target| Variable(target) },
+              tok: ":=",
+              rhs: Expression(value)
+            )
+
+          in SyntaxTree::CallNode
+            SyntaxTree::Go::ExprStmt.new(x: Call(node))
 
           in SyntaxTree::VoidStmt
             nil
