@@ -1,1 +1,10 @@
-/* unsupported: Array */
+package main
+
+import "crypto/fips140"
+
+import "fmt"
+
+func runFIPS140() {
+	fmt.Println("FIPS 140-3 mode enabled:", fips140.Enabled())
+	fmt.Println("module version:         ", fips140.Version())
+}

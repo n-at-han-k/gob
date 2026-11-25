@@ -1,1 +1,24 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "os"
+
+import "runtime"
+
+import "runtime/pprof"
+
+func runPProf() {
+	nil
+	nil
+	runtime.GC()
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	fmt.Printf("wrote heap profile: %s (%d bytes)\n", f.Name(), info.Size())
+	fmt.Println("view with: go tool pprof", f.Name())
+	nil
+}

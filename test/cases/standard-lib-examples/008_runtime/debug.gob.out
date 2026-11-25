@@ -1,1 +1,15 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "runtime/debug"
+
+func runDebug() {
+	nil
+	nil
+	debug.ReadGCStats(&stats)
+	fmt.Printf("gc runs: %d, total pause: %v\n", stats.NumGC(), stats.PauseTotal())
+	nil
+	nil
+	fmt.Print("stack:\n", nil, "...\n")
+}

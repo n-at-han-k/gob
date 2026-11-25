@@ -1,1 +1,17 @@
-/* unsupported: Array */
+package main
+
+import "encoding/hex"
+
+import "fmt"
+
+import "log"
+
+func runHex() {
+	nil
+	nil
+	fmt.Println("encoded:", encoded)
+	nil
+	nil
+	fmt.Printf("decoded: %s\n", back)
+	fmt.Print(hex.Dump(src))
+}

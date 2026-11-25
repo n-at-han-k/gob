@@ -1,1 +1,24 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "io"
+
+import "log"
+
+import "net/mail"
+
+import "strings"
+
+func runMail() {
+	nil
+	nil
+	nil
+	nil
+	nil
+	fmt.Println("from:   ", from)
+	fmt.Println("to:     ", to)
+	fmt.Println("subject:", msg.Header().Get("Subject"))
+	nil
+	fmt.Print("body:   ", nil)
+}

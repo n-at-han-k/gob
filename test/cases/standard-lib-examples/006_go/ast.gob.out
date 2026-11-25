@@ -1,1 +1,18 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "go/ast"
+
+import "go/parser"
+
+import "go/token"
+
+import "log"
+
+func runAST() {
+	nil
+	nil
+	nil
+	nil
+}

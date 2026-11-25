@@ -1,1 +1,17 @@
-/* unsupported: Array */
+package main
+
+import "crypto/rand"
+
+import "fmt"
+
+import "log"
+
+import "math/big"
+
+func runRand() {
+	nil
+	nil
+	fmt.Printf("random bytes: %x\n", buf)
+	nil
+	fmt.Println("random int  :", n)
+}

@@ -1,1 +1,21 @@
-/* unsupported: Array */
+package main
+
+import "bytes"
+
+import "encoding/gob"
+
+import "fmt"
+
+import "log"
+
+nil
+
+func runGob() {
+	nil
+	nil
+	nil
+	fmt.Printf("encoded %d bytes\n", buf.Len())
+	nil
+	nil
+	fmt.Printf("decoded: %+v\n", back)
+}

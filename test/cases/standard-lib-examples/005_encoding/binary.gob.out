@@ -1,1 +1,26 @@
-/* unsupported: Array */
+package main
+
+import "bytes"
+
+import "encoding/binary"
+
+import "fmt"
+
+import "log"
+
+func runBinary() {
+	nil
+	binary.Write(&buf, binary.BigEndian(), nil)
+	binary.Write(&buf, binary.LittleEndian(), nil)
+	fmt.Printf("bytes: %x\n", buf.Bytes())
+	nil
+	nil
+	nil
+	binary.Read(&buf, binary.LittleEndian(), &b)
+	fmt.Printf("a=%#x b=%#x\n", a, b)
+	nil
+	nil
+	fmt.Printf("varint(-12345) = %x (%d bytes)\n", nil, n)
+	nil
+	fmt.Println("decoded:", v)
+}

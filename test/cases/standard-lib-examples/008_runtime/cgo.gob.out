@@ -1,1 +1,16 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "runtime/cgo"
+
+func runCGO() {
+	nil
+	nil
+	nil
+	nil
+	fmt.Printf("handle: %d\n", nil)
+	fmt.Printf("value:  %v\n", got)
+	nil
+	fmt.Printf("mutation visible on original: %v\n", nil)
+}

@@ -1,1 +1,11 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "go/version"
+
+func runVersion() {
+	nil
+	fmt.Println("go1.21 <  go1.22:", nil)
+	fmt.Println("go1.22 >= go1.22rc2:", nil)
+}

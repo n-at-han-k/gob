@@ -1,1 +1,18 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "runtime"
+
+func runRuntime() {
+	fmt.Println("go version:  ", runtime.Version())
+	fmt.Println("GOOS/GOARCH: ", runtime.GOOS(), runtime.GOARCH())
+	fmt.Println("NumCPU:      ", runtime.NumCPU())
+	fmt.Println("NumGoroutine:", runtime.NumGoroutine())
+	fmt.Println("GOMAXPROCS:  ", runtime.GOMAXPROCS(nil))
+	nil
+	fmt.Printf("here: %s:%d (%s)\n", file, line, runtime.FuncForPC(pc).Name())
+	nil
+	runtime.ReadMemStats(&m)
+	fmt.Printf("heap alloc: %d KiB, sys: %d KiB, num GC: %d\n", nil, nil, m.NumGC())
+}

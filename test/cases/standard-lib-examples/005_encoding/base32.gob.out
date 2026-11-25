@@ -1,1 +1,17 @@
-/* unsupported: Array */
+package main
+
+import "encoding/base32"
+
+import "fmt"
+
+import "log"
+
+func runBase32() {
+	nil
+	nil
+	fmt.Println("std:  ", encoded)
+	nil
+	nil
+	fmt.Printf("decoded: %s\n", decoded)
+	fmt.Println("hex:  ", base32.HexEncoding().EncodeToString(src))
+}

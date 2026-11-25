@@ -1,1 +1,10 @@
-/* unsupported: Array */
+package main
+
+import "crypto/sha1"
+
+import "fmt"
+
+func runSHA1() {
+	nil
+	fmt.Printf("sha1: %x\n", sum)
+}

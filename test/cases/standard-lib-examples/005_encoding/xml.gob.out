@@ -1,1 +1,19 @@
-/* unsupported: Array */
+package main
+
+import "encoding/xml"
+
+import "fmt"
+
+import "log"
+
+nil
+
+func runXML() {
+	nil
+	nil
+	nil
+	fmt.Println(nil)
+	nil
+	nil
+	fmt.Printf("parsed: %+v\n", back)
+}

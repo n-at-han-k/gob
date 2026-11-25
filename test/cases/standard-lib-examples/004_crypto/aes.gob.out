@@ -1,1 +1,27 @@
-/* unsupported: Array */
+package main
+
+import "crypto/aes"
+
+import "crypto/cipher"
+
+import "crypto/rand"
+
+import "fmt"
+
+import "log"
+
+func runAES() {
+	nil
+	rand.Read(key)
+	nil
+	nil
+	nil
+	nil
+	rand.Read(nonce)
+	nil
+	nil
+	nil
+	nil
+	fmt.Printf("ciphertext (%d bytes): %x\n", nil, ct)
+	fmt.Printf("decrypted: %s\n", pt)
+}

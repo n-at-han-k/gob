@@ -1,1 +1,15 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "go/build/constraint"
+
+import "log"
+
+func runConstraint() {
+	nil
+	nil
+	nil
+	fmt.Println("expr:", expr)
+	nil
+}

@@ -1,1 +1,13 @@
-/* unsupported: Array */
+package main
+
+import "crypto/subtle"
+
+import "fmt"
+
+func runSubtle() {
+	nil
+	nil
+	nil
+	fmt.Println("equal (constant time):", nil)
+	fmt.Println("not equal:            ", nil)
+}

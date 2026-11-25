@@ -1,1 +1,19 @@
-/* unsupported: Array */
+package main
+
+import "crypto/pbkdf2"
+
+import "crypto/rand"
+
+import "crypto/sha256"
+
+import "fmt"
+
+import "log"
+
+func runPBKDF2() {
+	nil
+	rand.Read(salt)
+	nil
+	nil
+	fmt.Printf("salt: %x\nkey:  %x\n", salt, key)
+}

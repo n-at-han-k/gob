@@ -1,1 +1,19 @@
-/* unsupported: Array */
+package main
+
+import "crypto/rc4"
+
+import "fmt"
+
+import "log"
+
+func runRC4() {
+	nil
+	nil
+	nil
+	nil
+	c.XORKeyStream(ct, pt)
+	nil
+	nil
+	c2.XORKeyStream(out, ct)
+	fmt.Printf("ct: %x\npt: %s\n", ct, out)
+}

@@ -1,1 +1,23 @@
-/* unsupported: Array */
+package main
+
+import "crypto/ecdsa"
+
+import "crypto/elliptic"
+
+import "crypto/rand"
+
+import "crypto/sha256"
+
+import "fmt"
+
+import "log"
+
+func runECDSA() {
+	nil
+	nil
+	nil
+	nil
+	nil
+	fmt.Printf("signature (%d B): %x\n", nil, sig)
+	fmt.Println("valid:", ok)
+}

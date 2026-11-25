@@ -1,1 +1,8 @@
-/* unsupported: Array */
+package main
+
+import "crypto/elliptic"
+
+import "fmt"
+
+func runElliptic() {
+}

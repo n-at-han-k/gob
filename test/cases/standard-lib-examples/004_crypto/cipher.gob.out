@@ -1,1 +1,23 @@
-/* unsupported: Array */
+package main
+
+import "crypto/aes"
+
+import "crypto/cipher"
+
+import "crypto/rand"
+
+import "fmt"
+
+func runCipher() {
+	nil
+	rand.Read(key)
+	nil
+	nil
+	rand.Read(iv)
+	nil
+	nil
+	cipher.NewCTR(block, iv).XORKeyStream(ct, plaintext)
+	nil
+	cipher.NewCTR(block, iv).XORKeyStream(pt, ct)
+	fmt.Printf("ct: %x\npt: %s\n", ct, pt)
+}

@@ -1,1 +1,15 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "go/importer"
+
+import "log"
+
+func runImporter() {
+	nil
+	nil
+	fmt.Println("package:", pkg.Path())
+	fmt.Println("name:   ", pkg.Name())
+	fmt.Println("first 5 exported names:")
+}

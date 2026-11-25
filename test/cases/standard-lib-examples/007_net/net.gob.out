@@ -1,1 +1,15 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "net"
+
+func runNet() {
+	nil
+	fmt.Println("ip:", ip, "loopback:", ip.IsLoopback(), "private:", ip.IsPrivate())
+	nil
+	fmt.Println("addr:", addr, "network:", network)
+	nil
+	fmt.Println("host:", host, "port:", port)
+	nil
+}

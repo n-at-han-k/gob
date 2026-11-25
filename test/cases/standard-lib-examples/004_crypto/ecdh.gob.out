@@ -1,1 +1,22 @@
-/* unsupported: Array */
+package main
+
+import "bytes"
+
+import "crypto/ecdh"
+
+import "crypto/rand"
+
+import "fmt"
+
+import "log"
+
+func runECDH() {
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	fmt.Printf("shared secret (%d B): %x\n", nil, shareA)
+	fmt.Println("both sides agree:", bytes.Equal(shareA, shareB))
+}

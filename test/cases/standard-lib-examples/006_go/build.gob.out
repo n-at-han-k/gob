@@ -1,1 +1,16 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "go/build"
+
+import "log"
+
+func runBuild() {
+	nil
+	nil
+	fmt.Println("import path:", pkg.ImportPath())
+	fmt.Println("directory:  ", pkg.Dir())
+	fmt.Println("go files:   ", pkg.GoFiles())
+	fmt.Println("imports:    ", pkg.Imports())
+}

@@ -1,1 +1,18 @@
-/* unsupported: Array */
+package main
+
+import "encoding"
+
+import "fmt"
+
+nil
+
+func runEncoding() {
+	nil
+	nil
+	fmt.Printf("marshalled: %s\n", txt)
+	nil
+	nil
+	nil
+	nil
+	fmt.Printf("parsed:     %+v\n", back)
+}

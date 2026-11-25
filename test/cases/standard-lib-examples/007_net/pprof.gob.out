@@ -1,1 +1,25 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "io"
+
+import "net/http"
+
+import "net/http/httptest"
+
+import "net/http/pprof"
+
+# ()
+
+func runPProf() {
+	nil
+	nil
+	nil
+	nil
+	resp.Body().Close()
+	fmt.Println("status:", resp.Status())
+	nil
+	nil
+	fmt.Println(snippet)
+}

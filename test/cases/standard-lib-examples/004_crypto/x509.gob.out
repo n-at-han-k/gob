@@ -1,1 +1,32 @@
-/* unsupported: Array */
+package main
+
+import "crypto/ecdsa"
+
+import "crypto/elliptic"
+
+import "crypto/rand"
+
+import "crypto/x509"
+
+import "crypto/x509/pkix"
+
+import "fmt"
+
+import "log"
+
+import "math/big"
+
+import "time"
+
+func runX509() {
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	fmt.Println("subject:  ", cert.Subject())
+	fmt.Println("issuer:   ", cert.Issuer())
+	fmt.Println("not after:", cert.NotAfter().Format(time.RFC3339()))
+	fmt.Println("is CA:    ", cert.IsCA())
+}

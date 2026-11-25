@@ -1,1 +1,28 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "log"
+
+import "net"
+
+import "net/rpc"
+
+nil
+
+nil
+
+func runRPC() {
+	nil
+	srv.Register(Arith.new())
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	fmt.Println("6 * 7 =", result)
+}

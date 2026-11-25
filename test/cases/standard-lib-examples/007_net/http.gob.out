@@ -1,1 +1,22 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "io"
+
+import "log"
+
+import "net/http"
+
+import "net/http/httptest"
+
+func runHTTP() {
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	fmt.Println("status:", resp.Status())
+	fmt.Print("body:  ", nil)
+}

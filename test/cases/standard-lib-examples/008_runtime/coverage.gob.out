@@ -1,1 +1,16 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "os"
+
+import "runtime/coverage"
+
+func runCoverage() {
+	nil
+	nil
+	nil
+	nil
+	nil
+	fmt.Println("(rebuild with `go build -cover` for these to succeed)")
+}

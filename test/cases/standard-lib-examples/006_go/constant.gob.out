@@ -1,1 +1,15 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "go/constant"
+
+import "go/token"
+
+func runConstant() {
+	nil
+	fmt.Println("1 << 100 =", big)
+	nil
+	fmt.Println("1.5 + 2 =", sum, "(kind:", sum.Kind(), ")")
+	fmt.Println("1<<100 > 1e30?", constant.Compare(big, token.GTR(), constant.MakeFloat64(nil)))
+}

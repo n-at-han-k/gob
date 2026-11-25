@@ -1,1 +1,19 @@
-/* unsupported: Array */
+package main
+
+import "encoding/asn1"
+
+import "fmt"
+
+import "log"
+
+nil
+
+func runASN1() {
+	nil
+	nil
+	nil
+	fmt.Printf("DER (%d bytes): %x\n", nil, der)
+	nil
+	nil
+	fmt.Printf("parsed: %+v\n", back)
+}

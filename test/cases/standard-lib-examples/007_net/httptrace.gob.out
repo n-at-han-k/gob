@@ -1,1 +1,20 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "net/http"
+
+import "net/http/httptest"
+
+import "net/http/httptrace"
+
+func runHTTPTrace() {
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	resp.Body().Close()
+	fmt.Println("status:", resp.Status())
+}

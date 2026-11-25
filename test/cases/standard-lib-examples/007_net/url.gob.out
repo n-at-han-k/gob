@@ -1,1 +1,22 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "log"
+
+import "net/url"
+
+func runURL() {
+	nil
+	nil
+	fmt.Println("scheme:  ", u.Scheme())
+	fmt.Println("host:    ", u.Host())
+	fmt.Println("user:    ", u.User())
+	fmt.Println("path:    ", u.Path())
+	fmt.Println("fragment:", u.Fragment())
+	nil
+	fmt.Println("tags:    ", nil)
+	nil
+	nil
+	fmt.Println("built:   ", built)
+}

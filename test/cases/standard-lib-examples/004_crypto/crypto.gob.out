@@ -1,1 +1,17 @@
-/* unsupported: Array */
+package main
+
+import "crypto"
+
+import "crypto/md5"
+
+import "crypto/sha1"
+
+import "crypto/sha256"
+
+import "crypto/sha512"
+
+import "fmt"
+
+func runCrypto() {
+	nil
+}

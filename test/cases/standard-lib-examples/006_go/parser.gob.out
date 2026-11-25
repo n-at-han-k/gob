@@ -1,1 +1,19 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "go/parser"
+
+import "go/token"
+
+import "log"
+
+func runParser() {
+	nil
+	nil
+	fmt.Printf("expression AST: %#v\n\n", expr)
+	nil
+	nil
+	nil
+	nil
+}

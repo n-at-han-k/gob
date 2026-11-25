@@ -1,1 +1,17 @@
-/* unsupported: Array */
+package main
+
+import "encoding/ascii85"
+
+import "fmt"
+
+func runAscii85() {
+	nil
+	nil
+	nil
+	nil
+	fmt.Printf("encoded: %s\n", dst)
+	nil
+	nil
+	nil
+	fmt.Printf("decoded: %s\n", nil)
+}

@@ -1,1 +1,24 @@
-/* unsupported: Array */
+package main
+
+import "crypto"
+
+import "crypto/rand"
+
+import "crypto/rsa"
+
+import "crypto/sha256"
+
+import "fmt"
+
+import "log"
+
+func runRSA() {
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	fmt.Printf("signature (%d bytes)\n", nil)
+	fmt.Println("verify err:", err)
+}

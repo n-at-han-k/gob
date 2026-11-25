@@ -1,1 +1,18 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "net/http"
+
+import "net/http/httptest"
+
+func runHTTPTest() {
+	nil
+	nil
+	nil
+	handler.ServeHTTP(rec, req)
+	nil
+	fmt.Println("status:", resp.Status())
+	fmt.Println("header:", resp.Header().Get("X-Test"))
+	fmt.Print("body:  ", rec.Body().String())
+}

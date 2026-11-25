@@ -1,1 +1,19 @@
-/* unsupported: Array */
+package main
+
+import "crypto/des"
+
+import "fmt"
+
+import "log"
+
+func runDES() {
+	nil
+	nil
+	nil
+	nil
+	nil
+	block.Encrypt(ct, plaintext)
+	nil
+	block.Decrypt(pt, ct)
+	fmt.Printf("block size: %d\nct: %x\npt: %s\n", block.BlockSize(), ct, pt)
+}

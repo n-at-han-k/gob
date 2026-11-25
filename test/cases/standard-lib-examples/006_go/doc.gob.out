@@ -1,1 +1,24 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "go/ast"
+
+import "go/doc"
+
+import "go/parser"
+
+import "go/token"
+
+import "log"
+
+func runDoc() {
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	fmt.Println("package:", p.Name())
+	fmt.Println("synopsis:", doc.Synopsis(p.Doc()))
+}

@@ -1,1 +1,19 @@
-/* unsupported: Array */
+package main
+
+import "encoding/base64"
+
+import "fmt"
+
+import "log"
+
+func runBase64() {
+	nil
+	nil
+	fmt.Println("std:", std)
+	nil
+	fmt.Println("url:", url)
+	fmt.Println("raw:", base64.RawURLEncoding().EncodeToString(src))
+	nil
+	nil
+	fmt.Printf("decoded: %s\n", back)
+}

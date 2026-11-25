@@ -1,1 +1,26 @@
-/* unsupported: Array */
+package main
+
+import "encoding/json"
+
+import "fmt"
+
+import "log"
+
+import "strings"
+
+nil
+
+func runJSON() {
+	nil
+	nil
+	nil
+	fmt.Println("compact:", nil)
+	nil
+	fmt.Println(nil)
+	nil
+	json.Unmarshal(data, &back)
+	fmt.Printf("parsed: %+v\n", back)
+	nil
+	nil
+	nil
+}

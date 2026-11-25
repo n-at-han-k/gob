@@ -1,1 +1,27 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "log"
+
+import "net"
+
+import "net/rpc"
+
+import "net/rpc/jsonrpc"
+
+func runJSONRPC() {
+	nil
+	srv.Register(Arith.new())
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	nil
+	fmt.Println("9 * 9 =", result)
+}

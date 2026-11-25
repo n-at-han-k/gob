@@ -1,1 +1,17 @@
-/* unsupported: Array */
+package main
+
+import "fmt"
+
+import "go/format"
+
+import "log"
+
+func runFormat() {
+	nil
+	nil
+	nil
+	fmt.Println("---before---")
+	fmt.Print(nil)
+	fmt.Println("---after----")
+	fmt.Print(nil)
+}

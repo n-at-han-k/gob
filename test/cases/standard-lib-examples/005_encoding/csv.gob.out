@@ -1,1 +1,21 @@
-/* unsupported: Array */
+package main
+
+import "encoding/csv"
+
+import "fmt"
+
+import "log"
+
+import "os"
+
+import "strings"
+
+func runCSV() {
+	nil
+	w.WriteAll(nil.new(nil, nil, nil))
+	w.Flush()
+	nil
+	nil
+	nil
+	nil
+}
