@@ -47,18 +47,21 @@ module Gob
         before_callback&.call(self)
 
         Array(body).each do |node|
-          result = iterate_callback&.call(self, node)
+          iterate_callback&.call(self, node).then do |result|
+            case result
+            when Hoist
+              result.nodes.each do |hoisted_node|
+                hoisted = iterate_callback&.call(self, hoisted_node)
 
-          case result
-          when Hoist
-            result.nodes.each do |hoisted_node|
-              hoisted = iterate_callback&.call(self, hoisted_node)
-              @tree << hoisted if hoisted
+                if hoisted
+                  @tree << hoisted
+                end
+              end
+            when nil
+              # dropped
+            else
+              @tree << result
             end
-          when nil
-            # dropped
-          else
-            @tree << result
           end
         end
 
