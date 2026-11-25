@@ -1,54 +1,9 @@
 package main
 
-import "fmt"
-
-nil
-
-nil
-
-nil
-
-nil
-
-func main() {
-	nil
-	nil
-	nil
-	nil
-	fmt.Println("zero values:", a, b, c, d)
-	nil
-	nil
-	fmt.Println(name, age)
-	nil
-	nil
-	fmt.Println(city, country)
-	nil
-	fmt.Println(x, y, z)
-	nil
-	fmt.Println(x, y)
-	nil
-	nil
-	nil
-	fmt.Println(host, port, enabled)
-	nil
-	nil
-	fmt.Println(big)
-	nil
-	fmt.Println(greeting, PI, STATUS_ACTIVE, STATUS_INACTIVE)
-	fmt.Println(packageLevel)
-	nil
+func #<SyntaxTree::Go::Ident:0x0000799350eb5480>() {
 	{
-		nil
-		fmt.Println(shadow)
 	}
-	fmt.Println(shadow)
-	nil
-	nil
-	fmt.Println(swap1, swap2)
-	nil
-	fmt.Println(kept)
 }
 
-func ignoreOne() {
-	nil
+func #<SyntaxTree::Go::Ident:0x0000799350eb5070>() {
 }

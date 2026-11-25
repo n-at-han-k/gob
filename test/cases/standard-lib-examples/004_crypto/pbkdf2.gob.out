@@ -1,17 +1,4 @@
 package main
 
-import "crypto/pbkdf2"
-
-import "crypto/rand"
-
-import "crypto/sha256"
-
-import "fmt"
-
-import "log"
-
-func runPBKDF2() {
-	salt = nil
-	rand.Read(salt)
-	fmt.Printf("salt: %x\nkey:  %x\n", salt, key)
+func #<SyntaxTree::Go::Ident:0x00007993a2dd5fb8>() {
 }

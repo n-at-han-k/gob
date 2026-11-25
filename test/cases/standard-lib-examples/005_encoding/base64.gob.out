@@ -1,17 +1,4 @@
 package main
 
-import "encoding/base64"
-
-import "fmt"
-
-import "log"
-
-func runBase64() {
-	src = nil.new("hello base64+/=?")
-	std = nil.EncodeToString(src)
-	fmt.Println("std:", std)
-	url = nil.EncodeToString(src)
-	fmt.Println("url:", url)
-	fmt.Println("raw:", nil)
-	fmt.Printf("decoded: %s\n", back)
+func #<SyntaxTree::Go::Ident:0x00007993a2e31b38>() {
 }

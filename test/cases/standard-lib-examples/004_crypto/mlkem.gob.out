@@ -1,15 +1,4 @@
 package main
 
-import "bytes"
-
-import "crypto/mlkem"
-
-import "fmt"
-
-import "log"
-
-func runMLKEM() {
-	ek = dk.EncapsulationKey()
-	fmt.Printf("shared secret (%d B): %x\n", nil, shared1)
-	fmt.Println("both sides agree:", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2df6560>() {
 }

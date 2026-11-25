@@ -1,17 +1,4 @@
 package main
 
-import "crypto"
-
-import "crypto/md5"
-
-import "crypto/sha1"
-
-import "crypto/sha256"
-
-import "crypto/sha512"
-
-import "fmt"
-
-func runCrypto() {
-	hashes = nil.new(nil, nil, nil, nil)
+func #<SyntaxTree::Go::Ident:0x00007993a28aec10>() {
 }

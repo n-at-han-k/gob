@@ -1,13 +1,4 @@
 package main
 
-import "encoding/json/v2"
-
-import "fmt"
-
-import "log"
-
-func runJSONv2() {
-	a = v2article.new(nil)
-	fmt.Println("marshalled:", nil)
-	fmt.Printf("parsed: %+v\n", back)
+func #<SyntaxTree::Go::Ident:0x00007993a00d9e88>() {
 }

@@ -1,14 +1,4 @@
 package main
 
-import "fmt"
-
-import "go/build"
-
-import "log"
-
-func runBuild() {
-	fmt.Println("import path:", nil)
-	fmt.Println("directory:  ", nil)
-	fmt.Println("go files:   ", nil)
-	fmt.Println("imports:    ", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2e2c2c8>() {
 }

@@ -1,13 +1,4 @@
 package main
 
-import "crypto/subtle"
-
-import "fmt"
-
-func runSubtle() {
-	a = nil.new("expected-token")
-	b = nil.new("expected-token")
-	c = nil.new("wrong-token   ")
-	fmt.Println("equal (constant time):", nil)
-	fmt.Println("not equal:            ", nil)
+func #<SyntaxTree::Go::Ident:0x0000799350e47e08>() {
 }

@@ -1,16 +1,4 @@
 package main
 
-import "fmt"
-
-import "runtime"
-
-func runRuntime() {
-	fmt.Println("go version:  ", nil)
-	fmt.Println("GOOS/GOARCH: ", nil, nil)
-	fmt.Println("NumCPU:      ", nil)
-	fmt.Println("NumGoroutine:", nil)
-	fmt.Println("GOMAXPROCS:  ", nil)
-	fmt.Printf("here: %s:%d (%s)\n", file, line, nil)
-	runtime.ReadMemStats(@m)
-	fmt.Printf("heap alloc: %d KiB, sys: %d KiB, num GC: %d\n", nil, nil, nil)
+func #<SyntaxTree::Go::Ident:0x0000799350e805f0>() {
 }

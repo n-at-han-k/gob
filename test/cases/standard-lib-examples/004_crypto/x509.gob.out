@@ -1,27 +1,4 @@
 package main
 
-import "crypto/ecdsa"
-
-import "crypto/elliptic"
-
-import "crypto/rand"
-
-import "crypto/x509"
-
-import "crypto/x509/pkix"
-
-import "fmt"
-
-import "log"
-
-import "math/big"
-
-import "time"
-
-func runX509() {
-	tmpl = nil.new(nil)
-	fmt.Println("subject:  ", nil)
-	fmt.Println("issuer:   ", nil)
-	fmt.Println("not after:", nil)
-	fmt.Println("is CA:    ", nil)
+func #<SyntaxTree::Go::Ident:0x0000799350ed8160>() {
 }

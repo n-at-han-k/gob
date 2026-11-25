@@ -1,15 +1,4 @@
 package main
 
-import "bytes"
-
-import "encoding/gob"
-
-import "fmt"
-
-import "log"
-
-func runGob() {
-	enc = gob.NewEncoder(@buf)
-	fmt.Printf("encoded %d bytes\n", nil)
-	fmt.Printf("decoded: %+v\n", back)
+func #<SyntaxTree::Go::Ident:0x00007993a005d0e0>() {
 }

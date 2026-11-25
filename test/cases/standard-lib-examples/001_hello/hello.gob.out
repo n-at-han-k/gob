@@ -1,7 +1,4 @@
 package main
 
-import "fmt"
-
-func main() {
-	fmt.Println("Hello, gopher!")
+func #<SyntaxTree::Go::Ident:0x00007993a0076a40>() {
 }

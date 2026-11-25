@@ -1,15 +1,4 @@
 package main
 
-import "encoding/ascii85"
-
-import "fmt"
-
-func runAscii85() {
-	src = nil.new("hello ascii85")
-	dst = nil
-	n = ascii85.Encode(dst, src)
-	dst = nil
-	fmt.Printf("encoded: %s\n", dst)
-	back = nil
-	fmt.Printf("decoded: %s\n", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2ddc098>() {
 }

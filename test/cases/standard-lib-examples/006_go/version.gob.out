@@ -1,11 +1,4 @@
 package main
 
-import "fmt"
-
-import "go/version"
-
-func runVersion() {
-	vs = nil.new("go1.20", "go1.21.0", "go1.22rc2", "go1.23.4-custom", "notaversion")
-	fmt.Println("go1.21 <  go1.22:", nil)
-	fmt.Println("go1.22 >= go1.22rc2:", nil)
+func #<SyntaxTree::Go::Ident:0x0000799350e69bc0>() {
 }

@@ -1,17 +1,4 @@
 package main
 
-import "bytes"
-
-import "crypto/ecdh"
-
-import "crypto/rand"
-
-import "fmt"
-
-import "log"
-
-func runECDH() {
-	curve = ecdh.P256()
-	fmt.Printf("shared secret (%d B): %x\n", nil, shareA)
-	fmt.Println("both sides agree:", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a0055a70>() {
 }

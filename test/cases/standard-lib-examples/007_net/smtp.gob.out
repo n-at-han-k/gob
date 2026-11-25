@@ -1,17 +1,4 @@
 package main
 
-import "fmt"
-
-import "net/smtp"
-
-func runSMTP() {
-	auth = smtp.PlainAuth(nil, "alice@example.com", "hunter2", "smtp.example.com")
-	from = "alice@example.com"
-	to = nil.new("bob@example.org")
-	body = nil.new("Subject: hello\r\n\r\nsent by net/smtp\r\n")
-	fmt.Printf("auth:  %T\n", auth)
-	fmt.Println("from:  ", from)
-	fmt.Println("to:    ", to)
-	fmt.Printf("body:\n%s", body)
-	fmt.Println("(smtp.SendMail would dial smtp.example.com:25 and deliver this)")
+func #<SyntaxTree::Go::Ident:0x00007993a2e141a0>() {
 }

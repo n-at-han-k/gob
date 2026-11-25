@@ -1,10 +1,4 @@
 package main
 
-import "fmt"
-
-import "os"
-
-import "sort"
-
-func main() {
+func #<SyntaxTree::Go::Ident:0x00007993a28a2870>() {
 }

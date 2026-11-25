@@ -1,22 +1,4 @@
 package main
 
-import "crypto/aes"
-
-import "crypto/cipher"
-
-import "crypto/rand"
-
-import "fmt"
-
-func runCipher() {
-	key = nil
-	rand.Read(key)
-	iv = nil
-	rand.Read(iv)
-	plaintext = nil.new("streaming plaintext")
-	ct = nil
-	nil.XORKeyStream(ct, plaintext)
-	pt = nil
-	nil.XORKeyStream(pt, ct)
-	fmt.Printf("ct: %x\npt: %s\n", ct, pt)
+func #<SyntaxTree::Go::Ident:0x00007993a2dd53d8>() {
 }

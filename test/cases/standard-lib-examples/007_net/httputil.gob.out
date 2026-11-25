@@ -1,17 +1,4 @@
 package main
 
-import "fmt"
-
-import "net/http"
-
-import "net/http/httptest"
-
-import "net/http/httputil"
-
-import "net/url"
-
-func runHTTPUtil() {
-	upstream = httptest.NewServer(nil)
-	proxy = httptest.NewServer(nil)
-	fmt.Print(nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2e155a0>() {
 }

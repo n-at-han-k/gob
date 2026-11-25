@@ -1,16 +1,4 @@
 package main
 
-import "crypto/rc4"
-
-import "fmt"
-
-import "log"
-
-func runRC4() {
-	pt = nil.new("legacy data")
-	ct = nil
-	c.XORKeyStream(ct, pt)
-	out = nil
-	c2.XORKeyStream(out, ct)
-	fmt.Printf("ct: %x\npt: %s\n", ct, out)
+func #<SyntaxTree::Go::Ident:0x0000799350e621e0>() {
 }

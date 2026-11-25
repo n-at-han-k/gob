@@ -1,14 +1,4 @@
 package main
 
-import "fmt"
-
-import "runtime/cgo"
-
-func runCGO() {
-	original = nil.new(nil)
-	h = cgo.NewHandle(original)
-	got = nil
-	fmt.Printf("handle: %d\n", nil)
-	fmt.Printf("value:  %v\n", got)
-	fmt.Printf("mutation visible on original: %v\n", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a307d6d0>() {
 }

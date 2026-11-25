@@ -1,12 +1,4 @@
 package main
 
-import "fmt"
-
-import "net"
-
-func runNet() {
-	ip = net.ParseIP("192.168.1.42")
-	fmt.Println("ip:", ip, "loopback:", nil, "private:", nil)
-	fmt.Println("addr:", addr, "network:", network)
-	fmt.Println("host:", host, "port:", port)
+func #<SyntaxTree::Go::Ident:0x00007993a2c7c6d0>() {
 }

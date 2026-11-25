@@ -1,18 +1,4 @@
 package main
 
-import "crypto/dsa"
-
-import "crypto/rand"
-
-import "crypto/sha256"
-
-import "fmt"
-
-import "log"
-
-func runDSA() {
-	priv = nil.new(nil)
-	digest = sha256.Sum256(nil)
-	ok = dsa.Verify(nil, nil, r, s)
-	fmt.Println("signature valid:", ok)
+func #<SyntaxTree::Go::Ident:0x00007993a2ae4b60>() {
 }

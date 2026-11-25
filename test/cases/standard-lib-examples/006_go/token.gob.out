@@ -1,13 +1,4 @@
 package main
 
-import "fmt"
-
-import "go/token"
-
-func runToken() {
-	nil
-	nil
-	f.SetLinesForContent(nil.new("line one\nline two\nline three"))
-	nil
-	fmt.Println("offset 10 is at", fset.Position(pos))
+func #<SyntaxTree::Go::Ident:0x0000799350e40838>() {
 }

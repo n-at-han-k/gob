@@ -1,13 +1,4 @@
 package main
 
-import "fmt"
-
-import "go/build/constraint"
-
-import "log"
-
-func runConstraint() {
-	line = "//go:build linux && (amd64 || arm64)"
-	fmt.Println("expr:", expr)
-	envs = nil.new(nil, nil, nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2e21148>() {
 }

@@ -1,22 +1,4 @@
 package main
 
-import "crypto/aes"
-
-import "crypto/cipher"
-
-import "crypto/rand"
-
-import "fmt"
-
-import "log"
-
-func runAES() {
-	key = nil
-	rand.Read(key)
-	nonce = nil
-	rand.Read(nonce)
-	plaintext = nil.new("secret message")
-	ct = gcm.Seal(nil, nonce, plaintext, nil)
-	fmt.Printf("ciphertext (%d bytes): %x\n", nil, ct)
-	fmt.Printf("decrypted: %s\n", pt)
+func #<SyntaxTree::Go::Ident:0x00007993a003b7d8>() {
 }

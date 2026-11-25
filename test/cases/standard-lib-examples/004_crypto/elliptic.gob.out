@@ -1,8 +1,4 @@
 package main
 
-import "crypto/elliptic"
-
-import "fmt"
-
-func runElliptic() {
+func #<SyntaxTree::Go::Ident:0x0000799350eba840>() {
 }

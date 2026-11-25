@@ -1,17 +1,4 @@
 package main
 
-import "fmt"
-
-import "net/http"
-
-import "net/http/httptest"
-
-import "net/http/httptrace"
-
-func runHTTPTrace() {
-	srv = httptest.NewServer(nil)
-	trace = nil.new(nil)
-	req = req.WithContext(nil)
-	nil.Close()
-	fmt.Println("status:", nil)
+func #<SyntaxTree::Go::Ident:0x0000799350eb9170>() {
 }

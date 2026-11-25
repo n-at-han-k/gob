@@ -1,15 +1,4 @@
 package main
 
-import "crypto/rand"
-
-import "fmt"
-
-import "log"
-
-import "math/big"
-
-func runRand() {
-	buf = nil
-	fmt.Printf("random bytes: %x\n", buf)
-	fmt.Println("random int  :", n)
+func #<SyntaxTree::Go::Ident:0x0000799350ed15e0>() {
 }

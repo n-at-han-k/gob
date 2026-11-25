@@ -1,19 +1,4 @@
 package main
 
-import "encoding/csv"
-
-import "fmt"
-
-import "log"
-
-import "os"
-
-import "strings"
-
-func runCSV() {
-	w = csv.NewWriter(nil)
-	w.WriteAll(nil)
-	w.Flush()
-	input = "id,label\n1,apple\n2,orange\n3,pear\n"
-	r = csv.NewReader(nil)
+func #<SyntaxTree::Go::Ident:0x00007993a0013800>() {
 }

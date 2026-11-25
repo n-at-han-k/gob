@@ -1,17 +1,4 @@
 package main
 
-import "fmt"
-
-import "os"
-
-import "runtime"
-
-import "runtime/pprof"
-
-func runPProf() {
-	junk = nil
-	runtime.GC()
-	fmt.Printf("wrote heap profile: %s (%d bytes)\n", nil, nil)
-	fmt.Println("view with: go tool pprof", nil)
-	_ = junk
+func #<SyntaxTree::Go::Ident:0x00007993a0016be0>() {
 }

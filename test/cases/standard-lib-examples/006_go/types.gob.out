@@ -1,27 +1,4 @@
 package main
 
-import "fmt"
-
-import "go/ast"
-
-import "go/importer"
-
-import "go/parser"
-
-import "go/token"
-
-import "go/types"
-
-import "log"
-
-func runTypes() {
-	src = "package p
-import "fmt"
-func Greet(name string) { fmt.Println("hi", name) }
-var Answer = 21 * 2
-"
-	fset = token.NewFileSet()
-	conf = nil.new(nil)
-	info = nil.new(nil)
-	fmt.Println("package:", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2e29f78>() {
 }

@@ -1,11 +1,4 @@
 package main
 
-import "fmt"
-
-import "os"
-
-import "runtime/coverage"
-
-func runCoverage() {
-	fmt.Println("(rebuild with `go build -cover` for these to succeed)")
+func #<SyntaxTree::Go::Ident:0x00007993a2e387a8>() {
 }

@@ -1,17 +1,4 @@
 package main
 
-import "crypto/ed25519"
-
-import "crypto/rand"
-
-import "fmt"
-
-import "log"
-
-func runED25519() {
-	msg = nil.new("sign me")
-	sig = ed25519.Sign(priv, msg)
-	fmt.Printf("public key (%d B): %x\n", nil, pub)
-	fmt.Printf("signature (%d B): %x\n", nil, sig)
-	fmt.Println("valid:", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2c2f970>() {
 }

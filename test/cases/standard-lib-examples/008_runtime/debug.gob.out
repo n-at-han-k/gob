@@ -1,12 +1,4 @@
 package main
 
-import "fmt"
-
-import "runtime/debug"
-
-func runDebug() {
-	debug.ReadGCStats(@stats)
-	fmt.Printf("gc runs: %d, total pause: %v\n", nil, nil)
-	stack = debug.Stack()
-	fmt.Print("stack:\n", nil, "...\n")
+func #<SyntaxTree::Go::Ident:0x00007993a00d73b8>() {
 }

@@ -1,15 +1,4 @@
 package main
 
-import "fmt"
-
-import "log"
-
-import "net"
-
-import "net/rpc"
-
-func runRPC() {
-	srv = rpc.NewServer()
-	srv.Register(nil)
-	fmt.Println("6 * 7 =", result)
+func #<SyntaxTree::Go::Ident:0x00007993a2c7ce50>() {
 }

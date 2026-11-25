@@ -1,19 +1,4 @@
 package main
 
-import "fmt"
-
-import "io"
-
-import "log"
-
-import "net/mail"
-
-import "strings"
-
-func runMail() {
-	raw = nil
-	fmt.Println("from:   ", from)
-	fmt.Println("to:     ", to)
-	fmt.Println("subject:", nil)
-	fmt.Print("body:   ", nil)
+func #<SyntaxTree::Go::Ident:0x0000799350e4e258>() {
 }

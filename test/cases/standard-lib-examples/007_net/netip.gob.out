@@ -1,18 +1,4 @@
 package main
 
-import "fmt"
-
-import "log"
-
-import "net/netip"
-
-func runNetip() {
-	fmt.Println("addr:      ", addr)
-	fmt.Println("is v6?     ", nil)
-	fmt.Println("is private?", nil)
-	prefix = netip.MustParsePrefix("10.0.0.0/8")
-	fmt.Println("prefix:    ", prefix)
-	fmt.Println("contains 10.1.2.3?", nil)
-	seen = nil.new(nil)
-	fmt.Println("map:       ", seen)
+func #<SyntaxTree::Go::Ident:0x00007993a2ddd808>() {
 }

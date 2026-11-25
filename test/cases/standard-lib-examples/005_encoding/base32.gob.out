@@ -1,15 +1,4 @@
 package main
 
-import "encoding/base32"
-
-import "fmt"
-
-import "log"
-
-func runBase32() {
-	src = nil.new("hello base32")
-	encoded = nil.EncodeToString(src)
-	fmt.Println("std:  ", encoded)
-	fmt.Printf("decoded: %s\n", decoded)
-	fmt.Println("hex:  ", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2bd17d0>() {
 }

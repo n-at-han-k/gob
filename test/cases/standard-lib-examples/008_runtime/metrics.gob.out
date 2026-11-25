@@ -1,12 +1,4 @@
 package main
 
-import "fmt"
-
-import "runtime/metrics"
-
-func runMetrics() {
-	samples = nil.new(nil, nil, nil)
-	metrics.Read(samples)
-	all = metrics.All()
-	fmt.Printf("\n%d metrics available; first 5 names:\n", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a0074b00>() {
 }

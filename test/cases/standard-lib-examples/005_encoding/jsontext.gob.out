@@ -1,14 +1,4 @@
 package main
 
-import "encoding/json/jsontext"
-
-import "fmt"
-
-import "io"
-
-import "strings"
-
-func runJSONText() {
-	src = "{"name":"Nathan","tags":["go","stdlib"],"count":3}"
-	dec = jsontext.NewDecoder(nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2e315e8>() {
 }

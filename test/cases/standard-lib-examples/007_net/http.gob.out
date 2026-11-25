@@ -1,17 +1,4 @@
 package main
 
-import "fmt"
-
-import "io"
-
-import "log"
-
-import "net/http"
-
-import "net/http/httptest"
-
-func runHTTP() {
-	srv = httptest.NewServer(nil)
-	fmt.Println("status:", nil)
-	fmt.Print("body:  ", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2dfd130>() {
 }

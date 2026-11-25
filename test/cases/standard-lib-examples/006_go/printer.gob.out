@@ -1,17 +1,4 @@
 package main
 
-import "go/parser"
-
-import "go/printer"
-
-import "go/token"
-
-import "log"
-
-import "os"
-
-func runPrinter() {
-	src = "package p; func Hi(){println("hi")}"
-	fset = token.NewFileSet()
-	cfg = nil.new(nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2e378a8>() {
 }

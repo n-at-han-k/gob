@@ -1,17 +1,4 @@
 package main
 
-import "bufio"
-
-import "fmt"
-
-import "log"
-
-import "net/textproto"
-
-import "strings"
-
-func runTextproto() {
-	raw = nil
-	r = textproto.NewReader(nil)
-	fmt.Println("canonical:", nil)
+func #<SyntaxTree::Go::Ident:0x0000799350e6f750>() {
 }

@@ -1,23 +1,4 @@
 package main
 
-import "fmt"
-
-import "go/doc/comment"
-
-func runComment() {
-	src = "Package widget draws widgets.
-
-# Overview
-
-Widgets come in three sizes:
-  - small
-  - medium
-  - large
-
-See [example.com] for details.
-
-[example.com]: https://example.com
-"
-	doc = p.Parse(src)
-	fmt.Print(nil)
+func #<SyntaxTree::Go::Ident:0x00007993a2ae45c0>() {
 }

@@ -1,20 +1,4 @@
 package main
 
-import "bytes"
-
-import "encoding/binary"
-
-import "fmt"
-
-import "log"
-
-func runBinary() {
-	binary.Write(@buf, nil, nil)
-	binary.Write(@buf, nil, nil)
-	fmt.Printf("bytes: %x\n", nil)
-	binary.Read(@buf, nil, @b)
-	fmt.Printf("a=%#x b=%#x\n", a, b)
-	n = binary.PutVarint(nil, nil)
-	fmt.Printf("varint(-12345) = %x (%d bytes)\n", nil, n)
-	fmt.Println("decoded:", v)
+func #<SyntaxTree::Go::Ident:0x00007993a00324f8>() {
 }

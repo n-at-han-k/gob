@@ -1,17 +1,7 @@
 package main
 
-import "fmt"
-
-import "net/http"
-
-import "net/http/cookiejar"
-
-import "net/url"
-
-func runCookieJar() {
-	jar.SetCookies(u, nil)
-	fmt.Println("cookies for sibling site:", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a28861e8>() {
 }
 
-func mustURL(s any) {
+func #<SyntaxTree::Go::Ident:0x00007993a2885ce8>() {
 }

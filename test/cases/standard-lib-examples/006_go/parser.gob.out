@@ -1,20 +1,4 @@
 package main
 
-import "fmt"
-
-import "go/parser"
-
-import "go/token"
-
-import "log"
-
-func runParser() {
-	fmt.Printf("expression AST: %#v\n\n", expr)
-	src = "package p
-import (
-	"fmt"
-	"io"
-)
-"
-	fset = token.NewFileSet()
+func #<SyntaxTree::Go::Ident:0x00007993a2df0200>() {
 }

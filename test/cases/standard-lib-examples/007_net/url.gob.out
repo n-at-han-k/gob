@@ -1,19 +1,4 @@
 package main
 
-import "fmt"
-
-import "log"
-
-import "net/url"
-
-func runURL() {
-	fmt.Println("scheme:  ", nil)
-	fmt.Println("host:    ", nil)
-	fmt.Println("user:    ", nil)
-	fmt.Println("path:    ", nil)
-	fmt.Println("fragment:", nil)
-	q = u.Query()
-	fmt.Println("tags:    ", nil)
-	built = nil.new(nil)
-	fmt.Println("built:   ", built)
+func #<SyntaxTree::Go::Ident:0x0000799350ed6f90>() {
 }

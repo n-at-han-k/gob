@@ -1,13 +1,4 @@
 package main
 
-import "encoding/asn1"
-
-import "fmt"
-
-import "log"
-
-func runASN1() {
-	p = person.new(nil)
-	fmt.Printf("DER (%d bytes): %x\n", nil, der)
-	fmt.Printf("parsed: %+v\n", back)
+func #<SyntaxTree::Go::Ident:0x00007993a2e3f878>() {
 }

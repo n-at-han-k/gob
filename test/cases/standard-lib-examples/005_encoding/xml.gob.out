@@ -1,13 +1,4 @@
 package main
 
-import "encoding/xml"
-
-import "fmt"
-
-import "log"
-
-func runXML() {
-	b = book.new(nil)
-	fmt.Println(nil)
-	fmt.Printf("parsed: %+v\n", back)
+func #<SyntaxTree::Go::Ident:0x00007993a00185d0>() {
 }

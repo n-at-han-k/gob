@@ -1,20 +1,4 @@
 package main
 
-import "crypto/ecdsa"
-
-import "crypto/elliptic"
-
-import "crypto/rand"
-
-import "crypto/sha256"
-
-import "fmt"
-
-import "log"
-
-func runECDSA() {
-	digest = sha256.Sum256(nil)
-	ok = ecdsa.VerifyASN1(nil, nil, sig)
-	fmt.Printf("signature (%d B): %x\n", nil, sig)
-	fmt.Println("valid:", ok)
+func #<SyntaxTree::Go::Ident:0x00007993a003c318>() {
 }

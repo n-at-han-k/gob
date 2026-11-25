@@ -1,11 +1,4 @@
 package main
 
-import "crypto/sha512"
-
-import "fmt"
-
-func runSHA512() {
-	fmt.Printf("Sum384:     %x\n", nil)
-	fmt.Printf("Sum512:     %x\n", nil)
-	fmt.Printf("Sum512_256: %x\n", nil)
+func #<SyntaxTree::Go::Ident:0x0000799350e4d178>() {
 }

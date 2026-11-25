@@ -19,44 +19,19 @@ module Gob
       end
 
       module FunctionNodes
-        def FunctionSignature(fields, returns)
-          case returns
-          in []
-            SyntaxTree::Go::FuncType.new(
-              params: SyntaxTree::Go::FieldList.new(list: fields),
-              results: nil
-            )
-          else
-            SyntaxTree::Go::FuncType.new(
-              params: SyntaxTree::Go::FieldList.new(list: fields),
-              results: SyntaxTree::Go::FieldList.new(
-                list: returns.map do |type|
-                  SyntaxTree::Go::Field.new(
-                    names: [],
-                    type: SyntaxTree::Go::Ident.new(name: type)
-                  )
-                end
-              )
-            )
-          end
-        end
-
-        def Signature(comments)
-          comment =
-            comments.map(&:value).find { |value| value.match?(/^\s*#\s*\(/) }
-
-          match =
-            comment&.match(
-              /^\s*#\s*\((?<types>[^)]*)\)\s*->\s*\(?(?<returns>[^)]+)\)?$/
-            )
-
-          match ? [match[:types], match[:returns]].map { |text| text.split(",").map(&:strip).reject(&:empty?) } : [[], []]
-        end
-
-        def Function(name:, signature:, body:)
+                #SyntaxTree::Go::Field.new(
+                #  names: [],
+                #  type: SyntaxTree::Go::Ident.new(name: type)
+                #)
+        def Function(name:, params:, body:)
           SyntaxTree::Go::FuncDecl.new(
-            name: Variable(name),
-            type: signature,
+            name: SyntaxTree::Go::Ident.new(name: name),
+            type: SyntaxTree::Go::FuncType.new(
+              type_params: nil,
+              params: SyntaxTree::Go::FieldList.new(list: [
+              ]),
+              results: nil
+            ),
             body: SyntaxTree::Go::BlockStmt.new(list: body)
           )
         end
@@ -124,32 +99,21 @@ module Gob
             ]
               Hoist.new(body)
 
+                #contents: SyntaxTree::Params[requireds: _parameters],
+                #comments: [SyntaxTree::Comment[value: /^#\s*\(/ => signature]]
             in SyntaxTree::DefNode[
               target: nil,
               operator: nil,
               name: name,
-              params: SyntaxTree::Params[
-                requireds: requireds,
-                comments: comments
-              ],
+              params: params,
               bodystmt: SyntaxTree::BodyStmt[
                 statements: SyntaxTree::Statements[body: body]
               ]
             ]
               ctx.descend(body).then do |children|
-                Signature(comments) => [types, returns]
-
                 Function(
-                  name: name,
-                  signature: FunctionSignature(
-                    requireds.each_with_index.map do |required, index|
-                      SyntaxTree::Go::Field.new(
-                        names: [Variable(required)],
-                        type: SyntaxTree::Go::Ident.new(name: types[index] || "any")
-                      )
-                    end,
-                    returns
-                  ),
+                  name: Variable(name),
+                  params: params,
                   body: children.tree
                 )
               end

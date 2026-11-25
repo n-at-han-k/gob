@@ -1,20 +1,4 @@
 package main
 
-import "crypto"
-
-import "crypto/rand"
-
-import "crypto/rsa"
-
-import "crypto/sha256"
-
-import "fmt"
-
-import "log"
-
-func runRSA() {
-	digest = sha256.Sum256(nil)
-	err = rsa.VerifyPSS(nil, nil, nil, sig, nil)
-	fmt.Printf("signature (%d bytes)\n", nil)
-	fmt.Println("verify err:", err)
+func #<SyntaxTree::Go::Ident:0x00007993a2e1dac0>() {
 }

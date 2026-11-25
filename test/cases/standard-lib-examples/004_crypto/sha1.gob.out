@@ -1,10 +1,4 @@
 package main
 
-import "crypto/sha1"
-
-import "fmt"
-
-func runSHA1() {
-	sum = sha1.Sum(nil)
-	fmt.Printf("sha1: %x\n", sum)
+func #<SyntaxTree::Go::Ident:0x00007993a005d9a0>() {
 }

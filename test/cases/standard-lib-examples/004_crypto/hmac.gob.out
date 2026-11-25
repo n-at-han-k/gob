@@ -1,19 +1,4 @@
 package main
 
-import "crypto/hmac"
-
-import "crypto/sha256"
-
-import "fmt"
-
-func runHMAC() {
-	key = nil.new("shared secret")
-	msg = nil.new("transfer $100")
-	mac = hmac.New(nil, key)
-	mac.Write(msg)
-	tag = mac.Sum(nil)
-	check = hmac.New(nil, key)
-	check.Write(msg)
-	fmt.Printf("tag: %x\n", tag)
-	fmt.Println("valid:", nil)
+func #<SyntaxTree::Go::Ident:0x0000799350e852d0>() {
 }

@@ -1,20 +1,4 @@
 package main
 
-import "context"
-
-import "fmt"
-
-import "os"
-
-import "runtime/trace"
-
-import "sync"
-
-import "time"
-
-func runTrace() {
-	wg.Wait()
-	trace.Stop()
-	fmt.Printf("wrote trace: %s (%d bytes)\n", nil, nil)
-	fmt.Println("view with: go tool trace", nil)
+func #<SyntaxTree::Go::Ident:0x0000799350e8eab0>() {
 }

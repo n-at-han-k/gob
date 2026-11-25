@@ -1,14 +1,4 @@
 package main
 
-import "encoding/pem"
-
-import "fmt"
-
-import "os"
-
-func runPEM() {
-	block = nil.new(nil)
-	pem.Encode(nil, block)
-	encoded = pem.EncodeToMemory(block)
-	fmt.Printf("type=%s bytes=%q leftover=%d\n", nil, nil, nil)
+func #<SyntaxTree::Go::Ident:0x0000799350e88700>() {
 }

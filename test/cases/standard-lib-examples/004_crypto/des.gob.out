@@ -1,17 +1,4 @@
 package main
 
-import "crypto/des"
-
-import "fmt"
-
-import "log"
-
-func runDES() {
-	key = nil.new("8bytekey")
-	plaintext = nil.new("blockdat")
-	ct = nil
-	block.Encrypt(ct, plaintext)
-	pt = nil
-	block.Decrypt(pt, ct)
-	fmt.Printf("block size: %d\nct: %x\npt: %s\n", nil, ct, pt)
+func #<SyntaxTree::Go::Ident:0x00007993a2dd50b8>() {
 }

@@ -1,11 +1,4 @@
 package main
 
-import "crypto/tls"
-
-import "fmt"
-
-func runTLS() {
-	cfg = nil.new(nil)
-	fmt.Printf("min version: 0x%04x (TLS 1.2)\n", nil)
-	fmt.Println("ALPN offers:", nil)
+func #<SyntaxTree::Go::Ident:0x00007993a0077850>() {
 }

@@ -1,12 +1,4 @@
 package main
 
-import "encoding"
-
-import "fmt"
-
-func runEncoding() {
-	fmt.Printf("marshalled: %s\n", txt)
-	u = @back
-	_ = u.UnmarshalText(nil)
-	fmt.Printf("parsed:     %+v\n", back)
+func #<SyntaxTree::Go::Ident:0x00007993a0053950>() {
 }

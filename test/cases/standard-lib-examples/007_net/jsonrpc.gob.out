@@ -1,18 +1,4 @@
 package main
 
-import "fmt"
-
-import "log"
-
-import "net"
-
-import "net/rpc"
-
-import "net/rpc/jsonrpc"
-
-func runJSONRPC() {
-	srv = rpc.NewServer()
-	srv.Register(nil)
-	client = rpc.NewClientWithCodec(nil)
-	fmt.Println("9 * 9 =", result)
+func #<SyntaxTree::Go::Ident:0x00007993a2dfd090>() {
 }

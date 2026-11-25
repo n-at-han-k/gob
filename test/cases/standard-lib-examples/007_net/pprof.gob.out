@@ -1,21 +1,6 @@
 package main
 
-import "fmt"
-
-import "io"
-
-import "net/http"
-
-import "net/http/httptest"
-
-import "net/http/pprof"
-
 # ()
 
-func runPProf() {
-	srv = httptest.NewServer(nil)
-	nil.Close()
-	fmt.Println("status:", nil)
-	snippet = nil
-	fmt.Println(snippet)
+func #<SyntaxTree::Go::Ident:0x00007993a2dddc68>() {
 }

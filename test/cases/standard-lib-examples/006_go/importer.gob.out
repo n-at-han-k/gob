@@ -1,13 +1,4 @@
 package main
 
-import "fmt"
-
-import "go/importer"
-
-import "log"
-
-func runImporter() {
-	fmt.Println("package:", nil)
-	fmt.Println("name:   ", nil)
-	fmt.Println("first 5 exported names:")
+func #<SyntaxTree::Go::Ident:0x0000799350ebf9d0>() {
 }
