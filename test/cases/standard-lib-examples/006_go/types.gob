@@ -15,7 +15,7 @@ var Answer = 21 * 2
 `
     fset = token.NewFileSet()
     file, err = parser.ParseFile(fset, "p.go", src, 0)
-    if err != nil
+    if err
       log.Fatal(err)
     end
 
@@ -25,7 +25,7 @@ var Answer = 21 * 2
       Types: Hash[ast.Expr, types.TypeAndValue].new
     )
     pkg, err = conf.Check("p", fset, Array[@@ast.File].new(file), info)
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

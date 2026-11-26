@@ -11,7 +11,7 @@ module Main
 
     back = make(Array[byte], len(src))
     ndst, _, err = ascii85.Decode(back, dst, true)
-    if err != nil
+    if err
       fmt.Println("decode err:", err)
       return
     end

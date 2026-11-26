@@ -44,7 +44,7 @@ func (self *Sequence) Next() (KSUID, error) {
 	if count > math.MaxUint16 {
 		return Nil, errors.New("too many IDs were generated")
 	}
-	self.count++
+	self.count = self.count + 1
 	return withSequenceNumber(id, uint16(count)), nil
 }
 

@@ -15,7 +15,7 @@ module Main
     a = article.new(Title: "Learning Go", Views: 12, Tags: Array[string].new("go", "stdlib"))
 
     data, err = json.Marshal(a)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     fmt.Println("compact:", string(data))

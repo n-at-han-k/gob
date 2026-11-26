@@ -6,16 +6,16 @@ module Main
   def runConstraint
     line = "//go:build linux && (amd64 || arm64)"
     expr, err = constraint.Parse(line)
-    if err != nil
+    if err
       log.Fatal(err)
     end
 
     fmt.Println("expr:", expr)
 
     envs = Array[Hash[string, bool]].new(
-      { "linux" => true, "amd64" => true },
-      { "linux" => true, "arm" => true },
-      { "darwin" => true, "arm64" => true }
+      {"linux" => true, "amd64" => true},
+      {"linux" => true, "arm" => true},
+      {"darwin" => true, "arm64" => true}
     )
     envs.each do |_, env|
       fmt.Printf("matches %v: %v\n", env, expr.Eval(lambda { |tag| # string -> bool

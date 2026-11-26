@@ -10,7 +10,7 @@ module Main
     rand.Read(key)
 
     block, err = aes.NewCipher(key)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     gcm, _ = cipher.NewGCM(block)
@@ -21,7 +21,7 @@ module Main
     plaintext = Array[byte].new("secret message")
     ct = gcm.Seal(nil, nonce, plaintext, nil)
     pt, err = gcm.Open(nil, nonce, ct, nil)
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

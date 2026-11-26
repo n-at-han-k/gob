@@ -10,7 +10,7 @@ module Main
     info = Array[byte].new("app: session key v1")
 
     key, err = hkdf.Key(sha256.New, secret, salt, string(info), 32)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     fmt.Printf("derived 32-byte key: %x\n", key)

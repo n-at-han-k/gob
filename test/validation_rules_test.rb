@@ -52,6 +52,16 @@ class ValidationRulesTest < Minitest::Test
     assert_equal "x = Hash[string, int].new(\"a\" => 1)\n", autocorrect("x = { \"a\" => 1 }\n")
   end
 
+  def test_collection_literals_inside_typed_new_are_not_enforced
+    source = "x = Array[Array[int]].new([1, 2], [3, 4])\n"
+    assert_equal source, autocorrect(source)
+    refute_includes offense_names(source), "Gob/CollectionLiteral"
+
+    hash_source = "x = Hash[string, Array[int]].new(\"a\" => [1, 2])\n"
+    assert_equal hash_source, autocorrect(hash_source)
+    refute_includes offense_names(hash_source), "Gob/CollectionLiteral"
+  end
+
   def test_select_block
     expected = "case\nwhen ~ready()\n  return value\nend\n"
     assert_equal expected, autocorrect("select do |c|\n  c << ready() { return value }\nend\n")

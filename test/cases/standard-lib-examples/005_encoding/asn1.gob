@@ -8,7 +8,7 @@ module Main
   def runASN1
     p = person.new(Name: "Nathan", Age: 30)
     der, err = asn1.Marshal(p)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     fmt.Printf("DER (%d bytes): %x\n", len(der), der)

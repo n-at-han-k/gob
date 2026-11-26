@@ -34,7 +34,7 @@ module Ksuid
         return Nil, errors.New("too many IDs were generated")
       end
 
-      self.count += 1
+      self.count = self.count + 1
 
       return withSequenceNumber(id, uint16(count)), nil
     end

@@ -17,14 +17,14 @@ module Main
 
     go lambda {
       conn, err = l.Accept()
-      if err != nil
+      if err
         return
       end
       srv.ServeCodec(jsonrpc.NewServerCodec(conn))
     }.()
 
     conn, err = net.Dial("tcp", l.Addr().String())
-    if err != nil
+    if err
       log.Fatal(err)
     end
     client = rpc.NewClientWithCodec(jsonrpc.NewClientCodec(conn))

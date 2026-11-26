@@ -5,7 +5,7 @@ require "log"
 module Main
   def runImporter
     pkg, err = importer.Default().Import("fmt")
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

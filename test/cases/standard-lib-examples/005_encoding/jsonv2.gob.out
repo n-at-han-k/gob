@@ -19,7 +19,7 @@ func runJSONv2() {
 	}
 	fmt.Println("marshalled:", string(data))
 	var back v2article
-	if err := json.Unmarshal(data, &back); err != nil {
+	if err = json.Unmarshal(data, &back); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("parsed: %+v\n", back)

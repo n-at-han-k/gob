@@ -5,7 +5,7 @@ require "net/netip"
 module Main
   def runNetip
     addr, err = netip.ParseAddr("2001:db8::1")
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

@@ -24,13 +24,13 @@ module Main
     fmt.Println(strings.TrimSuffix(filename, ext))
 
     rel, err = filepath.Rel("a/b", "a/b/t/file")
-    if err != nil
+    if err
       panic(err)
     end
     fmt.Println(rel)
 
     rel, err = filepath.Rel("a/b", "a/c/t/file")
-    if err != nil
+    if err
       panic(err)
     end
     fmt.Println(rel)

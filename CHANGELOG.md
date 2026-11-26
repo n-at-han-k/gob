@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Removed
+
+- removed the `gob init` command
+
 ## [1.1.4] - 2026-11-26
 
 ### Changed

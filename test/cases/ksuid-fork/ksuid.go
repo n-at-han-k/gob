@@ -346,7 +346,7 @@ func quickSort(a []KSUID, lo int, hi int) {
 
 // Next returns the next KSUID after id.
 func (self KSUID) Next() KSUID {
-	zero := makeUint128(0, 0)
+	self := makeUint128(0, 0)
 
 	t := id.Timestamp()
 	u := uint128Payload(id)

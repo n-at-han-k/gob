@@ -36,7 +36,7 @@ func runRPC() {
 	}
 	defer client.Close()
 	var result int
-	if err := client.Call("Arith.Multiply", Args{6, 7}, &result); err != nil {
+	if err = client.Call("Arith.Multiply", Args{6, 7}, &result); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("6 * 7 =", result)

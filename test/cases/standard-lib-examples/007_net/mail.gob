@@ -12,7 +12,7 @@ module Main
       "Date: Mon, 01 Jan 2024 09:00:00 +0000\r\n" + "\r\n" + "hello there\r\n"
 
     msg, err = mail.ReadMessage(strings.NewReader(raw))
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

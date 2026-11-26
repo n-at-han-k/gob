@@ -72,7 +72,7 @@ func fastEncodeBase62(dst []byte, src []byte) {
 		}
 		// Writes at the end of the destination buffer because we computed the
 		// lowest bits first.
-		n--
+		n = n - 1
 		dst[n] = base62Characters[remainder]
 		bp = quotient
 	}
@@ -166,7 +166,7 @@ func fastDecodeBase62(dst []byte, src []byte) error {
 		dst[n-3] = byte(remainder >> 16)
 		dst[n-2] = byte(remainder >> 8)
 		dst[n-1] = byte(remainder)
-		n -= 4
+		n = n - 4
 		bp = quotient
 	}
 	var zero [20]byte
@@ -191,7 +191,7 @@ func reserve(dst []byte, nbytes int) []byte {
 	c := cap(dst)
 	n := len(dst)
 	if avail := c - n; avail < nbytes {
-		c *= 2
+		c = c * 2
 		if c-n < nbytes {
 			c = n + nbytes
 		}

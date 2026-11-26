@@ -227,12 +227,12 @@ func NewRandomWithTime(t time.Time) (ksuid KSUID, err error) {
 	// multiple goroutines, the use of the rander and randBuffer are explicitly
 	// synchronized here.
 	randMutex.Lock()
-	_, err := io.ReadAtLeast(rander, randBuffer[:], len(randBuffer))
+	_, err = io.ReadAtLeast(rander, randBuffer[:], len(randBuffer))
 	copy(ksuid[timestampLengthInBytes:], randBuffer[:])
 	randMutex.Unlock()
 	if err != nil {
 		// don't leak random bytes on error
-		ksuid := Nil
+		ksuid = Nil
 		return
 	}
 	ts := timeToCorrectedUTCTimestamp(t)

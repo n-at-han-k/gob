@@ -14,7 +14,7 @@ module Main
 
     r = textproto.NewReader(bufio.NewReader(strings.NewReader(raw)))
     hdr, err = r.ReadMIMEHeader()
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

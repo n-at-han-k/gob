@@ -12,7 +12,7 @@ module Main
       if err == io.EOF
         break
       end
-      if err != nil
+      if err
         fmt.Println("err:", err)
         return
       end

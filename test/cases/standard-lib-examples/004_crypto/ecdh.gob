@@ -9,7 +9,7 @@ module Main
     curve = ecdh.P256()
 
     alice, err = curve.GenerateKey(rand.Reader)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     bob, _ = curve.GenerateKey(rand.Reader)

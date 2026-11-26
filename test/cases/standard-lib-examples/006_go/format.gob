@@ -9,7 +9,7 @@ func   Add(a,b int)int{return a+b}
 `)
 
     pretty, err = format.Source(src)
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

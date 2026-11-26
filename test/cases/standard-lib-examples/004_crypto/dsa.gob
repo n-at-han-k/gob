@@ -18,7 +18,7 @@ module Main
 
     digest = sha256.Sum256(Array[byte].new("hello"))
     r, s, err = dsa.Sign(rand.Reader, priv, digest[])
-    if err != nil
+    if err
       log.Fatal(err)
     end
     ok = dsa.Verify(@priv.PublicKey, digest[], r, s)

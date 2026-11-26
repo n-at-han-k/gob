@@ -27,19 +27,19 @@ func newRBG() io.Reader {
 
 func newRandomBitsGenerator() (r io.Reader, err error) {
 	var seed int64
-	if seed, err := readCryptoRandomSeed(); err != nil {
+	if seed, err = readCryptoRandomSeed(); err != nil {
 		return
 	}
-	r := &randSourceReader{source: rand.NewSource(seed).(rand.Source64)}
+	r = &randSourceReader{source: rand.NewSource(seed).(rand.Source64)}
 	return
 }
 
 func readCryptoRandomSeed() (seed int64, err error) {
 	var b [8]byte
-	if _, err := io.ReadFull(cryptoRand.Reader, b[:]); err != nil {
+	if _, err = io.ReadFull(cryptoRand.Reader, b[:]); err != nil {
 		return
 	}
-	seed := int64(binary.LittleEndian.Uint64(b[:]))
+	seed = int64(binary.LittleEndian.Uint64(b[:]))
 	return
 }
 

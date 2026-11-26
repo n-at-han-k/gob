@@ -5,7 +5,7 @@ require "log"
 module Main
   def runBuild
     pkg, err = build.Default.Import("fmt", "", 0)
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

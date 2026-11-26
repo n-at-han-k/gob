@@ -5,7 +5,7 @@ require "net/http"
 module Main
   def main
     resp, err = http.Get("https://gobyexample.com")
-    if err != nil
+    if err
       panic(err)
     end
     defer resp.Body.Close()

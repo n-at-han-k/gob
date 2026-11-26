@@ -10,7 +10,7 @@ module Main
     rand.Read(salt)
 
     key, err = pbkdf2.Key(sha256.New, "hunter2", salt, 100_000, 32)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     fmt.Printf("salt: %x\nkey:  %x\n", salt, key)

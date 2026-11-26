@@ -18,7 +18,7 @@ module Main
     input = "id,label\n1,apple\n2,orange\n3,pear\n"
     r = csv.NewReader(strings.NewReader(input))
     records, err = r.ReadAll()
-    if err != nil
+    if err
       log.Fatal(err)
     end
     records.each do |_, rec|

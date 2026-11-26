@@ -5,7 +5,7 @@ require "log"
 module Main
   def runRC4
     c, err = rc4.NewCipher(Array[byte].new("weakkey"))
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

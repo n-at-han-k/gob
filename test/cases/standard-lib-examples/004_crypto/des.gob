@@ -6,7 +6,7 @@ module Main
   def runDES
     key = Array[byte].new("8bytekey")
     block, err = des.NewCipher(key)
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

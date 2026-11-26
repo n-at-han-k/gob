@@ -13,7 +13,7 @@ module Main
   def createFile(p) # (string) -> *os.File
     fmt.Println("creating")
     f, err = os.Create(p)
-    if err != nil
+    if err
       panic(err)
     end
     return f
@@ -27,7 +27,7 @@ module Main
   def closeFile(f) # (*os.File)
     fmt.Println("closing")
     err = f.Close()
-    if err != nil
+    if err
       panic(err)
     end
   end

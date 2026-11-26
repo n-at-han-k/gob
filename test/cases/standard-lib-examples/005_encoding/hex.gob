@@ -10,7 +10,7 @@ module Main
     fmt.Println("encoded:", encoded)
 
     back, err = hex.DecodeString(encoded)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     fmt.Printf("decoded: %s\n", back)

@@ -63,7 +63,7 @@ module Ksuid
 
       # Writes at the end of the destination buffer because we computed the
       # lowest bits first.
-      n -= 1
+      n = n - 1
       dst[n] = BASE62_CHARACTERS[remainder]
       bp = quotient
     end
@@ -158,7 +158,7 @@ module Ksuid
       dst[n - 3] = byte(remainder >> 16)
       dst[n - 2] = byte(remainder >> 8)
       dst[n - 1] = byte(remainder)
-      n -= 4
+      n = n - 4
       bp = quotient
     end
 
@@ -185,7 +185,7 @@ module Ksuid
     n = len(dst)
 
     if avail = c - n && avail < nbytes
-      c *= 2
+      c = c * 2
 
       if c - n < nbytes
         c = n + nbytes

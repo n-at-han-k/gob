@@ -7,7 +7,7 @@ module Main
 
     path = filepath.Join(os.TempDir(), "file")
     _, err = os.Create(path)
-    if err != nil
+    if err
       panic(err)
     end
   end

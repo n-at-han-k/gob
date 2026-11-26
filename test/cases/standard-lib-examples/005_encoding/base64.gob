@@ -15,7 +15,7 @@ module Main
     fmt.Println("raw:", base64.RawURLEncoding.EncodeToString(src))
 
     back, err = base64.StdEncoding.DecodeString(std)
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

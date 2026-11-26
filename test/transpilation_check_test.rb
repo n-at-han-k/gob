@@ -54,6 +54,7 @@ class TranspilationCheckTest < Minitest::Test
 
     define_method(test_name) do
       tree = SyntaxTree.parse(File.read(gob))
+      Gob::Transpilation::Context.global_for(gob)
 
       generated_go =
         Gob::Go::Printer.print(

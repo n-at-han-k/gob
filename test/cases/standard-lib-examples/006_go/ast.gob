@@ -14,7 +14,7 @@ var Answer = 42
 
     fset = token.NewFileSet()
     file, err = parser.ParseFile(fset, "example.go", src, parser.ParseComments)
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

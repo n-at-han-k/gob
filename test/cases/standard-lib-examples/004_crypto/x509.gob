@@ -11,7 +11,7 @@ require "time"
 module Main
   def runX509
     priv, err = ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-    if err != nil
+    if err
       log.Fatal(err)
     end
 
@@ -25,7 +25,7 @@ module Main
     )
 
     der, err = x509.CreateCertificate(rand.Reader, tmpl, tmpl, @priv.PublicKey, priv)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     cert, _ = x509.ParseCertificate(der)

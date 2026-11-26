@@ -19,7 +19,7 @@ func main() {
 		fmt.Println(scanner.Text())
 		i = i + 1
 	}
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		panic(err)
 	}
 }

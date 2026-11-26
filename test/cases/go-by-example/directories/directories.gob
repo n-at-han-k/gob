@@ -58,7 +58,7 @@ module Main
   end
 
   def visit(path, d, err) # (string, fs.DirEntry, error) -> error
-    if err != nil
+    if err
       return err
     end
     fmt.Println(" ", path, d.IsDir())
