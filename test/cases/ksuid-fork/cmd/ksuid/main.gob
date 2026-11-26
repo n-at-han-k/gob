@@ -1,0 +1,150 @@
+require "bytes"
+require "encoding/hex"
+require "flag"
+require "fmt"
+require "io"
+require "os"
+require "strings"
+require "text/template"
+require "time"
+
+require "github.com/segmentio/ksuid"
+
+module Main
+  var :count, int
+  var :format, string
+  var :tpltxt, string
+  var :verbose, bool
+
+  # templateData is printTemplate's anonymous struct; Gob needs a named type.
+  var templateData = Struct.new(
+    String: string,
+    Raw: string,
+    Time: time.Time,
+    Timestamp: uint32,
+    Payload: string
+  )
+
+  def init # ()
+    flag.IntVar(@count, "n", 1, "Number of KSUIDs to generate when called with no other arguments.")
+    flag.StringVar(@format, "f", "string", "One of string, inspect, time, timestamp, payload, raw, or template.")
+    flag.StringVar(@tpltxt, "t", "", "The Go template used to format the output.")
+    flag.BoolVar(@verbose, "v", false, "Turn on verbose mode.")
+  end
+
+  def main # ()
+    flag.Parse()
+    args = flag.Args()
+
+    var :print, Proc[ksuid.KSUID]
+
+    case format
+    when "string"
+      print = printString
+    when "inspect"
+      print = printInspect
+    when "time"
+      print = printTime
+    when "timestamp"
+      print = printTimestamp
+    when "payload"
+      print = printPayload
+    when "raw"
+      print = printRaw
+    when "template"
+      print = printTemplate
+    else
+      fmt.Println("Bad formatting function:", format)
+      os.Exit(1)
+    end
+
+    if len(args) == 0
+      i = 0
+
+      while i < count
+        args = append(args, ksuid.New().String())
+        i = i + 1
+      end
+    end
+
+    var :ids, Array[ksuid.KSUID]
+
+    args.each do |_, arg|
+      id, err = ksuid.Parse(arg)
+      if err
+        fmt.Printf("Error when parsing %q: %s\n\n", arg, err)
+        flag.PrintDefaults()
+        os.Exit(1)
+      end
+
+      ids = append(ids, id)
+    end
+
+    ids.each do |_, id|
+      if verbose
+        fmt.Printf("%s: ", id)
+      end
+
+      print(id)
+    end
+  end
+
+  def printString(id) # (ksuid.KSUID)
+    fmt.Println(id.String())
+  end
+
+  def printInspect(id) # (ksuid.KSUID)
+    const :inspectFormat, `
+REPRESENTATION:
+
+  String: %v
+     Raw: %v
+
+COMPONENTS:
+
+       Time: %v
+  Timestamp: %v
+    Payload: %v
+
+`
+
+    fmt.Printf(inspectFormat,
+      id.String(),
+      strings.ToUpper(hex.EncodeToString(id.Bytes())),
+      id.Time(),
+      id.Timestamp(),
+      strings.ToUpper(hex.EncodeToString(id.Payload())))
+  end
+
+  def printTime(id) # (ksuid.KSUID)
+    fmt.Println(id.Time())
+  end
+
+  def printTimestamp(id) # (ksuid.KSUID)
+    fmt.Println(id.Timestamp())
+  end
+
+  def printPayload(id) # (ksuid.KSUID)
+    os.Stdout.Write(id.Payload())
+  end
+
+  def printRaw(id) # (ksuid.KSUID)
+    os.Stdout.Write(id.Bytes())
+  end
+
+  def printTemplate(id) # (ksuid.KSUID)
+    b = @bytes.Buffer.new()
+    t = template.Must(template.New("").Parse(tpltxt))
+
+    t.Execute(b, templateData.new(
+      String: id.String(),
+      Raw: strings.ToUpper(hex.EncodeToString(id.Bytes())),
+      Time: id.Time(),
+      Timestamp: id.Timestamp(),
+      Payload: strings.ToUpper(hex.EncodeToString(id.Payload()))
+    ))
+
+    b.WriteByte(10)
+    io.Copy(os.Stdout, b)
+  end
+end

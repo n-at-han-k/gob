@@ -6,6 +6,8 @@ This document describes the Gob syntax supported by the current implementation. 
 
 - Gob source files use the `.gob` extension.
 - `require "pkg"` imports a Go package.
+- `require "pkg", name` imports it under an alias.
+- `require "pkg", _` is a blank import.
 - `module Main` declares `package main`; other module names declare that package name (for example `module Ksuid` -> `package ksuid`).
 - Top-level `def main` is treated as Go `func main()`.
 
@@ -25,6 +27,7 @@ end
 var a = "initial"          # inferred var
 var :b, int, 1             # explicit typed var with value
 var :c, int                # explicit typed zero value
+var buf Array[byte, 16]    # explicit typed zero value, bare name
 f = "apple"                # short assignment in function body
 ```
 
@@ -37,7 +40,11 @@ const :numJobs, 5
 const :s, "hello"
 ```
 
-Module-level uppercase names and `var` declarations follow Go package declarations as shown in golden cases.
+At module scope:
+
+- `NAME = value` becomes a Go `const`. `SCREAMING_SNAKE` names are rewritten to `lowerCamel`.
+- `name = value` becomes a package-level `var`.
+- Adjacent `const` or `var` declarations are grouped into one parenthesised block.
 
 ## Functions
 
@@ -88,6 +95,10 @@ while i < len(s)
   i = i + 1
 end
 
+until done
+  i = i + 1
+end
+
 loop do
   break
 end
@@ -96,8 +107,10 @@ next
 ```
 
 - `while` maps to a Go `for` condition loop.
+- `until cond` maps to `for !cond`.
 - `loop do` maps to an infinite Go `for {}` loop.
 - `break` and `next` map to Go `break` and `continue`.
+- `unless cond` maps to `if !cond`. `unless err != nil` maps to `if err == nil`.
 
 Iteration forms in golden cases include:
 
@@ -151,34 +164,42 @@ c = make(Hash[string, int])
 - `Hash[K, V].new(...)` creates a Go map literal.
 - `Array[T, N].new(...)` creates a Go fixed-size array literal.
 - `make(Array[T], n)` and `make(Hash[K, V])` map to Go `make`.
+- `Array[byte].new(x)` and `Array[rune].new(x)` are conversions: `[]byte(x)` and `[]rune(x)`.
+- `Proc` is the Go type `func()`.
+- `x[]` slices the whole value: `x[:]`. `x[...n]` becomes `x[:n]`.
+- `x.(Hash[K, V])` is a type assertion.
 - Common Go builtins/helpers used in cases include `len`, `cap`, `append`, `copy`, `delete`, and `clear`.
 
 ## Structs and classes
 
 ```ruby
 var person = Struct.new(name: string, age: int) do
-  def self.Rename(name) # (string)
+  def Rename(name) # (string)
     self.name = name
   end
 
-  def Display # -> string
+  protected def Display # -> string
     return self.name
   end
 end
 ```
 
 - `Struct.new(...)` declares a Go struct type.
-- Struct field tags can be placed in a comment immediately before the field:
+- Struct field tags are written as a comment on the field. `gob fmt` moves a trailing tag onto the line above:
 
   ```ruby
   var article = Struct.new(
-    # `json:"title"`
-    Title: string,
+    Title: string, # `json:"title"`
+    # `json:"views"`
+    Views: int,
   )
   ```
 
-- `def self.Method` inside a struct/class block declares a pointer receiver.
-- Plain `def` inside the block declares a value receiver.
+  A tag on the last field of a struct is currently dropped, so give it a field after it.
+
+- Plain `def` inside the block declares a pointer receiver, because most methods need to modify the receiver.
+- `protected def` declares a value receiver. The method gets a copy, so the instance is protected from modification.
+- Every receiver is named `self`.
 - Struct literals use `person.new(name: "Ann", age: 40)` or positional fields as shown in cases.
 
 `class` declares a named struct type with `attr_accessor` fields:
@@ -190,7 +211,21 @@ class Args
 end
 ```
 
-Class methods follow the same receiver rule: `def self.Method` for pointer receivers, `def Method` for value receivers. Instantiate with `ClassName.new(...)`, like struct literals.
+Class methods follow the same receiver rule. Instantiate with `ClassName.new(...)`, like struct literals.
+
+`Class.new(Type)` declares a named Go type over an underlying type:
+
+```ruby
+var CompressedSet = Class.new(Array[byte])
+
+var KSUID = Class.new(Array[byte, BYTE_LENGTH]) do
+  protected def String # () -> string
+    return ""
+  end
+end
+```
+
+These become `type CompressedSet []byte` and `type KSUID [byteLength]byte`. Methods in the block attach to the named type.
 
 ## Pointers
 
@@ -200,6 +235,9 @@ v = @@p      # dereference
 ```
 
 `@` maps to Go `&`. `@@` maps to Go `*` for dereference.
+
+- `@pkg.Type.new(Field: v)` becomes `&pkg.Type{Field: v}`.
+- `@@pkg.Type` in a type position is the pointer type `*pkg.Type`.
 
 ## Errors
 

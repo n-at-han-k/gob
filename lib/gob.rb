@@ -30,6 +30,7 @@ module Gob
   # Parse `source` and transpile it into a SyntaxTree::Go tree.
   def self.transpile(source, path: nil, check: true)
     Validation::Rules.check!(source, path: path) if check
+    Transpilation::Context.global_for(path) if path
     Transpilation::Runner.new.call(SyntaxTree.parse(source))
   end
 

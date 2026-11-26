@@ -1,0 +1,358 @@
+require "bytes"
+require "encoding/binary"
+
+module Ksuid
+  # CompressedSet is an immutable data type which stores a set of KSUIDs.
+  type :CompressedSet, Array[byte] do
+    # Iter returns an iterator that produces all KSUIDs in the set.
+    protected def Iter # () -> CompressedSetIter
+      return CompressedSetIter.new(content: Array[byte].new(self))
+    end
+
+    # String satisfies the fmt.Stringer interface, returns a human-readable string
+    # representation of the set.
+    protected def String # () -> string
+      b = bytes.Buffer.new()
+      b.WriteByte('[')
+      self.writeTo(@b)
+      b.WriteByte(']')
+
+      return b.String()
+    end
+
+    # String satisfies the fmt.GoStringer interface, returns a Go representation of
+    # the set.
+    protected def GoString # () -> string
+      b = bytes.Buffer.new()
+      b.WriteString("ksuid.CompressedSet{")
+      self.writeTo(@b)
+      b.WriteByte('}')
+
+      return b.String()
+    end
+
+    protected def writeTo(b) # (*bytes.Buffer)
+      a = Array[byte, 27].new()
+
+      i, it = 0, self.Iter()
+
+      while it.Next()
+        if i != 0
+          b.WriteString(", ")
+        end
+
+        b.WriteByte('"')
+        it.KSUID.Append(a[...0])
+        b.Write(a[])
+        b.WriteByte('"')
+
+        i = i + 1
+      end
+    end
+  end
+
+  # Compress creates and returns a compressed set of KSUIDs from the list given
+  # as arguments.
+  def Compress(ids) # (...KSUID) -> CompressedSet
+    c = 1 + BYTE_LENGTH + (len(ids) / 5)
+    b = make(Array[byte], 0, c)
+
+    return AppendCompressed(b, *ids)
+  end
+
+  # AppendCompressed uses the given byte slice as pre-allocated storage space to
+  # build a KSUID set.
+  #
+  # Note that the set uses a compression technique to store the KSUIDs, so the
+  # resuling length is not 20 x len(ids). The rule of thumb here is for the given
+  # byte slice to reserve the amount of memory that the application would be OK
+  # to waste.
+  def AppendCompressed(set, ids) # ([]byte, ...KSUID) -> CompressedSet
+    if len(ids) != 0
+      unless IsSorted(ids)
+        Sort(ids)
+      end
+
+      one = makeUint128(0, 1)
+
+      # The first KSUID is always written to the set, this is the starting
+      # point for all deltas.
+      set = append(set, byte(RAW_KSUID))
+      set = append(set, *ids[0][])
+
+      timestamp = ids[0].Timestamp()
+      lastKSUID = ids[0]
+      lastValue = uint128Payload(ids[0])
+
+      i = 1
+
+      while i != len(ids)
+        id = ids[i]
+
+        if id == lastKSUID
+          i = i + 1
+          next
+        end
+
+        t = id.Timestamp()
+        v = uint128Payload(id)
+
+        if t != timestamp
+          d = t - timestamp
+          n = varintLength32(d)
+
+          set = append(set, TIME_DELTA | byte(n))
+          set = appendVarint32(set, d, n)
+          set = append(set, *id[TIMESTAMP_LENGTH_IN_BYTES...])
+
+          timestamp = t
+        else
+          d = sub128(v, lastValue)
+
+          if d != one
+            n = varintLength128(d)
+
+            set = append(set, PAYLOAD_DELTA | byte(n))
+            set = appendVarint128(set, d, n)
+          else
+            l, c = rangeLength(ids[i + 1...], t, id, v)
+            m = uint64(l + 1)
+            n = varintLength64(m)
+
+            set = append(set, PAYLOAD_RANGE | byte(n))
+            set = appendVarint64(set, m, n)
+
+            i = i + c
+            id = ids[i]
+            v = uint128Payload(id)
+          end
+        end
+
+        lastKSUID = id
+        lastValue = v
+
+        i = i + 1
+      end
+    end
+
+    return CompressedSet(set)
+  end
+
+  def rangeLength(ids, timestamp, lastKSUID, lastValue) # ([]KSUID, uint32, KSUID, uint128) -> (length int, count int)
+    one = makeUint128(0, 1)
+
+    ids.each do |i|
+      id = ids[i]
+
+      if id == lastKSUID
+        next
+      end
+
+      if id.Timestamp() != timestamp
+        count = i
+
+        return
+      end
+
+      v = uint128Payload(id)
+
+      if sub128(v, lastValue) != one
+        count = i
+
+        return
+      end
+
+      lastKSUID = id
+      lastValue = v
+      length = length + 1
+    end
+
+    count = len(ids)
+
+    return
+  end
+
+  def appendVarint128(b, v, n) # ([]byte, uint128, int) -> []byte
+    c = v.bytes()
+
+    return append(b, *c[len(c) - n...])
+  end
+
+  def appendVarint64(b, v, n) # ([]byte, uint64, int) -> []byte
+    c = Array[byte, 8].new()
+    binary.BigEndian.PutUint64(c[], v)
+
+    return append(b, *c[len(c) - n...])
+  end
+
+  def appendVarint32(b, v, n) # ([]byte, uint32, int) -> []byte
+    c = Array[byte, 4].new()
+    binary.BigEndian.PutUint32(c[], v)
+
+    return append(b, *c[len(c) - n...])
+  end
+
+  def varint128(b) # ([]byte) -> uint128
+    a = Array[byte, 16].new()
+    copy(a[16 - len(b)...], b)
+
+    return makeUint128FromPayload(a[])
+  end
+
+  def varint64(b) # ([]byte) -> uint64
+    a = Array[byte, 8].new()
+    copy(a[8 - len(b)...], b)
+
+    return binary.BigEndian.Uint64(a[])
+  end
+
+  def varint32(b) # ([]byte) -> uint32
+    a = Array[byte, 4].new()
+    copy(a[4 - len(b)...], b)
+
+    return binary.BigEndian.Uint32(a[])
+  end
+
+  def varintLength128(v) # (uint128) -> int
+    if v[1] != 0
+      return 8 + varintLength64(v[1])
+    end
+
+    return varintLength64(v[0])
+  end
+
+  def varintLength64(v) # (uint64) -> int
+    if (v & 0xFFFFFFFFFFFFFF00) == 0
+      return 1
+    elsif (v & 0xFFFFFFFFFFFF0000) == 0
+      return 2
+    elsif (v & 0xFFFFFFFFFF000000) == 0
+      return 3
+    elsif (v & 0xFFFFFFFF00000000) == 0
+      return 4
+    elsif (v & 0xFFFFFF0000000000) == 0
+      return 5
+    elsif (v & 0xFFFF000000000000) == 0
+      return 6
+    elsif (v & 0xFF00000000000000) == 0
+      return 7
+    else
+      return 8
+    end
+  end
+
+  def varintLength32(v) # (uint32) -> int
+    if (v & 0xFFFFFF00) == 0
+      return 1
+    elsif (v & 0xFFFF0000) == 0
+      return 2
+    elsif (v & 0xFF000000) == 0
+      return 3
+    else
+      return 4
+    end
+  end
+
+  RAW_KSUID = 0
+  TIME_DELTA = (1 << 6)
+  PAYLOAD_DELTA = (1 << 7)
+  PAYLOAD_RANGE = (1 << 6) | (1 << 7)
+
+  # CompressedSetIter is an iterator type returned by Set.Iter to produce the
+  # list of KSUIDs stored in a set.
+  #
+  # Here's is how the iterator type is commonly used:
+  #
+  #	for it := set.Iter(); it.Next(); {
+  #		id := it.KSUID
+  #		// ...
+  #	}
+  #
+  # CompressedSetIter values are not safe to use concurrently from multiple
+  # goroutines.
+  class CompressedSetIter
+    # KSUID is modified by calls to the Next method to hold the KSUID loaded
+    # by the iterator.
+    attr_accessor :KSUID, KSUID
+
+    attr_accessor :content, Array[byte]
+    attr_accessor :offset, int
+
+    attr_accessor :seqlength, uint64
+    attr_accessor :timestamp, uint32
+    attr_accessor :lastValue, uint128
+
+    # Next moves the iterator forward, returning true if there a KSUID was found,
+    # or false if the iterator as reached the end of the set it was created from.
+    def Next # () -> bool
+      if self.seqlength != 0
+        value = incr128(self.lastValue)
+        self.KSUID = value.ksuid(self.timestamp)
+        self.seqlength = self.seqlength - 1
+        self.lastValue = value
+
+        return true
+      end
+
+      if self.offset == len(self.content)
+        return false
+      end
+
+      b = self.content[self.offset]
+      self.offset = self.offset + 1
+
+      const :mask, RAW_KSUID | TIME_DELTA | PAYLOAD_DELTA | PAYLOAD_RANGE
+
+      tag = int(b) & mask
+      cnt = int(b) & (mask ^ -1)
+
+      case tag
+      when RAW_KSUID
+        off0 = self.offset
+        off1 = off0 + BYTE_LENGTH
+
+        copy(self.KSUID[], self.content[off0...off1])
+
+        self.offset = off1
+        self.timestamp = self.KSUID.Timestamp()
+        self.lastValue = uint128Payload(self.KSUID)
+      when TIME_DELTA
+        off0 = self.offset
+        off1 = off0 + cnt
+        off2 = off1 + PAYLOAD_LENGTH_IN_BYTES
+
+        self.timestamp = self.timestamp + varint32(self.content[off0...off1])
+
+        binary.BigEndian.PutUint32(self.KSUID[...TIMESTAMP_LENGTH_IN_BYTES], self.timestamp)
+        copy(self.KSUID[TIMESTAMP_LENGTH_IN_BYTES...], self.content[off1...off2])
+
+        self.offset = off2
+        self.lastValue = uint128Payload(self.KSUID)
+      when PAYLOAD_DELTA
+        off0 = self.offset
+        off1 = off0 + cnt
+
+        delta = varint128(self.content[off0...off1])
+        value = add128(self.lastValue, delta)
+
+        self.KSUID = value.ksuid(self.timestamp)
+        self.offset = off1
+        self.lastValue = value
+      when PAYLOAD_RANGE
+        off0 = self.offset
+        off1 = off0 + cnt
+
+        value = incr128(self.lastValue)
+        self.KSUID = value.ksuid(self.timestamp)
+        self.seqlength = varint64(self.content[off0...off1])
+        self.offset = off1
+        self.seqlength = self.seqlength - 1
+        self.lastValue = value
+      else
+        panic("KSUID set iterator is reading malformed data")
+      end
+
+      return true
+    end
+  end
+end

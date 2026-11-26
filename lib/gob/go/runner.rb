@@ -24,10 +24,6 @@ module Gob
         end
       end
 
-      def mod_init(module_path = nil)
-        execute("go", "mod", "init", *[module_path].compact)
-      end
-
       def with_source(source)
         Dir.mktmpdir("gob-") do |directory|
           path = File.join(directory, "main.go")

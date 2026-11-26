@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- methods now take a pointer receiver by default; `protected def` declares a value receiver instead. This replaces the `def self.Method` rule from 1.1.1
+
 ### Removed
 
 - removed the `gob init` command

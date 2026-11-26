@@ -11,18 +11,35 @@ module Gob
     class Runner
       module DefinitionNodes
         def parse_signature_comment(text)
-          case text.split(/\s*->\s*/, 2)
-          in [/\A#\s*\z/, ret] unless ret.empty?
-            { params: [], returns: ret.delete_prefix("(").delete_suffix(")").split(/\s*,\s*/) }
-          in [/\A#\s*\(([^)]*)\)\z/, ret] unless ret.empty?
-            { params: $1.split(/\s*,\s*/), returns: ret.delete_prefix("(").delete_suffix(")").split(/\s*,\s*/) }
-          in [/\A#\s*(.+)\z/, ret] unless ret.empty?
-            { params: $1.split(/\s*,\s*/), returns: ret.delete_prefix("(").delete_suffix(")").split(/\s*,\s*/) }
-          in [/\A#\s*\(([^)]*)\)\s*\z/]
-            { params: $1.split(/\s*,\s*/), returns: [] }
-          else
-            { params: [], returns: [] }
-          end
+          params, returns =
+            case text.split(/\s*->\s*/, 2)
+            in [/\A#\s*\z/, ret] unless ret.empty?
+              [[], ret]
+            in [/\A#\s*\(([^)]*)\)\z/, ret] unless ret.empty?
+              [$1, ret]
+            in [/\A#\s*(.+)\z/, ret] unless ret.empty?
+              [$1, ret]
+            in [/\A#\s*\(([^)]*)\)\s*\z/]
+              [$1, ""]
+            else
+              ["", ""]
+            end
+
+          parse_items = ->(value) {
+            value = value.to_s.strip.delete_prefix("(").delete_suffix(")").strip
+            value.empty? ? [] : value.split(/\s*,\s*/)
+          }
+
+          {
+            params: parse_items.call(params),
+            returns: parse_items.call(returns).map do |item|
+              if (m = item.match(/\A([A-Za-z_]\w*)\s+(.+)\z/)) && !%w[chan func map interface struct].include?(m[1])
+                { name: m[1], type: m[2] }
+              else
+                { name: nil, type: item }
+              end
+            end
+          }
         end
 
         # var colour = Struct.new(R: byte)
@@ -51,6 +68,16 @@ module Gob
                 type: Statements(type)
               )
             ]
+          )
+        end
+
+        # type :CompressedSet, Array[byte]
+        # type CompressedSet []byte
+        # ---
+        def Alias(name, type)
+          SyntaxTree::Go::GenDecl.new(
+            tok: :type,
+            specs: [ SyntaxTree::Go::TypeSpec.new(name: Ident(name), type: Statements(type)) ]
           )
         end
 
@@ -92,30 +119,28 @@ module Gob
           end
         end
 
-        # def MarshalText # -> ([]byte, error)
+        # A method takes a pointer receiver, because a method that cannot modify
+        # its receiver is the exception rather than the rule. `protected` is that
+        # exception: it hands the method a copy, so the instance is protected
+        # from modification.
+        #
+        # def Mutate(value) # (int)
+        # func (self *colour) Mutate(value int)
+        # ---
+        # protected def MarshalText # () -> ([]byte, error)
         # func (self colour) MarshalText() ([]byte, error)
         # ---
         def Methods(name, body)
           Array(body).filter_map do |node|
             case node
-            in SyntaxTree::DefNode[
-              target: target,
-              name: { value: method },
-              params: params,
-              bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: statements ] ]
+            in SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "protected"],
+              arguments: SyntaxTree::Args[ parts: [ SyntaxTree::DefNode => definition ] ]
             ]
-              ps = params.respond_to?(:contents) ? params.contents : params
-                param_names = Array(ps.respond_to?(:requireds) ? ps.requireds : []).map { |p| p.respond_to?(:value) ? p.value : nil }.compact
-              descend(statements, declared: ["self", *param_names]).then do |children|
-                Function(
-                  name: method,
-                  params: params,
-                  body: children.tree,
-                  receiver: SyntaxTree::Go::FieldList.new(
-                    list: [ SyntaxTree::Go::Field.new(names: [ Ident("self") ], type: target ? SyntaxTree::Go::StarExpr.new(x: Ident(name)) : Ident(name)) ]
-                  )
-                )
-              end
+              Method(definition, receiver: Receiver(name, pointer: false))
+
+            in SyntaxTree::DefNode => definition
+              Method(definition, receiver: Receiver(name, pointer: true))
 
             else
               nil
@@ -123,44 +148,88 @@ module Gob
           end
         end
 
-        def Function(name:, params:, body:, receiver: nil)
+        # self is the name Gob gives every receiver.
+        # ---
+        def Receiver(name, pointer:)
+          type = Ident(name)
+
+          SyntaxTree::Go::FieldList.new(
+            list: [
+              SyntaxTree::Go::Field.new(
+                names: [ Ident("self") ],
+                type:  pointer ? SyntaxTree::Go::StarExpr.new(x: type) : type
+              )
+            ]
+          )
+        end
+
+        # Reads one definition, whatever shape its signature takes.
+        # ---
+        def Method(definition, receiver:)
+          definition => SyntaxTree::DefNode[
+            name: { value: method },
+            params: params,
+            bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: statements ] ]
+          ]
+
+          descend(statements, declared: ["self", *Scope(params)]).then do |children|
+            Function(name: method, params: params, body: children.tree, receiver: receiver)
+          end
+        end
+
+        # The names a signature brings into scope: the parameters it binds and
+        # the results it names.
+        # ---
+        def Scope(params)
           case params
           in { contents: SyntaxTree::Params[requireds: args], comments: [SyntaxTree::Comment[value: types], *] }
-            input, output = parse_signature_comment(types).values_at(:params, :returns)
-            params = args.map { |arg|
-              SyntaxTree::Go::Field.new(
-                names: [ SyntaxTree::Go::Ident.new(name: arg.value) ],
-                type: SyntaxTree::Go::Ident.new(name: input.shift)
-              )
-            }
-            results = output.map { |result|
-              SyntaxTree::Go::Field.new(
-                names: [ SyntaxTree::Go::Ident.new(name: result) ],
-              )
-            }
+            [*args.map(&:value), *ResultNames(types)]
 
           in { contents: SyntaxTree::Params[requireds: args] }
+            args.map(&:value)
+
+          in { comments: [SyntaxTree::Comment[value: types], *] }
+            ResultNames(types)
+
+          else
+            []
+          end
+        end
+
+        def ResultNames(types)
+          parse_signature_comment(types)[:returns].filter_map { |result| result[:name] }
+        end
+
+        def Function(name:, params:, body:, receiver: nil)
+          sig =
+            case params
+            in { contents: SyntaxTree::Params, comments: [SyntaxTree::Comment[value: types], *] }
+              parse_signature_comment(types)
+            in { comments: [SyntaxTree::Comment[value: types], *] }
+              parse_signature_comment(types)
+            else
+              { params: [], returns: [] }
+            end
+
+          case params
+          in { contents: SyntaxTree::Params[requireds: args] }
+            input = sig[:params].dup
             params = args.map { |arg|
               SyntaxTree::Go::Field.new(
-                names: [ SyntaxTree::Go::Ident.new(name: arg.value) ],
+                names: [SyntaxTree::Go::Ident.new(name: arg.value)],
                 type: SyntaxTree::Go::Ident.new(name: input.shift)
               )
             }
-            results = []
-
-          in { comments: [SyntaxTree::Comment[value: types], *] }
-            _, output = parse_signature_comment(types).values_at(:params, :returns)
-            params = []
-            results = output.map { |result|
-              SyntaxTree::Go::Field.new(
-                names: [ SyntaxTree::Go::Ident.new(name: result) ],
-              )
-            }
-
           else
             params = []
-            results = []
+          end
 
+          results = sig[:returns].map do |ret|
+            if ret[:name]
+              SyntaxTree::Go::Field.new(names: [Ident(ret[:name])], type: Ident(ret[:type]))
+            else
+              SyntaxTree::Go::Field.new(type: Ident(ret[:type]))
+            end
           end
 
           SyntaxTree::Go::FuncDecl.new(
@@ -208,29 +277,33 @@ module Gob
             params: SyntaxTree::Params[requireds: args],
             comments: [SyntaxTree::Comment[value: types], *]
           ]
-            input, output = parse_signature_comment(types).values_at(:params, :returns)
-
+            sig = parse_signature_comment(types)
           in SyntaxTree::BlockVar[ params: SyntaxTree::Params[requireds: args] ]
-            input, output = [], []
-
+            sig = { params: [], returns: [] }
           else
-            args, input, output = [], [], []
-
+            args = []
+            sig = { params: [], returns: [] }
           end
+
+          input = sig[:params].dup
+          param_names = args.map(&:value)
+          return_names = sig[:returns].filter_map { |ret| ret[:name] }
 
           SyntaxTree::Go::FuncLit.new(
             type: SyntaxTree::Go::FuncType.new(
               type_params: nil,
               params: SyntaxTree::Go::FieldList.new(
                 list: args.map { |arg|
-                  SyntaxTree::Go::Field.new(names: [ Ident(arg.value) ], type: Ident(input.shift))
+                  SyntaxTree::Go::Field.new(names: [Ident(arg.value)], type: Ident(input.shift))
                 }
               ),
               results: SyntaxTree::Go::FieldList.new(
-                list: output.map { |result| SyntaxTree::Go::Field.new(names: [ Ident(result) ]) }
+                list: sig[:returns].map { |ret|
+                  ret[:name] ? SyntaxTree::Go::Field.new(names: [Ident(ret[:name])], type: Ident(ret[:type])) : SyntaxTree::Go::Field.new(type: Ident(ret[:type]))
+                }
               )
             ),
-            body: descend(body).then { |children| Block(body: children.tree) }
+            body: descend(body, declared: [*param_names, *return_names]).then { |children| Block(body: children.tree) }
           )
         end
       end
@@ -283,45 +356,69 @@ module Gob
           # if avail := c - n; avail < nbytes { ... }
           # ---
           in SyntaxTree::Assign[target: target, value: SyntaxTree::Binary[left: left, operator: :"&&", right: right], location: location]
-            Statements(SyntaxTree::Assign.new(target: target, value: left, location: location)).then { |init| [init, Truthy(LeftHand(right))] }
+            init, _, init_names = Guard(SyntaxTree::Assign.new(target: target, value: left, location: location))
+            [init, Truthy(LeftHand(right)), init_names]
 
-          in SyntaxTree::Assign | SyntaxTree::MAssign
-            Statements(node).then { |init| [init, Truthy(init.lhs.last)] }
+          in SyntaxTree::Assign[target: target, value: value]
+            lhs = Array(LeftHand(target))
+            names = lhs.grep(SyntaxTree::Go::Ident).map(&:name) - ["_"]
+            init_names = undeclared(names)
+            init = SyntaxTree::Go::AssignStmt.new(
+              lhs: lhs,
+              tok_pos: nil,
+              tok: init_names.any? ? ":=" : "=",
+              rhs: Array(RightHand(value))
+            )
+            [init, Truthy(init.lhs.last), init_names]
+
+          in SyntaxTree::MAssign[target: target, value: value]
+            lhs = Array(LeftHand(target))
+            names = lhs.grep(SyntaxTree::Go::Ident).map(&:name) - ["_"]
+            init_names = undeclared(names)
+            init = SyntaxTree::Go::AssignStmt.new(
+              lhs: lhs,
+              tok_pos: nil,
+              tok: init_names.any? ? ":=" : "=",
+              rhs: Array(RightHand(value))
+            )
+            [init, Truthy(init.lhs.last), init_names]
 
           else
-            [nil, Truthy(LeftHand(node))]
+            [nil, Truthy(LeftHand(node)), []]
           end
         end
 
-        def Body(ctx, statements)
-          ctx.descend(statements.body).then { |children| Block(body: children.tree) }
+        def Body(ctx, statements, declared: [])
+          ctx.descend(statements.body, declared: declared).then { |children| Block(body: children.tree) }
         end
 
         # if cond ... end
         # if cond { ... }
         # ---
-        def If(ctx, predicate, statements, consequent)
-          init, cond = Guard(predicate)
+        def If(ctx, predicate, statements, consequent, declared: [])
+          init, cond, init_names = Guard(predicate)
+          scope = [*declared, *init_names]
 
           SyntaxTree::Go::IfStmt.new(
             init:  init,
             cond:  cond,
-            body:  Body(ctx, statements),
-            else_: Logic(ctx, consequent)
+            body:  Body(ctx, statements, declared: scope),
+            else_: Logic(ctx, consequent, declared: scope)
           )
         end
 
         # unless cond ... end
         # if !cond { ... }
         # ---
-        def Unless(ctx, predicate, statements, consequent)
-          init, cond = Guard(predicate)
+        def Unless(ctx, predicate, statements, consequent, declared: [])
+          init, cond, init_names = Guard(predicate)
+          scope = [*declared, *init_names]
 
           SyntaxTree::Go::IfStmt.new(
             init:  init,
             cond:  Not(cond),
-            body:  Body(ctx, statements),
-            else_: Logic(ctx, consequent)
+            body:  Body(ctx, statements, declared: scope),
+            else_: Logic(ctx, consequent, declared: scope)
           )
         end
 
@@ -329,13 +426,13 @@ module Gob
         # for cond { ... }
         # ---
         def While(ctx, predicate, statements)
-          init, cond = Guard(predicate)
+          init, cond, init_names = Guard(predicate)
 
           SyntaxTree::Go::ForStmt.new(
             init: init,
             cond: cond,
             post: nil,
-            body: Body(ctx, statements)
+            body: Body(ctx, statements, declared: init_names)
           )
         end
 
@@ -343,13 +440,13 @@ module Gob
         # for !cond { ... }
         # ---
         def Until(ctx, predicate, statements)
-          init, cond = Guard(predicate)
+          init, cond, init_names = Guard(predicate)
 
           SyntaxTree::Go::ForStmt.new(
             init: init,
             cond: Not(cond),
             post: nil,
-            body: Body(ctx, statements)
+            body: Body(ctx, statements, declared: init_names)
           )
         end
 
@@ -378,10 +475,14 @@ module Gob
             statements: SyntaxTree::Statements[ body: body ],
             consequent: consequent
           ]
+            before = ctx.state.fetch(:declared).dup
+            list = parts.map { |part| Statements(part) }
+            declared = ctx.state.fetch(:declared) - before
+            ctx.state.fetch(:declared).replace(before)
             [
               SyntaxTree::Go::CaseClause.new(
-                list: parts.map { |part| Statements(part) },
-                body: ctx.descend(body).then { |children| children.tree }
+                list: list,
+                body: ctx.descend(body, declared: declared).then { |children| children.tree }
               ),
               *Cases(ctx, consequent)
             ]
@@ -407,6 +508,12 @@ module Gob
         # ---
         def Comm(node)
           case node
+          # when ch << "ping"
+          # case ch <- "ping":
+          # ---
+          in SyntaxTree::Binary[ left: left, operator: :<<, right: right ]
+            SyntaxTree::Go::SendStmt.new(chan: Statements(left), value: Statements(right))
+
           in SyntaxTree::Assign | SyntaxTree::MAssign
             Statements(node)
 
@@ -422,10 +529,14 @@ module Gob
             statements: SyntaxTree::Statements[ body: body ],
             consequent: consequent
           ]
+            before = ctx.state.fetch(:declared).dup
+            comm_node = Comm(comm)
+            declared = ctx.state.fetch(:declared) - before
+            ctx.state.fetch(:declared).replace(before)
             [
               SyntaxTree::Go::CommClause.new(
-                comm: Comm(comm),
-                body: ctx.descend(body).then { |children| children.tree }
+                comm: comm_node,
+                body: ctx.descend(body, declared: declared).then { |children| children.tree }
               ),
               *Comms(ctx, consequent)
             ]
@@ -486,24 +597,24 @@ module Gob
             key:   key,
             value: value,
             tok:   ":=",
-            x:     LeftHand(collection),
+            x:     Statements(collection),
             body:  Body(ctx, statements)
           )
         end
 
-        def Logic(ctx, node)
+        def Logic(ctx, node, declared: [])
           case node
           in SyntaxTree::IfNode[predicate: predicate, statements: statements, consequent: consequent]
-            If(ctx, predicate, statements, consequent)
+            If(ctx, predicate, statements, consequent, declared: declared)
 
           in SyntaxTree::Elsif[predicate: predicate, statements: statements, consequent: consequent]
-            If(ctx, predicate, statements, consequent)
+            If(ctx, predicate, statements, consequent, declared: declared)
 
           in SyntaxTree::UnlessNode[predicate: predicate, statements: statements, consequent: consequent]
-            Unless(ctx, predicate, statements, consequent)
+            Unless(ctx, predicate, statements, consequent, declared: declared)
 
           in SyntaxTree::Else[statements: statements]
-            Body(ctx, statements)
+            Body(ctx, statements, declared: declared)
 
           in SyntaxTree::WhileNode[predicate: predicate, statements: statements]
             While(ctx, predicate, statements)
@@ -628,7 +739,7 @@ module Gob
           # STATUS_ACTIVE
           # statusActive
           # ---
-          in SyntaxTree::Const[value: name] if name == name.upcase && name.include?("_")
+          in SyntaxTree::Const[value: name] if state.fetch(:uppercase_constants, []).include?(name)
             Constant(name)
 
           in { value: String => name }
@@ -662,6 +773,23 @@ module Gob
           SyntaxTree::Go::BinaryExpr.new(x: left, op: operator, y: right, location: location)
         end
 
+        # append(b, *c)
+        # append(b, c...)
+        # ---
+        def Arguments(parts)
+          [
+            Array(parts).map { |part|
+              case part
+              in SyntaxTree::ArgStar[value: value]
+                Statements(value)
+              else
+                Statements(part)
+              end
+            },
+            Array(parts).any? { |part| part.is_a?(SyntaxTree::ArgStar) }
+          ]
+        end
+
         def Call(node)
           case node
 
@@ -691,12 +819,15 @@ module Gob
             message: { value: message },
             arguments: SyntaxTree::ArgParen[arguments: arguments]
           ]
+            args, ellipsis = Arguments(arguments&.parts)
+
             SyntaxTree::Go::CallExpr.new(
               fun: SyntaxTree::Go::SelectorExpr.new(
-                x: LeftHand(receiver),
+                x: Statements(receiver),
                 sel: Ident(message)
               ),
-              args: Array(arguments&.parts).map { |argument| Statements(argument) }
+              args: args,
+              ellipsis: ellipsis
             )
 
           in SyntaxTree::CallNode[
@@ -705,9 +836,12 @@ module Gob
             message: (SyntaxTree::Ident | SyntaxTree::Const) => message_node,
             arguments: SyntaxTree::ArgParen[arguments: arguments]
           ]
+            args, ellipsis = Arguments(arguments&.parts)
+
             SyntaxTree::Go::CallExpr.new(
               fun: Ident(message_node.value),
-              args: Array(arguments&.parts).map { |argument| Statements(argument) }
+              args: args,
+              ellipsis: ellipsis
             )
 
           in SyntaxTree::CallNode[
@@ -836,17 +970,15 @@ module Gob
         def Declaration(tok, variable, type, value)
           declare([variable])
 
-          SyntaxTree::Go::DeclStmt.new(
-            decl: SyntaxTree::Go::GenDecl.new(
-              tok: tok,
-              specs: [
-                SyntaxTree::Go::ValueSpec.new(
-                  names:  [Ident(variable)],
-                  type:   type && Statements(type),
-                  values: value ? [Statements(value)] : []
-                )
-              ]
-            )
+          SyntaxTree::Go::GenDecl.new(
+            tok: tok,
+            specs: [
+              SyntaxTree::Go::ValueSpec.new(
+                names:  [Ident(variable)],
+                type:   type && Statements(type),
+                values: value ? [Statements(value)] : []
+              )
+            ]
           )
         end
 
@@ -884,6 +1016,8 @@ module Gob
           # var demos = map[string]func(){...}
           # ---
           in ["var" | "const" => tok, [SyntaxTree::Assign[target: target, value: value]]]
+            declare(Array(LeftHand(target)).grep(SyntaxTree::Go::Ident).map(&:name))
+
             SyntaxTree::Go::GenDecl.new(
               tok: tok.to_sym,
               specs: [ SyntaxTree::Go::ValueSpec.new( names: [LeftHand(target)], values: [RightHand(value)] ) ]
@@ -901,19 +1035,19 @@ module Gob
           # var :a, int
           # var a int
           # ---
-          in ["var", [SyntaxTree::SymbolLiteral[value: SyntaxTree::Ident[value: variable]], type]]
+          in ["var", [SyntaxTree::SymbolLiteral[value: { value: variable }], type]]
             Declaration(:var, variable, type, nil)
 
           # var :name, string, "Nathan"
           # var name string = "Nathan"
           # ---
-          in ["var", [SyntaxTree::SymbolLiteral[value: SyntaxTree::Ident[value: variable]], type, value]]
+          in ["var", [SyntaxTree::SymbolLiteral[value: { value: variable }], type, value]]
             Declaration(:var, variable, type, value)
 
           # const :greeting, "hi"
           # const greeting = "hi"
           # ---
-          in ["const", [SyntaxTree::SymbolLiteral[value: SyntaxTree::Ident[value: variable]], value]]
+          in ["const", [SyntaxTree::SymbolLiteral[value: { value: variable }], value]]
             Declaration(:const, variable, nil, value)
 
           else
@@ -974,6 +1108,20 @@ module Gob
           ]
             SyntaxTree::Go::ArrayType.new( len: Statements(size), elt: Statements(type) )
 
+          # Proc[ksuid.KSUID]
+          # func(ksuid.KSUID)
+          # ---
+          in SyntaxTree::ARef[
+            collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[ value: "Proc" ] ],
+            index: SyntaxTree::Args[ parts: parts ]
+          ]
+            SyntaxTree::Go::FuncType.new(
+              params: SyntaxTree::Go::FieldList.new(
+                list: parts.map { |part| SyntaxTree::Go::Field.new(type: Statements(part)) }
+              ),
+              results: nil
+            )
+
           # Proc
           # func()
           # ---
@@ -986,6 +1134,9 @@ module Gob
           # Array[byte].new("hello")
           # []byte("hello")
           # ---
+          # Array[byte].new(text)
+          # []byte(text)
+          # ---
           in SyntaxTree::CallNode[
             receiver: SyntaxTree::ARef[
               collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Array"] ],
@@ -996,12 +1147,12 @@ module Gob
             operator: SyntaxTree::Period[value: "."],
             message: SyntaxTree::Ident[value: "new"],
             arguments: SyntaxTree::ArgParen[
-              arguments: SyntaxTree::Args[ parts: [ SyntaxTree::StringLiteral | SyntaxTree::XStringLiteral => text ] ]
+              arguments: SyntaxTree::Args[ parts: [ value ] ]
             ]
           ]
             SyntaxTree::Go::CallExpr.new(
               fun:  Statements(receiver),
-              args: [ Statements(text) ]
+              args: [ Statements(value) ]
             )
 
           # @url.URL.new(Scheme: "https")
@@ -1181,6 +1332,12 @@ module Gob
           #in SyntaxTree::Go::CompositeLit
           #  SyntaxTree::Go::CompositeLit.new(x: nil)
 
+          # (digit - 'A')
+          # (digit - 'A')
+          # ---
+          in SyntaxTree::Paren[contents: SyntaxTree::Statements[body: [statement]]]
+            SyntaxTree::Go::ParenExpr.new(x: Statements(statement))
+
           in SyntaxTree::Command[
             message: SyntaxTree::Ident[value: name],
             arguments: SyntaxTree::Args[parts: args]
@@ -1194,12 +1351,7 @@ module Gob
             Call(node)
 
           in SyntaxTree::Assign[target: target, value: value]
-            SyntaxTree::Go::AssignStmt.new(
-              lhs:     Array(LeftHand(target)),
-              tok_pos: nil,
-              tok:     ":=",
-              rhs:     Array(RightHand(value))
-            )
+            Assignment(self, target, value)
 
           in SyntaxTree::MAssign[
             target: SyntaxTree::MLHS[
@@ -1218,12 +1370,7 @@ module Gob
             nil
 
           in SyntaxTree::MAssign[target: target, value: value]
-            SyntaxTree::Go::AssignStmt.new(
-              lhs:     Array(LeftHand(target)),
-              tok_pos: nil,
-              tok:     ":=",
-              rhs:     Array(RightHand(value))
-            )
+            Assignment(self, target, value)
 
           in SyntaxTree::MethodAddBlock[
             call: SyntaxTree::CallNode[
@@ -1265,11 +1412,11 @@ module Gob
           ]
             Lambda(block)
 
-          # ch << "ping"
-          # ch <- "ping"
+          # 1 << 6
+          # 1 << 6
           # ---
-          in SyntaxTree::Binary[ left: left, operator: :<<, right: right ]
-            SyntaxTree::Go::SendStmt.new(chan: Statements(left), value: Statements(right))
+          in SyntaxTree::Binary[ left: left, operator: :<<, right: right ] => binary
+            Binary(Statements(left), :<<, Statements(right), location: binary.location)
 
           # break
           # break
@@ -1351,6 +1498,32 @@ module Gob
             ]
               ctx.state[:package] = name == "Main" ? "main" : name.downcase
               Hoist.new(body)
+
+            # type :uint128, Array[uint64, 2] do def M ... end end
+            # type uint128 [2]uint64
+            # func (self *uint128) M() { ... }
+            # ---
+            in SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "type"],
+              arguments: SyntaxTree::Args[ parts: [
+                SyntaxTree::SymbolLiteral[value: { value: name }], type
+              ] ],
+              block: SyntaxTree::BlockNode[
+                bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: methods ] ]
+              ]
+            ]
+              [ Alias(name, type), *Methods(name, methods) ]
+
+            # type :CompressedSet, Array[byte]
+            # type CompressedSet []byte
+            # ---
+            in SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "type"],
+              arguments: SyntaxTree::Args[ parts: [
+                SyntaxTree::SymbolLiteral[value: { value: name }], type
+              ] ]
+            ]
+              Alias(name, type)
 
             # var colour = Struct.new(R: byte) do def M ... end end
             # type colour struct { R byte }
@@ -1450,19 +1623,48 @@ module Gob
 
             in SyntaxTree::DefNode[
               name: { value: name },
+              params: { contents: SyntaxTree::Params[requireds: args], comments: [SyntaxTree::Comment[value: types], *] } => params,
+              bodystmt: SyntaxTree::BodyStmt[
+                statements: SyntaxTree::Statements[body: body]
+              ]
+            ]
+              return_names = parse_signature_comment(types)[:returns].filter_map { |ret| ret[:name] }
+              ctx.descend(body, declared: [*args.map(&:value), *return_names]).then do |children|
+                Function(name: name, params: params, body: children.tree)
+              end
+
+            in SyntaxTree::DefNode[
+              name: { value: name },
+              params: { contents: SyntaxTree::Params[requireds: args] } => params,
+              bodystmt: SyntaxTree::BodyStmt[
+                statements: SyntaxTree::Statements[body: body]
+              ]
+            ]
+              ctx.descend(body, declared: args.map(&:value)).then do |children|
+                Function(name: name, params: params, body: children.tree)
+              end
+
+            in SyntaxTree::DefNode[
+              name: { value: name },
+              params: { comments: [SyntaxTree::Comment[value: types], *] } => params,
+              bodystmt: SyntaxTree::BodyStmt[
+                statements: SyntaxTree::Statements[body: body]
+              ]
+            ]
+              return_names = parse_signature_comment(types)[:returns].filter_map { |ret| ret[:name] }
+              ctx.descend(body, declared: return_names).then do |children|
+                Function(name: name, params: params, body: children.tree)
+              end
+
+            in SyntaxTree::DefNode[
+              name: { value: name },
               params: params,
               bodystmt: SyntaxTree::BodyStmt[
                 statements: SyntaxTree::Statements[body: body]
               ]
             ]
-              ps = params.respond_to?(:contents) ? params.contents : params
-                param_names = Array(ps.respond_to?(:requireds) ? ps.requireds : []).map { |p| p.respond_to?(:value) ? p.value : nil }.compact
-              ctx.descend(body, declared: param_names).then do |children|
-                Function(
-                  name: name,
-                  params: params,
-                  body: children.tree
-                )
+              ctx.descend(body).then do |children|
+                Function(name: name, params: params, body: children.tree)
               end
 
             in SyntaxTree::Begin[
@@ -1505,6 +1707,12 @@ module Gob
                 )
               )
 
+            # ch << "ping"
+            # ch <- "ping"
+            # ---
+            in SyntaxTree::Binary[ left: left, operator: :<<, right: right ]
+              SyntaxTree::Go::SendStmt.new(chan: Statements(left), value: Statements(right))
+
             in SyntaxTree::CallNode
               SyntaxTree::Go::ExprStmt.new(x: Statements(node))
 
@@ -1518,6 +1726,7 @@ module Gob
               target: SyntaxTree::VarField[value: SyntaxTree::Const[value: name]],
               value: value
             ] if ctx.equal?(root_context)
+              ctx.state[:uppercase_constants] = (ctx.state[:uppercase_constants] || []) | [name]
               SyntaxTree::Go::GenDecl.new(
                 tok: :const,
                 specs: [ SyntaxTree::Go::ValueSpec.new( names: [Constant(name)], values: [RightHand(value)] ) ]
@@ -1562,11 +1771,41 @@ module Gob
               # a declaration may arrive with its methods alongside it
               ctx.tree.replace(ctx.tree.flatten)
 
+
               ctx.tree.unshift(SyntaxTree::Go::GenDecl.new(
                 tok: :import,
                 specs: ctx.tree.select { |node| node.is_a?(SyntaxTree::Go::ImportSpec) }
               ))
               ctx.tree.reject! { |node| node.is_a?(SyntaxTree::Go::ImportSpec) }
+
+              [:const, :var].each do |tok|
+                decls = ctx.tree.select { |node| node.is_a?(SyntaxTree::Go::GenDecl) && node.tok == tok }
+                next if decls.length < 2
+
+                first_index = ctx.tree.index { |node| node.equal?(decls.first) }
+                last_index  = ctx.tree.rindex { |node| node.equal?(decls.last) }
+                range = ctx.tree[first_index..last_index]
+
+                grouped = SyntaxTree::Go::GenDecl.new(tok: tok, specs: range.flat_map { |node|
+                  case node
+                  # consecutive `#` lines are one block comment, so they wait in
+                  # state until the spec they were written against arrives
+                  in SyntaxTree::Go::Comment
+                    ctx.state.fetch(:comments) << node
+                    []
+
+                  in SyntaxTree::Go::GenDecl[tok: ^tok, specs: specs]
+                    [*ctx.state.fetch(:comments).slice!(0..), *specs]
+
+                  else
+                    []
+                  end
+                })
+
+                replaced = ctx.tree[0...first_index] + [grouped] + ctx.tree[(last_index + 1)..]
+                ctx.tree.replace(replaced)
+              end
+
               file = Package(name: ctx.state[:package] || "main", declarations: ctx.tree.dup)
               ctx.tree.replace([file])
             end

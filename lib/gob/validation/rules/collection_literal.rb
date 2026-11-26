@@ -18,6 +18,7 @@ module Gob
           # Hash[string, int].new("one" => 1)
           # ---
           def rule(node)
+            return if inside_typed_collection_new?(node)
             return if @ancestors&.[](0...-1)&.any? do |ancestor|
               ancestor.is_a?(SyntaxTree::ArrayLiteral) || ancestor.is_a?(SyntaxTree::HashLiteral)
             end
@@ -35,6 +36,26 @@ module Gob
 
             else
               nil
+            end
+          end
+
+          def inside_typed_collection_new?(_node)
+            ancestors = @ancestors&.[](0...-1) || []
+
+            ancestors.any? do |ancestor|
+              next false unless ancestor.is_a?(SyntaxTree::CallNode)
+
+              case ancestor
+              in SyntaxTree::CallNode[
+                receiver: SyntaxTree::ARef[collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Array" | "Hash"]]],
+                operator: SyntaxTree::Period[value: "."],
+                message: SyntaxTree::Ident[value: "new"],
+                arguments: arguments
+              ]
+                !arguments.nil? && ancestors.include?(arguments)
+              else
+                false
+              end
             end
           end
 

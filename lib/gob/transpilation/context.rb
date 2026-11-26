@@ -11,6 +11,39 @@ module Gob
     Hoist = Struct.new(:nodes)
 
     class Context
+      class << self
+        def global
+          @global
+        end
+
+        def global=(value)
+          @global = value
+        end
+
+        def global_for(path)
+          dir = File.dirname(path)
+          self.global = {
+            uppercase_constants: Dir.glob(File.join(dir, "*.gob")).flat_map { |file|
+              SyntaxTree.parse(File.read(file)).statements.body.flat_map { |node|
+                case node
+                in SyntaxTree::ModuleDeclaration[bodystmt: SyntaxTree::BodyStmt[statements: SyntaxTree::Statements[body: body]]]
+                  body
+                else
+                  [node]
+                end
+              }.filter_map { |node|
+                case node
+                in SyntaxTree::Assign[target: SyntaxTree::VarField[value: SyntaxTree::Const[value: name]]]
+                  name
+                else
+                  nil
+                end
+              }
+            }.uniq
+          }
+        end
+      end
+
       attr_reader :body, :children, :tree, :state
 
       protected
@@ -27,7 +60,10 @@ module Gob
 
       def initialize(body, state: nil)
         @body = body
-        @state = state || { declared: [] }
+        @state = state || { declared: [], uppercase_constants: [], comments: [] }
+        if (global = self.class.global) && (constants = global[:uppercase_constants])
+          @state[:uppercase_constants] = (@state[:uppercase_constants] | constants)
+        end
         @children = []
         @tree = []
       end
@@ -37,9 +73,9 @@ module Gob
       def descend(body, inherit: true, declared: [])
         child_state =
           if inherit
-            { **state, declared: state.fetch(:declared).dup.concat(declared) }
+            { **state, declared: state.fetch(:declared).dup.concat(declared), uppercase_constants: state.fetch(:uppercase_constants, []).dup, comments: [] }
           else
-            { declared: declared.dup }
+            { declared: declared.dup, uppercase_constants: [], comments: [] }
           end
 
         child_context = self.class.new(body, state: child_state)
@@ -50,11 +86,15 @@ module Gob
         child_context
       end
 
+      # Answers with `names` that are not already in scope, without mutating.
+      def undeclared(names)
+        declared = state.fetch(:declared)
+        names.reject { |name| declared.include?(name) }
+      end
+
       # Records `names` and answers with the ones that were not already in scope.
       def declare(names)
-        state.fetch(:declared).then do |declared|
-          names.reject { |name| declared.include?(name) }.tap { |fresh| declared.concat(fresh) }
-        end
+        undeclared(names).tap { |fresh| state.fetch(:declared).concat(fresh) }
       end
 
       def match(&block)

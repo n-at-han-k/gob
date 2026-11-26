@@ -16,7 +16,7 @@ module Main
 end
 ```
 
-`require` becomes a Go import. `module Main` produces `package main`, and `main` is treated specially as Go's entry point.
+`require` becomes a Go import. `require "pkg", name` aliases it, and `require "pkg", _` is a blank import. `module Main` produces `package main`, and `main` is treated specially as Go's entry point.
 
 ## Variables
 
@@ -34,7 +34,9 @@ module Main
 end
 ```
 
-Use `var name = value` when Go can infer the type, `var :name, Type` for an explicit zero value, and `var :name, Type, value` for an explicit typed value. Short assignment `name = value` becomes `:=` in function bodies. Constants use `const :name, value`.
+Use `var name = value` when Go can infer the type, `var :name, Type` for an explicit zero value, and `var :name, Type, value` for an explicit typed value. `var name Type` works too. Short assignment `name = value` becomes `:=` in function bodies. Constants use `const :name, value`.
+
+At module scope, `NAME = value` becomes a Go `const` renamed to `lowerCamel`, and `name = value` becomes a package-level `var`.
 
 ## Control flow
 
@@ -51,12 +53,16 @@ while i < 10
   i = i + 1
 end
 
+until done
+  i = i + 1
+end
+
 loop do
   break
 end
 ```
 
-`if`, `elsif`, `else`, `while`, `loop do`, `break`, `next`, and `defer` map to their Go equivalents. `case/when` maps to Go `switch`, type switch, or `select` depending on form.
+`if`, `elsif`, `else`, `while`, `loop do`, `break`, `next`, and `defer` map to their Go equivalents. `unless cond` becomes `if !cond`, and `until cond` becomes `for !cond`. `case/when` maps to Go `switch`, type switch, or `select` depending on form.
 
 ## Functions and multiple returns
 
@@ -111,21 +117,29 @@ end
 ```ruby
 module Main
   var person = Struct.new(name: string, age: int) do
-    def self.area # -> int
-      return 0
+    def Birthday # ()
+      self.age = self.age + 1
+    end
+
+    protected def Label # () -> string
+      return self.name
     end
   end
 
   def main
     p = person.new(name: "Ann", age: 40)
     sp = @p
-    sp.age = 41
-    fmt.Println(@@sp.age)
+    sp.Birthday()
+    fmt.Println(sp.Label())
   end
 end
 ```
 
-`Struct.new(...)` declares a Go struct type. `class` with `attr_accessor` is another struct form used in golden cases. `@value` takes an address; `@@value` dereferences. `def self.Method` inside a struct/class block declares a pointer-receiver method; a plain `def` inside the block declares a value-receiver method. Struct field tags can be written as comments before fields.
+`Struct.new(...)` declares a Go struct type. `class` with `attr_accessor` is another struct form used in golden cases. `Class.new(Type)` declares a named type over an underlying type, such as `type KSUID [byteLength]byte`. Struct field tags can be written as comments before fields.
+
+`@value` takes an address; `@@value` dereferences.
+
+Every receiver is named `self`. A plain `def` inside a struct or class block gets a pointer receiver, because most methods need to modify the receiver. `protected def` gets a value receiver instead, so the method works on a copy.
 
 ## Errors
 

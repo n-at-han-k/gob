@@ -29,9 +29,10 @@ Gob borrows Ruby syntax where it maps cleanly to Go:
 
 - `require "pkg"` maps to Go imports.
 - `module` maps to a Go package declaration.
-- `def` declares Go functions or methods; `class`/`Struct.new` declare Go struct types.
+- `def` declares Go functions or methods; `class`/`Struct.new` declare Go struct types; `Class.new` declares a named type over an underlying type.
+- Inside a struct or class block, a plain `def` gets a pointer receiver and `protected def` gets a value receiver. Every receiver is named `self`.
 - `Array[T].new(...)` and `Hash[K, V].new(...)` map to Go slices/maps; fixed arrays use `Array[T, N].new(...)`.
-- `while`, `loop do`, `break`, `next`, and `defer` map to Go control-flow constructs.
+- `while`, `until`, `unless`, `loop do`, `break`, `next`, and `defer` map to Go control-flow constructs.
 - `case/when` maps to Go `switch`, type switch, or `select` depending on form.
 - `lambda { ... }` maps to Go function literals.
 - `go`, channels, `@` address-of, and `@@` dereference express Go runtime/concurrency/pointer concepts.
@@ -49,5 +50,7 @@ Golden cases live under `test/cases/`. A case typically has:
 - `name.gob` - Gob input
 - `name.go` - expected Go output
 - `name.gob.out` - generated output
+
+Run the goldens with `bin/transpilation-check` (optionally scoped to a path or file).
 
 The test loop is: make the emitted Go correct, compile/verify it, then update goldens only when the output is right.
