@@ -7,7 +7,12 @@ import (
 	"strings"
 )
 
-var article = Struct{Title: string, Views: int, Tags: []string, internal: string}
+var article = Struct{
+	Title:    string,
+	Views:    int,
+	Tags:     []string,
+	internal: string,
+}
 
 func runJSON() {
 	a := article{Title: "Learning Go", Views: 12, Tags: []string{"go", "stdlib"}}

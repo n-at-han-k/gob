@@ -1,12 +1,12 @@
 package main
 
 import (
-	"context"
+	_ "context"
 	"fmt"
 	"os"
 	"runtime/trace"
 	"sync"
-	"time"
+	_ "time"
 )
 
 func runTrace() {

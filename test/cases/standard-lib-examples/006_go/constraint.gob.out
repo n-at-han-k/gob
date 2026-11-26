@@ -13,7 +13,11 @@ func runConstraint() {
 		log.Fatal(err)
 	}
 	fmt.Println("expr:", expr)
-	envs := []map[string]bool{{"linux": true, "amd64": true}, {"linux": true, "arm": true}, {"darwin": true, "arm64": true}}
+	envs := []map[string]bool{
+		{"linux": true, "amd64": true},
+		{"linux": true, "arm": true},
+		{"darwin": true, "arm64": true},
+	}
 	for _, env := range envs {
 		fmt.Printf("matches %v: %v\n", env, expr.Eval(nil))
 	}

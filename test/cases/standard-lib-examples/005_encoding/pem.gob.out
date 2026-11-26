@@ -7,7 +7,13 @@ import (
 )
 
 func runPEM() {
-	block := &pem.Block{Type: "MESSAGE", Headers: map[string]string{"Comment": "learning-go example"}, Bytes: []byte("some binary payload")}
+	block := &pem.Block{
+		Type: "MESSAGE",
+		Headers: map[string]string{
+			"Comment": "learning-go example",
+		},
+		Bytes: []byte("some binary payload"),
+	}
 	pem.Encode(os.Stdout, block)
 	encoded := pem.EncodeToMemory(block)
 	got, rest := pem.Decode(encoded)

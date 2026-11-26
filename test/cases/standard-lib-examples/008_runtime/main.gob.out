@@ -6,7 +6,17 @@ import (
 	"sort"
 )
 
-var demos = map[string]func(){"runtime": runRuntime, "cgo": runCGO, "coverage": runCoverage, "debug": runDebug, "metrics": runMetrics, "pprof": runPProf, "race": runRace, "secret": runSecret, "trace": runTrace}
+var demos = map[string]func(){
+	"runtime":  runRuntime,
+	"cgo":      runCGO,
+	"coverage": runCoverage,
+	"debug":    runDebug,
+	"metrics":  runMetrics,
+	"pprof":    runPProf,
+	"race":     runRace,
+	"secret":   runSecret,
+	"trace":    runTrace,
+}
 
 func main() {
 	if len(os.Args) < 2 {

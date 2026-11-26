@@ -6,7 +6,24 @@ import (
 	"sort"
 )
 
-var demos = map[string]func(){"net": runNet, "http": runHTTP, "cgi": runCGI, "cookiejar": runCookieJar, "fcgi": runFCGI, "httptest": runHTTPTest, "httptrace": runHTTPTrace, "httputil": runHTTPUtil, "pprof": runPProf, "mail": runMail, "netip": runNetip, "rpc": runRPC, "jsonrpc": runJSONRPC, "smtp": runSMTP, "textproto": runTextproto, "url": runURL}
+var demos = map[string]func(){
+	"net":       runNet,
+	"http":      runHTTP,
+	"cgi":       runCGI,
+	"cookiejar": runCookieJar,
+	"fcgi":      runFCGI,
+	"httptest":  runHTTPTest,
+	"httptrace": runHTTPTrace,
+	"httputil":  runHTTPUtil,
+	"pprof":     runPProf,
+	"mail":      runMail,
+	"netip":     runNetip,
+	"rpc":       runRPC,
+	"jsonrpc":   runJSONRPC,
+	"smtp":      runSMTP,
+	"textproto": runTextproto,
+	"url":       runURL,
+}
 
 func main() {
 	if len(os.Args) < 2 {

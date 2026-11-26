@@ -10,7 +10,12 @@ import (
 func runHTTPTrace() {
 	srv := httptest.NewServer(http.HandlerFunc(nil))
 	defer srv.Close()
-	trace := &httptrace.ClientTrace{GetConn: nil, GotConn: nil, WroteHeaders: nil, GotFirstResponseByte: nil}
+	trace := &httptrace.ClientTrace{
+		GetConn:              nil,
+		GotConn:              nil,
+		WroteHeaders:         nil,
+		GotFirstResponseByte: nil,
+	}
 	req, _ := http.NewRequest("GET", srv.URL, nil)
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	resp, _ := http.DefaultTransport.RoundTrip(req)

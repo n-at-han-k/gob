@@ -77,6 +77,34 @@ module Gob
         end
       end
 
+      module LambdaNodes
+        # lambda { srv.ServeCodec(c) }
+        # func() { srv.ServeCodec(c) }
+        # ---
+        def Lambda(ctx, block)
+          case block
+          in SyntaxTree::BlockNode[ bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: body ] ] ]
+            Lambda(ctx, body)
+
+          in SyntaxTree::BlockNode[ bodystmt: SyntaxTree::Statements[ body: body ] ]
+            Lambda(ctx, body)
+
+          in Array
+            SyntaxTree::Go::FuncLit.new(
+              type: SyntaxTree::Go::FuncType.new(
+                type_params: nil,
+                params: SyntaxTree::Go::FieldList.new(list: []),
+                results: SyntaxTree::Go::FieldList.new(list: [])
+              ),
+              body: ctx.descend(block).then { |children| Block(body: children.tree) }
+            )
+
+          else
+            nil
+          end
+        end
+      end
+
       module BlockNodes
         def Block(body:)
           SyntaxTree::Go::BlockStmt.new(list: body)
@@ -320,7 +348,9 @@ module Gob
         def IntLiteral(value)       = BasicLit(:INT, value)
         def FloatLiteral(value)     = BasicLit(:FLOAT, value)
 
-        def Binary(left, operator, right) = SyntaxTree::Go::BinaryExpr.new(x: left, op: operator, y: right)
+        def Binary(left, operator, right, location: SyntaxTree::Location.default)
+          SyntaxTree::Go::BinaryExpr.new(x: left, op: operator, y: right, location: location)
+        end
 
         def Call(node)
           case node
@@ -439,8 +469,8 @@ module Gob
           in SyntaxTree::FloatLiteral[value: text]
             FloatLiteral(text)
 
-          in SyntaxTree::Binary[left: left, operator: operator, right: right]
-            Binary(Statements(left), operator, Statements(right))
+          in SyntaxTree::Binary[left: left, operator: operator, right: right] => binary
+            Binary(Statements(left), operator, Statements(right), location: binary.location)
 
 
 
@@ -667,7 +697,8 @@ module Gob
                   x:   Ident(name.delete_prefix("@")),
                   sel: Ident(selector)
                 ),
-                elts: Array(arguments&.arguments&.parts).flat_map { |item| Statements(item) }
+                elts: Array(arguments&.arguments&.parts).flat_map { |item| Statements(item) },
+                location: arguments&.location || SyntaxTree::Location.default
               )
             )
 
@@ -689,7 +720,8 @@ module Gob
                 type: type,
                 elts: Array(arguments&.arguments&.parts).flat_map { |item|
                   Array(Statements(item)).map { |entry| Entry(type, entry) }
-                }
+                },
+                location: arguments&.location || SyntaxTree::Location.default
               )
             end
 
@@ -729,19 +761,21 @@ module Gob
           # { Name: "session", Value: "abc123" }
           # {Name: "session", Value: "abc123"}
           # ---
-          in SyntaxTree::HashLiteral[ assocs: assocs ]
+          in SyntaxTree::HashLiteral[ assocs: assocs ] => hash
             SyntaxTree::Go::CompositeLit.new(
               type: nil,
-              elts: assocs.map { |assoc| Statements(assoc) }
+              elts: assocs.map { |assoc| Statements(assoc) },
+              location: hash.location
             )
 
           # ["go & rust"]
           # {"go & rust"}
           # ---
-          in SyntaxTree::ArrayLiteral[ contents: SyntaxTree::Args[ parts: parts ] ]
+          in SyntaxTree::ArrayLiteral[ contents: SyntaxTree::Args[ parts: parts ] ] => array
             SyntaxTree::Go::CompositeLit.new(
               type: nil,
-              elts: parts.map { |part| Statements(part) }
+              elts: parts.map { |part| Statements(part) },
+              location: array.location
             )
 
           # digest[]
@@ -935,6 +969,48 @@ module Gob
           end
         end
 
+        # every identifier the tree uses as a selector base
+        def Selectors(node)
+          case node
+          in SyntaxTree::Go::SelectorExpr[x: SyntaxTree::Go::Ident[name: name]]
+            [name]
+
+          in Array
+            node.flat_map { |child| Selectors(child) }
+
+          in SyntaxTree::Go::Node
+            Selectors(node.child_nodes)
+
+          else
+            []
+          end
+        end
+
+        # require "crypto/md5"      -- nothing says md5.
+        # _ "crypto/md5"
+        # ---
+        # require "encoding/json/v2"  -- the code says json.
+        # json "encoding/json/v2"
+        # ---
+        def Imports(tree)
+          specs   = tree.select { |node| node.is_a?(SyntaxTree::Go::ImportSpec) }
+          paths   = specs.map { |spec| spec.path.value.delete_prefix("\"").delete_suffix("\"") }
+          claimed = paths.map { |path| path.split("/").last }
+          used    = Selectors(tree)
+
+          paths.map do |path|
+            *parents, package = path.split("/")
+
+            if used.include?(package)
+              ImportSpec(path)
+            else
+              parents.reverse.find { |parent| used.include?(parent) && !claimed.include?(parent) }.then do |alias_|
+                ImportSpec(path, name: Ident(alias_ || "_"))
+              end
+            end
+          end
+        end
+
         def ImportSpec(path, name: nil)
           SyntaxTree::Go::ImportSpec.new(
             doc: nil,
@@ -995,6 +1071,26 @@ module Gob
               SyntaxTree::MethodAddBlock[call: SyntaxTree::CallNode[ message: SyntaxTree::Ident[value: "each"] ]] => logic_node
               Logic(ctx, logic_node)
 
+            # go lambda { ... }.()
+            # go func() { ... }()
+            # ---
+            in SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "go"],
+              arguments: SyntaxTree::Args[ parts: [
+                SyntaxTree::CallNode[
+                  receiver: SyntaxTree::MethodAddBlock[
+                    call: SyntaxTree::CallNode[ message: SyntaxTree::Ident[value: "lambda"] ],
+                    block: block
+                  ],
+                  operator: SyntaxTree::Period[value: "."],
+                  message: :call
+                ]
+              ] ]
+            ]
+              SyntaxTree::Go::GoStmt.new(
+                call: SyntaxTree::Go::CallExpr.new(fun: Lambda(ctx, block), args: [])
+              )
+
             in SyntaxTree::CallNode
               SyntaxTree::Go::ExprStmt.new(x: Statements(node))
 
@@ -1037,7 +1133,7 @@ module Gob
             if ctx.equal?(root_context)
               ctx.tree.unshift(SyntaxTree::Go::GenDecl.new(
                 tok: :import,
-                specs: ctx.tree.select { |node| node.is_a?(SyntaxTree::Go::ImportSpec) }
+                specs: Imports(ctx.tree)
               ))
               ctx.tree.reject! { |node| node.is_a?(SyntaxTree::Go::ImportSpec) }
               file = Package(name: "main", declarations: ctx.tree.dup)
@@ -1055,6 +1151,7 @@ module Gob
       include Runner::StatementNodes
 
       include Runner::LogicNodes
+      include Runner::LambdaNodes
       include Runner::BlockNodes
       include Runner::VariableNodes
     end

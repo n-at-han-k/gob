@@ -5,7 +5,11 @@ import (
 	"fmt"
 )
 
-var colour = Struct{R: byte, G: byte, B: byte}
+var colour = Struct{
+	R: byte,
+	G: byte,
+	B: byte,
+}
 
 func runEncoding() {
 	var m encoding.TextMarshaler = colour{255, 128, 0}

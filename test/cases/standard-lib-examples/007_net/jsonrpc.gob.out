@@ -16,6 +16,13 @@ func runJSONRPC() {
 		log.Fatal(err)
 	}
 	defer l.Close()
+	go func() {
+		conn, err := l.Accept()
+		if err != nil {
+			return
+		}
+		srv.ServeCodec(jsonrpc.NewServerCodec(conn))
+	}()
 	conn, err := net.Dial("tcp", l.Addr().String())
 	if err != nil {
 		log.Fatal(err)

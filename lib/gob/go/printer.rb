@@ -57,7 +57,7 @@ module Gob
         when SyntaxTree::Go::BasicLit
           out << node.value.to_s
         when SyntaxTree::Go::BinaryExpr
-          emit_binary_expr(node, out)
+          emit_binary_expr(node, out, indent: indent)
         when SyntaxTree::Go::UnaryExpr
           emit_unary_expr(node, out)
         when SyntaxTree::Go::ParenExpr
@@ -305,10 +305,17 @@ module Gob
         emit(node.sel, out)
       end
 
-      def emit_binary_expr(node, out)
-        emit(node.x, out)
-        out << " " << node.op.to_s << " "
-        emit(node.y, out)
+      def emit_binary_expr(node, out, indent: 0)
+        emit(node.x, out, indent: indent)
+        out << " " << node.op.to_s
+
+        if node.location.start_line != node.location.end_line
+          out << "\n" << tabs(indent + 1)
+        else
+          out << " "
+        end
+
+        emit(node.y, out, indent: indent)
       end
 
       def emit_unary_expr(node, out)
@@ -325,7 +332,7 @@ module Gob
       def emit_composite_lit(node, out, indent: 0)
         emit(node.type, out) if node.type
 
-        if node.instance_variable_get(:@multiline) && !node.elts.empty?
+        if node.location.start_line != node.location.end_line && !node.elts.empty?
           out << "{\n"
           node.elts.each do |elt|
             out << tabs(indent + 1)

@@ -6,7 +6,11 @@ import (
 )
 
 func runMetrics() {
-	samples := []metrics.Sample{{Name: "/memory/classes/heap/objects:bytes"}, {Name: "/sched/goroutines:goroutines"}, {Name: "/gc/cycles/total:gc-cycles"}}
+	samples := []metrics.Sample{
+		{Name: "/memory/classes/heap/objects:bytes"},
+		{Name: "/sched/goroutines:goroutines"},
+		{Name: "/gc/cycles/total:gc-cycles"},
+	}
 	metrics.Read(samples)
 	for _, s := range samples {
 	}
