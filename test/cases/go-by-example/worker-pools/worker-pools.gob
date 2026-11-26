@@ -1,0 +1,40 @@
+require "fmt"
+require "time"
+
+module Main
+  def worker(id, jobs, results) # (int, <-chan int, chan<- int)
+    jobs.each do |j|
+      fmt.Println("worker", id, "started  job", j)
+      time.Sleep(time.Second)
+      fmt.Println("worker", id, "finished job", j)
+      results << j * 2
+    end
+  end
+
+  def main
+    const :numJobs, 5
+    jobs = make(Chan[int], numJobs)
+    results = make(Chan[int], numJobs)
+
+    w = 1
+    while w <= 3
+      go lambda {
+        worker(w, jobs, results)
+      }.()
+      w = w + 1
+    end
+
+    j = 1
+    while j <= numJobs
+      jobs << j
+      j = j + 1
+    end
+    close(jobs)
+
+    a = 1
+    while a <= numJobs
+      ~results
+      a = a + 1
+    end
+  end
+end

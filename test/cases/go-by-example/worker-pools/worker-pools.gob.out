@@ -1,0 +1,39 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func worker(id int, jobs <-chan int, results chan<- int) {
+	for j := range jobs {
+		fmt.Println("worker", id, "started  job", j)
+		time.Sleep(time.Second)
+		fmt.Println("worker", id, "finished job", j)
+		results <- j * 2
+	}
+}
+
+func main() {
+	const numJobs = 5
+	jobs := make(chan int, numJobs)
+	results := make(chan int, numJobs)
+	w := 1
+	for w <= 3 {
+		go func() {
+			worker(w, jobs, results)
+		}()
+		w = w + 1
+	}
+	j := 1
+	for j <= numJobs {
+		jobs <- j
+		j = j + 1
+	}
+	close(jobs)
+	a := 1
+	for a <= numJobs {
+		<-results
+		a = a + 1
+	}
+}

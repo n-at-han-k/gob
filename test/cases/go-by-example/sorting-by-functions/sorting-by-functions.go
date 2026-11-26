@@ -12,12 +12,17 @@ import (
 	"slices"
 )
 
+type person struct {
+	name string
+	age  int
+}
+
 func main() {
 	fruits := []string{"peach", "banana", "kiwi"}
 
 	// We implement a comparison function for string
 	// lengths. `cmp.Compare` is helpful for this.
-	lenCmp := func(a, b string) int {
+	lenCmp := func(a string, b string) int {
 		return cmp.Compare(len(a), len(b))
 	}
 
@@ -28,15 +33,10 @@ func main() {
 
 	// We can use the same technique to sort a slice of
 	// values that aren't built-in types.
-	type Person struct {
-		name string
-		age  int
-	}
-
-	people := []Person{
-		{name: "Jax", age: 37},
-		{name: "TJ", age: 25},
-		{name: "Alex", age: 72},
+	people := []person{
+		person{name: "Jax", age: 37},
+		person{name: "TJ", age: 25},
+		person{name: "Alex", age: 72},
 	}
 
 	// Sort `people` by age using `slices.SortFunc`.
@@ -45,9 +45,8 @@ func main() {
 	// you may want the slice to contain `*Person` instead
 	// and adjust the sorting function accordingly. If in
 	// doubt, [benchmark](testing-and-benchmarking)!
-	slices.SortFunc(people,
-		func(a, b Person) int {
-			return cmp.Compare(a.age, b.age)
-		})
+	slices.SortFunc(people, func(a person, b person) int {
+		return cmp.Compare(a.age, b.age)
+	})
 	fmt.Println(people)
 }

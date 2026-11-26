@@ -1,0 +1,29 @@
+require "cmp"
+require "fmt"
+require "slices"
+
+module Main
+  var person = Struct.new(name: string, age: int)
+
+  def main
+    fruits = Array[string].new("peach", "banana", "kiwi")
+
+    lenCmp = lambda { |a, b| # (string, string) -> int
+      return cmp.Compare(len(a), len(b))
+    }
+
+    slices.SortFunc(fruits, lenCmp)
+    fmt.Println(fruits)
+
+    people = Array[person].new(
+      person.new(name: "Jax", age: 37),
+      person.new(name: "TJ", age: 25),
+      person.new(name: "Alex", age: 72)
+    )
+
+    slices.SortFunc(people, lambda { |a, b| # (person, person) -> int
+      return cmp.Compare(a.age, b.age)
+    })
+    fmt.Println(people)
+  end
+end

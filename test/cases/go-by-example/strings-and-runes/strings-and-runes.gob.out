@@ -1,0 +1,38 @@
+package main
+
+import (
+	"fmt"
+	"unicode/utf8"
+)
+
+func main() {
+	const s = "สวัสดี"
+	fmt.Println("Len:", len(s))
+	i := 0
+	for i < len(s) {
+		fmt.Printf("%x ", s[i])
+		i = i + 1
+	}
+	fmt.Println()
+	fmt.Println("Rune count:", utf8.RuneCountInString(s))
+	for idx, runeValue := range s {
+		fmt.Printf("%#U starts at %d\n", runeValue, idx)
+	}
+	fmt.Println("\nUsing DecodeRuneInString")
+	i, w := 0, 0
+	for i < len(s) {
+		runeValue, width := utf8.DecodeRuneInString(s[i:])
+		fmt.Printf("%#U starts at %d\n", runeValue, i)
+		w = width
+		examineRune(runeValue)
+		i = i + w
+	}
+}
+
+func examineRune(r rune) {
+	if r == 116 {
+		fmt.Println("found tee")
+	} else if r == 3626 {
+		fmt.Println("found so sua")
+	}
+}

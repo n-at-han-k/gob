@@ -1,0 +1,7 @@
+require "fmt"
+
+module Main
+  def main
+    fmt.Println("hello world")
+  end
+end

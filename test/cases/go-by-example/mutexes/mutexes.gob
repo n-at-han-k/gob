@@ -1,0 +1,39 @@
+require "fmt"
+require "sync"
+
+module Main
+  var container = Struct.new(mu: sync.Mutex, counters: Hash[string, int]) do
+    def self.inc(name) # (string)
+      self.mu.Lock()
+      defer self.mu.Unlock()
+      self.counters[name] = self.counters[name] + 1
+    end
+  end
+
+  def main
+    c = container.new(counters: Hash[string, int].new("a" => 0, "b" => 0))
+
+    var :wg, sync.WaitGroup
+
+    doIncrement = lambda { |name, n| # (string, int)
+      n.times do
+        c.inc(name)
+      end
+    }
+
+    wg.Go(lambda {
+      doIncrement("a", 10000)
+    })
+
+    wg.Go(lambda {
+      doIncrement("a", 10000)
+    })
+
+    wg.Go(lambda {
+      doIncrement("b", 10000)
+    })
+
+    wg.Wait()
+    fmt.Println(c.counters)
+  end
+end

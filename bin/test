@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ "$#" -eq 0 ]; then
-  set -- test/cases/standard-lib-examples
+  set -- test/cases
 fi
 
 export GOB_CASE_PATHS="$(printf '%s\n' "$@")"

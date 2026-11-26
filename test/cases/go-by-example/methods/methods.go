@@ -5,18 +5,19 @@ package main
 import "fmt"
 
 type rect struct {
-	width, height int
+	width  int
+	height int
 }
 
 // This `area` method has a _receiver type_ of `*rect`.
-func (r *rect) area() int {
-	return r.width * r.height
+func (self *rect) area() int {
+	return self.width * self.height
 }
 
 // Methods can be defined for either pointer or value
 // receiver types. Here's an example of a value receiver.
-func (r rect) perim() int {
-	return 2*r.width + 2*r.height
+func (self rect) perim() int {
+	return 2*self.width + 2*self.height
 }
 
 func main() {

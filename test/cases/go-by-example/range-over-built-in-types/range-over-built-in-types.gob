@@ -1,0 +1,31 @@
+require "fmt"
+
+module Main
+  def main
+    nums = Array[int].new(2, 3, 4)
+    sum = 0
+    nums.each do |_, num|
+      sum = sum + num
+    end
+    fmt.Println("sum:", sum)
+
+    nums.each do |i, num|
+      if num == 3
+        fmt.Println("index:", i)
+      end
+    end
+
+    kvs = Hash[string, string].new("a" => "apple", "b" => "banana")
+    kvs.each do |k, v|
+      fmt.Printf("%s -> %s\n", k, v)
+    end
+
+    kvs.each do |k|
+      fmt.Println("key:", k)
+    end
+
+    "go".each do |i, c|
+      fmt.Println(i, c)
+    end
+  end
+end

@@ -1,0 +1,37 @@
+require "fmt"
+
+module Main
+  var person = Struct.new(name: string, age: int)
+  var dog = Struct.new(name: string, isGood: bool)
+
+  def newPerson(name) # (string) -> *person
+    p = person.new(name: name)
+    p.age = 42
+    return @p
+  end
+
+  def main
+    fmt.Println(person.new("Bob", 20))
+
+    fmt.Println(person.new(name: "Alice", age: 30))
+
+    fmt.Println(person.new(name: "Fred"))
+
+    fmt.Println(@person.new(name: "Ann", age: 40))
+
+    fmt.Println(newPerson("Jon"))
+
+    s = person.new(name: "Sean", age: 50)
+    fmt.Println(s.name)
+
+    s.age = 51
+    fmt.Println(s)
+
+    sp = @s
+    sp.age = 52
+    fmt.Println(sp.age)
+
+    d = dog.new(name: "Rex", isGood: true)
+    fmt.Println(d)
+  end
+end

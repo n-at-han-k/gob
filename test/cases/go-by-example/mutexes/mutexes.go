@@ -10,28 +10,28 @@ import (
 	"sync"
 )
 
-// Container holds a map of counters; since we want to
+// container holds a map of counters; since we want to
 // update it concurrently from multiple goroutines, we
 // add a `Mutex` to synchronize access.
 // Note that mutexes must not be copied, so if this
 // `struct` is passed around, it should be done by
 // pointer.
-type Container struct {
+type container struct {
 	mu       sync.Mutex
 	counters map[string]int
 }
 
-func (c *Container) inc(name string) {
+func (self *container) inc(name string) {
 	// Lock the mutex before accessing `counters`; unlock
 	// it at the end of the function using a [defer](defer)
 	// statement.
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.counters[name]++
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.counters[name] = self.counters[name] + 1
 }
 
 func main() {
-	c := Container{
+	c := container{
 		// Note that the zero value of a mutex is usable as-is, so no
 		// initialization is required here.
 		counters: map[string]int{"a": 0, "b": 0},
@@ -48,7 +48,7 @@ func main() {
 	}
 
 	// Run several goroutines concurrently; note
-	// that they all access the same `Container`,
+	// that they all access the same `container`,
 	// and two of them access the same counter.
 	wg.Go(func() {
 		doIncrement("a", 10000)

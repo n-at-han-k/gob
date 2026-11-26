@@ -1,0 +1,45 @@
+require "bufio"
+require "fmt"
+require "log"
+require "net"
+require "strings"
+
+module Main
+  def main
+    listener, err = net.Listen("tcp", ":8090")
+    if err != nil
+      log.Fatal("Error listening:", err)
+    end
+
+    defer listener.Close()
+
+    loop do
+      conn, err = listener.Accept()
+      if err != nil
+        log.Println("Error accepting conn:", err)
+        next
+      end
+
+      go lambda {
+        handleConnection(conn)
+      }.()
+    end
+  end
+
+  def handleConnection(conn) # (net.Conn)
+    defer conn.Close()
+
+    reader = bufio.NewReader(conn)
+    message, err = reader.ReadString(10)
+    if err != nil
+      log.Printf("Read error: %v", err)
+      return
+    end
+
+    ackMsg = strings.ToUpper(strings.TrimSpace(message))
+    _, err = fmt.Fprintf(conn, "ACK: %s\n", ackMsg)
+    if err != nil
+      log.Printf("Server write error: %v", err)
+    end
+  end
+end

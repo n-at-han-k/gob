@@ -1,0 +1,22 @@
+require "fmt"
+
+module Main
+  def intSeq # -> func() int
+    i = 0
+    return lambda { || # () -> int
+      i = i + 1
+      return i
+    }
+  end
+
+  def main
+    nextInt = intSeq()
+
+    fmt.Println(nextInt())
+    fmt.Println(nextInt())
+    fmt.Println(nextInt())
+
+    newInts = intSeq()
+    fmt.Println(newInts())
+  end
+end

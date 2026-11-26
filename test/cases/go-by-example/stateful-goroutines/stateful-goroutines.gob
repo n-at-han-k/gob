@@ -1,0 +1,59 @@
+require "fmt"
+require "math/rand"
+require "sync/atomic"
+require "time"
+
+module Main
+  var readOp = Struct.new(key: int, resp: Chan[int])
+  var writeOp = Struct.new(key: int, val: int, resp: Chan[bool])
+
+  def main
+    var :readOps, atomic.Uint64
+    var :writeOps, atomic.Uint64
+
+    reads = make(Chan[readOp])
+    writes = make(Chan[writeOp])
+
+    go lambda {
+      var state = make(Hash[int, int])
+      loop do
+        case
+        when read = ~reads
+          read.resp << state[read.key]
+        when write = ~writes
+          state[write.key] = write.val
+          write.resp << true
+        end
+      end
+    }.()
+
+    100.times do
+      go lambda {
+        loop do
+          read = readOp.new(key: rand.Intn(5), resp: make(Chan[int]))
+          reads << read
+          ~read.resp
+          readOps.Add(1)
+          time.Sleep(time.Millisecond)
+        end
+      }.()
+    end
+
+    10.times do
+      go lambda {
+        loop do
+          write = writeOp.new(key: rand.Intn(5), val: rand.Intn(100), resp: make(Chan[bool]))
+          writes << write
+          ~write.resp
+          writeOps.Add(1)
+          time.Sleep(time.Millisecond)
+        end
+      }.()
+    end
+
+    time.Sleep(time.Second)
+
+    fmt.Println("readOps:", readOps.Load())
+    fmt.Println("writeOps:", writeOps.Load())
+  end
+end

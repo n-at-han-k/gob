@@ -35,7 +35,9 @@ func main() {
 		// We use a goroutine here to handle the connection
 		// so that the main loop can continue accepting more
 		// connections.
-		go handleConnection(conn)
+		go func() {
+			handleConnection(conn)
+		}()
 	}
 }
 
@@ -49,7 +51,7 @@ func handleConnection(conn net.Conn) {
 	// Use `bufio.NewReader` to read one line of data
 	// from the client (terminated by a newline).
 	reader := bufio.NewReader(conn)
-	message, err := reader.ReadString('\n')
+	message, err := reader.ReadString(10)
 	if err != nil {
 		log.Printf("Read error: %v", err)
 		return
@@ -58,8 +60,7 @@ func handleConnection(conn net.Conn) {
 	// Create and send a response back to the client,
 	// demonstrating two-way communication.
 	ackMsg := strings.ToUpper(strings.TrimSpace(message))
-	response := fmt.Sprintf("ACK: %s\n", ackMsg)
-	_, err = conn.Write([]byte(response))
+	_, err = fmt.Fprintf(conn, "ACK: %s\n", ackMsg)
 	if err != nil {
 		log.Printf("Server write error: %v", err)
 	}

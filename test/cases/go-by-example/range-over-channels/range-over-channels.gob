@@ -1,0 +1,14 @@
+require "fmt"
+
+module Main
+  def main
+    queue = make(Chan[string], 2)
+    queue << "one"
+    queue << "two"
+    close(queue)
+
+    queue.each do |elem|
+      fmt.Println(elem)
+    end
+  end
+end

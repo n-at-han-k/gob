@@ -1,0 +1,35 @@
+require "fmt"
+
+module Main
+  def main
+    jobs = make(Chan[int], 5)
+    done = make(Chan[bool])
+
+    go lambda {
+      loop do
+        j, more = ~jobs
+        if more
+          fmt.Println("received job", j)
+        else
+          fmt.Println("received all jobs")
+          done << true
+          return
+        end
+      end
+    }.()
+
+    j = 1
+    while j <= 3
+      jobs << j
+      fmt.Println("sent job", j)
+      j = j + 1
+    end
+    close(jobs)
+    fmt.Println("sent all jobs")
+
+    ~done
+
+    _, ok = ~jobs
+    fmt.Println("received more jobs:", ok)
+  end
+end

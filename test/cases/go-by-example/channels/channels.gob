@@ -1,0 +1,14 @@
+require "fmt"
+
+module Main
+  def main
+    messages = make(Chan[string])
+
+    go lambda {
+      messages << "ping"
+    }.()
+
+    msg = ~messages
+    fmt.Println(msg)
+  end
+end

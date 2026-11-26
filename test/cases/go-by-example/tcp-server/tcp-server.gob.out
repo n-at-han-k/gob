@@ -1,0 +1,42 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"net"
+	"strings"
+)
+
+func main() {
+	listener, err := net.Listen("tcp", ":8090")
+	if err != nil {
+		log.Fatal("Error listening:", err)
+	}
+	defer listener.Close()
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			log.Println("Error accepting conn:", err)
+			continue
+		}
+		go func() {
+			handleConnection(conn)
+		}()
+	}
+}
+
+func handleConnection(conn net.Conn) {
+	defer conn.Close()
+	reader := bufio.NewReader(conn)
+	message, err := reader.ReadString(10)
+	if err != nil {
+		log.Printf("Read error: %v", err)
+		return
+	}
+	ackMsg := strings.ToUpper(strings.TrimSpace(message))
+	_, err = fmt.Fprintf(conn, "ACK: %s\n", ackMsg)
+	if err != nil {
+		log.Printf("Server write error: %v", err)
+	}
+}

@@ -1,0 +1,26 @@
+require "bufio"
+require "fmt"
+require "net/http"
+
+module Main
+  def main
+    resp, err = http.Get("https://gobyexample.com")
+    if err != nil
+      panic(err)
+    end
+    defer resp.Body.Close()
+
+    fmt.Println("Response status:", resp.Status)
+
+    scanner = bufio.NewScanner(resp.Body)
+    i = 0
+    while scanner.Scan() && i < 5
+      fmt.Println(scanner.Text())
+      i = i + 1
+    end
+
+    if (err = scanner.Err())
+      panic(err)
+    end
+  end
+end

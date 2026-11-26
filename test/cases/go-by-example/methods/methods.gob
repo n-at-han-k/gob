@@ -1,0 +1,24 @@
+require "fmt"
+
+module Main
+  var rect = Struct.new(width: int, height: int) do
+    def self.area # -> int
+      return self.width * self.height
+    end
+
+    def perim # -> int
+      return 2 * self.width + 2 * self.height
+    end
+  end
+
+  def main
+    r = rect.new(width: 10, height: 5)
+
+    fmt.Println("area: ", r.area())
+    fmt.Println("perim:", r.perim())
+
+    rp = @r
+    fmt.Println("area: ", rp.area())
+    fmt.Println("perim:", rp.perim())
+  end
+end

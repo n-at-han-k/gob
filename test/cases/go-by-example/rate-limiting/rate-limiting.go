@@ -18,8 +18,10 @@ func main() {
 	// We'll serve these requests off a channel of the
 	// same name.
 	requests := make(chan int, 5)
-	for i := 1; i <= 5; i++ {
+	i := 1
+	for i <= 5 {
 		requests <- i
+		i = i + 1
 	}
 	close(requests)
 
@@ -60,8 +62,10 @@ func main() {
 	// 3 of these will benefit from the burst capability
 	// of `burstyLimiter`.
 	burstyRequests := make(chan int, 5)
-	for i := 1; i <= 5; i++ {
+	i = 1
+	for i <= 5 {
 		burstyRequests <- i
+		i = i + 1
 	}
 	close(burstyRequests)
 	for req := range burstyRequests {

@@ -1,0 +1,10 @@
+require "fmt"
+require "os"
+
+module Main
+  def main
+    defer fmt.Println("!")
+
+    os.Exit(3)
+  end
+end

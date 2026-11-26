@@ -1,0 +1,40 @@
+require "fmt"
+require "time"
+
+module Main
+  def main
+    p = fmt.Println
+
+    now = time.Now()
+    p(now)
+
+    that = time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC)
+    p(that)
+
+    p(that.Year())
+    p(that.Month())
+    p(that.Day())
+    p(that.Hour())
+    p(that.Minute())
+    p(that.Second())
+    p(that.Nanosecond())
+    p(that.Location())
+
+    p(that.Weekday())
+
+    p(that.Before(now))
+    p(that.After(now))
+    p(that.Equal(now))
+
+    diff = now.Sub(that)
+    p(diff)
+
+    p(diff.Hours())
+    p(diff.Minutes())
+    p(diff.Seconds())
+    p(diff.Nanoseconds())
+
+    p(that.Add(diff))
+    p(that.Add(-diff))
+  end
+end

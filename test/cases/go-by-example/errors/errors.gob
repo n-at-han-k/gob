@@ -1,0 +1,49 @@
+require "errors"
+require "fmt"
+
+module Main
+  def f(arg) # (int) -> (int, error)
+    if arg == 42
+      return -1, errors.New("can't work with 42")
+    end
+
+    return arg + 3, nil
+  end
+
+  var ErrOutOfTea = errors.New("no more tea available")
+  var ErrPower = errors.New("can't boil water")
+
+  def makeTea(arg) # (int) -> error
+    if arg == 2
+      return ErrOutOfTea
+    elsif arg == 4
+      return fmt.Errorf("making tea: %w", ErrPower)
+    end
+    return nil
+  end
+
+  def main
+    Array[int].new(7, 42).each do |_, i|
+      if (r, e = f(i))
+        fmt.Println("f failed:", e)
+      else
+        fmt.Println("f worked:", r)
+      end
+    end
+
+    5.times do |i|
+      if (err = makeTea(i))
+        if errors.Is(err, ErrOutOfTea)
+          fmt.Println("We should buy new tea!")
+        elsif errors.Is(err, ErrPower)
+          fmt.Println("Now it is dark.")
+        else
+          fmt.Printf("unknown error: %s\n", err)
+        end
+        next
+      end
+
+      fmt.Println("Tea is ready!")
+    end
+  end
+end

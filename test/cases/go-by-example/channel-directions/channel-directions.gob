@@ -1,0 +1,20 @@
+require "fmt"
+
+module Main
+  def ping(pings, msg) # (chan<- string, string)
+    pings << msg
+  end
+
+  def pong(pings, pongs) # (<-chan string, chan<- string)
+    msg = ~pings
+    pongs << msg
+  end
+
+  def main
+    pings = make(Chan[string], 1)
+    pongs = make(Chan[string], 1)
+    ping(pings, "passed message")
+    pong(pings, pongs)
+    fmt.Println(~pongs)
+  end
+end

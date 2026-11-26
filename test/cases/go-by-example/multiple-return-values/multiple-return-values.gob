@@ -1,0 +1,16 @@
+require "fmt"
+
+module Main
+  def vals # -> (int, int)
+    return 3, 7
+  end
+
+  def main
+    a, b = vals()
+    fmt.Println(a)
+    fmt.Println(b)
+
+    _, c = vals()
+    fmt.Println(c)
+  end
+end

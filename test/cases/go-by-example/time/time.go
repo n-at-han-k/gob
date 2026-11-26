@@ -18,34 +18,34 @@ func main() {
 	// You can build a `time` struct by providing the
 	// year, month, day, etc. Times are always associated
 	// with a `Location`, i.e. time zone.
-	then := time.Date(
+	that := time.Date(
 		2009, 11, 17, 20, 34, 58, 651387237, time.UTC)
-	p(then)
+	p(that)
 
 	// You can extract the various components of the time
 	// value as expected.
-	p(then.Year())
-	p(then.Month())
-	p(then.Day())
-	p(then.Hour())
-	p(then.Minute())
-	p(then.Second())
-	p(then.Nanosecond())
-	p(then.Location())
+	p(that.Year())
+	p(that.Month())
+	p(that.Day())
+	p(that.Hour())
+	p(that.Minute())
+	p(that.Second())
+	p(that.Nanosecond())
+	p(that.Location())
 
 	// The Monday-Sunday `Weekday` is also available.
-	p(then.Weekday())
+	p(that.Weekday())
 
 	// These methods compare two times, testing if the
 	// first occurs before, after, or at the same time
 	// as the second, respectively.
-	p(then.Before(now))
-	p(then.After(now))
-	p(then.Equal(now))
+	p(that.Before(now))
+	p(that.After(now))
+	p(that.Equal(now))
 
 	// The `Sub` methods returns a `Duration` representing
 	// the interval between two times.
-	diff := now.Sub(then)
+	diff := now.Sub(that)
 	p(diff)
 
 	// We can compute the length of the duration in
@@ -58,6 +58,6 @@ func main() {
 	// You can use `Add` to advance a time by a given
 	// duration, or with a `-` to move backwards by a
 	// duration.
-	p(then.Add(diff))
-	p(then.Add(-diff))
+	p(that.Add(diff))
+	p(that.Add(-diff))
 }

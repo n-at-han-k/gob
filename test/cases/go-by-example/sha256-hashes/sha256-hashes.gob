@@ -1,0 +1,17 @@
+require "crypto/sha256"
+require "fmt"
+
+module Main
+  def main
+    s = "sha256 this string"
+
+    h = sha256.New()
+
+    h.Write(Array[byte].new("sha256 this string"))
+
+    bs = h.Sum(nil)
+
+    fmt.Println(s)
+    fmt.Printf("%x\n", bs)
+  end
+end

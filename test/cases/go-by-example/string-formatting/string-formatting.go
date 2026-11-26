@@ -10,7 +10,8 @@ import (
 )
 
 type point struct {
-	x, y int
+	x int
+	y int
 }
 
 func main() {

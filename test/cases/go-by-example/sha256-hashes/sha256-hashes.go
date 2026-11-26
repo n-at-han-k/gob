@@ -21,7 +21,7 @@ func main() {
 
 	// `Write` expects bytes. If you have a string `s`,
 	// use `[]byte(s)` to coerce it to bytes.
-	h.Write([]byte(s))
+	h.Write([]byte("sha256 this string"))
 
 	// This gets the finalized hash result as a byte
 	// slice. The argument to `Sum` can be used to append

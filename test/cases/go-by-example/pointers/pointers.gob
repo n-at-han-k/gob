@@ -1,0 +1,29 @@
+require "fmt"
+
+module Main
+  def zeroval(ival) # (int)
+    ival = 0
+  end
+
+  def zeroptr(iptr) # (*int)
+    @@iptr = 0
+  end
+
+  def main
+    i = 1
+    fmt.Println("initial:", i)
+
+    zeroval(i)
+    fmt.Println("zeroval:", i)
+
+    zeroptr(@i)
+    fmt.Println("zeroptr:", i)
+
+    fmt.Println("pointer:", @i)
+
+    p = new(42)
+    fmt.Println("value at *p:", @@p)
+    zeroptr(p)
+    fmt.Println("value at *p:", @@p)
+  end
+end

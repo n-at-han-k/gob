@@ -29,8 +29,10 @@ func main() {
 	// Indexing into a string produces the raw byte values at
 	// each index. This loop generates the hex values of all
 	// the bytes that constitute the code points in `s`.
-	for i := 0; i < len(s); i++ {
+	i := 0
+	for i < len(s) {
 		fmt.Printf("%x ", s[i])
+		i = i + 1
 	}
 	fmt.Println()
 
@@ -52,13 +54,15 @@ func main() {
 	// We can achieve the same iteration by using the
 	// `utf8.DecodeRuneInString` function explicitly.
 	fmt.Println("\nUsing DecodeRuneInString")
-	for i, w := 0, 0; i < len(s); i += w {
+	i, w := 0, 0
+	for i < len(s) {
 		runeValue, width := utf8.DecodeRuneInString(s[i:])
 		fmt.Printf("%#U starts at %d\n", runeValue, i)
 		w = width
 
 		// This demonstrates passing a `rune` value to a function.
 		examineRune(runeValue)
+		i = i + w
 	}
 }
 
@@ -66,9 +70,9 @@ func examineRune(r rune) {
 
 	// Values enclosed in single quotes are _rune literals_. We
 	// can compare a `rune` value to a rune literal directly.
-	if r == 't' {
+	if r == 116 {
 		fmt.Println("found tee")
-	} else if r == 'ส' {
+	} else if r == 3626 {
 		fmt.Println("found so sua")
 	}
 }

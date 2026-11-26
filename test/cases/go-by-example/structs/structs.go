@@ -12,6 +12,11 @@ type person struct {
 	age  int
 }
 
+type dog struct {
+	name   string
+	isGood bool
+}
+
 // `newPerson` constructs a new person struct with the given name.
 func newPerson(name string) *person {
 	// Go is a garbage collected language; you can safely
@@ -58,12 +63,6 @@ func main() {
 	// have to give it a name. The value can have an anonymous
 	// struct type. This technique is commonly used for
 	// [table-driven tests](testing-and-benchmarking).
-	dog := struct {
-		name   string
-		isGood bool
-	}{
-		"Rex",
-		true,
-	}
-	fmt.Println(dog)
+	d := dog{name: "Rex", isGood: true}
+	fmt.Println(d)
 }

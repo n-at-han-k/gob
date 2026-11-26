@@ -1,0 +1,18 @@
+require "context"
+require "fmt"
+require "os/signal"
+require "syscall"
+
+module Main
+  def main
+    ctx, stop = signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+    defer stop()
+
+    fmt.Println("awaiting signal")
+    ~ctx.Done()
+
+    fmt.Println()
+    fmt.Println(context.Cause(ctx))
+    fmt.Println("exiting")
+  end
+end

@@ -1,0 +1,25 @@
+require "fmt"
+require "time"
+
+module Main
+  def f(from) # (string)
+    3.times do |i|
+      fmt.Println(from, ":", i)
+    end
+  end
+
+  def main
+    f("direct")
+
+    go lambda {
+      f("goroutine")
+    }.()
+
+    go lambda { |msg| # (string)
+      fmt.Println(msg)
+    }.("going")
+
+    time.Sleep(time.Second)
+    fmt.Println("done")
+  end
+end

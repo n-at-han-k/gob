@@ -1,0 +1,21 @@
+require "bufio"
+require "fmt"
+require "os"
+require "strings"
+
+module Main
+  def main
+    scanner = bufio.NewScanner(os.Stdin)
+
+    while scanner.Scan()
+      ucl = strings.ToUpper(scanner.Text())
+
+      fmt.Println(ucl)
+    end
+
+    if (err = scanner.Err())
+      fmt.Fprintln(os.Stderr, "error:", err)
+      os.Exit(1)
+    end
+  end
+end

@@ -36,9 +36,11 @@ func main() {
 
 	// This sends 3 jobs to the worker over the `jobs`
 	// channel, then closes it.
-	for j := 1; j <= 3; j++ {
+	j := 1
+	for j <= 3 {
 		jobs <- j
 		fmt.Println("sent job", j)
+		j = j + 1
 	}
 	close(jobs)
 	fmt.Println("sent all jobs")

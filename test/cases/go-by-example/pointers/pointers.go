@@ -12,7 +12,7 @@ import "fmt"
 // value. `zeroval` will get a copy of `ival` distinct
 // from the one in the calling function.
 func zeroval(ival int) {
-	ival = 0
+	ival := 0
 }
 
 // `zeroptr` in contrast has an `*int` parameter, meaning

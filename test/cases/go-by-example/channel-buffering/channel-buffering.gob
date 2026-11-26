@@ -1,0 +1,13 @@
+require "fmt"
+
+module Main
+  def main
+    messages = make(Chan[string], 2)
+
+    messages << "buffered"
+    messages << "channel"
+
+    fmt.Println(~messages)
+    fmt.Println(~messages)
+  end
+end

@@ -33,14 +33,20 @@ func main() {
 
 	// This starts up 3 workers, initially blocked
 	// because there are no jobs yet.
-	for w := 1; w <= 3; w++ {
-		go worker(w, jobs, results)
+	w := 1
+	for w <= 3 {
+		go func() {
+			worker(w, jobs, results)
+		}()
+		w = w + 1
 	}
 
 	// Here we send 5 `jobs` and then `close` that
 	// channel to indicate that's all the work we have.
-	for j := 1; j <= numJobs; j++ {
+	j := 1
+	for j <= numJobs {
 		jobs <- j
+		j = j + 1
 	}
 	close(jobs)
 
@@ -48,7 +54,9 @@ func main() {
 	// This also ensures that the worker goroutines have
 	// finished. An alternative way to wait for multiple
 	// goroutines is to use a [WaitGroup](waitgroups).
-	for a := 1; a <= numJobs; a++ {
+	a := 1
+	for a <= numJobs {
 		<-results
+		a = a + 1
 	}
 }

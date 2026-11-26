@@ -1,0 +1,20 @@
+require "encoding/base64", b64
+require "fmt"
+
+module Main
+  def main
+    data = "abc123!?$*&()'-=@~"
+
+    sEnc = b64.StdEncoding.EncodeToString(Array[byte].new("abc123!?$*&()'-=@~"))
+    fmt.Println(sEnc)
+
+    sDec, _ = b64.StdEncoding.DecodeString(sEnc)
+    fmt.Println(string(sDec))
+    fmt.Println()
+
+    uEnc = b64.URLEncoding.EncodeToString(Array[byte].new("abc123!?$*&()'-=@~"))
+    fmt.Println(uEnc)
+    uDec, _ = b64.URLEncoding.DecodeString(uEnc)
+    fmt.Println(string(uDec))
+  end
+end

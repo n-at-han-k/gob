@@ -13,7 +13,8 @@ func main() {
 	fmt.Println(a)
 
 	// You can declare multiple variables at once.
-	var b, c int = 1, 2
+	var b int = 1
+	var c int = 2
 	fmt.Println(b, c)
 
 	// Go will infer the type of initialized variables.

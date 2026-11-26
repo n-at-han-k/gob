@@ -78,7 +78,7 @@ func main() {
 
 	// The `Func` variant allows you to transform matched
 	// text with a given function.
-	in := []byte("a peach")
-	out := r.ReplaceAllFunc(in, bytes.ToUpper)
+	in_ := []byte("a peach")
+	out := r.ReplaceAllFunc(in_, bytes.ToUpper)
 	fmt.Println(string(out))
 }

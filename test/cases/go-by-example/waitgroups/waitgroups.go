@@ -26,10 +26,12 @@ func main() {
 	var wg sync.WaitGroup
 
 	// Launch several goroutines using `WaitGroup.Go`
-	for i := 1; i <= 5; i++ {
+	i := 1
+	for i <= 5 {
 		wg.Go(func() {
 			worker(i)
 		})
+		i = i + 1
 	}
 
 	// Block until all the goroutines started by `wg` are

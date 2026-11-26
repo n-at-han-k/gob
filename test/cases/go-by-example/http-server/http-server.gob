@@ -1,0 +1,23 @@
+require "fmt"
+require "net/http"
+
+module Main
+  def hello(w, req) # (http.ResponseWriter, *http.Request)
+    fmt.Fprintf(w, "hello\n")
+  end
+
+  def headers(w, req) # (http.ResponseWriter, *http.Request)
+    req.Header.each do |name, headers|
+      headers.each do |_, h|
+        fmt.Fprintf(w, "%v: %v\n", name, h)
+      end
+    end
+  end
+
+  def main
+    http.HandleFunc("/hello", hello)
+    http.HandleFunc("/headers", headers)
+
+    http.ListenAndServe(":8090", nil)
+  end
+end

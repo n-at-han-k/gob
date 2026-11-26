@@ -58,7 +58,7 @@ func main() {
 
 		// It's idiomatic to use an inline error check in the `if`
 		// line.
-		if r, e := f(i); e != nil {
+		if r, e := f(i); e {
 			fmt.Println("f failed:", e)
 		} else {
 			fmt.Println("f worked:", r)

@@ -1,0 +1,45 @@
+require "fmt"
+require "time"
+
+module Main
+  def main
+    requests = make(Chan[int], 5)
+    i = 1
+    while i <= 5
+      requests << i
+      i = i + 1
+    end
+    close(requests)
+
+    limiter = time.Tick(200 * time.Millisecond)
+
+    requests.each do |req|
+      ~limiter
+      fmt.Println("request", req, time.Now())
+    end
+
+    burstyLimiter = make(Chan[time.Time], 3)
+
+    3.times do
+      burstyLimiter << time.Now()
+    end
+
+    go lambda {
+      time.Tick(200 * time.Millisecond).each do |t|
+        burstyLimiter << t
+      end
+    }.()
+
+    burstyRequests = make(Chan[int], 5)
+    i = 1
+    while i <= 5
+      burstyRequests << i
+      i = i + 1
+    end
+    close(burstyRequests)
+    burstyRequests.each do |req|
+      ~burstyLimiter
+      fmt.Println("request", req, time.Now())
+    end
+  end
+end

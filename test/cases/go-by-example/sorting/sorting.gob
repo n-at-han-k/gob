@@ -1,0 +1,17 @@
+require "fmt"
+require "slices"
+
+module Main
+  def main
+    strs = Array[string].new("c", "a", "b")
+    slices.Sort(strs)
+    fmt.Println("Strings:", strs)
+
+    ints = Array[int].new(7, 2, 4)
+    slices.Sort(ints)
+    fmt.Println("Ints:   ", ints)
+
+    s = slices.IsSorted(ints)
+    fmt.Println("Sorted: ", s)
+  end
+end

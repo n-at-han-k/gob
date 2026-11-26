@@ -1,0 +1,38 @@
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+type container struct {
+	mu       sync.Mutex
+	counters map[string]int
+}
+
+func (self *container) inc(name string) {
+	self.mu.Lock()
+	defer self.mu.Unlock()
+	self.counters[name] = self.counters[name] + 1
+}
+
+func main() {
+	c := container{counters: map[string]int{"a": 0, "b": 0}}
+	var wg sync.WaitGroup
+	doIncrement := func(name string, n int) {
+		for range n {
+			c.inc(name)
+		}
+	}
+	wg.Go(func() {
+		doIncrement("a", 10000)
+	})
+	wg.Go(func() {
+		doIncrement("a", 10000)
+	})
+	wg.Go(func() {
+		doIncrement("b", 10000)
+	})
+	wg.Wait()
+	fmt.Println(c.counters)
+}

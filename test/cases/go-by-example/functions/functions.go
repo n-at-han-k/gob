@@ -19,7 +19,7 @@ func plus(a int, b int) int {
 // the same type, you may omit the type name for the
 // like-typed parameters up to the final parameter that
 // declares the type.
-func plusPlus(a, b, c int) int {
+func plusPlus(a int, b int, c int) int {
 	return a + b + c
 }
 

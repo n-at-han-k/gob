@@ -28,8 +28,10 @@ func main() {
 
 	// Print the first 5 lines of the response body.
 	scanner := bufio.NewScanner(resp.Body)
-	for i := 0; scanner.Scan() && i < 5; i++ {
+	i := 0
+	for scanner.Scan() && i < 5 {
 		fmt.Println(scanner.Text())
+		i = i + 1
 	}
 
 	if err := scanner.Err(); err != nil {

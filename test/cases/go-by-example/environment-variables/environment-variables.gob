@@ -1,0 +1,17 @@
+require "fmt"
+require "os"
+require "strings"
+
+module Main
+  def main
+    os.Setenv("FOO", "1")
+    fmt.Println("FOO:", os.Getenv("FOO"))
+    fmt.Println("BAR:", os.Getenv("BAR"))
+
+    fmt.Println()
+    os.Environ().each do |_, e|
+      pair = strings.SplitN(e, "=", 2)
+      fmt.Println(pair[0])
+    end
+  end
+end

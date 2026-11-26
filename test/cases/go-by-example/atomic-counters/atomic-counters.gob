@@ -1,0 +1,23 @@
+require "fmt"
+require "sync"
+require "sync/atomic"
+
+module Main
+  def main
+    var :ops, atomic.Uint64
+
+    var :wg, sync.WaitGroup
+
+    50.times do
+      wg.Go(lambda {
+        1000.times do
+          ops.Add(1)
+        end
+      })
+    end
+
+    wg.Wait()
+
+    fmt.Println("ops:", ops.Load())
+  end
+end

@@ -1,0 +1,26 @@
+require "fmt"
+require "net/http"
+require "time"
+
+module Main
+  def hello(w, req) # (http.ResponseWriter, *http.Request)
+    ctx = req.Context()
+    fmt.Println("server: hello handler started")
+    defer fmt.Println("server: hello handler ended")
+
+    case
+    when ~time.After(10 * time.Second)
+      fmt.Fprintf(w, "hello\n")
+    when ~ctx.Done()
+      err = ctx.Err()
+      fmt.Println("server:", err)
+      internalError = http.StatusInternalServerError
+      http.Error(w, err.Error(), internalError)
+    end
+  end
+
+  def main
+    http.HandleFunc("/hello", hello)
+    http.ListenAndServe(":8090", nil)
+  end
+end

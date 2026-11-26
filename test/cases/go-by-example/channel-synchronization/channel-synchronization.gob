@@ -1,0 +1,21 @@
+require "fmt"
+require "time"
+
+module Main
+  def worker(done) # (chan bool)
+    fmt.Print("working...")
+    time.Sleep(time.Second)
+    fmt.Println("done")
+
+    done << true
+  end
+
+  def main
+    done = make(Chan[bool], 1)
+    go lambda {
+      worker(done)
+    }.()
+
+    ~done
+  end
+end

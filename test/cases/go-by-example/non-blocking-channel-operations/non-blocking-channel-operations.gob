@@ -1,0 +1,32 @@
+require "fmt"
+
+module Main
+  def main
+    messages = make(Chan[string])
+    signals = make(Chan[bool])
+
+    case
+    when msg = ~messages
+      fmt.Println("received message", msg)
+    else
+      fmt.Println("no message received")
+    end
+
+    msg = "hi"
+    case
+    when messages << msg
+      fmt.Println("sent message", msg)
+    else
+      fmt.Println("no message sent")
+    end
+
+    case
+    when msg = ~messages
+      fmt.Println("received message", msg)
+    when sig = ~signals
+      fmt.Println("received signal", sig)
+    else
+      fmt.Println("no activity")
+    end
+  end
+end

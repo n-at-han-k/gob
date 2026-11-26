@@ -10,9 +10,8 @@ import (
 	"bytes"
 	"fmt"
 	"log"
-	"os"
-
 	"log/slog"
+	"os"
 )
 
 func main() {
