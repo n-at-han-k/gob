@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.4] - 2026-11-26
+
+### Changed
+
+- `gob build`, `gob run`, and `gob transpile` now announce each stage of the pipeline — `fmt`, `vet`, `transpile`, `gofmt` — on stderr through `Gob::Reporter`, so a failure names the stage it came from
+- `Gob::Go::Runner` now runs the Go toolchain with inherited streams and prints the command it runs; `go build` and `go run` output arrives as it is produced rather than after the process exits, and programs run by `gob run` inherit stdin
+
 ## [1.1.3] - 2026-11-26
 
 ### Added
@@ -51,7 +58,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - initial release
 
-[Unreleased]: https://github.com/n-at-han-k/gob/compare/v1.1.3...HEAD
+[Unreleased]: https://github.com/n-at-han-k/gob/compare/v1.1.4...HEAD
+[1.1.4]: https://github.com/n-at-han-k/gob/releases/tag/v1.1.4
 [1.1.3]: https://github.com/n-at-han-k/gob/releases/tag/v1.1.3
 [1.1.2]: https://github.com/n-at-han-k/gob/releases/tag/v1.1.2
 [1.1.1]: https://github.com/n-at-han-k/gob/releases/tag/v1.1.1

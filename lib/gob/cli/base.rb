@@ -35,9 +35,17 @@ module Gob
         end
 
         def transpile_source(source, path)
+          Gob::Reporter.step("fmt #{path}")
           source = Gob::Validation::Rules.autocorrect(source, path: path)
+
+          Gob::Reporter.step("vet #{path}")
           validate_source!(source, path)
-          GoFormatter.format(Gob.transpile_to_go(source, path: path, check: false))
+
+          Gob::Reporter.step("transpile #{path}")
+          go_source = Gob.transpile_to_go(source, path: path, check: false)
+
+          Gob::Reporter.step("gofmt #{path}")
+          GoFormatter.format(go_source)
         end
 
         def write_output(output, path)

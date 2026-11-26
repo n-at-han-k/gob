@@ -4,6 +4,7 @@ require "syntax_tree"
 require "syntax_tree/go"
 
 require_relative "gob/version"
+require_relative "gob/reporter"
 require_relative "gob/transpilation/context"
 require_relative "gob/transpilation/runner"
 require_relative "gob/validation/rules"
