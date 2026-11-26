@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.platform = Gem::Platform.new(ENV["GOB_NATIVE_PLATFORM"]) if ENV["GOB_NATIVE_PLATFORM"]
 
   spec.files = Dir.glob(
-    ["{lib,exe}/**/*", "{ext}/**/*", "LICENSE", "README.md", "gob-lang.gemspec"],
+    ["{lib,exe}/**/*", "lib/gob/templates/**/*", "{ext}/**/*", "LICENSE", "README.md", "gob-lang.gemspec"],
     File::FNM_DOTMATCH,
     base: __dir__
   )

@@ -1,0 +1,70 @@
+{
+  description = "<%= project_name %> | a Gob project";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    utils.url = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, utils }:
+    utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = nixpkgs.legacyPackages.${system};
+        ruby = pkgs.ruby_4_0;
+        go = pkgs.go_1_27;
+        bundler = pkgs.bundler.override { inherit ruby; };
+
+        bundix = pkgs.bundix.override {
+          bundler = bundler;
+        };
+
+        hasGemset = builtins.pathExists ./gemset.nix;
+        gemset = if hasGemset then import ./gemset.nix else { };
+
+        ffiPack = {
+          x86_64-linux = { platform = "x86_64-linux-gnu"; sha256 = "0bbmph141hwnn3m4k8hx8nhy1imfjpz87h595ww4n1xf5r6b2gcx"; };
+          aarch64-linux = { platform = "aarch64-linux-gnu"; sha256 = "1pw0q28vnllqysx7g9gv6vy2gz6csbiwm8rx37hzbn7zj5pz025j"; };
+          aarch64-darwin = { platform = "arm64-darwin"; sha256 = "06q06ylk32yma4ms84sd6cxhlcvp1sbbyal58q51n98r2jpil1qr"; };
+          x86_64-darwin = { platform = "x86_64-darwin"; sha256 = "15m4rlngxc2ff6pb4b1a11fbvkxl16vn4jgndh4kacng4c2kjw5a"; };
+        }.${system};
+
+        gems = if hasGemset then pkgs.bundlerEnv {
+          name = "<%= project_name %>-gems";
+          inherit ruby;
+          gemfile = ./Gemfile;
+          lockfile = ./Gemfile.lock;
+          groups = [ "default" ];
+          gemset = gemset
+            // pkgs.lib.optionalAttrs (gemset ? ffi) {
+              ffi = gemset.ffi // {
+                inherit (ffiPack) platform;
+                source = gemset.ffi.source // { inherit (ffiPack) sha256; };
+              };
+            };
+        } else pkgs.emptyDirectory;
+      in
+      {
+        devShells.default = pkgs.mkShell {
+          nativeBuildInputs = [ pkgs.pkg-config ];
+          buildInputs = [
+            ruby
+            bundler
+            bundix
+            go
+            pkgs.gopls
+            pkgs.git
+            pkgs.libyaml
+            pkgs.openssl
+          ] ++ pkgs.lib.optional hasGemset gems
+            ++ pkgs.lib.optional hasGemset gems.wrappedRuby;
+
+          shellHook = ''
+            export BUNDLE_GEMFILE="$PWD/Gemfile"
+            export BUNDLE_FROZEN=false
+            export RUBYLIB="$PWD/lib''${RUBYLIB:+:$RUBYLIB}"
+            export PATH="$PWD/exe''${PATH:+:$PATH}"
+            if [ -w gemset.nix ]; then bundix -l; fi
+          '';
+        };
+      });
+}

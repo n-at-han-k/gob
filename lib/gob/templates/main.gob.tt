@@ -1,0 +1,7 @@
+require "fmt"
+
+module Main
+  def main
+    fmt.Println("Ey up gobbah! What's cookin'?")
+  end
+end
