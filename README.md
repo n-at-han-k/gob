@@ -37,6 +37,7 @@ Commands:
   gob completion --shell=SHELL  # Generate shell completion script
   gob fmt FILE...               # Format Gob source
   gob help [COMMAND]            # Describe available commands or one specific...
+  gob init [MODULE]             # Initialise a Go module (go.mod)
   gob run FILE [ARGS...]        # Transpile and run a Gob program
   gob transpile FILE            # Transpile Gob source to Go
   gob tree                      # Print a tree of all available commands

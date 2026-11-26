@@ -122,10 +122,12 @@ bin/test
 gob vet path/to/example.gob
 ```
 
-The shell configures `BUNDLE_GEMFILE`, `RUBYLIB`, and `PATH`, so `gob` resolves to this checkout. Prefer these pinned tools over system Ruby/Go. After dependency changes, update `Gemfile.lock` and run `bundix -l` to regenerate `gemset.nix`; the shell hook also does this when the file is writable.
+The shell configures `BUNDLE_GEMFILE`, `RUBYLIB`, and `PATH`, so `gob` resolves to this checkout. Prefer these pinned tools over system Ruby/Go. After dependency changes, update `Gemfile.lock` and run `bundix -l` to regenerate `gemset.nix`; the shell hook also does this when the file is writable. The Nix environment includes only the `default` and `development` groups; do not add tree-sitter to Gob's runtime dependencies.
 
 ## References
 
+- [`references/nix.md`](references/nix.md) — flake setup, Bundix, native formatter, and troubleshooting.
+- [`templates/flake.nix`](templates/flake.nix) — copyable Gob development-shell template with Ruby 4.0, Go 1.27, Bundix, and the FFI platform hashes.
 - [`references/examples.md`](references/examples.md) — paired Gob and Go examples covering declarations, structs, collections, functions, pointers, errors, and concurrency.
 
 ## Golden tests

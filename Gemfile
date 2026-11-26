@@ -1,11 +1,5 @@
 source "https://rubygems.org"
 
-group :old do
-  gem "ast-crispr"
-  gem "ast-crispr-ruby-prism"
-  gem "unparser"
-end
-
 gem "syntax_tree"
 gem "ffi"
 gem "minitest"

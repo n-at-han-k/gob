@@ -23,12 +23,6 @@
 
         gemset = import ./gemset.nix;
 
-        treeSitterPack = {
-          x86_64-linux = { platform = "x86_64-linux"; sha256 = "1sirqhxgpkbh1mfr3cqis0xa2mmzb64a3zpfpzgr647cxj16di23"; };
-          aarch64-linux = { platform = "aarch64-linux"; sha256 = "1bxgpzrncppgd2m9691gr6zrr1rdl27grb5bj0f0rv3qvlxvzg7q"; };
-          aarch64-darwin = { platform = "arm64-darwin"; sha256 = "1kyjxnb8n4xc2lcri44x1yx8dzcq76p61fdiarjm7j1r164x26v2"; };
-        }.${system};
-
         ffiPack = {
           x86_64-linux = { platform = "x86_64-linux-gnu"; sha256 = "0bbmph141hwnn3m4k8hx8nhy1imfjpz87h595ww4n1xf5r6b2gcx"; };
           aarch64-linux = { platform = "aarch64-linux-gnu"; sha256 = "1pw0q28nvllqysx7g9gv6vy2gz6csbiwm8rx37hzbn7zj5pz025j"; };
@@ -41,14 +35,8 @@
           inherit ruby;
           gemfile = ./Gemfile;
           lockfile = ./Gemfile.lock;
+          groups = [ "default" "development" ];
           gemset = gemset
-            // pkgs.lib.optionalAttrs (gemset ? tree_sitter_language_pack) {
-              tree_sitter_language_pack = gemset.tree_sitter_language_pack // {
-                inherit (treeSitterPack) platform;
-                source = gemset.tree_sitter_language_pack.source
-                  // { inherit (treeSitterPack) sha256; };
-              };
-            }
             // pkgs.lib.optionalAttrs (gemset ? ffi) {
               ffi = gemset.ffi // {
                 inherit (ffiPack) platform;

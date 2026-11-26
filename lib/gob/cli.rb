@@ -26,6 +26,7 @@ require_relative "cli/errors"
 require_relative "cli/base"
 require_relative "cli/commands/build"
 require_relative "cli/commands/fmt"
+require_relative "cli/commands/init"
 require_relative "cli/commands/run"
 require_relative "cli/commands/transpile"
 require_relative "cli/commands/vet"
@@ -53,6 +54,8 @@ module Gob
 
     desc "fmt FILE...", "Format Gob source"
     subcommand "fmt", Commands::Fmt
+    desc "init [MODULE]", "Initialise a Go module (go.mod)"
+    subcommand "init", Commands::Init
     desc "run FILE [ARGS...]", "Transpile and run a Gob program"
 
     def _run(file, *args)
