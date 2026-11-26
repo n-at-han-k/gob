@@ -34,7 +34,7 @@ func runJSONRPC() {
 	defer client.Close()
 
 	var result int
-	if err := client.Call("Arith.Multiply", Args{9, 9}, &result); err != nil {
+	if err = client.Call("Arith.Multiply", Args{9, 9}, &result); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println("9 * 9 =", result)

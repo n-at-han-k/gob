@@ -18,9 +18,8 @@ func runASN1() {
 		log.Fatal(err)
 	}
 	fmt.Printf("DER (%d bytes): %x\n", len(der), der)
-
 	var back person
-	if _, err := asn1.Unmarshal(der, &back); err != nil {
+	if _, err = asn1.Unmarshal(der, &back); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("parsed: %+v\n", back)

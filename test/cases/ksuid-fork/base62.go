@@ -6,10 +6,12 @@ import (
 )
 
 // lexographic ordering (based on Unicode table) is 0-9A-Za-z
-const base62Characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-const zeroString = "000000000000000000000000000"
-const offsetUppercase = 10
-const offsetLowercase = 36
+const (
+	base62Characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+	zeroString       = "000000000000000000000000000"
+	offsetUppercase  = 10
+	offsetLowercase  = 36
+)
 
 var errShortBuffer = errors.New("the output buffer is too small to hold to decoded value")
 

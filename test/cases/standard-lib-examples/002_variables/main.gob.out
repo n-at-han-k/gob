@@ -2,11 +2,11 @@ package main
 
 import "fmt"
 
-const pi = 3.14159
-
-const statusActive = "active"
-
-const statusInactive = "inactive"
+const (
+	pi             = 3.14159
+	statusActive   = "active"
+	statusInactive = "inactive"
+)
 
 var packageLevel = "I live at package scope"
 

@@ -18,31 +18,15 @@ import (
 
 // This number (14e8) was picked to be easy to remember.
 
-const epochStamp = 1400000000
-
-// Timestamp is a uint32
-
-const timestampLengthInBytes = 4
-
-// Payload is 16-bytes
-
-const payloadLengthInBytes = 16
-
-// KSUIDs are 20 bytes when binary encoded
-
-const byteLength = timestampLengthInBytes + payloadLengthInBytes
-
-// The length of a KSUID when string (base62) encoded
-
-const stringEncodedLength = 27
-
-// A string-encoded minimum value for a KSUID
-
-const minStringEncoded = "000000000000000000000000000"
-
-// A string-encoded maximum value for a KSUID
-
-const maxStringEncoded = "aWgEPTl1tmebfsQzFP4bxwgy80V"
+const (
+	epochStamp             = 1400000000
+	timestampLengthInBytes = 4
+	payloadLengthInBytes   = 16
+	byteLength             = timestampLengthInBytes + payloadLengthInBytes
+	stringEncodedLength    = 27
+	minStringEncoded       = "000000000000000000000000000"
+	maxStringEncoded       = "aWgEPTl1tmebfsQzFP4bxwgy80V"
+)
 
 // KSUIDs are 20 bytes:
 
@@ -149,25 +133,16 @@ func (self *KSUID) scan(b []byte) error {
 	}
 }
 
-var rander = rand.Reader
-
-var randMutex = sync.Mutex{}
-
-var randBuffer = [payloadLengthInBytes]byte{}
-
-var errSize = fmt.Errorf("Valid KSUIDs are %v bytes", byteLength)
-
-var errStrSize = fmt.Errorf("Valid encoded KSUIDs are %v characters", stringEncodedLength)
-
-var errStrValue = fmt.Errorf("Valid encoded KSUIDs are bounded by %s and %s", minStringEncoded, maxStringEncoded)
-
-var errPayloadSize = fmt.Errorf("Valid KSUID payloads are %v bytes", payloadLengthInBytes)
-
-// Represents a completely empty (invalid) KSUID
-
-// Represents the highest value a KSUID can have
-
-var Max = KSUID{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255}
+var (
+	rander         = rand.Reader
+	randMutex      = sync.Mutex{}
+	randBuffer     = [payloadLengthInBytes]byte{}
+	errSize        = fmt.Errorf("Valid KSUIDs are %v bytes", byteLength)
+	errStrSize     = fmt.Errorf("Valid encoded KSUIDs are %v characters", stringEncodedLength)
+	errStrValue    = fmt.Errorf("Valid encoded KSUIDs are bounded by %s and %s", minStringEncoded, maxStringEncoded)
+	errPayloadSize = fmt.Errorf("Valid KSUID payloads are %v bytes", payloadLengthInBytes)
+	Max            = KSUID{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255}
+)
 
 // Parse decodes a string-encoded representation of a KSUID object
 

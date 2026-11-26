@@ -16,19 +16,13 @@ import (
 // significantly higher useful lifetime of around 136 years from March 2017.
 // This number (14e8) was picked to be easy to remember.
 const (
-	epochStamp int64 = 1400000000
-	// Timestamp is a uint32
+	epochStamp             = 1400000000
 	timestampLengthInBytes = 4
-	// Payload is 16-bytes
-	payloadLengthInBytes = 16
-	// KSUIDs are 20 bytes when binary encoded
-	byteLength = timestampLengthInBytes + payloadLengthInBytes
-	// The length of a KSUID when string (base62) encoded
-	stringEncodedLength = 27
-	// A string-encoded minimum value for a KSUID
-	minStringEncoded = "000000000000000000000000000"
-	// A string-encoded maximum value for a KSUID
-	maxStringEncoded = "aWgEPTl1tmebfsQzFP4bxwgy80V"
+	payloadLengthInBytes   = 16
+	byteLength             = timestampLengthInBytes + payloadLengthInBytes
+	stringEncodedLength    = 27
+	minStringEncoded       = "000000000000000000000000000"
+	maxStringEncoded       = "aWgEPTl1tmebfsQzFP4bxwgy80V"
 )
 
 // KSUIDs are 20 bytes:

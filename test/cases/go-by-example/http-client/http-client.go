@@ -1,7 +1,3 @@
-// The Go standard library comes with excellent support
-// for HTTP clients and servers in the `net/http`
-// package. In this example we'll use it to issue simple
-// HTTP requests.
 package main
 
 import (
@@ -11,30 +7,19 @@ import (
 )
 
 func main() {
-
-	// Issue an HTTP GET request to a server. `http.Get` is a
-	// convenient shortcut around creating an `http.Client`
-	// object and calling its `Get` method; it uses the
-	// `http.DefaultClient` object which has useful default
-	// settings.
 	resp, err := http.Get("https://gobyexample.com")
 	if err != nil {
 		panic(err)
 	}
 	defer resp.Body.Close()
-
-	// Print the HTTP response status.
 	fmt.Println("Response status:", resp.Status)
-
-	// Print the first 5 lines of the response body.
 	scanner := bufio.NewScanner(resp.Body)
 	i := 0
 	for scanner.Scan() && i < 5 {
 		fmt.Println(scanner.Text())
 		i = i + 1
 	}
-
-	if err := scanner.Err(); err != nil {
+	if err = scanner.Err(); err != nil {
 		panic(err)
 	}
 }
