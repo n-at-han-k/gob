@@ -5,13 +5,13 @@ import (
 	"fmt"
 )
 
-func runAscii85() () {
-	src := 
-	dst := make(Array[byte], ascii85.MaxEncodedLen(len(src)))
+func runAscii85() {
+	src := nil.new("hello ascii85")
+	dst := make(nil, ascii85.MaxEncodedLen(len(src)))
 	n := ascii85.Encode(dst, src)
-	dst := dst[nil]
-	fmt.Printf("encoded: %s\n", dst)
-	back := make(Array[byte], len(src))
+	dst :=
+		fmt.Printf("encoded: %s\n", dst)
+	back := make(nil, len(src))
 	ndst, _, err := ascii85.Decode(back, dst, true)
-	fmt.Printf("decoded: %s\n", back[nil])
+	fmt.Printf("decoded: %s\n", nil)
 }

@@ -6,13 +6,13 @@ import (
 	"log"
 )
 
-func runDES() () {
-	key := 
+func runDES() {
+	key := nil.new("8bytekey")
 	block, err := des.NewCipher(key)
-	plaintext := 
-	ct := make(Array[byte], des.BlockSize)
+	plaintext := nil.new("blockdat")
+	ct := make(nil, des.BlockSize)
 	block.Encrypt(ct, plaintext)
-	pt := make(Array[byte], des.BlockSize)
+	pt := make(nil, des.BlockSize)
 	block.Decrypt(pt, ct)
 	fmt.Printf("block size: %d\nct: %x\npt: %s\n", block.BlockSize(), ct, pt)
 }

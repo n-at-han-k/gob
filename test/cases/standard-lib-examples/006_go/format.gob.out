@@ -6,8 +6,10 @@ import (
 	"log"
 )
 
-func runFormat() () {
-	src := 
+func runFormat() {
+	src := nil.new(`package p
+func   Add(a,b int)int{return a+b}
+`)
 	pretty, err := format.Source(src)
 	fmt.Println("---before---")
 	fmt.Print(string(src))

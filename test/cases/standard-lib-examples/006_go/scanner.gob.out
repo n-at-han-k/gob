@@ -6,8 +6,8 @@ import (
 	"go/token"
 )
 
-func runScanner() () {
-	src := 
+func runScanner() {
+	src := nil.new(`x := 1 + 2 // trailing comment`)
 	fset := token.NewFileSet()
 	file := fset.AddFile("snippet.go", fset.Base(), len(src))
 	s.Init(file, src, nil, scanner.ScanComments)

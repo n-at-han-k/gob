@@ -6,7 +6,6 @@
 # Distributed under terms of the MIT license.
 #
 
-
 # []string
 Array[string]
 
@@ -19,10 +18,10 @@ Array[byte]
 # [5]int
 Array[int, 5]
 
-# [9]string (from your example)
+# [9]string
 Array[string, 9]
 
-# [][8]string (from your example)
+# [][8]string
 Array[Array[string, 8]]
 
 # *[2][3]int (Pointer to a 2x3 fixed array)
@@ -52,7 +51,7 @@ Array[int, 5].new(
 # map[string]int
 Hash[string, int]
 
-# map[string]string (from your example)
+# map[string]string
 Hash[string, string]
 
 # map[string]func(){}
@@ -71,7 +70,7 @@ Hash[string, string].new(
 
 # map[string]string{"item": "one"} (String key)
 Hash[string, string].new(
-  "item" => "one", # Note: In Ruby, "item": "one" also works as valid syntax!
+  "item" => "one",
 )
 
 # []map[string]bool{}

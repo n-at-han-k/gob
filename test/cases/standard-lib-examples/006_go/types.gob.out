@@ -20,6 +20,6 @@ var Answer = 21 * 2
 	file, err := parser.ParseFile(fset, "p.go", src, 0)
 	conf := types.Config.new(nil)
 	info := *types.Info.new(nil)
-	pkg, err := conf.Check("p", fset, nil, info)
+	pkg, err := conf.Check("p", fset, nil.new(file), info)
 	fmt.Println("package:", pkg.Name())
 }

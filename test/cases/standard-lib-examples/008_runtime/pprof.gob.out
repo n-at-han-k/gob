@@ -8,7 +8,7 @@ import (
 )
 
 func runPProf() {
-	junk := make(Array[Array[byte]], 0, 100)
+	junk := make(nil, 0, 100)
 	runtime.GC()
 	f, err := os.CreateTemp("", "heap-*.prof")
 	info, _ := f.Stat()

@@ -9,16 +9,7 @@
 module Gob
   module Transpilation
     class Runner
-      module PackageNodes
-        def Package(name:, declarations:)
-          SyntaxTree::Go::File.new(
-            name: SyntaxTree::Go::Ident.new(name: name.to_s),
-            decls: declarations
-          )
-        end
-      end
-
-      module FunctionNodes
+      module DefinitionNodes
         def parse_signature_comment(text)
           case text.split(/\s*->\s*/, 2)
           in [/\A#\s*\z/, ret] unless ret.empty?
@@ -142,28 +133,6 @@ module Gob
         def Call(node)
           case node
 
-          # Array[].new()
-          in SyntaxTree::CallNode[ receiver: SyntaxTree::ARef[collection: SyntaxTree::VarRef[
-            value: SyntaxTree::Const[value: "Array"] ],
-            index: SyntaxTree::Args[ parts: args ] ],
-            operator: SyntaxTree::Period[value: "."],
-            message: SyntaxTree::Ident[value: "new"],
-            arguments: SyntaxTree::ArgParen[
-            arguments: SyntaxTree::Args[ parts: items ]
-          ]]
-            nil
-
-          # Hash[].new()
-          in SyntaxTree::CallNode[ receiver: SyntaxTree::ARef[collection: SyntaxTree::VarRef[
-            value: SyntaxTree::Const[value: "Hash"] ],
-            index: SyntaxTree::Args[ parts: args ] ],
-            operator: SyntaxTree::Period[value: "."],
-            message: SyntaxTree::Ident[value: "new"],
-            arguments: SyntaxTree::ArgParen[
-            arguments: SyntaxTree::Args[ parts: items ]
-          ]]
-            nil
-
           in SyntaxTree::CallNode[
             receiver: receiver,
             operator: SyntaxTree::Period[value: "."],
@@ -213,6 +182,13 @@ module Gob
       end
 
       module StatementNodes
+        def Package(name:, declarations:)
+          SyntaxTree::Go::File.new(
+            name: SyntaxTree::Go::Ident.new(name: name.to_s),
+            decls: declarations
+          )
+        end
+
         def LeftHand(node)
           case node
           in SyntaxTree::CallNode
@@ -233,17 +209,7 @@ module Gob
           in SyntaxTree::Binary[left: left, operator: operator, right: right]
             Binary(LeftHand(left), operator, LeftHand(right))
 
-          in SyntaxTree::ARef[collection: collection, index: SyntaxTree::Args[parts: [index]]]
-            SyntaxTree::Go::IndexExpr.new(
-              x: LeftHand(collection),
-              index: LeftHand(index)
-            )
 
-          in SyntaxTree::ARefField[collection: collection, index: SyntaxTree::Args[parts: [index]]]
-            SyntaxTree::Go::IndexExpr.new(
-              x: LeftHand(collection),
-              index: LeftHand(index)
-            )
 
           in SyntaxTree::VarField[value: value]
             LeftHand(value)
@@ -296,52 +262,75 @@ module Gob
           ]
             nil
 
-          # Array[string, 9] -> [9]string
-          in SyntaxTree::ARef[
-            collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Array" ]],
-            index: SyntaxTree::Args[
-              parts: [
-                SyntaxTree::VCall[value: SyntaxTree::Ident[value: "string"]],
-                SyntaxTree::Int[value: size]
-              ]
-            ]
-          ]
-            nil
 
-          # Array[Array[string, 8]] -> [][8]string
-          in SyntaxTree::ARef[
-            collection: SyntaxTree::VarRef[
-              value: SyntaxTree::Const[value: "Array"]
-            ],
-            index: SyntaxTree::Args[
-              parts: [
-                SyntaxTree::ARef[
-                  collection: SyntaxTree::VarRef[
-                    value: SyntaxTree::Const[value: "Array"]
-                  ],
-                  index: SyntaxTree::Args[
-                    parts: [
-                      SyntaxTree::VCall[value: SyntaxTree::Ident[value: "string"]],
-                      SyntaxTree::Int[value: "8"]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-            nil
-
-          # Hash[string, bool] -> map[string]bool
+          # Hash[string, bool]
+          # map[string]bool
+          # ---
           in SyntaxTree::ARef[
             collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Hash"]],
             index: SyntaxTree::Args[
               parts: [
-                SyntaxTree::VCall[value: SyntaxTree::Ident[value: "string"]],
-                SyntaxTree::VCall[value: SyntaxTree::Ident[value: "string"]]
+                SyntaxTree::VCall[value: SyntaxTree::Ident[value: key]],
+                SyntaxTree::VCall[value: SyntaxTree::Ident[value: value]]
               ]
             ]
           ]
-            nil
+            SyntaxTree::Go::MapType.new( )
+
+          # Array[string, 5]
+          # [5]string
+          # ---
+          in SyntaxTree::ARef[
+            collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[ value: "Array" ] ],
+            index: SyntaxTree::Args[ parts: [ type, *size ] ]
+          ]
+            (size || nil).then do |size|
+              case type
+              in SyntaxTree::VCall[ value: SyntaxTree::Ident[ value: name ] ]
+                SyntaxTree::Go::ArrayType.new( len: size, elt: Ident(name) )
+              end
+            end
+
+          # Array[string].new()
+          # Hash[string, int].new()
+          # [5]string{}
+          # map[string]int{}
+          # ---
+          in SyntaxTree::CallNode[
+            receiver: SyntaxTree::ARef[
+              collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Array" | "Hash"] ],
+              index: SyntaxTree::Args[ parts: args ]
+            ] => receiver,
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Ident[value: "new"],
+            arguments: SyntaxTree::ArgParen[
+              arguments: SyntaxTree::Args[ parts: items ]
+            ]
+          ]
+            Statements(receiver)
+
+          in SyntaxTree::ARef[
+            collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[ value: "Array" ] ],
+            index: SyntaxTree::Args[ parts: [ type, *size ] ]
+          ]
+            (size || nil).then do |size|
+              case type
+              in SyntaxTree::VCall[ value: SyntaxTree::Ident[ value: name ] ]
+                SyntaxTree::Go::ArrayType.new( len: size, elt: Ident(name) )
+              end
+            end
+
+          #in SyntaxTree::ARef[collection: collection, index: SyntaxTree::Args[parts: [index]]]
+          #  SyntaxTree::Go::IndexExpr.new(
+          #    x: LeftHand(collection),
+          #    index: LeftHand(index)
+          #  )
+
+          #in SyntaxTree::ARefField[collection: collection, index: SyntaxTree::Args[parts: [index]]]
+          #  SyntaxTree::Go::IndexExpr.new(
+          #    x: LeftHand(collection),
+          #    index: LeftHand(index)
+          #  )
 
           #in SyntaxTree::Go::ReturnStmt
           #  SyntaxTree::Go::ReturnStmt.new(return_: nil, results: nil)
@@ -396,21 +385,6 @@ module Gob
               rhs:     Array(RightHand(value))
             )
 
-          in SyntaxTree::MAssign[target: target, value: value]
-            SyntaxTree::Go::AssignStmt.new(
-              lhs:     Array(LeftHand(target)),
-              tok_pos: nil,
-              tok:     ":=",
-              rhs:     Array(RightHand(value))
-            )
-
-          in SyntaxTree::Assign[target: target, value: value]
-            SyntaxTree::Go::AssignStmt.new(
-              lhs: [Variable(target)],
-              tok: ":=",
-              rhs: Expression(value)
-            )
-
           in SyntaxTree::MAssign[
             target: SyntaxTree::MLHS[
               parts: [
@@ -426,6 +400,14 @@ module Gob
             ]
           ]
             nil
+
+          in SyntaxTree::MAssign[target: target, value: value]
+            SyntaxTree::Go::AssignStmt.new(
+              lhs:     Array(LeftHand(target)),
+              tok_pos: nil,
+              tok:     ":=",
+              rhs:     Array(RightHand(value))
+            )
 
           in SyntaxTree::MethodAddBlock[
             call: SyntaxTree::CallNode[
@@ -569,12 +551,12 @@ module Gob
     end
 
     class Context
-      include Runner::PackageNodes
-      include Runner::FunctionNodes
-      include Runner::BlockNodes
-      include Runner::LogicNodes
-      include Runner::VariableNodes
+      include Runner::DefinitionNodes
       include Runner::StatementNodes
+
+      include Runner::LogicNodes
+      include Runner::BlockNodes
+      include Runner::VariableNodes
     end
   end
 end

@@ -6,8 +6,8 @@ import (
 	"log"
 )
 
-func runBase64() () {
-	src := 
+func runBase64() {
+	src := nil.new("hello base64+/=?")
 	std := base64.StdEncoding.EncodeToString(src)
 	fmt.Println("std:", std)
 	url := base64.URLEncoding.EncodeToString(src)

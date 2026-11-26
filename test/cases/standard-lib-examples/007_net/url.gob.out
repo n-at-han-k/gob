@@ -14,7 +14,7 @@ func runURL() {
 	fmt.Println("path:    ", u.Path)
 	fmt.Println("fragment:", u.Fragment)
 	q := u.Query()
-	fmt.Println("tags:    ", q["tag"])
+	fmt.Println("tags:    ", nil)
 	built := *url.URL.new(nil)
 	built.RawQuery := url.Values.new(nil).Encode()
 	fmt.Println("built:   ", built)

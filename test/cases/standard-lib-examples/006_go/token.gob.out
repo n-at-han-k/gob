@@ -8,7 +8,7 @@ import (
 func runToken() {
 	fset := token.NewFileSet()
 	f := fset.AddFile("demo.go", fset.Base(), 100)
-	f.SetLinesForContent(nil)
+	f.SetLinesForContent(nil.new("line one\nline two\nline three"))
 	pos := f.Pos(10)
 	fmt.Println("offset 10 is at", fset.Position(pos))
 }

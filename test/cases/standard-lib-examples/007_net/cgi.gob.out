@@ -16,7 +16,7 @@ func runCGI() {
 	os.Setenv("QUERY_STRING", "who=world")
 	rec := httptest.NewRecorder()
 	handler := http.HandlerFunc(nil)
-	req, _ := cgi.RequestFromMap(nil)
+	req, _ := cgi.RequestFromMap(nil.new(nil))
 	handler.ServeHTTP(rec, req)
 	fmt.Print(rec.Body.String())
 }

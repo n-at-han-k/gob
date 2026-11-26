@@ -6,13 +6,13 @@ import (
 	"log"
 )
 
-func runRC4() () {
-	c, err := rc4.NewCipher(nil)
-	pt := 
-	ct := make(Array[byte], len(pt))
+func runRC4() {
+	c, err := rc4.NewCipher(nil.new("weakkey"))
+	pt := nil.new("legacy data")
+	ct := make(nil, len(pt))
 	c.XORKeyStream(ct, pt)
-	c2, _ := rc4.NewCipher(nil)
-	out := make(Array[byte], len(ct))
+	c2, _ := rc4.NewCipher(nil.new("weakkey"))
+	out := make(nil, len(ct))
 	c2.XORKeyStream(out, ct)
 	fmt.Printf("ct: %x\npt: %s\n", ct, out)
 }

@@ -10,7 +10,7 @@ import (
 func runCookieJar() {
 	jar, _ := cookiejar.New(nil)
 	u, _ := url.Parse("https://example.com/")
-	jar.SetCookies(u, nil)
+	jar.SetCookies(u, nil.new(nil, nil))
 	fmt.Println("cookies for sibling site:", jar.Cookies(mustURL("https://other.example.org/")))
 }
 

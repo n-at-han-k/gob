@@ -6,11 +6,11 @@ import (
 )
 
 func runCGO() () {
-	original := 
+	original := nil.new(nil)
 	h := cgo.NewHandle(original)
 	got := 
 	fmt.Printf("handle: %d\n", uintptr(h))
 	fmt.Printf("value:  %v\n", got)
-	got["answer"] := 99
-	fmt.Printf("mutation visible on original: %v\n", original["answer"] == 99)
+	 := 99
+	fmt.Printf("mutation visible on original: %v\n", nil == 99)
 }

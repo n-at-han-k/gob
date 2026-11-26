@@ -10,7 +10,7 @@ import (
 
 func runCSV() {
 	w := csv.NewWriter(os.Stdout)
-	w.WriteAll(nil)
+	w.WriteAll(nil.new(nil, nil, nil))
 	w.Flush()
 	input := "id,label\n1,apple\n2,orange\n3,pear\n"
 	r := csv.NewReader(strings.NewReader(input))

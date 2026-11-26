@@ -6,8 +6,8 @@ import (
 	"log"
 )
 
-func runHex() () {
-	src := 
+func runHex() {
+	src := nil.new("hello hex")
 	encoded := hex.EncodeToString(src)
 	fmt.Println("encoded:", encoded)
 	back, err := hex.DecodeString(encoded)
