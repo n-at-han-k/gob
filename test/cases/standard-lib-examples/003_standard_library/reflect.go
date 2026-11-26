@@ -7,7 +7,7 @@ import (
 
 type reflectUser struct {
 	Name string `json:"name"`
-	Age  int
+	Age  int    `json:"age"`
 }
 
 func runReflect() {

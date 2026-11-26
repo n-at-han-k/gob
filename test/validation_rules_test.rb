@@ -71,6 +71,16 @@ class ValidationRulesTest < Minitest::Test
     assert_includes offense_names("class X\n  attr_accessor :Name\nend\n"), "Gob/AttributeType"
   end
 
+  def test_go_call
+    assert_equal "go lambda {\n  srv.Accept(listener)\n}.()\n", autocorrect("go srv.Accept(listener)\n")
+  end
+
+  def test_struct_tag_position
+    source = "var x = Struct.new(\n  Name: string, # `json:\"name\"`\n)\n"
+    expected = "var x = Struct.new(\n  # `json:\"name\"`\n  Name: string,\n)\n"
+    assert_equal expected, autocorrect(source)
+  end
+
   private
 
     def autocorrect(source)

@@ -45,6 +45,9 @@ Gob/WordArray:
 Gob/GoBlock:
   Enabled: true
 
+Gob/GoCall:
+  Enabled: true
+
 Gob/RedundantLambdaParentheses:
   Enabled: true
 
@@ -67,4 +70,7 @@ Gob/AttributeType:
   Enabled: true
 
 Gob/SelectBlock:
+  Enabled: true
+
+Gob/StructTagPosition:
   Enabled: true

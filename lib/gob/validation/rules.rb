@@ -21,6 +21,7 @@ module Gob
       require_relative "rules/zero_based_range_loop"
       require_relative "rules/word_array"
       require_relative "rules/go_block"
+      require_relative "rules/go_call"
       require_relative "rules/redundant_lambda_parentheses"
       require_relative "rules/this_receiver"
       require_relative "rules/array_length"
@@ -29,6 +30,7 @@ module Gob
       require_relative "rules/invoked_lambda"
       require_relative "rules/attribute_type"
       require_relative "rules/select_block"
+      require_relative "rules/struct_tag_position"
 
       COPS = [
         BlockDelimiters,
@@ -45,6 +47,7 @@ module Gob
         ZeroBasedRangeLoop,
         WordArray,
         GoBlock,
+        GoCall,
         RedundantLambdaParentheses,
         ThisReceiver,
         ArrayLength,
@@ -52,7 +55,8 @@ module Gob
         LambdaSignature,
         InvokedLambda,
         AttributeType,
-        SelectBlock
+        SelectBlock,
+        StructTagPosition
       ].freeze
 
       CONFIG_PATH = File.expand_path("rules/config.yml", __dir__)

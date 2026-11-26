@@ -7,14 +7,15 @@ module Main
     XMLName: xml.Name,     # `xml:"book"`
     Title:   string,       # `xml:"title"`
     Author:  string,       # `xml:"author,attr"`
-    Tags:    Array[string], # `xml:"tags>tag"`
+    # `xml:"tags>tag"`
+    Tags:    Array[string],
   )
 
   def runXML
     b = book.new(Title: "Learning Go", Author: "Nathan", Tags: Array[string].new("go", "stdlib"))
 
     data, err = xml.MarshalIndent(b, "", "  ")
-    if err != nil
+    if err
       log.Fatal(err)
     end
     fmt.Println(xml.Header + string(data))

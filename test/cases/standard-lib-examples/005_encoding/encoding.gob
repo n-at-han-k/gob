@@ -11,7 +11,7 @@ module Main
       return fmt.Appendf(nil, "#%02x%02x%02x", self.R, self.G, self.B), nil
     end
 
-    def UnmarshalText(text) # ([]byte) -> error
+    def self.UnmarshalText(text) # ([]byte) -> error
       _, err = fmt.Sscanf(string(text), "#%02x%02x%02x", @self.R, @self.G, @self.B)
       return err
     end

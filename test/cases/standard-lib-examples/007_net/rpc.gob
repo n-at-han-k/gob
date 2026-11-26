@@ -4,6 +4,11 @@ require "net"
 require "net/rpc"
 
 module Main
+  class Args
+    attr_accessor :A, int
+    attr_accessor :B, int
+  end
+
   class Arith
     def Multiply(args, reply) # (Args, *int) -> error
       @@reply = args.A * args.B
@@ -11,24 +16,21 @@ module Main
     end
   end
 
-  class Args
-    attr_accessor :A, int
-    attr_accessor :B, int
-  end
-
   def runRPC
     srv = rpc.NewServer()
     srv.Register(Arith.new())
 
     l, err = net.Listen("tcp", "127.0.0.1:0")
-    if err != nil
+    if err
       log.Fatal(err)
     end
     defer l.Close()
-    go srv.Accept(l)
+    go lambda {
+      srv.Accept(l)
+    }.()
 
     client, err = rpc.Dial("tcp", l.Addr().String())
-    if err != nil
+    if err
       log.Fatal(err)
     end
     defer client.Close()

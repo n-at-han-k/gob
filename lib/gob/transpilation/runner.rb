@@ -87,6 +87,7 @@ module Gob
           Array(body).filter_map do |node|
             case node
             in SyntaxTree::DefNode[
+              target: target,
               name: { value: method },
               params: params,
               bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: statements ] ]
@@ -96,7 +97,7 @@ module Gob
                 params: params,
                 body: descend(statements).then { |children| children.tree },
                 receiver: SyntaxTree::Go::FieldList.new(
-                  list: [ SyntaxTree::Go::Field.new(names: [ Ident("self") ], type: Ident(name)) ]
+                  list: [ SyntaxTree::Go::Field.new(names: [ Ident("self") ], type: target ? SyntaxTree::Go::StarExpr.new(x: Ident(name)) : Ident(name)) ]
                 )
               )
 
