@@ -8,7 +8,7 @@ import (
 )
 
 func runRand() {
-	buf := make(nil, 16)
+	buf := make([]byte, 16)
 	if _, err := rand.Read(buf); err != nil {
 		log.Fatal(err)
 	}

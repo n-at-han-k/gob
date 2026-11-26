@@ -5,7 +5,7 @@ import (
 	"runtime/debug"
 )
 
-func runDebug() () {
+func runDebug() {
 	if info, ok := debug.ReadBuildInfo(); ok {
 		fmt.Println("go version:", info.GoVersion)
 		fmt.Println("main path: ", info.Main.Path)
@@ -19,7 +19,7 @@ func runDebug() () {
 	fmt.Printf("gc runs: %d, total pause: %v\n", stats.NumGC, stats.PauseTotal)
 	stack := debug.Stack()
 	if len(stack) > 200 {
-		stack := 
+		stack := stack[nil]
 	}
 	fmt.Print("stack:\n", string(stack), "...\n")
 }

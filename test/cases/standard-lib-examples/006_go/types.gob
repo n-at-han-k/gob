@@ -24,7 +24,7 @@ var Answer = 21 * 2
       Defs: Hash[@@ast.Ident, types.Object].new,
       Types: Hash[ast.Expr, types.TypeAndValue].new
     )
-    pkg, err = conf.Check("p", fset, Array[@ast.File].new(file), info)
+    pkg, err = conf.Check("p", fset, Array[@@ast.File].new(file), info)
     if err != nil
       log.Fatal(err)
     end

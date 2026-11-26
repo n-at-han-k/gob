@@ -8,7 +8,7 @@ import (
 )
 
 func runJSON() {
-	a := article.new(nil)
+	a := article{Title: "Learning Go", Views: 12, Tags: []string{"go", "stdlib"}}
 	data, err := json.Marshal(a)
 	if err != nil {
 		log.Fatal(err)

@@ -15,7 +15,7 @@ func runPrinter() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	cfg := printer.Config.new(nil)
+	cfg := printer.Config{Mode: printer.UseSpaces | printer.TabIndent, Tabwidth: 4}
 	if err := cfg.Fprint(os.Stdout, fset, file); err != nil {
 		log.Fatal(err)
 	}

@@ -6,7 +6,7 @@ import (
 )
 
 func runCGO() () {
-	original := nil.new(nil)
+	original := map[string]int{"answer": 42}
 	h := cgo.NewHandle(original)
 	got := 
 	fmt.Printf("handle: %d\n", uintptr(h))

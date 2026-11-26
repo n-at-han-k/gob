@@ -310,6 +310,15 @@ module Gob
         def Call(node)
           case node
 
+          # article.new(Title: "Learning Go")
+          # article{Title: "Learning Go"}
+          # ---
+          in SyntaxTree::CallNode[
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Ident[value: "new"]
+          ]
+            Statements(node)
+
           in SyntaxTree::CallNode[
             receiver: receiver,
             operator: SyntaxTree::Period[value: "."],
@@ -321,7 +330,7 @@ module Gob
                 x: LeftHand(receiver),
                 sel: Ident(message)
               ),
-              args: Array(arguments&.parts).map { |argument| LeftHand(argument) }
+              args: Array(arguments&.parts).map { |argument| Statements(argument) }
             )
 
           in SyntaxTree::CallNode[
@@ -332,7 +341,7 @@ module Gob
           ]
             SyntaxTree::Go::CallExpr.new(
               fun: Ident(message),
-              args: Array(arguments&.parts).map { |argument| LeftHand(argument) }
+              args: Array(arguments&.parts).map { |argument| Statements(argument) }
             )
 
           in SyntaxTree::CallNode[
@@ -341,15 +350,33 @@ module Gob
             message: { value: message },
             arguments: nil
           ]
-            x =
-              case receiver
-              in SyntaxTree::VarRef[value: SyntaxTree::IVar[value: name]]
-                SyntaxTree::Go::StarExpr.new(x: Ident(name.delete_prefix("@")))
-              else
-                LeftHand(receiver)
-              end
+            case receiver
+            # @priv.PublicKey
+            # &priv.PublicKey
+            # ---
+            in SyntaxTree::VarRef[value: SyntaxTree::IVar[value: name]]
+              SyntaxTree::Go::UnaryExpr.new(
+                op: :&,
+                x: SyntaxTree::Go::SelectorExpr.new(
+                  x:   Ident(name.delete_prefix("@")),
+                  sel: Ident(message)
+                )
+              )
 
-            SyntaxTree::Go::SelectorExpr.new(x: x, sel: Ident(message))
+            # @@ast.Ident
+            # *ast.Ident
+            # ---
+            in SyntaxTree::VarRef[value: SyntaxTree::CVar[value: name]]
+              SyntaxTree::Go::StarExpr.new(
+                x: SyntaxTree::Go::SelectorExpr.new(
+                  x:   Ident(name.delete_prefix("@@")),
+                  sel: Ident(message)
+                )
+              )
+
+            else
+              SyntaxTree::Go::SelectorExpr.new(x: LeftHand(receiver), sel: Ident(message))
+            end
 
           else
             nil
@@ -411,7 +438,7 @@ module Gob
           end
         end
 
-        def RightHand(node) = LeftHand(node)
+        def RightHand(node) = Statements(node)
 
         def Command(name, args)
           case [name, args]
@@ -445,46 +472,153 @@ module Gob
           # ---
           in SyntaxTree::ARef[
             collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Hash"]],
-            index: SyntaxTree::Args[
-              parts: [
-                SyntaxTree::VCall[value: SyntaxTree::Ident[value: key]],
-                SyntaxTree::VCall[value: SyntaxTree::Ident[value: value]]
-              ]
-            ]
+            index: SyntaxTree::Args[ parts: [ key, value ] ]
           ]
-            SyntaxTree::Go::MapType.new( )
+            SyntaxTree::Go::MapType.new(
+              key:   Statements(key),
+              value: Statements(value)
+            )
+
+          # Array[string]
+          # []string
+          # ---
+          in SyntaxTree::ARef[
+            collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[ value: "Array" ] ],
+            index: SyntaxTree::Args[ parts: [ type ] ]
+          ]
+            SyntaxTree::Go::ArrayType.new( len: nil, elt: Statements(type) )
 
           # Array[string, 5]
           # [5]string
           # ---
           in SyntaxTree::ARef[
             collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[ value: "Array" ] ],
-            index: SyntaxTree::Args[ parts: [ type, *size ] ]
+            index: SyntaxTree::Args[ parts: [ type, size ] ]
           ]
-            (size || nil).then do |size|
-              case type
-              in SyntaxTree::VCall[ value: SyntaxTree::Ident[ value: name ] ]
-                SyntaxTree::Go::ArrayType.new( len: size, elt: Ident(name) )
-              end
-            end
+            SyntaxTree::Go::ArrayType.new( len: Statements(size), elt: Statements(type) )
 
-          # Array[string].new()
-          # Hash[string, int].new()
-          # [5]string{}
-          # map[string]int{}
+          # Proc
+          # func()
+          # ---
+          in SyntaxTree::VarRef[ value: SyntaxTree::Const[ value: "Proc" ] ]
+            SyntaxTree::Go::FuncType.new(
+              params:  SyntaxTree::Go::FieldList.new(list: []),
+              results: nil
+            )
+
+          # Array[byte].new("hello")
+          # []byte("hello")
           # ---
           in SyntaxTree::CallNode[
             receiver: SyntaxTree::ARef[
-              collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Array" | "Hash"] ],
-              index: SyntaxTree::Args[ parts: args ]
+              collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Array"] ],
+              index: SyntaxTree::Args[
+                parts: [ SyntaxTree::VCall[value: SyntaxTree::Ident[value: "byte" | "rune"]] ]
+              ]
             ] => receiver,
             operator: SyntaxTree::Period[value: "."],
             message: SyntaxTree::Ident[value: "new"],
             arguments: SyntaxTree::ArgParen[
-              arguments: SyntaxTree::Args[ parts: items ]
+              arguments: SyntaxTree::Args[ parts: [ SyntaxTree::StringLiteral => text ] ]
             ]
           ]
-            Statements(receiver)
+            SyntaxTree::Go::CallExpr.new(
+              fun:  Statements(receiver),
+              args: [ Statements(text) ]
+            )
+
+          # @url.URL.new(Scheme: "https")
+          # &url.URL{Scheme: "https"}
+          # ---
+          in SyntaxTree::CallNode[
+            receiver: SyntaxTree::CallNode[
+              receiver: SyntaxTree::VarRef[ value: SyntaxTree::IVar[value: name] ],
+              operator: SyntaxTree::Period[value: "."],
+              message: { value: selector }
+            ],
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Ident[value: "new"],
+            arguments: arguments
+          ]
+            SyntaxTree::Go::UnaryExpr.new(
+              op: :&,
+              x: SyntaxTree::Go::CompositeLit.new(
+                type: SyntaxTree::Go::SelectorExpr.new(
+                  x:   Ident(name.delete_prefix("@")),
+                  sel: Ident(selector)
+                ),
+                elts: Array(arguments&.arguments&.parts).flat_map { |item| Statements(item) }
+              )
+            )
+
+          # Array[string].new("go", "stdlib")
+          # Hash[string, int].new("answer" => 42)
+          # article.new(Title: "Learning Go")
+          # []string{"go", "stdlib"}
+          # map[string]int{"answer": 42}
+          # article{Title: "Learning Go"}
+          # ---
+          in SyntaxTree::CallNode[
+            receiver: receiver,
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Ident[value: "new"],
+            arguments: arguments
+          ]
+            SyntaxTree::Go::CompositeLit.new(
+              type: Statements(receiver),
+              elts: Array(arguments&.arguments&.parts).flat_map { |item| Statements(item) }
+            )
+
+          # Title: "Learning Go"
+          # Title: "Learning Go"
+          # ---
+          in SyntaxTree::BareAssocHash[ assocs: assocs ]
+            assocs.map { |assoc| Statements(assoc) }
+
+          in SyntaxTree::Assoc[
+            key: SyntaxTree::Label[value: label],
+            value: value
+          ]
+            SyntaxTree::Go::KeyValueExpr.new(
+              key:   Ident(label.delete_suffix(":")),
+              value: Statements(value)
+            )
+
+          # "q": ["go & rust"]
+          # "q": {"go & rust"}
+          # ---
+          in SyntaxTree::Assoc[
+            key: SyntaxTree::DynaSymbol[parts: [SyntaxTree::TStringContent[value: text]]],
+            value: value
+          ]
+            SyntaxTree::Go::KeyValueExpr.new(
+              key:   StringLiteral(text),
+              value: Statements(value)
+            )
+
+          in SyntaxTree::Assoc[ key: key, value: value ]
+            SyntaxTree::Go::KeyValueExpr.new(
+              key:   Statements(key),
+              value: Statements(value)
+            )
+
+          # ["go & rust"]
+          # {"go & rust"}
+          # ---
+          in SyntaxTree::ArrayLiteral[ contents: SyntaxTree::Args[ parts: parts ] ]
+            SyntaxTree::Go::CompositeLit.new(
+              type: nil,
+              elts: parts.map { |part| Statements(part) }
+            )
+
+          # demos[os.Args[1]]
+          # demos[os.Args[1]]
+          # ---
+          in SyntaxTree::ARef[ collection: collection, index: SyntaxTree::Args[ parts: [ index ] ] ]
+            SyntaxTree::Go::IndexExpr.new(
+              x:     Statements(collection),
+              index: Statements(index)
+            )
 
           #in SyntaxTree::ARef[collection: collection, index: SyntaxTree::Args[parts: [index]]]
           #  SyntaxTree::Go::IndexExpr.new(
@@ -541,7 +675,7 @@ module Gob
             Command(name, args)
 
           in SyntaxTree::CallNode
-            SyntaxTree::Go::ExprStmt.new(x: Call(node))
+            Call(node)
 
           in SyntaxTree::Assign[target: target, value: value]
             SyntaxTree::Go::AssignStmt.new(
@@ -609,7 +743,7 @@ module Gob
           in SyntaxTree::VoidStmt
             nil
           else
-            nil
+            LeftHand(node)
           end
         end
 
@@ -672,6 +806,9 @@ module Gob
               SyntaxTree::MethodAddBlock[call: SyntaxTree::CallNode[ message: SyntaxTree::Ident[value: "loop"] ]] |
               SyntaxTree::MethodAddBlock[call: SyntaxTree::CallNode[ message: SyntaxTree::Ident[value: "each"] ]] => logic_node
               Logic(ctx, logic_node)
+
+            in SyntaxTree::CallNode
+              SyntaxTree::Go::ExprStmt.new(x: Statements(node))
 
             in SyntaxTree::Comment[value: value]
               SyntaxTree::Go::Comment.new(text: value.sub(/\A#/, "//"))

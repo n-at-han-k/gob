@@ -9,7 +9,7 @@ import (
 
 func runGob() {
 	enc := gob.NewEncoder(&buf)
-	if err := enc.Encode(message.new(nil)); err != nil {
+	if err := enc.Encode(message{Kind: "primes", Body: []int{2, 3, 5, 7, 11}}); err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("encoded %d bytes\n", buf.Len())

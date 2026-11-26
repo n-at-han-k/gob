@@ -9,16 +9,16 @@ import (
 )
 
 func runAES() {
-	key := make(nil, 32)
+	key := make([]byte, 32)
 	rand.Read(key)
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		log.Fatal(err)
 	}
 	gcm, _ := cipher.NewGCM(block)
-	nonce := make(nil, gcm.NonceSize())
+	nonce := make([]byte, gcm.NonceSize())
 	rand.Read(nonce)
-	plaintext := nil.new("secret message")
+	plaintext := []byte("secret message")
 	ct := gcm.Seal(nil, nonce, plaintext, nil)
 	pt, err := gcm.Open(nil, nonce, ct, nil)
 	if err != nil {

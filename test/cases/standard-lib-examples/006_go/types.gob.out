@@ -21,9 +21,9 @@ var Answer = 21 * 2
 	if err != nil {
 		log.Fatal(err)
 	}
-	conf := types.Config.new(nil)
-	info := *types.Info.new(nil)
-	pkg, err := conf.Check("p", fset, nil.new(file), info)
+	conf := types.Config{Importer: importer.Default()}
+	info := &types.Info{Defs: map[*ast.Ident]types.Object{}, Types: map[ast.Expr]types.TypeAndValue{}}
+	pkg, err := conf.Check("p", fset, []*ast.File{file}, info)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -17,7 +17,7 @@ func runBinary() {
 	binary.Read(&buf, binary.LittleEndian, &b)
 	fmt.Printf("a=%#x b=%#x\n", a, b)
 	n := binary.PutVarint(nil, nil)
-	fmt.Printf("varint(-12345) = %x (%d bytes)\n", nil, n)
-	v, _ := binary.Varint(nil)
+	fmt.Printf("varint(-12345) = %x (%d bytes)\n", vbuf[nil], n)
+	v, _ := binary.Varint(vbuf[nil])
 	fmt.Println("decoded:", v)
 }

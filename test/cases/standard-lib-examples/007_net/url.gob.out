@@ -17,8 +17,8 @@ func runURL() {
 	fmt.Println("path:    ", u.Path)
 	fmt.Println("fragment:", u.Fragment)
 	q := u.Query()
-	fmt.Println("tags:    ", nil)
-	built := *url.URL.new(nil)
-	built.RawQuery := url.Values.new(nil).Encode()
+	fmt.Println("tags:    ", q["tag"])
+	built := &url.URL{Scheme: "https", Host: "example.com", Path: "/search"}
+	built.RawQuery := url.Values{"q": {"go & rust"}}.Encode()
 	fmt.Println("built:   ", built)
 }

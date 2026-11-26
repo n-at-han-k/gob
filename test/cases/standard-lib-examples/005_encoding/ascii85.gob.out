@@ -6,15 +6,15 @@ import (
 )
 
 func runAscii85() {
-	src := nil.new("hello ascii85")
-	dst := make(nil, ascii85.MaxEncodedLen(len(src)))
+	src := []byte("hello ascii85")
+	dst := make([]byte, ascii85.MaxEncodedLen(len(src)))
 	n := ascii85.Encode(dst, src)
-	dst :=
-		fmt.Printf("encoded: %s\n", dst)
-	back := make(nil, len(src))
+	dst := dst[nil]
+	fmt.Printf("encoded: %s\n", dst)
+	back := make([]byte, len(src))
 	ndst, _, err := ascii85.Decode(back, dst, true)
 	if err != nil {
 		fmt.Println("decode err:", err)
 	}
-	fmt.Printf("decoded: %s\n", nil)
+	fmt.Printf("decoded: %s\n", back[nil])
 }

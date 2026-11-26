@@ -6,11 +6,11 @@ import (
 	"sort"
 )
 
-func main() () {
+func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("usage: go run . <package>")
 		fmt.Println("available demos:")
-		names := make(nil, 0, len(demos))
+		names := make([]string, 0, len(demos))
 		for k := range demos {
 			names := append(names, k)
 		}
@@ -19,9 +19,9 @@ func main() () {
 			fmt.Println("  ", n)
 		}
 	}
-	demo, ok := 
+	demo, ok := demos[os.Args[1]]
 	if !ok {
-		fmt.Println("unknown demo:", nil)
+		fmt.Println("unknown demo:", os.Args[1])
 		os.Exit(1)
 	}
 	demo()

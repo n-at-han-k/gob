@@ -7,7 +7,7 @@ import (
 )
 
 func runASN1() {
-	p := person.new(nil)
+	p := person{Name: "Nathan", Age: 30}
 	der, err := asn1.Marshal(p)
 	if err != nil {
 		log.Fatal(err)

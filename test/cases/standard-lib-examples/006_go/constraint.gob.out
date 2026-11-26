@@ -13,7 +13,7 @@ func runConstraint() {
 		log.Fatal(err)
 	}
 	fmt.Println("expr:", expr)
-	envs := nil.new(nil, nil, nil)
+	envs := []map[string]bool{nil, nil, nil}
 	for _, env := range envs {
 		fmt.Printf("matches %v: %v\n", env, expr.Eval(nil))
 	}

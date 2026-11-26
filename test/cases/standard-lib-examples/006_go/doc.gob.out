@@ -24,7 +24,7 @@ func Sub(a, b int) int { return a - b }
 	if err != nil {
 		log.Fatal(err)
 	}
-	p, err := doc.NewFromFiles(fset, nil.new(file), "example.com/math2")
+	p, err := doc.NewFromFiles(fset, []*ast.File{file}, "example.com/math2")
 	if err != nil {
 		log.Fatal(err)
 	}
