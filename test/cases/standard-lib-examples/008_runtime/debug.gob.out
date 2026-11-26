@@ -20,7 +20,7 @@ func runDebug() {
 	fmt.Printf("gc runs: %d, total pause: %v\n", stats.NumGC, stats.PauseTotal)
 	stack := debug.Stack()
 	if len(stack) > 200 {
-		stack = stack[nil]
+		stack = stack[:200]
 	}
 	fmt.Print("stack:\n", string(stack), "...\n")
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type book struct {
-	XMLName xml.Name `xml:"book"`
+	XMLName xml.Name `xml:"t mbook"`
 	Title   string   `xml:"title"`
 	Author  string   `xml:"author,attr"`
 	Tags    []string `xml:"tags>tag"`
@@ -27,4 +27,4 @@ func runXML() {
 		log.Fatal(err)
 	}
 	fmt.Printf("parsed: %+v\n", back)
-}
+}:qa

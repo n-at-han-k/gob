@@ -5,11 +5,10 @@ import (
 	"runtime/metrics"
 )
 
-func runMetrics() () {
-	samples := []metrics.Sample{nil, nil, nil}
+func runMetrics() {
+	samples := []metrics.Sample{{Name: "/memory/classes/heap/objects:bytes"}, {Name: "/sched/goroutines:goroutines"}, {Name: "/gc/cycles/total:gc-cycles"}}
 	metrics.Read(samples)
 	for _, s := range samples {
-		#<SyntaxTree::CallNode:0x000070df283c5410>
 	}
 	all := metrics.All()
 	fmt.Printf("\n%d metrics available; first 5 names:\n", len(all))

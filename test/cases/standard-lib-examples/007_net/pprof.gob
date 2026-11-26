@@ -6,20 +6,19 @@ require "net/http/pprof"
 
 module Main
 
-    # ()
-    def runPProf
-      srv = httptest.NewServer(http.DefaultServeMux)
-      defer { srv.Close() }
-      resp, _ = http.Get(srv.URL + "/debug/pprof/")
-      body, _ = io.ReadAll(resp.Body)
-      resp.Body.Close()
-      fmt.Println("status:", resp.Status)
-      snippet = string(body)
+  def runPProf
+    srv = httptest.NewServer(http.DefaultServeMux)
+    defer srv.Close()
+    resp, _ = http.Get(srv.URL + "/debug/pprof/")
+    body, _ = io.ReadAll(resp.Body)
+    resp.Body.Close()
+    fmt.Println("status:", resp.Status)
+    snippet = string(body)
 
-      if len(snippet) > 400
-        snippet = snippet[...400]
-      end
-
-      fmt.Println(snippet)
+    if len(snippet) > 400
+      snippet = snippet[...400]
     end
+
+    fmt.Println(snippet)
+  end
 end

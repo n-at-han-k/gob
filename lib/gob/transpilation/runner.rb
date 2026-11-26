@@ -295,7 +295,7 @@ module Gob
           in SyntaxTree::Const[value: name] if name == name.upcase
             Constant(name)
 
-          in { value: name }
+          in { value: String => name }
             SyntaxTree::Go::Ident.new(name: name)
 
           else
@@ -324,6 +324,17 @@ module Gob
 
         def Call(node)
           case node
+
+          # h.Value().(Hash[string, int])
+          # h.Value().(map[string]int)
+          # ---
+          in SyntaxTree::CallNode[
+            receiver: receiver,
+            operator: SyntaxTree::Period[value: "."],
+            message: :call,
+            arguments: SyntaxTree::ArgParen[ arguments: SyntaxTree::Args[ parts: [ type ] ] ]
+          ]
+            SyntaxTree::Go::TypeAssertExpr.new(x: Statements(receiver), type: Statements(type))
 
           # article.new(Title: "Learning Go")
           # article{Title: "Learning Go"}
@@ -413,6 +424,9 @@ module Gob
           in SyntaxTree::CallNode
             Call(node)
 
+          in SyntaxTree::ARefField[ collection: collection, index: SyntaxTree::Args[ parts: [ index ] ] ]
+            SyntaxTree::Go::IndexExpr.new(x: Statements(collection), index: Statements(index))
+
           in SyntaxTree::MLHS[parts: parts]
             parts.map { |part| LeftHand(part) }
 
@@ -426,7 +440,7 @@ module Gob
             FloatLiteral(text)
 
           in SyntaxTree::Binary[left: left, operator: operator, right: right]
-            Binary(LeftHand(left), operator, LeftHand(right))
+            Binary(Statements(left), operator, Statements(right))
 
 
 
@@ -494,10 +508,29 @@ module Gob
           )
         end
 
+        # runtime: runRuntime
+        # "runtime": runRuntime
+        # ---
+        def Entry(type, entry)
+          case [type, entry]
+          in [SyntaxTree::Go::MapType, SyntaxTree::Go::KeyValueExpr[key: SyntaxTree::Go::Ident[name: name], value: value]]
+            SyntaxTree::Go::KeyValueExpr.new(key: StringLiteral(name), value: value)
+
+          else
+            entry
+          end
+        end
+
         def Command(name, args)
           case [name, args]
           in ["require", [SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: path]]]]]
             ImportSpec(path)
+
+          # defer h.Delete()
+          # defer h.Delete()
+          # ---
+          in ["defer", [call]]
+            SyntaxTree::Go::DeferStmt.new(call: Statements(call))
 
           # var demos = Hash[string, Proc].new(...)
           # var demos = map[string]func(){...}
@@ -606,7 +639,7 @@ module Gob
             operator: SyntaxTree::Period[value: "."],
             message: SyntaxTree::Ident[value: "new"],
             arguments: SyntaxTree::ArgParen[
-              arguments: SyntaxTree::Args[ parts: [ SyntaxTree::StringLiteral => text ] ]
+              arguments: SyntaxTree::Args[ parts: [ SyntaxTree::StringLiteral | SyntaxTree::XStringLiteral => text ] ]
             ]
           ]
             SyntaxTree::Go::CallExpr.new(
@@ -651,10 +684,14 @@ module Gob
             message: SyntaxTree::Ident[value: "new"],
             arguments: arguments
           ]
-            SyntaxTree::Go::CompositeLit.new(
-              type: Statements(receiver),
-              elts: Array(arguments&.arguments&.parts).flat_map { |item| Statements(item) }
-            )
+            Statements(receiver).then do |type|
+              SyntaxTree::Go::CompositeLit.new(
+                type: type,
+                elts: Array(arguments&.arguments&.parts).flat_map { |item|
+                  Array(Statements(item)).map { |entry| Entry(type, entry) }
+                }
+              )
+            end
 
           # Title: "Learning Go"
           # Title: "Learning Go"
@@ -689,6 +726,15 @@ module Gob
               value: Statements(value)
             )
 
+          # { Name: "session", Value: "abc123" }
+          # {Name: "session", Value: "abc123"}
+          # ---
+          in SyntaxTree::HashLiteral[ assocs: assocs ]
+            SyntaxTree::Go::CompositeLit.new(
+              type: nil,
+              elts: assocs.map { |assoc| Statements(assoc) }
+            )
+
           # ["go & rust"]
           # {"go & rust"}
           # ---
@@ -696,6 +742,25 @@ module Gob
             SyntaxTree::Go::CompositeLit.new(
               type: nil,
               elts: parts.map { |part| Statements(part) }
+            )
+
+          # digest[]
+          # digest[:]
+          # ---
+          in SyntaxTree::ARef[ collection: collection, index: nil ]
+            SyntaxTree::Go::SliceExpr.new(x: Statements(collection), low: nil, high: nil)
+
+          # snippet[...400]
+          # snippet[:400]
+          # ---
+          in SyntaxTree::ARef[
+            collection: collection,
+            index: SyntaxTree::Args[ parts: [ SyntaxTree::RangeNode[ left: low, right: high ] ] ]
+          ]
+            SyntaxTree::Go::SliceExpr.new(
+              x:    Statements(collection),
+              low:  low && Statements(low),
+              high: high && Statements(high)
             )
 
           # demos[os.Args[1]]
@@ -850,6 +915,12 @@ module Gob
           # ---
           in SyntaxTree::ReturnNode
             SyntaxTree::Go::ReturnStmt.new(results: [])
+
+          # -12345
+          # -12345
+          # ---
+          in SyntaxTree::Unary[ operator: operator, statement: statement ]
+            SyntaxTree::Go::UnaryExpr.new(op: operator.to_sym, x: Statements(statement))
 
           # :int32
           # int32

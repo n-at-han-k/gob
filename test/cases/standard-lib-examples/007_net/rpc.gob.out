@@ -14,10 +14,12 @@ func runRPC() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer l.Close()
 	client, err := rpc.Dial("tcp", l.Addr().String())
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer client.Close()
 	var result int
 	if err := client.Call("Arith.Multiply", Args{6, 7}, &result); err != nil {
 		log.Fatal(err)

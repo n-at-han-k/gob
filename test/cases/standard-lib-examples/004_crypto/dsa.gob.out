@@ -18,10 +18,10 @@ func runDSA() {
 		log.Fatal(err)
 	}
 	digest := sha256.Sum256([]byte("hello"))
-	r, s, err := dsa.Sign(rand.Reader, priv, nil)
+	r, s, err := dsa.Sign(rand.Reader, priv, digest[:])
 	if err != nil {
 		log.Fatal(err)
 	}
-	ok := dsa.Verify(&priv.PublicKey, nil, r, s)
+	ok := dsa.Verify(&priv.PublicKey, digest[:], r, s)
 	fmt.Println("signature valid:", ok)
 }

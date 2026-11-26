@@ -8,6 +8,7 @@ import (
 
 func runCoverage() {
 	dir, _ := os.MkdirTemp("", "cover-")
+	defer os.RemoveAll(dir)
 	if err := coverage.WriteMetaDir(dir); err != nil {
 		fmt.Println("WriteMetaDir:", err)
 	} else {

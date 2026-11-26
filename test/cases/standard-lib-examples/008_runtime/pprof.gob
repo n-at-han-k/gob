@@ -17,8 +17,8 @@ module Main
       fmt.Println("temp:", err)
       return
     end
-    defer { os.Remove(f.Name()) }
-    defer { f.Close() }
+    defer os.Remove(f.Name())
+    defer f.Close()
 
     if err = pprof.Lookup("heap").WriteTo(f, 0)
       fmt.Println("write:", err)

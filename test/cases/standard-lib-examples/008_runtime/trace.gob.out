@@ -11,6 +11,8 @@ import (
 
 func runTrace() {
 	f, _ := os.CreateTemp("", "trace-*.out")
+	defer os.Remove(f.Name())
+	defer f.Close()
 	if err := trace.Start(f); err != nil {
 		fmt.Println("start:", err)
 		return

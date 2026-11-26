@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-func runAST() () {
+func runAST() {
 	src := `package p
 // Add returns a+b.
 func Add(a, b int) int { return a + b }
@@ -20,6 +20,5 @@ var Answer = 42
 		log.Fatal(err)
 	}
 	for _, decl := range file.Decls {
-		#<SyntaxTree::Assign:0x000070df19e11d10>
 	}
 }
