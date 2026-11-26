@@ -39,7 +39,7 @@ func main() {
 	// select. Here we attempt non-blocking receives
 	// on both `messages` and `signals`.
 	select {
-	case msg := <-messages:
+	case msg = <-messages:
 		fmt.Println("received message", msg)
 	case sig := <-signals:
 		fmt.Println("received signal", sig)

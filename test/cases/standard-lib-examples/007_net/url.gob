@@ -19,7 +19,7 @@ module Main
     fmt.Println("tags:    ", q["tag"])
 
     built = @url.URL.new(Scheme: "https", Host: "example.com", Path: "/search")
-    built.RawQuery = url.Values.new("q": Array[string].new("go & rust")).Encode()
+    built.RawQuery = url.Values.new("q": ["go & rust"]).Encode()
     fmt.Println("built:   ", built)
   end
 end

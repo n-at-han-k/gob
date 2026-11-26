@@ -22,7 +22,7 @@ func runPProf() {
 	defer os.Remove(f.Name())
 	defer f.Close()
 
-	if err := pprof.Lookup("heap").WriteTo(f, 0); err != nil {
+	if err = pprof.Lookup("heap").WriteTo(f, 0); err != nil {
 		fmt.Println("write:", err)
 		return
 	}

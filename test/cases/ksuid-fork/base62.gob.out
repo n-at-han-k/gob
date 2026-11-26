@@ -22,9 +22,9 @@ func base62Value(digit byte) byte {
 	if digit >= '0' && digit <= '9' {
 		return digit - '0'
 	} else if digit >= 'A' && digit <= 'Z' {
-		return offsetUppercase + nil
+		return offsetUppercase + (digit - 'A')
 	} else {
-		return offsetLowercase + nil
+		return offsetLowercase + (digit - 'a')
 	}
 }
 

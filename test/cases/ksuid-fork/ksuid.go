@@ -72,13 +72,13 @@ func (self KSUID) Bytes() []byte {
 
 // IsNil returns true if this is a "nil" KSUID
 func (self KSUID) IsNil() bool {
-	return i == Nil
+	return self == Nil
 }
 
 // Get satisfies the flag.Getter interface, making it possible to use KSUIDs as
 // part of of the command line options of a program.
 func (self KSUID) Get() interface{} {
-	return i
+	return self
 }
 
 // Set satisfies the flag.Value interface, making it possible to use KSUIDs as
@@ -96,11 +96,11 @@ func (self KSUID) MarshalBinary() ([]byte, error) {
 }
 
 func (self *KSUID) UnmarshalText(b []byte) error {
-	self, err := Parse(string(b))
+	id, err := Parse(string(b))
 	if err != nil {
 		return err
 	}
-	*i = id
+	*self = id
 	return nil
 }
 
@@ -109,7 +109,7 @@ func (self *KSUID) UnmarshalBinary(b []byte) error {
 	if err != nil {
 		return err
 	}
-	*i = id
+	*self = id
 	return nil
 }
 
@@ -141,7 +141,7 @@ func (self *KSUID) Scan(src interface{}) error {
 func (self *KSUID) scan(b []byte) error {
 	switch len(b) {
 	case 0:
-		*i = Nil
+		*self = Nil
 		return nil
 	case byteLength:
 		return self.UnmarshalBinary(b)
@@ -327,14 +327,18 @@ func quickSort(a []KSUID, lo int, hi int) {
 		pivot := a[hi]
 		i := lo - 1
 
-		for j, n := lo, hi; j != n; j++ {
+		j, n := lo, hi
+
+		for j != n {
 			if bytes.Compare(a[j][:], pivot[:]) < 0 {
-				i++
+				i = i + 1
 				a[i], a[j] = a[j], a[i]
 			}
+
+			j = j + 1
 		}
 
-		i++
+		i = i + 1
 		if bytes.Compare(a[hi][:], a[i][:]) < 0 {
 			a[i], a[hi] = a[hi], a[i]
 		}
@@ -346,14 +350,14 @@ func quickSort(a []KSUID, lo int, hi int) {
 
 // Next returns the next KSUID after id.
 func (self KSUID) Next() KSUID {
-	self := makeUint128(0, 0)
+	zero := makeUint128(0, 0)
 
-	t := id.Timestamp()
-	u := uint128Payload(id)
+	t := self.Timestamp()
+	u := uint128Payload(self)
 	v := add128(u, makeUint128(0, 1))
 
 	if v == zero { // overflow
-		t++
+		t = t + 1
 	}
 
 	return v.ksuid(t)
@@ -363,12 +367,12 @@ func (self KSUID) Next() KSUID {
 func (self KSUID) Prev() KSUID {
 	max := makeUint128(math.MaxUint64, math.MaxUint64)
 
-	t := id.Timestamp()
-	u := uint128Payload(id)
+	t := self.Timestamp()
+	u := uint128Payload(self)
 	v := sub128(u, makeUint128(0, 1))
 
 	if v == max { // overflow
-		t--
+		t = t - 1
 	}
 
 	return v.ksuid(t)
