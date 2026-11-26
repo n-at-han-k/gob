@@ -9,6 +9,12 @@ import (
 func runXML() {
 	b := book.new(nil)
 	data, err := xml.MarshalIndent(b, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(xml.Header + string(data))
+	if err := xml.Unmarshal(data, &back); err != nil {
+		log.Fatal(err)
+	}
 	fmt.Printf("parsed: %+v\n", back)
 }

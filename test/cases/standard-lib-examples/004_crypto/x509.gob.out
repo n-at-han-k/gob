@@ -14,8 +14,14 @@ import (
 
 func runX509() {
 	priv, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		log.Fatal(err)
+	}
 	tmpl := *x509.Certificate.new(nil)
 	der, err := x509.CreateCertificate(rand.Reader, tmpl, tmpl, *priv.PublicKey, priv)
+	if err != nil {
+		log.Fatal(err)
+	}
 	cert, _ := x509.ParseCertificate(der)
 	fmt.Println("subject:  ", cert.Subject)
 	fmt.Println("issuer:   ", cert.Issuer)

@@ -13,4 +13,7 @@ func runNet() {
 	host, port, _ := net.SplitHostPort("example.com:8080")
 	fmt.Println("host:", host, "port:", port)
 	ifs, _ := net.Interfaces()
+	for _, i := range ifs {
+		fmt.Printf("  %s mtu=%d flags=%s\n", i.Name, i.MTU, i.Flags)
+	}
 }

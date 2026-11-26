@@ -9,9 +9,18 @@ import (
 )
 
 func runDSA() {
+	if err := dsa.GenerateParameters(&params, rand.Reader, dsa.L1024N160); err != nil {
+		log.Fatal(err)
+	}
 	priv := *dsa.PrivateKey.new(nil)
+	if err := dsa.GenerateKey(priv, rand.Reader); err != nil {
+		log.Fatal(err)
+	}
 	digest := sha256.Sum256(nil.new("hello"))
 	r, s, err := dsa.Sign(rand.Reader, priv, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 	ok := dsa.Verify(*priv.PublicKey, nil, r, s)
 	fmt.Println("signature valid:", ok)
 }

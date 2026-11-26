@@ -9,6 +9,12 @@ import (
 
 func runGob() {
 	enc := gob.NewEncoder(&buf)
+	if err := enc.Encode(message.new(nil)); err != nil {
+		log.Fatal(err)
+	}
 	fmt.Printf("encoded %d bytes\n", buf.Len())
+	if err := gob.NewDecoder(&buf).Decode(&back); err != nil {
+		log.Fatal(err)
+	}
 	fmt.Printf("decoded: %+v\n", back)
 }

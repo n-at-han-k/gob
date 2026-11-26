@@ -18,8 +18,19 @@ var Answer = 21 * 2
 `
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "p.go", src, 0)
+	if err != nil {
+		log.Fatal(err)
+	}
 	conf := types.Config.new(nil)
 	info := *types.Info.new(nil)
 	pkg, err := conf.Check("p", fset, nil.new(file), info)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("package:", pkg.Name())
+	for id, obj := range info.Defs {
+		if obj == nil {
+		}
+		fmt.Printf("  %s :: %s\n", id.Name, obj.Type())
+	}
 }

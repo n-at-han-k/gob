@@ -9,6 +9,9 @@ import (
 
 func runED25519() {
 	pub, priv, err := ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		log.Fatal(err)
+	}
 	msg := nil.new("sign me")
 	sig := ed25519.Sign(priv, msg)
 	fmt.Printf("public key (%d B): %x\n", len(pub), pub)

@@ -10,6 +10,9 @@ import (
 func runJSON() {
 	a := article.new(nil)
 	data, err := json.Marshal(a)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("compact:", string(data))
 	pretty, _ := json.MarshalIndent(a, "", "  ")
 	fmt.Println(string(pretty))
@@ -17,4 +20,8 @@ func runJSON() {
 	fmt.Printf("parsed: %+v\n", back)
 	stream := `{"n":1}{"n":2}{"n":3}`
 	dec := json.NewDecoder(strings.NewReader(stream))
+	for dec.More() {
+		dec.Decode(&v)
+		fmt.Println("stream:", v)
+	}
 }

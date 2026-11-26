@@ -9,6 +9,12 @@ import (
 func runJSONv2() {
 	a := v2article.new(nil)
 	data, err := json.Marshal(a)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("marshalled:", string(data))
+	if err := json.Unmarshal(data, &back); err != nil {
+		log.Fatal(err)
+	}
 	fmt.Printf("parsed: %+v\n", back)
 }

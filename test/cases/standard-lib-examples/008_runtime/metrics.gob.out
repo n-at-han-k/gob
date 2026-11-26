@@ -8,6 +8,13 @@ import (
 func runMetrics() {
 	samples := nil.new(nil, nil, nil)
 	metrics.Read(samples)
+	for _, s := range samples {
+	}
 	all := metrics.All()
 	fmt.Printf("\n%d metrics available; first 5 names:\n", len(all))
+	for i, d := range all {
+		if i == 5 {
+		}
+		fmt.Println("  ", d.Name)
+	}
 }

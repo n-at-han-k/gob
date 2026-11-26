@@ -84,8 +84,185 @@ module Gob
       end
 
       module LogicNodes
-        def Logic(node)
-          nil
+        # if err != nil
+        # if err
+        # ---
+        def Truthy(node)
+          case node
+          in SyntaxTree::Go::Ident[name: "err"]
+            Binary(node, :!=, Ident(:nil))
+
+          else
+            node
+          end
+        end
+
+        # unless err != nil
+        # if err == nil
+        # ---
+        def Not(node)
+          case node
+          in SyntaxTree::Go::BinaryExpr[x: x, op: :!=, y: y]
+            Binary(x, :==, y)
+
+          in SyntaxTree::Go::BinaryExpr[x: x, op: :==, y: y]
+            Binary(x, :!=, y)
+
+          else
+            SyntaxTree::Go::UnaryExpr.new(op: :!, x: node)
+          end
+        end
+
+        # if err = f()
+        # if err := f(); err != nil
+        # ---
+        def Guard(node)
+          case node
+          in SyntaxTree::Paren[contents: SyntaxTree::Statements[body: [statement]]]
+            Guard(statement)
+
+          in SyntaxTree::Assign | SyntaxTree::MAssign
+            Statements(node).then { |init| [init, Truthy(init.lhs.last)] }
+
+          else
+            [nil, Truthy(LeftHand(node))]
+          end
+        end
+
+        def Body(ctx, statements)
+          ctx.descend(statements.body).then { |children| Block(body: children.tree) }
+        end
+
+        # if cond ... end
+        # if cond { ... }
+        # ---
+        def If(ctx, predicate, statements, consequent)
+          init, cond = Guard(predicate)
+
+          SyntaxTree::Go::IfStmt.new(
+            init:  init,
+            cond:  cond,
+            body:  Body(ctx, statements),
+            else_: Logic(ctx, consequent)
+          )
+        end
+
+        # unless cond ... end
+        # if !cond { ... }
+        # ---
+        def Unless(ctx, predicate, statements, consequent)
+          init, cond = Guard(predicate)
+
+          SyntaxTree::Go::IfStmt.new(
+            init:  init,
+            cond:  Not(cond),
+            body:  Body(ctx, statements),
+            else_: Logic(ctx, consequent)
+          )
+        end
+
+        # while cond ... end
+        # for cond { ... }
+        # ---
+        def While(ctx, predicate, statements)
+          init, cond = Guard(predicate)
+
+          SyntaxTree::Go::ForStmt.new(
+            init: init,
+            cond: cond,
+            post: nil,
+            body: Body(ctx, statements)
+          )
+        end
+
+        # until cond ... end
+        # for !cond { ... }
+        # ---
+        def Until(ctx, predicate, statements)
+          init, cond = Guard(predicate)
+
+          SyntaxTree::Go::ForStmt.new(
+            init: init,
+            cond: Not(cond),
+            post: nil,
+            body: Body(ctx, statements)
+          )
+        end
+
+        # loop do ... end
+        # for { ... }
+        # ---
+        def Loop(ctx, statements)
+          SyntaxTree::Go::ForStmt.new(
+            init: nil,
+            cond: nil,
+            post: nil,
+            body: Body(ctx, statements)
+          )
+        end
+
+        # collection.each do |key, value| ... end
+        # for key, value := range collection { ... }
+        # ---
+        def Each(ctx, collection, requireds, statements)
+          key, value = requireds.map { |required| Ident(required.value) }
+
+          SyntaxTree::Go::RangeStmt.new(
+            key:   key,
+            value: value,
+            tok:   ":=",
+            x:     LeftHand(collection),
+            body:  Body(ctx, statements)
+          )
+        end
+
+        def Logic(ctx, node)
+          case node
+          in SyntaxTree::IfNode[predicate: predicate, statements: statements, consequent: consequent]
+            If(ctx, predicate, statements, consequent)
+
+          in SyntaxTree::Elsif[predicate: predicate, statements: statements, consequent: consequent]
+            If(ctx, predicate, statements, consequent)
+
+          in SyntaxTree::UnlessNode[predicate: predicate, statements: statements, consequent: consequent]
+            Unless(ctx, predicate, statements, consequent)
+
+          in SyntaxTree::Else[statements: statements]
+            Body(ctx, statements)
+
+          in SyntaxTree::WhileNode[predicate: predicate, statements: statements]
+            While(ctx, predicate, statements)
+
+          in SyntaxTree::UntilNode[predicate: predicate, statements: statements]
+            Until(ctx, predicate, statements)
+
+          in SyntaxTree::MethodAddBlock[
+            call: SyntaxTree::CallNode[
+              message: SyntaxTree::Ident[value: "loop"]
+            ],
+            block: SyntaxTree::BlockNode[
+              bodystmt: SyntaxTree::BodyStmt[statements: statements]
+            ]
+          ]
+            Loop(ctx, statements)
+
+          in SyntaxTree::MethodAddBlock[
+            call: SyntaxTree::CallNode[
+              receiver: collection,
+              message: SyntaxTree::Ident[value: "each"]
+            ],
+            block: SyntaxTree::BlockNode[
+              block_var: SyntaxTree::BlockVar[
+                params: SyntaxTree::Params[requireds: requireds]
+              ],
+              bodystmt: SyntaxTree::BodyStmt[statements: statements]
+            ]
+          ]
+            Each(ctx, collection, requireds, statements)
+
+          else
+            nil
+          end
         end
       end
 
@@ -491,17 +668,17 @@ module Gob
                 Block(body: children.tree)
               end
 
-            in SyntaxTree::IfNode[] |
-              SyntaxTree::UnlessNode[] |
-              SyntaxTree::WhileNode[] |
-              SyntaxTree::UntilNode[] |
+            in SyntaxTree::IfNode |
+              SyntaxTree::UnlessNode |
+              SyntaxTree::WhileNode |
+              SyntaxTree::UntilNode |
               SyntaxTree::MethodAddBlock[call: SyntaxTree::CallNode[
                 message: SyntaxTree::Ident[value: "loop"]
               ]] |
               SyntaxTree::MethodAddBlock[call: SyntaxTree::CallNode[
                 message: SyntaxTree::Ident[value: "each"]
               ]] => logic_node
-              Logic(logic_node)
+              Logic(ctx, logic_node)
 
             in SyntaxTree::Comment[value: value]
               SyntaxTree::Go::Comment.new(text: value.sub(/\A#/, "//"))

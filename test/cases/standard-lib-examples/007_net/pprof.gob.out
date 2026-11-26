@@ -10,12 +10,15 @@ import (
 
 // ()
 
-func runPProf() {
+func runPProf() () {
 	srv := httptest.NewServer(http.DefaultServeMux)
 	resp, _ := http.Get(srv.URL + "/debug/pprof/")
 	body, _ := io.ReadAll(resp.Body)
 	resp.Body.Close()
 	fmt.Println("status:", resp.Status)
 	snippet := string(body)
+	if len(snippet) > 400 {
+		snippet := 
+	}
 	fmt.Println(snippet)
 }

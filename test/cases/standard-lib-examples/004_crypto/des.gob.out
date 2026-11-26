@@ -9,6 +9,9 @@ import (
 func runDES() {
 	key := nil.new("8bytekey")
 	block, err := des.NewCipher(key)
+	if err != nil {
+		log.Fatal(err)
+	}
 	plaintext := nil.new("blockdat")
 	ct := make(nil, des.BlockSize)
 	block.Encrypt(ct, plaintext)

@@ -10,7 +10,17 @@ var demos = nil
 
 // ()
 
-func main() {
-	demo, ok :=
-		demo()
+func main() () {
+	if len(os.Args) < 2 {
+		fmt.Println("usage: go run . <package>")
+		fmt.Println("available demos:")
+		names := make(nil, 0, len(demos))
+		sort.Strings(names)
+	}
+	demo, ok := 
+	if !ok {
+		fmt.Println("unknown demo:", nil)
+		os.Exit(1)
+	}
+	demo()
 }

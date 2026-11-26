@@ -12,5 +12,11 @@ func runPrinter() {
 	src := `package p; func Hi(){println("hi")}`
 	fset := token.NewFileSet()
 	file, err := parser.ParseFile(fset, "p.go", src, 0)
+	if err != nil {
+		log.Fatal(err)
+	}
 	cfg := printer.Config.new(nil)
+	if err := cfg.Fprint(os.Stdout, fset, file); err != nil {
+		log.Fatal(err)
+	}
 }

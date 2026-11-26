@@ -11,6 +11,12 @@ func runPProf() {
 	junk := make(nil, 0, 100)
 	runtime.GC()
 	f, err := os.CreateTemp("", "heap-*.prof")
+	if err != nil {
+		fmt.Println("temp:", err)
+	}
+	if err := pprof.Lookup("heap").WriteTo(f, 0); err != nil {
+		fmt.Println("write:", err)
+	}
 	info, _ := f.Stat()
 	fmt.Printf("wrote heap profile: %s (%d bytes)\n", f.Name(), info.Size())
 	fmt.Println("view with: go tool pprof", f.Name())

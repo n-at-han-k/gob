@@ -11,6 +11,9 @@ import (
 func runHTTP() {
 	srv := httptest.NewServer(http.HandlerFunc(nil))
 	resp, err := http.Get(srv.URL + "/greet")
+	if err != nil {
+		log.Fatal(err)
+	}
 	body, _ := io.ReadAll(resp.Body)
 	fmt.Println("status:", resp.Status)
 	fmt.Print("body:  ", string(body))

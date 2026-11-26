@@ -9,6 +9,12 @@ import (
 func runASN1() {
 	p := person.new(nil)
 	der, err := asn1.Marshal(p)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Printf("DER (%d bytes): %x\n", len(der), der)
+	if _, err := asn1.Unmarshal(der, &back); err != nil {
+		log.Fatal(err)
+	}
 	fmt.Printf("parsed: %+v\n", back)
 }

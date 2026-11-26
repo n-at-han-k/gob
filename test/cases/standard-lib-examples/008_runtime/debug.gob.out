@@ -5,9 +5,21 @@ import (
 	"runtime/debug"
 )
 
-func runDebug() {
+func runDebug() () {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		fmt.Println("go version:", info.GoVersion)
+		fmt.Println("main path: ", info.Main.Path)
+		for _, s := range info.Settings {
+			if s.Key == "vcs.revision" || s.Key == "GOARCH" || s.Key == "CGO_ENABLED" {
+				fmt.Printf("  %s = %s\n", s.Key, s.Value)
+			}
+		}
+	}
 	debug.ReadGCStats(&stats)
 	fmt.Printf("gc runs: %d, total pause: %v\n", stats.NumGC, stats.PauseTotal)
 	stack := debug.Stack()
+	if len(stack) > 200 {
+		stack := 
+	}
 	fmt.Print("stack:\n", string(stack), "...\n")
 }
