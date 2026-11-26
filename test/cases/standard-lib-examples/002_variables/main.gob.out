@@ -34,7 +34,7 @@ func main() {
 	var big int64 = int64(count) * 1000
 	fmt.Println(big)
 	const greeting = "hi"
-	fmt.Println(greeting, pi, statusActive, statusInactive)
+	fmt.Println(greeting, PI, statusActive, statusInactive)
 	fmt.Println(packageLevel)
 	shadow := "outer"
 	{

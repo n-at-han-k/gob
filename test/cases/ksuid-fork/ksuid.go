@@ -12,27 +12,21 @@ import (
 	"time"
 )
 
+// KSUID's epoch starts more recently so that the 32-bit number space gives a
+// significantly higher useful lifetime of around 136 years from March 2017.
+// This number (14e8) was picked to be easy to remember.
 const (
-	// KSUID's epoch starts more recently so that the 32-bit number space gives a
-	// significantly higher useful lifetime of around 136 years from March 2017.
-	// This number (14e8) was picked to be easy to remember.
 	epochStamp int64 = 1400000000
-
 	// Timestamp is a uint32
 	timestampLengthInBytes = 4
-
 	// Payload is 16-bytes
 	payloadLengthInBytes = 16
-
 	// KSUIDs are 20 bytes when binary encoded
 	byteLength = timestampLengthInBytes + payloadLengthInBytes
-
 	// The length of a KSUID when string (base62) encoded
 	stringEncodedLength = 27
-
 	// A string-encoded minimum value for a KSUID
 	minStringEncoded = "000000000000000000000000000"
-
 	// A string-encoded maximum value for a KSUID
 	maxStringEncoded = "aWgEPTl1tmebfsQzFP4bxwgy80V"
 )
@@ -44,15 +38,13 @@ const (
 type KSUID [byteLength]byte
 
 var (
-	rander     = rand.Reader
-	randMutex  = sync.Mutex{}
-	randBuffer = [payloadLengthInBytes]byte{}
-
+	rander         = rand.Reader
+	randMutex      = sync.Mutex{}
+	randBuffer     = [payloadLengthInBytes]byte{}
 	errSize        = fmt.Errorf("Valid KSUIDs are %v bytes", byteLength)
 	errStrSize     = fmt.Errorf("Valid encoded KSUIDs are %v characters", stringEncodedLength)
 	errStrValue    = fmt.Errorf("Valid encoded KSUIDs are bounded by %s and %s", minStringEncoded, maxStringEncoded)
 	errPayloadSize = fmt.Errorf("Valid KSUID payloads are %v bytes", payloadLengthInBytes)
-
 	// Represents a completely empty (invalid) KSUID
 	Nil KSUID
 	// Represents the highest value a KSUID can have
@@ -94,13 +86,13 @@ func (self KSUID) Bytes() []byte {
 
 // IsNil returns true if this is a "nil" KSUID
 func (self KSUID) IsNil() bool {
-	return self == Nil
+	return i == Nil
 }
 
 // Get satisfies the flag.Getter interface, making it possible to use KSUIDs as
 // part of of the command line options of a program.
 func (self KSUID) Get() interface{} {
-	return self
+	return i
 }
 
 // Set satisfies the flag.Value interface, making it possible to use KSUIDs as
@@ -118,11 +110,11 @@ func (self KSUID) MarshalBinary() ([]byte, error) {
 }
 
 func (self *KSUID) UnmarshalText(b []byte) error {
-	id, err := Parse(string(b))
+	self, err := Parse(string(b))
 	if err != nil {
 		return err
 	}
-	*self = id
+	*i = id
 	return nil
 }
 
@@ -131,7 +123,7 @@ func (self *KSUID) UnmarshalBinary(b []byte) error {
 	if err != nil {
 		return err
 	}
-	*self = id
+	*i = id
 	return nil
 }
 
@@ -163,7 +155,7 @@ func (self *KSUID) Scan(src interface{}) error {
 func (self *KSUID) scan(b []byte) error {
 	switch len(b) {
 	case 0:
-		*self = Nil
+		*i = Nil
 		return nil
 	case byteLength:
 		return self.UnmarshalBinary(b)
@@ -356,8 +348,8 @@ func quickSort(a []KSUID, lo int, hi int) {
 func (self KSUID) Next() KSUID {
 	zero := makeUint128(0, 0)
 
-	t := self.Timestamp()
-	u := uint128Payload(self)
+	t := id.Timestamp()
+	u := uint128Payload(id)
 	v := add128(u, makeUint128(0, 1))
 
 	if v == zero { // overflow
@@ -371,8 +363,8 @@ func (self KSUID) Next() KSUID {
 func (self KSUID) Prev() KSUID {
 	max := makeUint128(math.MaxUint64, math.MaxUint64)
 
-	t := self.Timestamp()
-	u := uint128Payload(self)
+	t := id.Timestamp()
+	u := uint128Payload(id)
 	v := sub128(u, makeUint128(0, 1))
 
 	if v == max { // overflow

@@ -235,12 +235,10 @@ func varintLength32(v uint32) int {
 	}
 }
 
-const (
-	rawKSUID     = 0
-	timeDelta    = (1 << 6)
-	payloadDelta = (1 << 7)
-	payloadRange = (1 << 6) | (1 << 7)
-)
+const rawKSUID = 0
+const timeDelta = (1 << 6)
+const payloadDelta = (1 << 7)
+const payloadRange = (1 << 6) | (1 << 7)
 
 // CompressedSetIter is an iterator type returned by Set.Iter to produce the
 // list of KSUIDs stored in a set.

@@ -5,26 +5,21 @@ import (
 	"errors"
 )
 
-const (
-	// lexographic ordering (based on Unicode table) is 0-9A-Za-z
-	base62Characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-	zeroString       = "000000000000000000000000000"
-	offsetUppercase  = 10
-	offsetLowercase  = 36
-)
+// lexographic ordering (based on Unicode table) is 0-9A-Za-z
+const base62Characters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+const zeroString = "000000000000000000000000000"
+const offsetUppercase = 10
+const offsetLowercase = 36
 
-var (
-	errShortBuffer = errors.New("the output buffer is too small to hold to decoded value")
-)
+var errShortBuffer = errors.New("the output buffer is too small to hold to decoded value")
 
 // Converts a base 62 byte into the number value that it represents.
 func base62Value(digit byte) byte {
-	switch {
-	case digit >= '0' && digit <= '9':
+	if digit >= '0' && digit <= '9' {
 		return digit - '0'
-	case digit >= 'A' && digit <= 'Z':
+	} else if digit >= 'A' && digit <= 'Z' {
 		return offsetUppercase + (digit - 'A')
-	default:
+	} else {
 		return offsetLowercase + (digit - 'a')
 	}
 }

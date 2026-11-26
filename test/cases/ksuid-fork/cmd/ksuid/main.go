@@ -14,12 +14,10 @@ import (
 	"github.com/segmentio/ksuid"
 )
 
-var (
-	count   int
-	format  string
-	tpltxt  string
-	verbose bool
-)
+var count int
+var format string
+var tpltxt string
+var verbose bool
 
 func init() {
 	flag.IntVar(&count, "n", 1, "Number of KSUIDs to generate when called with no other arguments.")

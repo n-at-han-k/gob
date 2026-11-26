@@ -6,7 +6,7 @@ This document describes the Gob syntax supported by the current implementation. 
 
 - Gob source files use the `.gob` extension.
 - `require "pkg"` imports a Go package.
-- `module Main` declares `package main`.
+- `module Main` declares `package main`; other module names declare that package name (for example `module Ksuid` -> `package ksuid`).
 - Top-level `def main` is treated as Go `func main()`.
 
 ```ruby
@@ -28,7 +28,16 @@ var :c, int                # explicit typed zero value
 f = "apple"                # short assignment in function body
 ```
 
-`var` forms declare Go variables. Plain assignment in a function body maps to Go short declaration where appropriate. Package/module-level assignments and constants follow the forms used in golden cases.
+`var` forms declare Go variables. Plain assignment in a function body maps to Go short declaration where appropriate. Compound assignments such as `+=` are supported where golden cases use them.
+
+Constants use `const :name, value`:
+
+```ruby
+const :numJobs, 5
+const :s, "hello"
+```
+
+Module-level uppercase names and `var` declarations follow Go package declarations as shown in golden cases.
 
 ## Functions
 
@@ -70,7 +79,27 @@ else
 end
 ```
 
-Supported iteration forms in golden cases include:
+`if err` and `if (name = expr)` follow Go-style condition/error-check patterns as shown in golden cases.
+
+Loops and control statements:
+
+```ruby
+while i < len(s)
+  i = i + 1
+end
+
+loop do
+  break
+end
+
+next
+```
+
+- `while` maps to a Go `for` condition loop.
+- `loop do` maps to an infinite Go `for {}` loop.
+- `break` and `next` map to Go `break` and `continue`.
+
+Iteration forms in golden cases include:
 
 ```ruby
 3.times do |i| ... end              # counting loop
@@ -78,6 +107,36 @@ nums.each do |_, num| ... end       # range over slice/array
 kvs.each do |k, v| ... end          # range over map
 "go".each do |i, c| ... end         # range over string
 ```
+
+`defer` schedules cleanup:
+
+```ruby
+defer file.Close()
+```
+
+## Case, switch, and select
+
+`case` maps to Go `switch` or `select` depending on form.
+
+```ruby
+case len(b)                # value switch
+when 0
+  return nil
+else
+  return err
+end
+
+case v = src.(type)        # type switch
+when nil
+  return self.scan(nil)
+when Array[byte]
+  return self.scan(v)
+else
+  return fmt.Errorf("type %T", v)
+end
+```
+
+A `case` with no expression and channel `when` clauses becomes a Go `select` (see Concurrency).
 
 ## Collections
 
@@ -90,10 +149,11 @@ c = make(Hash[string, int])
 
 - `Array[T].new(...)` creates a Go slice literal.
 - `Hash[K, V].new(...)` creates a Go map literal.
+- `Array[T, N].new(...)` creates a Go fixed-size array literal.
 - `make(Array[T], n)` and `make(Hash[K, V])` map to Go `make`.
 - Common Go builtins/helpers used in cases include `len`, `cap`, `append`, `copy`, `delete`, and `clear`.
 
-## Structs and methods
+## Structs and classes
 
 ```ruby
 var person = Struct.new(name: string, age: int) do
@@ -108,9 +168,29 @@ end
 ```
 
 - `Struct.new(...)` declares a Go struct type.
-- `def self.Method` inside a struct block declares a pointer receiver.
-- Plain `def` inside a struct block declares a value receiver.
+- Struct field tags can be placed in a comment immediately before the field:
+
+  ```ruby
+  var article = Struct.new(
+    # `json:"title"`
+    Title: string,
+  )
+  ```
+
+- `def self.Method` inside a struct/class block declares a pointer receiver.
+- Plain `def` inside the block declares a value receiver.
 - Struct literals use `person.new(name: "Ann", age: 40)` or positional fields as shown in cases.
+
+`class` declares a named struct type with `attr_accessor` fields:
+
+```ruby
+class Args
+  attr_accessor :A, int
+  attr_accessor :B, int
+end
+```
+
+Class methods follow the same receiver rule: `def self.Method` for pointer receivers, `def Method` for value receivers. Instantiate with `ClassName.new(...)`, like struct literals.
 
 ## Pointers
 
@@ -137,17 +217,21 @@ end
 
 ```ruby
 messages = make(Chan[string])
+jobs = make(Chan[int], 5)
 
 go lambda { messages << "ping" }.()
 
 msg = ~messages
+j, more = ~jobs
+close(jobs)
 ```
 
 - `go` starts a goroutine.
-- `Chan[T]` is the Gob channel type form.
-- `make(Chan[T])` creates a channel.
+- `Chan[T]` is the Gob channel type form; direction types use Go-style forms in signatures, such as `<-chan int` and `chan<- int`.
+- `make(Chan[T])` or `make(Chan[T], n)` creates an unbuffered or buffered channel.
 - `ch << value` sends.
-- `~ch` receives.
+- `~ch` receives; `value, ok = ~ch` checks whether the channel is still open.
+- `close(ch)` closes a channel.
 
 `case/when` with channel receives maps to Go `select`:
 

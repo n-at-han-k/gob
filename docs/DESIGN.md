@@ -28,9 +28,11 @@ The official transpilation implementation is `lib/gob/transpilation/runner.rb`.
 Gob borrows Ruby syntax where it maps cleanly to Go:
 
 - `require "pkg"` maps to Go imports.
-- `module Main` maps to `package main`.
-- `def` declares Go functions or methods.
-- `Array[T].new(...)` and `Hash[K, V].new(...)` map to Go slices/maps.
+- `module` maps to a Go package declaration.
+- `def` declares Go functions or methods; `class`/`Struct.new` declare Go struct types.
+- `Array[T].new(...)` and `Hash[K, V].new(...)` map to Go slices/maps; fixed arrays use `Array[T, N].new(...)`.
+- `while`, `loop do`, `break`, `next`, and `defer` map to Go control-flow constructs.
+- `case/when` maps to Go `switch`, type switch, or `select` depending on form.
 - `lambda { ... }` maps to Go function literals.
 - `go`, channels, `@` address-of, and `@@` dereference express Go runtime/concurrency/pointer concepts.
 

@@ -17,17 +17,6 @@ import (
 
 var FastRander = newRBG()
 
-type randSourceReader struct {
-	source rand.Source64
-}
-
-func (self *randSourceReader) Read(b []byte) (int, error) {
-	// optimized for generating 16 bytes payloads
-	binary.LittleEndian.PutUint64(b[:8], self.source.Uint64())
-	binary.LittleEndian.PutUint64(b[8:], self.source.Uint64())
-	return 16, nil
-}
-
 func newRBG() io.Reader {
 	r, err := newRandomBitsGenerator()
 	if err != nil {
@@ -52,4 +41,15 @@ func readCryptoRandomSeed() (seed int64, err error) {
 	}
 	seed := int64(binary.LittleEndian.Uint64(b[:]))
 	return
+}
+
+type randSourceReader struct {
+	source rand.Source64
+}
+
+func (self *randSourceReader) Read(b []byte) (int, error) {
+	// optimized for generating 16 bytes payloads
+	binary.LittleEndian.PutUint64(b[:8], self.source.Uint64())
+	binary.LittleEndian.PutUint64(b[8:], self.source.Uint64())
+	return 16, nil
 }

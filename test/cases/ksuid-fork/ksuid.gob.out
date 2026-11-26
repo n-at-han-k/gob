@@ -167,7 +167,7 @@ var errPayloadSize = fmt.Errorf("Valid KSUID payloads are %v bytes", payloadLeng
 
 // Represents the highest value a KSUID can have
 
-var Max = ksuid{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255}
+var Max = KSUID{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255}
 
 // Parse decodes a string-encoded representation of a KSUID object
 
@@ -246,7 +246,7 @@ func FromParts(t time.Time, payload []byte) (KSUID, error) {
 	if len(payload) != payloadLengthInBytes {
 		return Nil, errPayloadSize
 	}
-	var ksuid ksuid
+	var ksuid KSUID
 	ts := timeToCorrectedUTCTimestamp(t)
 	binary.BigEndian.PutUint32(ksuid[:timestampLengthInBytes], ts)
 	copy(ksuid[timestampLengthInBytes:], payload)
@@ -268,7 +268,7 @@ func FromPartsOrNil(t time.Time, payload []byte) KSUID {
 // Constructs a KSUID from a 20-byte binary representation
 
 func FromBytes(b []byte) (KSUID, error) {
-	var ksuid ksuid
+	var ksuid KSUID
 	if len(b) != byteLength {
 		return Nil, errSize
 	}

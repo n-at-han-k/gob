@@ -34,7 +34,29 @@ module Main
 end
 ```
 
-Use `var name = value` when Go can infer the type, `var :name, Type` for an explicit zero value, and `var :name, Type, value` for an explicit typed value. Short assignment `name = value` becomes `:=` in function bodies.
+Use `var name = value` when Go can infer the type, `var :name, Type` for an explicit zero value, and `var :name, Type, value` for an explicit typed value. Short assignment `name = value` becomes `:=` in function bodies. Constants use `const :name, value`.
+
+## Control flow
+
+```ruby
+if err != nil
+  fmt.Println(err)
+elsif other
+  fmt.Println(other)
+else
+  fmt.Println("ok")
+end
+
+while i < 10
+  i = i + 1
+end
+
+loop do
+  break
+end
+```
+
+`if`, `elsif`, `else`, `while`, `loop do`, `break`, `next`, and `defer` map to their Go equivalents. `case/when` maps to Go `switch`, type switch, or `select` depending on form.
 
 ## Functions and multiple returns
 
@@ -103,7 +125,7 @@ module Main
 end
 ```
 
-`Struct.new(...)` declares a Go struct type. `@value` takes an address; `@@value` dereferences. `def self.Method` inside a struct block declares a pointer-receiver method; a plain `def` inside the block declares a value-receiver method.
+`Struct.new(...)` declares a Go struct type. `class` with `attr_accessor` is another struct form used in golden cases. `@value` takes an address; `@@value` dereferences. `def self.Method` inside a struct/class block declares a pointer-receiver method; a plain `def` inside the block declares a value-receiver method. Struct field tags can be written as comments before fields.
 
 ## Errors
 
@@ -168,7 +190,7 @@ module Main
 end
 ```
 
-`go` starts a goroutine. `Chan[T]`/`make(Chan[T])` create channels. `<<` sends, and `~channel` receives. `case/when` over channel receives maps to Go `select`.
+`go` starts a goroutine. `Chan[T]`/`make(Chan[T])` create channels; `make(Chan[T], n)` creates a buffered channel. `<<` sends, `~channel` receives, `value, ok = ~channel` tests open status, and `close(ch)` closes a channel. `case/when` over channel receives maps to Go `select`.
 
 ## Next steps
 

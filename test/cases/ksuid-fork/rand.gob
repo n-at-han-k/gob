@@ -10,16 +10,6 @@ module Ksuid
   # cryptographically secure KSUIDs and are generating a lot of them.
   var FastRander = newRBG()
 
-  var randSourceReader = Struct.new(source: rand.Source64) do
-    def self.Read(b) # ([]byte) -> (int, error)
-      # optimized for generating 16 bytes payloads
-      binary.LittleEndian.PutUint64(b[...8], self.source.Uint64())
-      binary.LittleEndian.PutUint64(b[8...], self.source.Uint64())
-
-      return 16, nil
-    end
-  end
-
   def newRBG # () -> io.Reader
     r, err = newRandomBitsGenerator()
     if err
@@ -51,5 +41,14 @@ module Ksuid
     seed = int64(binary.LittleEndian.Uint64(b[]))
 
     return
+  end
+  var randSourceReader = Struct.new(source: rand.Source64) do
+    def self.Read(b) # ([]byte) -> (int, error)
+      # optimized for generating 16 bytes payloads
+      binary.LittleEndian.PutUint64(b[...8], self.source.Uint64())
+      binary.LittleEndian.PutUint64(b[8...], self.source.Uint64())
+
+      return 16, nil
+    end
   end
 end
