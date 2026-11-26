@@ -36,8 +36,7 @@ module Gob
 
         def transpile_source(source, path)
           validate_source!(source, path)
-          ast = Gob::Transpiler.new.transpile(source)
-          GoFormatter.format(Gob::Go::Printer.print(ast))
+          GoFormatter.format(Gob.transpile_to_go(source, path: path, check: false))
         end
 
         def write_output(output, path)

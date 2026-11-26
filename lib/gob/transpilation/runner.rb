@@ -309,17 +309,6 @@ module Gob
           ]
             Statements(receiver)
 
-          in SyntaxTree::ARef[
-            collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[ value: "Array" ] ],
-            index: SyntaxTree::Args[ parts: [ type, *size ] ]
-          ]
-            (size || nil).then do |size|
-              case type
-              in SyntaxTree::VCall[ value: SyntaxTree::Ident[ value: name ] ]
-                SyntaxTree::Go::ArrayType.new( len: size, elt: Ident(name) )
-              end
-            end
-
           #in SyntaxTree::ARef[collection: collection, index: SyntaxTree::Args[parts: [index]]]
           #  SyntaxTree::Go::IndexExpr.new(
           #    x: LeftHand(collection),

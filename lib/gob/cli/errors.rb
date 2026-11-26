@@ -37,8 +37,6 @@ module Gob
           warn "#{location}: C: #{error.cop}: #{message}"
         when SyntaxTree::Parser::ParseError
           warn "gob: #{error.message}"
-        when Gob::Transpiler::UnsupportedNode
-          warn "gob: #{error.message}"
         when GoFormatter::Error
           warn "gob: #{error.message}"
         else
