@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-26
+
+### Added
+
+- `gob fmt` now normalizes `go call(...)` to `go lambda { ... }.()` through `Gob::Validation::Rules::GoCall`
+- `gob fmt` now moves struct tag comments before their fields through `Gob::Validation::Rules::StructTagPosition`
+
+### Fixed
+
+- `Gob::Transpilation::Runner` now emits pointer receivers for methods declared with `def self.Method`; use this form for mutating methods such as `UnmarshalText`
+
 ## [1.1.0] - 2026-11-26
 
 ### Added
@@ -28,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - initial release
 
-[Unreleased]: https://github.com/n-at-han-k/gob/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/n-at-han-k/gob/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/n-at-han-k/gob/releases/tag/v1.1.1
 [1.1.0]: https://github.com/n-at-han-k/gob/releases/tag/v1.1.0
 [1.0.0]: https://github.com/n-at-han-k/gob/releases/tag/v1.0.0
