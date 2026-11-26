@@ -668,16 +668,9 @@ module Gob
                 Block(body: children.tree)
               end
 
-            in SyntaxTree::IfNode |
-              SyntaxTree::UnlessNode |
-              SyntaxTree::WhileNode |
-              SyntaxTree::UntilNode |
-              SyntaxTree::MethodAddBlock[call: SyntaxTree::CallNode[
-                message: SyntaxTree::Ident[value: "loop"]
-              ]] |
-              SyntaxTree::MethodAddBlock[call: SyntaxTree::CallNode[
-                message: SyntaxTree::Ident[value: "each"]
-              ]] => logic_node
+            in SyntaxTree::IfNode | SyntaxTree::UnlessNode | SyntaxTree::WhileNode | SyntaxTree::UntilNode |
+              SyntaxTree::MethodAddBlock[call: SyntaxTree::CallNode[ message: SyntaxTree::Ident[value: "loop"] ]] |
+              SyntaxTree::MethodAddBlock[call: SyntaxTree::CallNode[ message: SyntaxTree::Ident[value: "each"] ]] => logic_node
               Logic(ctx, logic_node)
 
             in SyntaxTree::Comment[value: value]
@@ -686,12 +679,7 @@ module Gob
             in SyntaxTree::Assign[target: target, value: value] if ctx.equal?(root_context)
               SyntaxTree::Go::GenDecl.new(
                 tok: :var,
-                specs: [
-                  SyntaxTree::Go::ValueSpec.new(
-                    names: [LeftHand(target)],
-                    values: [RightHand(value)]
-                  )
-                ]
+                specs: [ SyntaxTree::Go::ValueSpec.new( names: [LeftHand(target)], values: [RightHand(value)] ) ]
               )
 
             else
