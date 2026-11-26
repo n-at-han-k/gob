@@ -86,8 +86,6 @@ module Gob
         self
       end
 
-      alias match_each_child match
-
       def before(&block)
         @before_callback = block
       end

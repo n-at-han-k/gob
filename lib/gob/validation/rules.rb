@@ -41,11 +41,6 @@ module Gob
         @registry ||= RuboCop::Cop::Registry.new(COPS)
       end
 
-      def reset!
-        @config_store = nil
-        @registry = nil
-      end
-
       PASSES = 10
 
       # Layout is corrected before anything reads the source, so that what the
