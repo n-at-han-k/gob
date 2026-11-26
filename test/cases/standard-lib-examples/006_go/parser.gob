@@ -11,7 +11,7 @@ module Main
     end
     fmt.Printf("expression AST: %#v\n\n", expr)
 
-	  src = `package p
+    src = `package p
 import (
 	"fmt"
 	"io"

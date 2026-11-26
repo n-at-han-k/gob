@@ -1,0 +1,26 @@
+require "fmt"
+require "reflect"
+
+module Main
+  class ReflectUser
+    attr_accessor :Name
+    attr_accessor :Age
+  end
+
+
+  def runReflect # ()
+    u = ReflectUser.new(Name: "Nathan", Age: 30)
+    v = reflect.ValueOf(u)
+    t = reflect.TypeOf(u)
+    fmt.Println("kind:", v.Kind(), "type:", t.Name())
+
+    (0...t.NumField()).each do |i|
+      f = t.Field(i)
+      fmt.Printf("  %s (%s) = %v  json=%q\n", f.Name, f.Type, v.Field(i).Interface(), f.Tag.Get("json"))
+    end
+
+    up = ReflectUser.new()
+    reflect.ValueOf(up).Elem().FieldByName("Name").SetString("Reflected")
+    fmt.Printf("mutated: %+v\n", up)
+  end
+end

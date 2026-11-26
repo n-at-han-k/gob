@@ -1,0 +1,18 @@
+package main
+
+import "fmt"
+
+func runClosing() {
+	jobs := make(chan int, 2)
+
+	jobs <- 7
+	jobs <- 8
+	close(jobs)
+
+	for job := range jobs {
+		fmt.Println("job:", job)
+	}
+
+	n, ok := <-jobs
+	fmt.Println("after close:", n, ok)
+}

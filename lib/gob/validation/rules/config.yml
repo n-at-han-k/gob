@@ -3,14 +3,23 @@ AllCops:
   TargetRubyVersion: 3.4
   NewCops: disable
 
-Gob/ModuleRules:
+Gob/BlockDelimiters:
   Enabled: true
 
-Gob/ClassRules:
+Gob/DeferStatement:
   Enabled: true
 
-Gob/FunctionRules:
+Gob/ErrorCheck:
   Enabled: true
 
-Gob/ProgramRules:
+Gob/Indentation:
+  Enabled: true
+
+Gob/Multiline:
+  Enabled: true
+
+Gob/QuoteMarks:
+  Enabled: true
+
+Gob/SignatureComment:
   Enabled: true

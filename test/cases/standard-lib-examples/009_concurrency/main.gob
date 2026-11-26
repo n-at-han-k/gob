@@ -1,0 +1,40 @@
+require "fmt"
+require "os"
+require "sort"
+
+module Main
+  var demos = Hash[string, Proc].new(
+    channels:  runChannels,
+    buffering: runBuffering,
+    select:    runSelect,
+    closing:   runClosing
+  )
+
+  def main
+    if len(os.Args) < 2
+      fmt.Println("usage: go run . <package>")
+      fmt.Println("available demos:")
+
+      names = make(Array[string], 0, len(demos))
+      demos.each do |k|
+        names = append(names, k)
+      end
+
+      sort.Strings(names)
+      names.each do |_, n|
+        fmt.Println("  ", n)
+      end
+
+      return
+    end
+
+    demo, ok = demos[os.Args[1]]
+
+    unless ok
+      fmt.Println("unknown demo:", os.Args[1])
+      os.Exit(1)
+    end
+
+    demo()
+  end
+end

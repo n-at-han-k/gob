@@ -1,0 +1,31 @@
+require "fmt"
+require "iter"
+require "slices"
+
+module Main
+
+  def countdown(from) # (int) -> iter.Seq[int]
+    return(
+        lambda do
+          i = from
+
+          while i >= 0
+            unless yield(i)
+              return
+            end
+
+            i -= 1
+          end
+        end
+      )
+  end
+
+  def runIter # ()
+    countdown(3).each do |n|
+      fmt.Println(n)
+    end
+    slices.All(%w[a b c]).each do |i, v|
+      fmt.Println(i, v)
+    end
+  end
+end

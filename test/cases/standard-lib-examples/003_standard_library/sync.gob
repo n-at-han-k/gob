@@ -1,0 +1,43 @@
+require "fmt"
+require "sync"
+require "sync/atomic"
+
+module Main
+
+  def runSync # ()
+    define_var :wg, sync.WaitGroup
+    define_var :mu, sync.Mutex
+    counter = 0
+
+    (0...100).each do |i|
+      wg.Add(1)
+
+      go do
+        defer wg.Done()
+        mu.Lock()
+        counter += 1
+        mu.Unlock()
+      end.()
+    end
+
+    wg.Wait()
+    fmt.Println("mutex counter:", counter)
+    define_var :atomicCounter, atomic.Int64
+    define_var :wg2, sync.WaitGroup
+    (0...100).each do |i|
+      wg2.Add(1)
+
+      go do
+        defer wg2.Done()
+        atomicCounter.Add(1)
+      end.()
+    end
+
+    wg2.Wait()
+    fmt.Println("atomic counter:", atomicCounter.Load())
+    define_var :once, sync.Once
+    (0...3).each do |i|
+      once.Do(lambda { fmt.Println("initialised") })
+    end
+  end
+end

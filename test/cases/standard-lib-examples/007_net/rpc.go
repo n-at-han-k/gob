@@ -9,7 +9,10 @@ import (
 
 type Arith struct{}
 
-type Args struct{ A, B int }
+type Args struct {
+	A int
+	B int
+}
 
 func (self Arith) Multiply(args Args, reply *int) error {
 	*reply = args.A * args.B

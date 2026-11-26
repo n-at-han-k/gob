@@ -4,10 +4,10 @@ require "log"
 
 module Main
   var book = Struct.new(
-	  XMLName: xml.Name,     # `xml:"book"`
-	  Title:   string,       # `xml:"title"`
-	  Author:  string,       # `xml:"author,attr"`
-	  Tags:    Array[string], # `xml:"tags>tag"`
+    XMLName: xml.Name,     # `xml:"book"`
+    Title:   string,       # `xml:"title"`
+    Author:  string,       # `xml:"author,attr"`
+    Tags:    Array[string], # `xml:"tags>tag"`
   )
 
   def runXML

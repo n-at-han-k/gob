@@ -6,11 +6,11 @@ import (
 	"log"
 )
 
-var book = Struct{
-	XMLName: xml.Name,
-	Title:   string,
-	Author:  string,
-	Tags:    []string,
+type book struct {
+	XMLName xml.Name `xml:"book"`
+	Title   string   `xml:"title"`
+	Author  string   `xml:"author,attr"`
+	Tags    []string
 }
 
 func runXML() {

@@ -1,0 +1,12 @@
+package main
+
+import "fmt"
+
+func runBuffering() {
+	ch := make(chan int, 3)
+	ch <- 1
+	ch <- 2
+	ch <- 3
+	fmt.Println("len:", len(ch), "cap:", cap(ch))
+	fmt.Println("drained:", <-ch, <-ch, <-ch)
+}

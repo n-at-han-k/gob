@@ -1,0 +1,39 @@
+require "fmt"
+require "time"
+
+module Main
+  def runSelect
+    fast = make(Chan[string])
+    slow = make(Chan[string])
+
+    go lambda {
+      time.Sleep(10 * time.Millisecond)
+      fast << "fast"
+    }.()
+
+    go lambda {
+      time.Sleep(200 * time.Millisecond)
+      slow << "slow"
+    }.()
+
+    2.times do
+      case
+      when msg = ~fast
+        fmt.Println("got:", msg)
+      when msg = ~slow
+        fmt.Println("got:", msg)
+      when ~time.After(50 * time.Millisecond)
+        fmt.Println("timed out waiting")
+      end
+    end
+
+    idle = make(Chan[int], 1)
+
+    case
+    when n = ~idle
+      fmt.Println("drained:", n)
+    else
+      fmt.Println("nothing ready")
+    end
+  end
+end

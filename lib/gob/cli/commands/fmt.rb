@@ -14,8 +14,8 @@ module Gob
           files_from(*files)
 
           files.each do |file|
-            source, = read_source(file)
-            formatted = SyntaxTree.format(source)
+            source, path = read_source(file)
+            formatted = Gob::Validation::Rules.autocorrect(source, path: path)
 
             if options[:write]
               raise Thor::Error, "Cannot use --write with stdin" if file == "-"

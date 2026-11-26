@@ -1,0 +1,28 @@
+package main
+
+import (
+	"fmt"
+	"sync"
+	"sync/atomic"
+)
+
+func runSync() {
+	counter := 0
+	for i := range nil {
+		wg.Add(1)
+		nil
+	}
+	wg.Wait()
+	fmt.Println("mutex counter:", counter)
+	for i := range nil {
+		wg2.Add(1)
+		nil
+	}
+	wg2.Wait()
+	fmt.Println("atomic counter:", atomicCounter.Load())
+	for i := range nil {
+		once.Do(func() {
+			fmt.Println("initialised")
+		})
+	}
+}

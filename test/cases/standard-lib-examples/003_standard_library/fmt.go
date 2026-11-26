@@ -1,0 +1,23 @@
+package main
+
+import "fmt" 
+
+type point struct{ X, Y int }
+
+func runFmt() {
+
+	fmt.Println("hello", 42, true)
+
+	fmt.Printf("%d + %d = %d\n", 2, 3, 2+3)
+	fmt.Printf("%.2f pi\n", 3.14159)
+	fmt.Printf("%q quoted\n", "text")
+	fmt.Printf("%v vs %+v vs %#v\n", point{1, 2}, point{1, 2}, point{1, 2})
+	fmt.Printf("%b %o %x hex\n", 255, 255, 255)
+	fmt.Printf("%-10s|%10s|\n", "left", "right")
+
+	s := fmt.Sprintf("year=%d", 2026)
+	fmt.Println(s)
+
+	err := fmt.Errorf("bad input: %s", "nope")
+	fmt.Println(err)
+}

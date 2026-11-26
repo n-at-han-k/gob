@@ -1,0 +1,19 @@
+require "fmt"
+require "log"
+require "mime"
+
+module Main
+
+  def runMime # ()
+    fmt.Println(".html:", mime.TypeByExtension(".html"))
+    fmt.Println(".json:", mime.TypeByExtension(".json"))
+    mt, params, err = mime.ParseMediaType("text/plain; charset=\"utf-8\"")
+
+    if err != nil
+      log.Fatal(err)
+    end
+
+    fmt.Println("type:", mt, "params:", params)
+    fmt.Println(mime.FormatMediaType("text/html", { "charset" => "utf-8" }))
+  end
+end

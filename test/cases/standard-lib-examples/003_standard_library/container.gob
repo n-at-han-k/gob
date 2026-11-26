@@ -1,0 +1,63 @@
+require "container/heap"
+require "container/list"
+require "container/ring"
+require "fmt"
+
+module Main
+  var intHeap = Class.new(Array[int]) do
+    def Len # -> int
+      return len(this)
+    end
+
+    def Less(i, j) # (int, int) -> bool
+      return this[i] < this[j]
+    end
+
+    def Swap(i, j) # (int, int)
+      this[i], this[j] = this[j], this[i]
+    end
+
+    def Push(x) # (any)
+      this = append(@this, x)
+    end
+
+    def Pop # () -> any
+      old = @this
+      n = len(old)
+      x = old[n - 1]
+      @this = old[...n - 1]
+
+      return x
+    end
+  end
+
+  def runContainer
+    l = list.New()
+    l.PushBack("b")
+    l.PushFront("a")
+    l.PushBack("c")
+    e = l.Front()
+
+    while e != nil
+      fmt.Print(e.Value, " ")
+      e = e.Next()
+    end
+
+    fmt.Println()
+    h = IntHeap.new(5, 1, 4, 2, 3)
+    heap.Init(h)
+    while h.Len() > 0
+      fmt.Print(heap.Pop(h), " ")
+    end
+    fmt.Println()
+    r = ring.New(5)
+
+    (0...r.Len()).each do |i|
+      r.Value = i
+      r = r.Next()
+    end
+
+    r.Do(lambda { |v| fmt.Print(v, " ") })
+    fmt.Println()
+  end
+end

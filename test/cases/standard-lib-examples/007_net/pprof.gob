@@ -2,7 +2,7 @@ require "fmt"
 require "io"
 require "net/http"
 require "net/http/httptest"
-require "net/http/pprof"
+require "net/http/pprof", _
 
 module Main
 

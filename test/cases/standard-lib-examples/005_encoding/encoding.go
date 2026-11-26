@@ -5,7 +5,11 @@ import (
 	"fmt"
 )
 
-type colour struct{ R, G, B byte }
+type colour struct {
+	R byte
+	G byte
+	B byte
+}
 
 func (self colour) MarshalText() ([]byte, error) {
 	return fmt.Appendf(nil, "#%02x%02x%02x", self.R, self.G, self.B), nil

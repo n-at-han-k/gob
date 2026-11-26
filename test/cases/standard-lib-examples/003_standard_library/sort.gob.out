@@ -1,0 +1,26 @@
+package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+type Person struct {}
+
+func runSort() () {
+	nums := {5, 2, 4, 1, 3}
+	sort.Ints(nums)
+	fmt.Println("ints:", nums)
+	people := {{"C", 30}, {"A", 25}, {"B", 30}}
+	sort.Slice(people, func(i , j ) () {
+		if nil.Age != nil.Age {
+			return nil.Age < nil.Age
+		}
+		return nil.Name < nil.Name
+	})
+	fmt.Println("people:", people)
+	sort.SliceStable(people, func(i , j ) () {
+		return nil.Age < nil.Age
+	})
+	fmt.Println("stable:", people)
+}

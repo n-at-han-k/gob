@@ -35,6 +35,7 @@ module Gob
         end
 
         def transpile_source(source, path)
+          source = Gob::Validation::Rules.autocorrect(source, path: path)
           validate_source!(source, path)
           GoFormatter.format(Gob.transpile_to_go(source, path: path, check: false))
         end

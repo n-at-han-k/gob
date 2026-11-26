@@ -6,7 +6,10 @@ import (
 	"log"
 )
 
-var person = Struct{Name: string, Age: int}
+type person struct {
+	Name string
+	Age  int
+}
 
 func runASN1() {
 	p := person{Name: "Nathan", Age: 30}

@@ -7,9 +7,9 @@ import (
 	"log"
 )
 
-var message = Struct{
-	Kind: string,
-	Body: []int,
+type message struct {
+	Kind string
+	Body []int
 }
 
 func runGob() {

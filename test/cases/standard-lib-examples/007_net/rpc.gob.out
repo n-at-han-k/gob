@@ -7,6 +7,18 @@ import (
 	"net/rpc"
 )
 
+type Arith struct{}
+
+func (self Arith) Multiply(args Args, reply *int) error {
+	*reply = args.A * args.B
+	return nil
+}
+
+type Args struct {
+	A int
+	B int
+}
+
 func runRPC() {
 	srv := rpc.NewServer()
 	srv.Register(Arith{})

@@ -1,0 +1,32 @@
+package main
+
+import "fmt"
+
+func runBuiltin() {
+	s := make([]int, 0, 4)
+
+	s = append(s, 1, 2, 3)
+	fmt.Println("len/cap:", len(s), cap(s))
+
+	dst := make([]int, 3)
+	copy(dst, s)
+	fmt.Println("copied:", dst)
+
+	p := new(int)
+	*p = 42
+	fmt.Println("new int:", *p)
+
+	m := map[string]int{"a": 1, "b": 2}
+	delete(m, "a")
+	fmt.Println("map:", m)
+
+	fmt.Println("min/max:", min(3, 1, 2), max(3, 1, 2))
+
+	defer func() {
+		if err := recover(); err != nil {
+			fmt.Println("recovered:", err)
+		}
+	}()
+
+	panic("boom")
+}

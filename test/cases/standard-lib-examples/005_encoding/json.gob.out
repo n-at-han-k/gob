@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-var article = Struct{
-	Title:    string,
-	Views:    int,
-	Tags:     []string,
-	internal: string,
+type article struct {
+	Title    string   `json:"title"`
+	Views    int      `json:"views"`
+	Tags     []string `json:"tags,omitempty"`
+	internal string
 }
 
 func runJSON() {

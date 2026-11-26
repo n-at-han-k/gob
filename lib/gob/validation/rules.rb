@@ -7,16 +7,22 @@ module Gob
   module Validation
     module Rules
       require_relative "rules/cop"
-      require_relative "rules/class_rules"
-      require_relative "rules/function_rules"
-      require_relative "rules/module_rules"
-      require_relative "rules/program_rules"
+      require_relative "rules/block_delimiters"
+      require_relative "rules/defer_statement"
+      require_relative "rules/error_check"
+      require_relative "rules/indentation"
+      require_relative "rules/multiline"
+      require_relative "rules/quote_marks"
+      require_relative "rules/signature_comment"
 
       COPS = [
-        ClassRules,
-        FunctionRules,
-        ModuleRules,
-        ProgramRules
+        BlockDelimiters,
+        DeferStatement,
+        ErrorCheck,
+        Indentation,
+        Multiline,
+        QuoteMarks,
+        SignatureComment
       ].freeze
 
       CONFIG_PATH = File.expand_path("rules/config.yml", __dir__)
@@ -38,6 +44,49 @@ module Gob
       def reset!
         @config_store = nil
         @registry = nil
+      end
+
+      PASSES = 10
+
+      # Layout is corrected before anything reads the source, so that what the
+      # transpiler sees is always in house style. Corrections are applied in
+      # passes, since fixing one layout rule can expose the next.
+      def autocorrect(source, path: nil)
+        temp_path = path || "gob_check.rb"
+        config = config_store.for(temp_path)
+
+        PASSES.times do
+          corrector = merge(correctors(source, temp_path, config))
+          break if corrector.nil?
+
+          corrected = corrector.process
+          break if corrected == source
+
+          source = corrected
+        end
+
+        source
+      end
+
+      def correctors(source, path, config)
+        processed_source = RuboCop::ProcessedSource.new(source, config.target_ruby_version, path)
+        team = RuboCop::Cop::Team.mobilize(registry, config, { autocorrect: true, stdin: true })
+
+        team.investigate(processed_source).correctors.compact.reject(&:empty?)
+      end
+
+      # Two rules may reach for the same characters; the first one wins this
+      # pass and the other is picked up by the next.
+      def merge(correctors)
+        return nil if correctors.empty?
+
+        correctors.drop(1).each_with_object(correctors.first) do |corrector, head|
+          begin
+            head.merge!(corrector)
+          rescue Parser::ClobberingError
+            nil
+          end
+        end
       end
 
       def validate(source, path: nil)

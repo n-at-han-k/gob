@@ -6,9 +6,9 @@ import (
 	"log"
 )
 
-var v2article = Struct{
-	Title: string,
-	Tags:  []string,
+type v2article struct {
+	Title string `json:"title"`
+	Tags  []string
 }
 
 func runJSONv2() {

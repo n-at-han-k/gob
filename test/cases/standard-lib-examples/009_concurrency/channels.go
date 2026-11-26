@@ -1,0 +1,39 @@
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func runChannels() {
+	ch := make(chan string)
+
+	go func() {
+		ch <- "ping"
+	}()
+
+	msg := <-ch
+	fmt.Println("received:", msg)
+
+	var wg sync.WaitGroup
+	results := make(chan int)
+
+	for i := range 3 {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			results <- id * id
+		}(i)
+	}
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	total := 0
+	for n := range results {
+		total = total + n
+	}
+	fmt.Println("total:", total)
+}

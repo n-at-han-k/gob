@@ -1,15 +1,15 @@
 require "crypto"
-require "crypto/md5"
-require "crypto/sha1"
-require "crypto/sha256"
-require "crypto/sha512"
+require "crypto/md5", _
+require "crypto/sha1", _
+require "crypto/sha256", _
+require "crypto/sha512", _
 require "fmt"
 
 module Main
-    def runCrypto
-      hashes = Array[crypto.Hash].new(crypto.MD5, crypto.SHA1, crypto.SHA256, crypto.SHA512)
-      hashes.each do |_, h|
-        fmt.Printf("%-8s size=%d bytes available=%v\n", h, h.Size(), h.Available())
-      end
+  def runCrypto
+    hashes = Array[crypto.Hash].new(crypto.MD5, crypto.SHA1, crypto.SHA256, crypto.SHA512)
+    hashes.each do |_, h|
+      fmt.Printf("%-8s size=%d bytes available=%v\n", h, h.Size(), h.Available())
     end
+  end
 end

@@ -77,6 +77,8 @@ module Gob
           emit_array_type(node, out)
         when SyntaxTree::Go::MapType
           emit_map_type(node, out)
+        when SyntaxTree::Go::ChanType
+          emit_chan_type(node, out)
         when SyntaxTree::Go::FuncLit
           emit_func_lit(node, out, indent: indent)
         when SyntaxTree::Go::TypeAssertExpr
@@ -91,8 +93,12 @@ module Gob
           emit_switch_stmt(node, out, indent: indent)
         when SyntaxTree::Go::TypeSwitchStmt
           emit_type_switch_stmt(node, out, indent: indent)
+        when SyntaxTree::Go::SelectStmt
+          emit_select_stmt(node, out, indent: indent)
         when SyntaxTree::Go::CaseClause
           emit_case_clause(node, out, indent: indent)
+        when SyntaxTree::Go::CommClause
+          emit_comm_clause(node, out, indent: indent)
         when SyntaxTree::Go::BranchStmt
           emit_branch_stmt(node, out, indent: indent)
         when SyntaxTree::Go::IncDecStmt
@@ -474,6 +480,38 @@ module Gob
         emit(node.assign, out)
         out << " "
         emit(node.body, out, indent: indent)
+      end
+
+      def emit_select_stmt(node, out, indent: 0)
+        out << "select "
+        emit(node.body, out, indent: indent)
+      end
+
+      def emit_comm_clause(node, out, indent: 0)
+        if node.comm
+          out << tabs(indent) << "case "
+          emit(node.comm, out)
+          out << ":\n"
+        else
+          out << tabs(indent) << "default:\n"
+        end
+        node.body.each do |stmt|
+          out << tabs(indent + 1)
+          emit(stmt, out, indent: indent + 1)
+          out << "\n" unless out.end_with?("\n")
+        end
+      end
+
+      def emit_chan_type(node, out)
+        case node.dir
+        when 1
+          out << "chan<- "
+        when 2
+          out << "<-chan "
+        else
+          out << "chan "
+        end
+        emit(node.value, out)
       end
 
       def emit_case_clause(node, out, indent: 0)

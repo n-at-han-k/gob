@@ -1,0 +1,8 @@
+require "fmt"
+
+module Main
+
+  def runSimd # ()
+    fmt.Println("simd is experimental; see comments for usage sketch")
+  end
+end

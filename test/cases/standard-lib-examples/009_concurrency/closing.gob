@@ -1,0 +1,18 @@
+require "fmt"
+
+module Main
+  def runClosing
+    jobs = make(Chan[int], 2)
+
+    jobs << 7
+    jobs << 8
+    close(jobs)
+
+    jobs.each do |job|
+      fmt.Println("job:", job)
+    end
+
+    n, ok = ~jobs
+    fmt.Println("after close:", n, ok)
+  end
+end

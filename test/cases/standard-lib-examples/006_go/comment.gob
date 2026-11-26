@@ -3,7 +3,7 @@ require "go/doc/comment"
 
 module Main
   def runComment
-	  src = `Package widget draws widgets.
+    src = `Package widget draws widgets.
 
 # Overview
 

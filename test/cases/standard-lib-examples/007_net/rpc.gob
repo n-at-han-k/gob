@@ -12,7 +12,7 @@ module Main
   end
 
   class Args
-    attr_accessor :A
+    attr_accessor :A, int
     attr_accessor :B, int
   end
 

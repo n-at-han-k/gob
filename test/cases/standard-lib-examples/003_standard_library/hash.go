@@ -1,0 +1,36 @@
+package main
+
+import (
+	"fmt"          
+	"hash"         
+	"hash/adler32" 
+	"hash/crc32"   
+	"hash/crc64"   
+	"hash/fnv"     
+	"hash/maphash" 
+)
+
+func runHash() {
+	data := []byte("hello")
+
+	hashes := []struct {
+		name string
+		h    hash.Hash
+	}{
+		{"adler32", adler32.New()},
+		{"crc32", crc32.NewIEEE()},
+		{"crc64", crc64.New(crc64.MakeTable(crc64.ISO))},
+		{"fnv-64a", fnv.New64a()},
+	}
+	for _, entry := range hashes {
+		entry.h.Write(data)
+		fmt.Printf("%-8s size=%d  sum=%x\n", entry.name, entry.h.Size(), entry.h.Sum(nil))
+	}
+
+	fmt.Printf("adler32 (Checksum): %x\n", adler32.Checksum(data))
+	fmt.Printf("crc32   (IEEE):     %x\n", crc32.ChecksumIEEE(data))
+
+	seed := maphash.MakeSeed()
+	fmt.Printf("maphash string(%q): %x\n", data, maphash.String(seed, string(data)))
+	fmt.Printf("maphash comparable: %x\n", maphash.Comparable(seed, struct{ a, b int }{1, 2}))
+}

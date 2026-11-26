@@ -13,6 +13,14 @@ func runMetrics() {
 	}
 	metrics.Read(samples)
 	for _, s := range samples {
+		switch s.Value.Kind() {
+		case metrics.KindUint64:
+			fmt.Printf("  %-40s %d\n", s.Name, s.Value.Uint64())
+		case metrics.KindFloat64:
+			fmt.Printf("  %-40s %f\n", s.Name, s.Value.Float64())
+		case metrics.KindBad:
+			fmt.Printf("  %-40s (unsupported)\n", s.Name)
+		}
 	}
 	all := metrics.All()
 	fmt.Printf("\n%d metrics available; first 5 names:\n", len(all))

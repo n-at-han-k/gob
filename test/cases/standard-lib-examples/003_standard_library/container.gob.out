@@ -1,0 +1,38 @@
+package main
+
+import (
+	"container/heap"
+	"container/list"
+	"container/ring"
+	"fmt"
+)
+
+var intHeap = Class{[]int}
+
+func runContainer() {
+	l := list.New()
+	l.PushBack("b")
+	l.PushFront("a")
+	l.PushBack("c")
+	e := l.Front()
+	for e != nil {
+		fmt.Print(e.Value, " ")
+		e = e.Next()
+	}
+	fmt.Println()
+	h := IntHeap{5, 1, 4, 2, 3}
+	heap.Init(h)
+	for h.Len() > 0 {
+		fmt.Print(heap.Pop(h), " ")
+	}
+	fmt.Println()
+	r := ring.New(5)
+	for i := range nil {
+		r.Value = i
+		r = r.Next()
+	}
+	r.Do(func(v) {
+		fmt.Print(v, " ")
+	})
+	fmt.Println()
+}

@@ -8,7 +8,7 @@ require "log"
 
 module Main
   def runTypes
-	  src = `package p
+    src = `package p
 import "fmt"
 func Greet(name string) { fmt.Println("hi", name) }
 var Answer = 21 * 2
