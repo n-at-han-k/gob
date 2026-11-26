@@ -16,6 +16,7 @@ func runImporter() {
 	fmt.Println("first 5 exported names:")
 	for i, name := range pkg.Scope().Names() {
 		if i == 5 {
+			break
 		}
 		fmt.Println("  ", name)
 	}

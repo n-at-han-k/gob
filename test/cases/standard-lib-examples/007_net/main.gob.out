@@ -16,6 +16,7 @@ func main() {
 		fmt.Println("available demos:")
 		names := make([]string, 0, len(demos))
 		sort.Strings(names)
+		return
 	}
 	demo, ok := demos[os.Args[1]]
 	if !ok {

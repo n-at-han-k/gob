@@ -6,6 +6,8 @@ import (
 	"log"
 )
 
+var v2article = Struct{Title: string, Tags: []string}
+
 func runJSONv2() {
 	a := v2article{Title: "Learning Go", Tags: []string{"go", "v2"}}
 	data, err := json.Marshal(a)
@@ -13,6 +15,7 @@ func runJSONv2() {
 		log.Fatal(err)
 	}
 	fmt.Println("marshalled:", string(data))
+	var back v2article
 	if err := json.Unmarshal(data, &back); err != nil {
 		log.Fatal(err)
 	}

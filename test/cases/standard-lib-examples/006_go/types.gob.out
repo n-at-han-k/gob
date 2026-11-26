@@ -30,6 +30,7 @@ var Answer = 21 * 2
 	fmt.Println("package:", pkg.Name())
 	for id, obj := range info.Defs {
 		if obj == nil {
+			continue
 		}
 		fmt.Printf("  %s :: %s\n", id.Name, obj.Type())
 	}

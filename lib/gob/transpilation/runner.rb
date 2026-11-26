@@ -289,12 +289,27 @@ module Gob
               x: SyntaxTree::Go::Ident.new(name: name.delete_prefix("@@"))
             )
 
+          # STATUS_ACTIVE
+          # statusActive
+          # ---
+          in SyntaxTree::Const[value: name] if name == name.upcase
+            Constant(name)
+
           in { value: name }
             SyntaxTree::Go::Ident.new(name: name)
 
           else
             nil
           end
+        end
+
+        # STATUS_ACTIVE
+        # statusActive
+        # ---
+        def Constant(name)
+          head, *tail = name.downcase.split("_")
+
+          Ident(head + tail.map(&:capitalize).join)
         end
 
         def Ident(name)             = SyntaxTree::Go::Ident.new(name: name.to_s)
@@ -458,14 +473,68 @@ module Gob
           )
         end
 
+        # var :name, string, "Nathan"
+        # var name string = "Nathan"
+        # ---
+        # const :greeting, "hi"
+        # const greeting = "hi"
+        # ---
+        def Declaration(tok, variable, type, value)
+          SyntaxTree::Go::DeclStmt.new(
+            decl: SyntaxTree::Go::GenDecl.new(
+              tok: tok,
+              specs: [
+                SyntaxTree::Go::ValueSpec.new(
+                  names:  [Ident(variable)],
+                  type:   type && Statements(type),
+                  values: value ? [Statements(value)] : []
+                )
+              ]
+            )
+          )
+        end
+
         def Command(name, args)
           case [name, args]
           in ["require", [SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: path]]]]]
             ImportSpec(path)
-          in ["var", _]
-            nil
-          in ["const", _]
-            nil
+
+          # var demos = Hash[string, Proc].new(...)
+          # var demos = map[string]func(){...}
+          # ---
+          in ["var" | "const" => tok, [SyntaxTree::Assign[target: target, value: value]]]
+            SyntaxTree::Go::GenDecl.new(
+              tok: tok.to_sym,
+              specs: [ SyntaxTree::Go::ValueSpec.new( names: [LeftHand(target)], values: [RightHand(value)] ) ]
+            )
+
+          # var mixed Array[byte, 16]
+          # var mixed [16]byte
+          # ---
+          in ["var", [SyntaxTree::Command[
+            message: SyntaxTree::Ident[value: variable],
+            arguments: SyntaxTree::Args[ parts: [ type ] ]
+          ]]]
+            Declaration(:var, variable, type, nil)
+
+          # var :a, int
+          # var a int
+          # ---
+          in ["var", [SyntaxTree::SymbolLiteral[value: SyntaxTree::Ident[value: variable]], type]]
+            Declaration(:var, variable, type, nil)
+
+          # var :name, string, "Nathan"
+          # var name string = "Nathan"
+          # ---
+          in ["var", [SyntaxTree::SymbolLiteral[value: SyntaxTree::Ident[value: variable]], type, value]]
+            Declaration(:var, variable, type, value)
+
+          # const :greeting, "hi"
+          # const greeting = "hi"
+          # ---
+          in ["const", [SyntaxTree::SymbolLiteral[value: SyntaxTree::Ident[value: variable]], value]]
+            Declaration(:const, variable, nil, value)
+
           else
             nil
           end
@@ -758,6 +827,36 @@ module Gob
           ]
             nil
 
+          # break
+          # break
+          # ---
+          in SyntaxTree::Break
+            SyntaxTree::Go::BranchStmt.new(tok: :break)
+
+          # next
+          # continue
+          # ---
+          in SyntaxTree::Next
+            SyntaxTree::Go::BranchStmt.new(tok: :continue)
+
+          # return "discarded", "kept"
+          # return "discarded", "kept"
+          # ---
+          in SyntaxTree::ReturnNode[arguments: SyntaxTree::Args[ parts: parts ]]
+            SyntaxTree::Go::ReturnStmt.new(results: parts.map { |part| Statements(part) })
+
+          # return
+          # return
+          # ---
+          in SyntaxTree::ReturnNode
+            SyntaxTree::Go::ReturnStmt.new(results: [])
+
+          # :int32
+          # int32
+          # ---
+          in SyntaxTree::SymbolLiteral[value: SyntaxTree::Ident[value: name]]
+            Ident(name)
+
           in SyntaxTree::VoidStmt
             nil
           else
@@ -831,6 +930,21 @@ module Gob
             in SyntaxTree::Comment[value: value]
               SyntaxTree::Go::Comment.new(text: value.sub(/\A#/, "//"))
 
+            # PI = 3.14159
+            # const pi = 3.14159
+            # ---
+            in SyntaxTree::Assign[
+              target: SyntaxTree::VarField[value: SyntaxTree::Const[value: name]],
+              value: value
+            ] if ctx.equal?(root_context)
+              SyntaxTree::Go::GenDecl.new(
+                tok: :const,
+                specs: [ SyntaxTree::Go::ValueSpec.new( names: [Constant(name)], values: [RightHand(value)] ) ]
+              )
+
+            # packageLevel = "I live at package scope"
+            # var packageLevel = "I live at package scope"
+            # ---
             in SyntaxTree::Assign[target: target, value: value] if ctx.equal?(root_context)
               SyntaxTree::Go::GenDecl.new(
                 tok: :var,

@@ -6,6 +6,8 @@ import (
 	"log"
 )
 
+var book = Struct{XMLName: xml.Name, Title: string, Author: string, Tags: []string}
+
 func runXML() {
 	b := book{Title: "Learning Go", Author: "Nathan", Tags: []string{"go", "stdlib"}}
 	data, err := xml.MarshalIndent(b, "", "  ")
@@ -13,6 +15,7 @@ func runXML() {
 		log.Fatal(err)
 	}
 	fmt.Println(xml.Header + string(data))
+	var back book
 	if err := xml.Unmarshal(data, &back); err != nil {
 		log.Fatal(err)
 	}

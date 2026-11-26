@@ -13,9 +13,11 @@ func runJSONText() {
 	for {
 		tok, err := dec.ReadToken()
 		if err == io.EOF {
+			break
 		}
 		if err != nil {
 			fmt.Println("err:", err)
+			return
 		}
 		fmt.Printf("kind=%c value=%s\n", tok.Kind(), tok.String())
 	}

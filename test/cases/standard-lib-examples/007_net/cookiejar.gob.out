@@ -22,4 +22,5 @@ func mustURL(s string) *url.URL {
 	if err != nil {
 		panic(err)
 	}
+	return u
 }

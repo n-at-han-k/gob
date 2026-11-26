@@ -20,6 +20,6 @@ var Answer = 42
 		log.Fatal(err)
 	}
 	for _, decl := range file.Decls {
-		#<SyntaxTree::Assign:0x0000719fe808a508>
+		#<SyntaxTree::Assign:0x000070df19e11d10>
 	}
 }

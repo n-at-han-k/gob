@@ -4,10 +4,8 @@ import "fmt"
 
 const pi = 3.14159
 
-const (
-	statusActive   = "active"
-	statusInactive = "inactive"
-)
+const statusActive = "active"
+const statusInactive = "inactive"
 
 var packageLevel = "I live at package scope"
 

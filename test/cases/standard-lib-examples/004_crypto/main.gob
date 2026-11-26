@@ -3,7 +3,7 @@ require "os"
 require "sort"
 
 module Main
-  var demos = Map[string, Proc].new(
+  var demos = Hash[string, Proc].new(
     crypto:   runCrypto,
     aes:      runAES,
     cipher:   runCipher,

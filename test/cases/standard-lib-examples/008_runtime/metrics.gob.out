@@ -9,12 +9,13 @@ func runMetrics() () {
 	samples := []metrics.Sample{nil, nil, nil}
 	metrics.Read(samples)
 	for _, s := range samples {
-		#<SyntaxTree::CallNode:0x0000719fe80d32f8>
+		#<SyntaxTree::CallNode:0x000070df283c5410>
 	}
 	all := metrics.All()
 	fmt.Printf("\n%d metrics available; first 5 names:\n", len(all))
 	for i, d := range all {
 		if i == 5 {
+			break
 		}
 		fmt.Println("  ", d.Name)
 	}

@@ -9,6 +9,7 @@ import (
 )
 
 func runDSA() {
+	var params dsa.Parameters
 	if err := dsa.GenerateParameters(&params, rand.Reader, dsa.L1024N160); err != nil {
 		log.Fatal(err)
 	}

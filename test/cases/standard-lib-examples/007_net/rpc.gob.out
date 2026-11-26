@@ -18,6 +18,7 @@ func runRPC() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	var result int
 	if err := client.Call("Arith.Multiply", Args{6, 7}, &result); err != nil {
 		log.Fatal(err)
 	}
