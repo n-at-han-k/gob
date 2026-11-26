@@ -4,7 +4,7 @@ require "slices"
 module Main
 
   def runSlices # ()
-    s = [3, 1, 4, 1, 5, 9, 2, 6]
+    s = Array[int].new(3, 1, 4, 1, 5, 9, 2, 6)
     slices.Sort(s)
     fmt.Println("sorted:", s)
     fmt.Println("Contains 5:", slices.Contains(s, 5))
@@ -14,7 +14,9 @@ module Main
     cp = slices.Clone(s)
     slices.Reverse(cp)
     fmt.Println("reversed clone:", cp)
-    odd = slices.DeleteFunc(slices.Clone(s), lambda { |v| return v % 2 == 0 })
+    odd = slices.DeleteFunc(slices.Clone(s), lambda { |v| # (int) -> bool
+      return v % 2 == 0
+    })
     fmt.Println("odd only:", odd)
   end
 end

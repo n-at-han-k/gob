@@ -9,9 +9,8 @@ module Main
     raw = `<script>alert("xss")</script>`
     fmt.Println(html.EscapeString(raw))
 
-    tmpl =
-        template.Must(template.New("t").Parse("<p>Hello {{.Name}}! Comment: {{.Body}}</p>" + "\n"))
+    tmpl = template.Must(template.New("t").Parse(`<p>Hello {{.Name}}! Comment: {{.Body}}</p>` + "\n"))
 
-    tmpl.Execute(os.Stdout, { "Name" => "Nathan", "Body" => raw })
+    tmpl.Execute(os.Stdout, Hash[string, string].new("Name" => "Nathan", "Body" => raw))
   end
 end

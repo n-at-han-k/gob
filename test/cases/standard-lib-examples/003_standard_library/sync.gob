@@ -5,38 +5,38 @@ require "sync/atomic"
 module Main
 
   def runSync # ()
-    define_var :wg, sync.WaitGroup
-    define_var :mu, sync.Mutex
+    var :wg, sync.WaitGroup
+    var :mu, sync.Mutex
     counter = 0
 
-    (0...100).each do |i|
+    100.times do
       wg.Add(1)
 
-      go do
+      go lambda {
         defer wg.Done()
         mu.Lock()
-        counter += 1
+        counter = counter + 1
         mu.Unlock()
-      end.()
+      }.()
     end
 
     wg.Wait()
     fmt.Println("mutex counter:", counter)
-    define_var :atomicCounter, atomic.Int64
-    define_var :wg2, sync.WaitGroup
-    (0...100).each do |i|
+    var :atomicCounter, atomic.Int64
+    var :wg2, sync.WaitGroup
+    100.times do
       wg2.Add(1)
 
-      go do
+      go lambda {
         defer wg2.Done()
         atomicCounter.Add(1)
-      end.()
+      }.()
     end
 
     wg2.Wait()
     fmt.Println("atomic counter:", atomicCounter.Load())
-    define_var :once, sync.Once
-    (0...3).each do |i|
+    var :once, sync.Once
+    3.times do
       once.Do(lambda { fmt.Println("initialised") })
     end
   end

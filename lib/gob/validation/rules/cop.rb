@@ -27,11 +27,25 @@ module Gob
               node.each { |child| walk(child) }
 
             in SyntaxTree::Node
+              @ancestors ||= []
+              @ancestors << node
               rule(node)
               walk(node.child_nodes)
+              @ancestors.pop
 
             else
               nil
+            end
+          end
+
+          def body_statements(bodystmt)
+            case bodystmt
+            in SyntaxTree::BodyStmt[statements: SyntaxTree::Statements[body: body]]
+              body
+            in SyntaxTree::Statements[body: body]
+              body
+            else
+              []
             end
           end
 

@@ -2,31 +2,38 @@ require "fmt"
 require "sort"
 
 module Main
-  class Person
-    attr_accessor :Name
-    attr_accessor :Age
-  end
-
+  var person = Struct.new(Name: string, Age: int)
 
   def runSort # ()
-    nums = [5, 2, 4, 1, 3]
+    nums = Array[int].new(5, 2, 4, 1, 3)
     sort.Ints(nums)
     fmt.Println("ints:", nums)
-    people = [["C", 30], ["A", 25], ["B", 30]]
+    people = Array[person].new(
+      person.new("C", 30),
+      person.new("A", 25),
+      person.new("B", 30)
+    )
 
     sort.Slice(
-        people,
-        lambda do |i, j|
-          if people[i].Age != people[j].Age
-            return people[i].Age < people[j].Age
-          end
+      people,
+      lambda do |i, j| # (int, int) -> bool
+        left = people[i]
+        right = people[j]
 
-          return people[i].Name < people[j].Name
+        if left.Age != right.Age
+          return left.Age < right.Age
         end
-      )
+
+        return left.Name < right.Name
+      end
+    )
 
     fmt.Println("people:", people)
-    sort.SliceStable(people, lambda { |i, j| return people[i].Age < people[j].Age })
+    sort.SliceStable(people, lambda { |i, j| # (int, int) -> bool
+      left = people[i]
+      right = people[j]
+      return left.Age < right.Age
+    })
     fmt.Println("stable:", people)
   end
 end

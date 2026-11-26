@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"     
-	"structs" 
-	"unsafe"  
+	"fmt"
+	"structs"
+	"unsafe"
 )
 
 type stat struct {

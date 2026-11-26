@@ -3,17 +3,14 @@ require "fmt"
 require "os"
 
 module Main
-  class NotFoundError
-    attr_accessor :key, string
-
+  var notFoundError = Struct.new(key: string) do
     def Error # () -> string
       return fmt.Sprintf("key %q not found", self.key)
     end
   end
 
-
   def lookup(k) # (string) -> error
-    return @NotFoundError.new(key: k)
+    return @notFoundError.new(key: k)
   end
 
   def runErrors # ()
@@ -23,7 +20,7 @@ module Main
     fmt.Println(wrapped)
     fmt.Println("Is sentinel:", errors.Is(wrapped, sentinel))
     err = lookup("missing")
-    var :nf, ptr(NotFoundError)
+    var :nf, @@notFoundError
 
     if errors.As(err, @nf)
       fmt.Println("typed error, key:", nf.key)

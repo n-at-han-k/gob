@@ -21,13 +21,11 @@ func zipDemo() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	zw := zip.NewWriter(f)
 	w, _ := zw.Create("hello.txt")
 	io.Copy(w, strings.NewReader("hello from inside a zip"))
 	zw.Close()
 	f.Close()
-
 	zr, err := zip.OpenReader("example.zip")
 	if err != nil {
 		log.Fatal(err)
@@ -45,9 +43,9 @@ func zipDemo() {
 func tarDemo() {
 	var buf bytes.Buffer
 	tw := tar.NewWriter(&buf)
-	files := map[string]string{
-		"greeting.txt": "hello from inside a tar",
-		"nested/x.txt": "another entry",
+	files := map[string][]byte{
+		"greeting.txt": []byte("hello from inside a tar"),
+		"nested/x.txt": []byte("another entry"),
 	}
 	for name, body := range files {
 		hdr := &tar.Header{
@@ -58,12 +56,11 @@ func tarDemo() {
 		if err := tw.WriteHeader(hdr); err != nil {
 			log.Fatal(err)
 		}
-		if _, err := tw.Write([]byte(body)); err != nil {
+		if _, err := tw.Write(body); err != nil {
 			log.Fatal(err)
 		}
 	}
 	tw.Close()
-
 	tr := tar.NewReader(&buf)
 	fmt.Println("--- tar ---")
 	for {

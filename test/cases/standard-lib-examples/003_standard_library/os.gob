@@ -13,7 +13,7 @@ module Main
     fmt.Println("cwd:", wd)
     f, err = os.CreateTemp("", "example-*.txt")
 
-    if err != nil
+    if err
       log.Fatal(err)
     end
 

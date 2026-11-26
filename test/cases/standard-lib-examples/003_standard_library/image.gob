@@ -13,17 +13,21 @@ require "os"
 module Main
 
   def runImage # ()
-    size = 100
+    const :size, 100
     img = makeGradient(size)
-    tint = image.NewUniform(RGBA.new(200, 0, 0, 128))
+    tint = image.NewUniform(color.RGBA.new(200, 0, 0, 128))
     quadrant = image.Rect(size / 2, size / 2, size, size)
-    draw.Draw(img, quadrant, tint, Point.new(), draw.Over)
-    writeFile("gradient.png", lambda { |w| return png.Encode(w, img) })
-    writeFile("gradient.jpg", lambda { |w| return jpeg.Encode(w, img, Options.new(Quality: 90)) })
+    draw.Draw(img, quadrant, tint, image.Point.new(), draw.Over)
+    writeFile("gradient.png", lambda { |w| # (*os.File) -> error
+      return png.Encode(w, img)
+    })
+    writeFile("gradient.jpg", lambda { |w| # (*os.File) -> error
+      return jpeg.Encode(w, img, @jpeg.Options.new(Quality: 90))
+    })
     writeGIF("gradient.gif", img)
     decoded, format, err = image.Decode(bytes.NewReader(pngBytes(img)))
 
-    if err != nil
+    if err
       log.Fatal(err)
     end
 
@@ -35,35 +39,35 @@ module Main
   def makeGradient(size) # (int) -> *image.RGBA
     img = image.NewRGBA(image.Rect(0, 0, size, size))
 
-    (0...size).each do |y|
-      (0...size).each do |x|
+    size.times do |y|
+      size.times do |x|
         img.Set(
-            x,
-            y,
-            RGBA.new(
-              R: uint8(x * 255 / size),
-              G: uint8(y * 255 / size),
-              B: 128,
-              A: 255
-            )
+          x,
+          y,
+          color.RGBA.new(
+            R: uint8(x * 255 / size),
+            G: uint8(y * 255 / size),
+            B: 128,
+            A: 255
           )
+        )
       end
     end
 
     return img
   end
 
-  def writeFile(name, enc) # (string, (*os.File) -> error)
+  def writeFile(name, enc) # string, func(*os.File) error -> ()
     f, err = os.Create(name)
 
-    if err != nil
+    if err
       log.Fatal(err)
     end
 
     defer f.Close()
     err = enc(f)
 
-    if err != nil
+    if err
       log.Fatal(err)
     end
 
@@ -72,13 +76,15 @@ module Main
 
   def writeGIF(name, src) # (string, image.Image)
     paletted = image.NewPaletted(src.Bounds(), palette.Plan9)
-    draw.FloydSteinberg.Draw(paletted, src.Bounds(), src, Point.new())
-    writeFile(name, lambda { |w| return gif.Encode(w, paletted, nil) })
+    draw.FloydSteinberg.Draw(paletted, src.Bounds(), src, image.Point.new())
+    writeFile(name, lambda { |w| # (*os.File) -> error
+      return gif.Encode(w, paletted, nil)
+    })
   end
 
   def pngBytes(img) # (image.Image) -> []byte
-    define_var :buf, bytes.Buffer
-    png.Encode(buf, img)
+    var :buf, bytes.Buffer
+    png.Encode(@buf, img)
 
     return buf.Bytes()
   end

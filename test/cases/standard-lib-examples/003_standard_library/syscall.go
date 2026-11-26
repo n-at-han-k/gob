@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"     
-	"syscall" 
+	"fmt"
+	"syscall"
 )
 
 func runSyscall() {

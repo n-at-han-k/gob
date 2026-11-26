@@ -1,11 +1,11 @@
 package main
 
 import (
-	"expvar" 
-	"fmt"    
+	"expvar"
+	"fmt"
 )
 
-var hits    = expvar.NewInt("hits")
+var hits = expvar.NewInt("hits")
 var lastKey = expvar.NewString("last_key")
 
 func runExpvar() {

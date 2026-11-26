@@ -1,6 +1,12 @@
 require "fmt"
 
 module Main
+  def recoverPanic
+    if err = recover()
+      fmt.Println("recovered:", err)
+    end
+  end
+
   def runBuiltin
     s = make(Array[int], 0, 4)
 
@@ -20,11 +26,7 @@ module Main
 
     fmt.Println("min/max:", min(3, 1, 2), max(3, 1, 2))
 
-    defer lambda {
-      if err = recover()
-        fmt.Println("recovered:", r)
-      end
-    }.()
+    defer recoverPanic()
 
     panic("boom")
   end

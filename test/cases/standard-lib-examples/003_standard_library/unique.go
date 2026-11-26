@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"    
-	"unique" 
+	"fmt"
+	"unique"
 )
 
 func runUnique() {
@@ -10,8 +10,8 @@ func runUnique() {
 	b := unique.Make("hello")
 	c := unique.Make("world")
 
-	fmt.Println("a == b:", a == b) 
-	fmt.Println("a == c:", a == c) 
+	fmt.Println("a == b:", a == b)
+	fmt.Println("a == c:", a == c)
 
 	fmt.Println("value:", a.Value())
 }

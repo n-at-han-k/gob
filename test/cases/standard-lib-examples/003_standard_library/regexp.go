@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"    
-	"regexp" 
+	"fmt"
+	"regexp"
 )
 
 func runRegexp() {

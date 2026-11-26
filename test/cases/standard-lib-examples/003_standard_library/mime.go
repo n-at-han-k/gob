@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"  
-	"log"  
-	"mime" 
+	"fmt"
+	"log"
+	"mime"
 )
 
 func runMime() {

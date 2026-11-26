@@ -2,16 +2,13 @@ require "fmt"
 require "unsafe"
 
 module Main
-  class Header
-    attr_accessor :Flag, byte
-    attr_accessor :Len, uint32
-  end
+  var header = Struct.new(Flag: byte, Len: uint32)
 
 
   def runUnsafe # ()
-    fmt.Println("Sizeof header:  ", unsafe.Sizeof(Header.new()))
-    fmt.Println("Alignof header: ", unsafe.Alignof(Header.new()))
-    fmt.Println("Offsetof Len:   ", unsafe.Offsetof(Header.new().Len))
+    fmt.Println("Sizeof header:  ", unsafe.Sizeof(header.new()))
+    fmt.Println("Alignof header: ", unsafe.Alignof(header.new()))
+    fmt.Println("Offsetof Len:   ", unsafe.Offsetof(header.new().Len))
     b = Array[byte].new("hello")
     s = unsafe.String(@b[0], len(b))
     fmt.Println("string view:", s)

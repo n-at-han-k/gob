@@ -1,10 +1,10 @@
 package main
 
 import (
-	"context" 
-	"errors"  
-	"fmt"     
-	"time"    
+	"context"
+	"errors"
+	"fmt"
+	"time"
 )
 
 func work(ctx context.Context) error {
@@ -17,16 +17,12 @@ func work(ctx context.Context) error {
 }
 
 func runContext() {
-
 	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
-
 	err := work(ctx)
 	if errors.Is(err, context.DeadlineExceeded) {
 		fmt.Println("timed out as expected")
 	}
-
-	type key string
-	ctx2 := context.WithValue(context.Background(), key("user"), "nathan")
-	fmt.Println("user:", ctx2.Value(key("user")))
+	ctx2 := context.WithValue(context.Background(), "user", "nathan")
+	fmt.Println("user:", ctx2.Value("user"))
 }

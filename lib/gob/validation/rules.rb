@@ -14,6 +14,21 @@ module Gob
       require_relative "rules/multiline"
       require_relative "rules/quote_marks"
       require_relative "rules/signature_comment"
+      require_relative "rules/trailing_whitespace"
+      require_relative "rules/variable_declaration"
+      require_relative "rules/pointer_type"
+      require_relative "rules/operator_assignment"
+      require_relative "rules/zero_based_range_loop"
+      require_relative "rules/word_array"
+      require_relative "rules/go_block"
+      require_relative "rules/redundant_lambda_parentheses"
+      require_relative "rules/this_receiver"
+      require_relative "rules/array_length"
+      require_relative "rules/collection_literal"
+      require_relative "rules/lambda_signature"
+      require_relative "rules/invoked_lambda"
+      require_relative "rules/attribute_type"
+      require_relative "rules/select_block"
 
       COPS = [
         BlockDelimiters,
@@ -22,7 +37,22 @@ module Gob
         Indentation,
         Multiline,
         QuoteMarks,
-        SignatureComment
+        SignatureComment,
+        TrailingWhitespace,
+        VariableDeclaration,
+        PointerType,
+        OperatorAssignment,
+        ZeroBasedRangeLoop,
+        WordArray,
+        GoBlock,
+        RedundantLambdaParentheses,
+        ThisReceiver,
+        ArrayLength,
+        CollectionLiteral,
+        LambdaSignature,
+        InvokedLambda,
+        AttributeType,
+        SelectBlock
       ].freeze
 
       CONFIG_PATH = File.expand_path("rules/config.yml", __dir__)

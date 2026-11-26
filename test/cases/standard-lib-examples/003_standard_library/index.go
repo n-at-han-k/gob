@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"               
-	"index/suffixarray" 
+	"fmt"
+	"index/suffixarray"
 )
 
 func runIndex() {

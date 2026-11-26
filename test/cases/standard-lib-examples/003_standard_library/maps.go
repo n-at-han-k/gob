@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"    
-	"maps"   
-	"slices" 
+	"fmt"
+	"maps"
+	"slices"
 )
 
 func runMaps() {

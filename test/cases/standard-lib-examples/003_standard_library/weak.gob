@@ -3,12 +3,10 @@ require "runtime"
 require "weak"
 
 module Main
-  class Big
-    attr_accessor :payload, Array[byte, 1 << 20]
-  end
+  var big = Struct.new(payload: Array[byte, 1_048_576])
 
   def runWeak # ()
-    strong = @Big.new()
+    strong = @big.new()
     w = weak.Make(strong)
     fmt.Println("before GC:", w.Value() != nil)
     strong = nil

@@ -7,9 +7,9 @@ import (
 	"os"
 )
 
-func runHTML() () {
+func runHTML() {
 	raw := `<script>alert("xss")</script>`
 	fmt.Println(html.EscapeString(raw))
-	tmpl := template.Must(template.New("t").Parse("<p>Hello {{.Name}}! Comment: {{.Body}}</p>" + "\n"))
-	tmpl.Execute(os.Stdout, {"Name": "Nathan", "Body": raw})
+	tmpl := template.Must(template.New("t").Parse(`<p>Hello {{.Name}}! Comment: {{.Body}}</p>` + "\n"))
+	tmpl.Execute(os.Stdout, map[string]string{"Name": "Nathan", "Body": raw})
 }

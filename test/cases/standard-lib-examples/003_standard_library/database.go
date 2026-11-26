@@ -1,8 +1,8 @@
 package main
 
 import (
-	"database/sql" 
-	"fmt"          
+	"database/sql"
+	"fmt"
 )
 
 func runDatabase() {

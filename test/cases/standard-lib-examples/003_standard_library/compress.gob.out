@@ -22,10 +22,10 @@ func runCompress() {
 	bzip2Demo()
 }
 
-func gzipDemo(in_) {
+func gzipDemo(input []byte) {
 	var buf bytes.Buffer
 	gw := gzip.NewWriter(&buf)
-	if _, err := gw.Write(in_); err != nil {
+	if _, err := gw.Write(input); err != nil {
 		log.Fatal(err)
 	}
 	gw.Close()
@@ -36,13 +36,13 @@ func gzipDemo(in_) {
 	}
 	out, _ := io.ReadAll(gr)
 	gr.Close()
-	fmt.Printf("gzip:  %d -> %d bytes, roundtrip=%q\n", len(in_), compressedLen, out)
+	fmt.Printf("gzip:  %d -> %d bytes, roundtrip=%q\n", len(input), compressedLen, out)
 }
 
-func flateDemo(in_) {
+func flateDemo(input []byte) {
 	var buf bytes.Buffer
-	fw, _ := flate.NewWriter(buf, flate.DefaultCompression)
-	fw.Write(in_)
+	fw, _ := flate.NewWriter(&buf, flate.DefaultCompression)
+	fw.Write(input)
 	fw.Close()
 	fr := flate.NewReader(&buf)
 	out, _ := io.ReadAll(fr)
@@ -50,9 +50,10 @@ func flateDemo(in_) {
 	fmt.Printf("flate: roundtrip=%q\n", out)
 }
 
-func zlibDemo(in_) {
+func zlibDemo(input []byte) {
+	var buf bytes.Buffer
 	zw := zlib.NewWriter(&buf)
-	zw.Write(in_)
+	zw.Write(input)
 	zw.Close()
 	zr, err := zlib.NewReader(&buf)
 	if err != nil {
@@ -63,10 +64,10 @@ func zlibDemo(in_) {
 	fmt.Printf("zlib:  roundtrip=%q\n", out)
 }
 
-func lzwDemo(in_) {
+func lzwDemo(input []byte) {
 	var buf bytes.Buffer
 	lw := lzw.NewWriter(&buf, lzw.LSB, 8)
-	lw.Write(in_)
+	lw.Write(input)
 	lw.Close()
 	lr := lzw.NewReader(&buf, lzw.LSB, 8)
 	out, _ := io.ReadAll(lr)

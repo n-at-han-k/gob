@@ -6,9 +6,11 @@ require "time"
 module Main
 
   def work(ctx) # (context.Context) -> error
-    select do |c|
-      c << time.After(200 * time.Millisecond) { return nil }
-      c << ctx.Done() { return ctx.Err() }
+    case
+    when ~time.After(200 * time.Millisecond)
+      return nil
+    when ~ctx.Done()
+      return ctx.Err()
     end
   end
 
@@ -23,7 +25,7 @@ module Main
       fmt.Println("timed out as expected")
     end
 
-    ctx2 = context.WithValue(context.Background(), key("user"), "nathan")
-    fmt.Println("user:", ctx2.Value(key("user")))
+    ctx2 = context.WithValue(context.Background(), "user", "nathan")
+    fmt.Println("user:", ctx2.Value("user"))
   end
 end

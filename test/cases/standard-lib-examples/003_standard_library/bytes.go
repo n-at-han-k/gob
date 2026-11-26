@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes" 
-	"fmt"   
+	"bytes"
+	"fmt"
 )
 
 func runBytes() {

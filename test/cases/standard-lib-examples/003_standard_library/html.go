@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"           
-	"html"          
-	"html/template" 
-	"os"            
+	"fmt"
+	"html"
+	"html/template"
+	"os"
 )
 
 func runHTML() {

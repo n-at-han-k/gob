@@ -7,14 +7,16 @@ import (
 	"text/template"
 )
 
-func runText() () {
-	tmpl := "Hello {{.Name}}!\n{{range .Tasks}}  - {{.}}\n{{end}}"
+func runText() {
+	const tmpl = `Hello {{.Name}}!
+{{range .Tasks}}  - {{.}}
+{{end}}`
 	t := template.Must(template.New("greet").Parse(tmpl))
-	t.Execute(os.Stdout, {
-		"Name": "Nathan",
-		"Tasks": {"learn Go", "write examples", "ship it"},
+	t.Execute(os.Stdout, map[string]any{
+		"Name":  "Nathan",
+		"Tasks": []string{"learn Go", "write examples", "ship it"},
 	})
-	tw := tabwriter.NewWriter(os.Stdout, 0, 0, 2, " ", 0)
+	tw := tabwriter.NewWriter(os.Stdout, 0, 0, 2, " "[0], 0)
 	_, err := tw.Write([]byte("Name\tAge\tRole\napple\t3\tfruit\nblue\t42\tcolour\n"))
 	if err != nil {
 		log.Fatal(err)

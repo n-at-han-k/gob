@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"  
-	"os"   
-	"sort" 
+	"fmt"
+	"os"
+	"sort"
 )
 
 var demos = map[string]func(){

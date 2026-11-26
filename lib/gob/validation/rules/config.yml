@@ -23,3 +23,48 @@ Gob/QuoteMarks:
 
 Gob/SignatureComment:
   Enabled: true
+
+Gob/TrailingWhitespace:
+  Enabled: true
+
+Gob/VariableDeclaration:
+  Enabled: true
+
+Gob/PointerType:
+  Enabled: true
+
+Gob/OperatorAssignment:
+  Enabled: true
+
+Gob/ZeroBasedRangeLoop:
+  Enabled: true
+
+Gob/WordArray:
+  Enabled: true
+
+Gob/GoBlock:
+  Enabled: true
+
+Gob/RedundantLambdaParentheses:
+  Enabled: true
+
+Gob/ThisReceiver:
+  Enabled: true
+
+Gob/ArrayLength:
+  Enabled: true
+
+Gob/CollectionLiteral:
+  Enabled: true
+
+Gob/LambdaSignature:
+  Enabled: true
+
+Gob/InvokedLambda:
+  Enabled: true
+
+Gob/AttributeType:
+  Enabled: true
+
+Gob/SelectBlock:
+  Enabled: true

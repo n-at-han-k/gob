@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"      
-	"log/slog" 
-	"os"       
+	"log"
+	"log/slog"
+	"os"
 )
 
 func runLog() {

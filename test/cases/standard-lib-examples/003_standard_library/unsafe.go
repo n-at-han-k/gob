@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"    
-	"unsafe" 
+	"fmt"
+	"unsafe"
 )
 
 type header struct {

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"       
-	"go/ast"    
-	"go/parser" 
-	"go/token"  
-	"log"       
+	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
+	"log"
 )
 
 func runGoTools() {
@@ -18,9 +18,9 @@ func Sub(a, b int) int { return a - b }
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	ast.Inspect(file, func(n ast.Node) bool {
-		if fn, ok := n.(*ast.FuncDecl); ok {
+		fn, ok := n.(*ast.FuncDecl)
+		if ok {
 			pos := fset.Position(fn.Pos())
 			fmt.Printf("func %s at %s\n", fn.Name.Name, pos)
 		}

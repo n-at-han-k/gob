@@ -8,6 +8,12 @@ import (
 )
 
 func work(ctx context.Context) error {
+	select {
+	case <-time.After(200 * time.Millisecond):
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }
 
 func runContext() {
@@ -17,6 +23,6 @@ func runContext() {
 	if errors.Is(err, context.DeadlineExceeded) {
 		fmt.Println("timed out as expected")
 	}
-	ctx2 := context.WithValue(context.Background(), key("user"), "nathan")
-	fmt.Println("user:", ctx2.Value(key("user")))
+	ctx2 := context.WithValue(context.Background(), "user", "nathan")
+	fmt.Println("user:", ctx2.Value("user"))
 }

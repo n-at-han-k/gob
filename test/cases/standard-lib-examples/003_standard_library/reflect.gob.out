@@ -5,18 +5,21 @@ import (
 	"reflect"
 )
 
-type ReflectUser struct{}
+type reflectUser struct {
+	Name string `json:"name"`
+	Age  int
+}
 
 func runReflect() {
-	u := ReflectUser{Name: "Nathan", Age: 30}
+	u := reflectUser{Name: "Nathan", Age: 30}
 	v := reflect.ValueOf(u)
 	t := reflect.TypeOf(u)
 	fmt.Println("kind:", v.Kind(), "type:", t.Name())
-	for i := range nil {
+	for i := range t.NumField() {
 		f := t.Field(i)
 		fmt.Printf("  %s (%s) = %v  json=%q\n", f.Name, f.Type, v.Field(i).Interface(), f.Tag.Get("json"))
 	}
-	up := ReflectUser{}
+	up := &reflectUser{}
 	reflect.ValueOf(up).Elem().FieldByName("Name").SetString("Reflected")
 	fmt.Printf("mutated: %+v\n", up)
 }

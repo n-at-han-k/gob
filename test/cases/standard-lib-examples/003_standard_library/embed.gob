@@ -1,4 +1,4 @@
-require "embed"
+require "embed", :_
 require "fmt"
 
 module Main

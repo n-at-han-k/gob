@@ -20,28 +20,28 @@ module Main
     bzip2Demo()
   end
 
-  def gzipDemo(in_) # []byte
+  def gzipDemo(input) # ([]byte)
     var :buf, bytes.Buffer
     gw = gzip.NewWriter(@buf)
-    if (_, err = gw.Write(in_))
+    if (_, err = gw.Write(input))
       log.Fatal(err)
     end
     gw.Close()
     compressedLen = buf.Len()
 
     gr, err = gzip.NewReader(@buf)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     out, _ = io.ReadAll(gr)
     gr.Close()
-    fmt.Printf("gzip:  %d -> %d bytes, roundtrip=%q\n", len(in_), compressedLen, out)
+    fmt.Printf("gzip:  %d -> %d bytes, roundtrip=%q\n", len(input), compressedLen, out)
   end
 
-  def flateDemo(in_) # []byte
+  def flateDemo(input) # ([]byte)
     var :buf, bytes.Buffer
-    fw, _ = flate.NewWriter(buf, flate.DefaultCompression)
-    fw.Write(in_)
+    fw, _ = flate.NewWriter(@buf, flate.DefaultCompression)
+    fw.Write(input)
     fw.Close()
 
     fr = flate.NewReader(@buf)
@@ -50,14 +50,14 @@ module Main
     fmt.Printf("flate: roundtrip=%q\n", out)
   end
 
-  def zlibDemo(in_) # []byte
-    define_var :buf, bytes.Buffer
+  def zlibDemo(input) # ([]byte)
+    var :buf, bytes.Buffer
     zw = zlib.NewWriter(@buf)
-    zw.Write(in_)
+    zw.Write(input)
     zw.Close()
 
     zr, err = zlib.NewReader(@buf)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     out, _ = io.ReadAll(zr)
@@ -65,10 +65,10 @@ module Main
     fmt.Printf("zlib:  roundtrip=%q\n", out)
   end
 
-  def lzwDemo(in_) # []byte
+  def lzwDemo(input) # ([]byte)
     var :buf, bytes.Buffer
     lw = lzw.NewWriter(@buf, lzw.LSB, 8)
-    lw.Write(in_)
+    lw.Write(input)
     lw.Close()
     lr = lzw.NewReader(@buf, lzw.LSB, 8)
     out, _ = io.ReadAll(lr)
@@ -79,12 +79,12 @@ module Main
   def bzip2Demo
     const b64 = "QlpoOTFBWSZTWatrofEAAALZgAAQQAAQABJkwBAgADEA000EAB6j705RogeLuSKcKEhVtdD4gA=="
     compressed, err = base64.StdEncoding.DecodeString(b64)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     r = bzip2.NewReader(bytes.NewReader(compressed))
     out, err = io.ReadAll(r)
-    if err != nil
+    if err
       log.Fatal(err)
     end
     fmt.Printf("bzip2: decoded=%q\n", out)

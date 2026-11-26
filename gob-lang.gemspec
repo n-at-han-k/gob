@@ -43,6 +43,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "syntax_tree", "~> 6.3"
   spec.add_dependency "ffi", "~> 1.17"
   spec.add_dependency "thor", "~> 1.5"
+  spec.add_dependency "thor-completion", "~> 0.0.5"
   spec.add_dependency "gem_kit", "~> 0.2"
   spec.add_dependency "rubocop", "~> 1.92"
   spec.add_development_dependency "ast-crispr", "~> 7.1"

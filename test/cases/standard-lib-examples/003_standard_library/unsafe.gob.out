@@ -5,15 +5,15 @@ import (
 	"unsafe"
 )
 
-type Header struct {
+type header struct {
 	Flag byte
 	Len  uint32
 }
 
 func runUnsafe() {
-	fmt.Println("Sizeof header:  ", unsafe.Sizeof(Header{}))
-	fmt.Println("Alignof header: ", unsafe.Alignof(Header{}))
-	fmt.Println("Offsetof Len:   ", unsafe.Offsetof(Header{}.Len))
+	fmt.Println("Sizeof header:  ", unsafe.Sizeof(header{}))
+	fmt.Println("Alignof header: ", unsafe.Alignof(header{}))
+	fmt.Println("Offsetof Len:   ", unsafe.Offsetof(header{}.Len))
 	b := []byte("hello")
 	s := unsafe.String(&b[0], len(b))
 	fmt.Println("string view:", s)

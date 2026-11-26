@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bufio"   
-	"fmt"     
-	"strings" 
+	"bufio"
+	"fmt"
+	"strings"
 )
 
 func runBufio() {

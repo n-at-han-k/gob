@@ -5,22 +5,33 @@ import (
 	"sort"
 )
 
-type Person struct {}
+type person struct {
+	Name string
+	Age  int
+}
 
-func runSort() () {
-	nums := {5, 2, 4, 1, 3}
+func runSort() {
+	nums := []int{5, 2, 4, 1, 3}
 	sort.Ints(nums)
 	fmt.Println("ints:", nums)
-	people := {{"C", 30}, {"A", 25}, {"B", 30}}
-	sort.Slice(people, func(i , j ) () {
-		if nil.Age != nil.Age {
-			return nil.Age < nil.Age
+	people := []person{
+		person{"C", 30},
+		person{"A", 25},
+		person{"B", 30},
+	}
+	sort.Slice(people, func(i int, j int) bool {
+		left := people[i]
+		right := people[j]
+		if left.Age != right.Age {
+			return left.Age < right.Age
 		}
-		return nil.Name < nil.Name
+		return left.Name < right.Name
 	})
 	fmt.Println("people:", people)
-	sort.SliceStable(people, func(i , j ) () {
-		return nil.Age < nil.Age
+	sort.SliceStable(people, func(i int, j int) bool {
+		left := people[i]
+		right := people[j]
+		return left.Age < right.Age
 	})
 	fmt.Println("stable:", people)
 }

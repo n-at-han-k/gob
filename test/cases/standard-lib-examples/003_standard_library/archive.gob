@@ -15,7 +15,7 @@ module Main
 
   def zipDemo
     f, err = os.Create("example.zip")
-    if err != nil
+    if err
       log.Fatal(err)
     end
 
@@ -26,7 +26,7 @@ module Main
     f.Close()
 
     zr, err = zip.OpenReader("example.zip")
-    if err != nil
+    if err
       log.Fatal(err)
     end
     defer zr.Close()
@@ -41,10 +41,10 @@ module Main
 
   def tarDemo
     var :buf, bytes.Buffer
-    tw = tar.NewWriter(buf)
-    files = Hash[string, string].new(
-      "greeting.txt" => "hello from inside a tar",
-      "nested/x.txt" => "another entry"
+    tw = tar.NewWriter(@buf)
+    files = Hash[string, Array[byte]].new(
+      "greeting.txt" => Array[byte].new("hello from inside a tar"),
+      "nested/x.txt" => Array[byte].new("another entry")
     )
     files.each do |name, body|
       hdr = @tar.Header.new(
@@ -56,7 +56,7 @@ module Main
         log.Fatal(err)
       end
 
-      if (_, err = tw.Write(Array[byte].new(body)))
+      if (_, err = tw.Write(body))
         log.Fatal(err)
       end
     end
@@ -69,7 +69,7 @@ module Main
       if err == io.EOF
         break
       end
-      if err != nil
+      if err
         log.Fatal(err)
       end
       body, _ = io.ReadAll(tr)

@@ -1,11 +1,11 @@
 package main
 
 import (
-	_ "embed" 
-	"fmt"     
+	_ "embed"
+	"fmt"
 )
 
-var greeting string
+var greeting = ""
 
 func runEmbed() {
 	fmt.Print(greeting)

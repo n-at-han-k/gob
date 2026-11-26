@@ -7,16 +7,18 @@ require "hash/fnv"
 require "hash/maphash"
 
 module Main
+  var hashEntry = Struct.new(name: string, h: hash.Hash)
+  var pair = Struct.new(a: int, b: int)
 
   def runHash # ()
     data = Array[byte].new("hello")
 
-    hashes = [
-        ["adler32", adler32.New()],
-        ["crc32", crc32.NewIEEE()],
-        ["crc64", crc64.New(crc64.MakeTable(crc64.ISO))],
-        ["fnv-64a", fnv.New64a()]
-      ]
+    hashes = Array[hashEntry].new(
+      hashEntry.new("adler32", adler32.New()),
+      hashEntry.new("crc32", crc32.NewIEEE()),
+      hashEntry.new("crc64", crc64.New(crc64.MakeTable(crc64.ISO))),
+      hashEntry.new("fnv-64a", fnv.New64a())
+    )
 
     hashes.each do |_, entry|
       entry.h.Write(data)
@@ -29,12 +31,8 @@ module Main
     fmt.Printf("maphash string(%q): %x\n", data, maphash.String(seed, string(data)))
 
     fmt.Printf(
-        "maphash comparable: %x\n",
-        maphash.Comparable(seed, Struct.new(
-          :a,
-          :b,
-          keyword_init: true
-        ).new(1, 2))
-      )
+      "maphash comparable: %x\n",
+      maphash.Comparable(seed, pair.new(1, 2))
+    )
   end
 end

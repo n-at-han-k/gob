@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"    
-	"slices" 
+	"fmt"
+	"slices"
 )
 
 func runSlices() {

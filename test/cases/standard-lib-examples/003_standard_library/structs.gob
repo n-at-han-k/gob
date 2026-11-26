@@ -3,16 +3,16 @@ require "structs"
 require "unsafe"
 
 module Main
-  class Stat
-    attr_accessor :_
-    attr_accessor :Dev
-    attr_accessor :Ino
-    attr_accessor :Mode
-  end
+  var stat = Struct.new(
+    _: structs.HostLayout,
+    Dev: uint64,
+    Ino: uint64,
+    Mode: uint32
+  )
 
 
   def runStructs # ()
-    fmt.Println("size:", unsafe.Sizeof(Stat.new()))
-    fmt.Println("align:", unsafe.Alignof(Stat.new()))
+    fmt.Println("size:", unsafe.Sizeof(stat.new()))
+    fmt.Println("align:", unsafe.Alignof(stat.new()))
   end
 end

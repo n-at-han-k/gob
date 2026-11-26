@@ -10,6 +10,8 @@ module Main
     hits.Add(1)
     hits.Add(2)
     lastKey.Set("hello")
-    expvar.Do(lambda { |kv| fmt.Printf("%s = %s\n", kv.Key, kv.Value) })
+    expvar.Do(lambda { |kv| # (expvar.KeyValue)
+      fmt.Printf("%s = %s\n", kv.Key, kv.Value)
+    })
   end
 end

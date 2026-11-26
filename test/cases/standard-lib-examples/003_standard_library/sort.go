@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"  
-	"sort" 
+	"fmt"
+	"sort"
 )
 
 type person struct {
@@ -11,20 +11,27 @@ type person struct {
 }
 
 func runSort() {
-
 	nums := []int{5, 2, 4, 1, 3}
 	sort.Ints(nums)
 	fmt.Println("ints:", nums)
-
-	people := []person{{"C", 30}, {"A", 25}, {"B", 30}}
-	sort.Slice(people, func(i, j int) bool {
-		if people[i].Age != people[j].Age {
-			return people[i].Age < people[j].Age
+	people := []person{
+		person{"C", 30},
+		person{"A", 25},
+		person{"B", 30},
+	}
+	sort.Slice(people, func(i int, j int) bool {
+		left := people[i]
+		right := people[j]
+		if left.Age != right.Age {
+			return left.Age < right.Age
 		}
-		return people[i].Name < people[j].Name
+		return left.Name < right.Name
 	})
 	fmt.Println("people:", people)
-
-	sort.SliceStable(people, func(i, j int) bool { return people[i].Age < people[j].Age })
+	sort.SliceStable(people, func(i int, j int) bool {
+		left := people[i]
+		right := people[j]
+		return left.Age < right.Age
+	})
 	fmt.Println("stable:", people)
 }

@@ -10,13 +10,13 @@ module Main
     loud = fs.Bool("loud", false, "shout the greeting")
     count = fs.Int("count", 1, "how many times")
     fs.Parse(os.Args[2...])
-    greeting = fmt.Sprintf("hello, %s", name)
+    greeting = fmt.Sprintf("hello, %s", @@name)
 
-    if loud
-      greeting = "!"
+    if @@loud
+      greeting = greeting + "!"
     end
 
-    (0...count).each do |i|
+    @@count.times do
       fmt.Println(greeting)
     end
     fmt.Println("positional:", fs.Args())

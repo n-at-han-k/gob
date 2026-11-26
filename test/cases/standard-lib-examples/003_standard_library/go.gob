@@ -7,28 +7,30 @@ require "log"
 module Main
 
   def runGoTools # ()
-    src =
-        "package p\nfunc Add(a, b int) int { return a + b }\nfunc Sub(a, b int) int { return a - b }\n"
+    src = `package p
+func Add(a, b int) int { return a + b }
+func Sub(a, b int) int { return a - b }
+`
 
     fset = token.NewFileSet()
     file, err = parser.ParseFile(fset, "example.go", src, 0)
 
-    if err != nil
+    if err
       log.Fatal(err)
     end
 
     ast.Inspect(
-        file,
-        lambda do |n|
-          fn, ok = n
+      file,
+      lambda do |n| # (ast.Node) -> bool
+        fn, ok = n.(@@ast.FuncDecl)
 
-          if ok
-            pos = fset.Position(fn.Pos())
-            fmt.Printf("func %s at %s\n", fn.Name.Name, pos)
-          end
-
-          return true
+        if ok
+          pos = fset.Position(fn.Pos())
+          fmt.Printf("func %s at %s\n", fn.Name.Name, pos)
         end
-      )
+
+        return true
+      end
+    )
   end
 end
