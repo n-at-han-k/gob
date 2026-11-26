@@ -1,0 +1,405 @@
+require "bytes"
+require "crypto/rand"
+require "database/sql/driver"
+require "encoding/binary"
+require "fmt"
+require "io"
+require "math"
+require "sync"
+require "time"
+
+module Ksuid
+  # KSUID's epoch starts more recently so that the 32-bit number space gives a
+  # significantly higher useful lifetime of around 136 years from March 2017.
+  # This number (14e8) was picked to be easy to remember.
+  EPOCH_STAMP = 1400000000
+
+  # Timestamp is a uint32
+  TIMESTAMP_LENGTH_IN_BYTES = 4
+
+  # Payload is 16-bytes
+  PAYLOAD_LENGTH_IN_BYTES = 16
+
+  # KSUIDs are 20 bytes when binary encoded
+  BYTE_LENGTH = TIMESTAMP_LENGTH_IN_BYTES + PAYLOAD_LENGTH_IN_BYTES
+
+  # The length of a KSUID when string (base62) encoded
+  STRING_ENCODED_LENGTH = 27
+
+  # A string-encoded minimum value for a KSUID
+  MIN_STRING_ENCODED = "000000000000000000000000000"
+
+  # A string-encoded maximum value for a KSUID
+  MAX_STRING_ENCODED = "aWgEPTl1tmebfsQzFP4bxwgy80V"
+
+  # KSUIDs are 20 bytes:
+  #  00-03 byte: uint32 BE UTC timestamp with custom epoch
+  #  04-19 byte: random "payload"
+  var KSUID = Class.new(Array[byte, BYTE_LENGTH]) do
+    # Append appends the string representation of i to b, returning a slice to a
+    # potentially larger memory area.
+    def Append(b) # ([]byte) -> []byte
+      return fastAppendEncodeBase62(b, self[])
+    end
+
+    # The timestamp portion of the ID as a Time object
+    def Time # () -> time.Time
+      return correctedUTCTimestampToTime(self.Timestamp())
+    end
+
+    # The timestamp portion of the ID as a bare integer which is uncorrected
+    # for KSUID's special epoch.
+    def Timestamp # () -> uint32
+      return binary.BigEndian.Uint32(self[...TIMESTAMP_LENGTH_IN_BYTES])
+    end
+
+    # The 16-byte random payload without the timestamp
+    def Payload # () -> []byte
+      return self[TIMESTAMP_LENGTH_IN_BYTES...]
+    end
+
+    # String-encoded representation that can be passed through Parse()
+    def String # () -> string
+      return string(self.Append(make(Array[byte], 0, STRING_ENCODED_LENGTH)))
+    end
+
+    # Raw byte representation of KSUID
+    def Bytes # () -> []byte
+      # Safe because this is by-value
+      return self[]
+    end
+
+    # IsNil returns true if this is a "nil" KSUID
+    def IsNil # () -> bool
+      return self == Nil
+    end
+
+    # Get satisfies the flag.Getter interface, making it possible to use KSUIDs as
+    # part of of the command line options of a program.
+    def Get # () -> interface{}
+      return self
+    end
+
+    # Set satisfies the flag.Value interface, making it possible to use KSUIDs as
+    # part of of the command line options of a program.
+    def self.Set(s) # (string) -> error
+      return self.UnmarshalText(Array[byte].new(s))
+    end
+
+    def MarshalText # () -> ([]byte, error)
+      return Array[byte].new(self.String()), nil
+    end
+
+    def MarshalBinary # () -> ([]byte, error)
+      return self.Bytes(), nil
+    end
+
+    def self.UnmarshalText(b) # ([]byte) -> error
+      id, err = Parse(string(b))
+      if err
+        return err
+      end
+
+      @@self = id
+
+      return nil
+    end
+
+    def self.UnmarshalBinary(b) # ([]byte) -> error
+      id, err = FromBytes(b)
+      if err
+        return err
+      end
+
+      @@self = id
+
+      return nil
+    end
+
+    # Value converts the KSUID into a SQL driver value which can be used to
+    # directly use the KSUID as parameter to a SQL query.
+    def Value # () -> (driver.Value, error)
+      if self.IsNil()
+        return nil, nil
+      end
+
+      return self.String(), nil
+    end
+
+    # Scan implements the sql.Scanner interface. It supports converting from
+    # string, []byte, or nil into a KSUID value. Attempting to convert from
+    # another type will return an error.
+    def self.Scan(src) # (interface{}) -> error
+      case v = src.(type)
+      when nil
+        return self.scan(nil)
+      when Array[byte]
+        return self.scan(v)
+      when string
+        return self.scan(Array[byte].new(v))
+      else
+        return fmt.Errorf("Scan: unable to scan type %T into KSUID", v)
+      end
+    end
+
+    def self.scan(b) # ([]byte) -> error
+      case len(b)
+      when 0
+        @@self = Nil
+
+        return nil
+      when BYTE_LENGTH
+        return self.UnmarshalBinary(b)
+      when STRING_ENCODED_LENGTH
+        return self.UnmarshalText(b)
+      else
+        return errSize
+      end
+    end
+
+  end
+
+  var rander = rand.Reader
+  var randMutex = sync.Mutex.new()
+  var randBuffer = Array[byte, PAYLOAD_LENGTH_IN_BYTES].new()
+
+  var errSize = fmt.Errorf("Valid KSUIDs are %v bytes", BYTE_LENGTH)
+  var errStrSize = fmt.Errorf("Valid encoded KSUIDs are %v characters", STRING_ENCODED_LENGTH)
+  var errStrValue = fmt.Errorf("Valid encoded KSUIDs are bounded by %s and %s", MIN_STRING_ENCODED, MAX_STRING_ENCODED)
+  var errPayloadSize = fmt.Errorf("Valid KSUID payloads are %v bytes", PAYLOAD_LENGTH_IN_BYTES)
+
+  # Represents a completely empty (invalid) KSUID
+  var :Nil, KSUID
+  # Represents the highest value a KSUID can have
+  var Max = KSUID.new(255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255)
+
+  # Parse decodes a string-encoded representation of a KSUID object
+  def Parse(s) # (string) -> (KSUID, error)
+    if len(s) != STRING_ENCODED_LENGTH
+      return Nil, errStrSize
+    end
+
+    src = Array[byte, STRING_ENCODED_LENGTH].new()
+    dst = Array[byte, BYTE_LENGTH].new()
+
+    copy(src[], s[])
+
+    if (err = fastDecodeBase62(dst[], src[]))
+      return Nil, errStrValue
+    end
+
+    return FromBytes(dst[])
+  end
+
+  # Parse decodes a string-encoded representation of a KSUID object.
+  # Same behavior as Parse, but returns a Nil KSUID on error.
+  def ParseOrNil(s) # (string) -> KSUID
+    ksuid, err = Parse(s)
+    if err
+      return Nil
+    end
+
+    return ksuid
+  end
+
+  def timeToCorrectedUTCTimestamp(t) # (time.Time) -> uint32
+    return uint32(t.Unix() - EPOCH_STAMP)
+  end
+
+  def correctedUTCTimestampToTime(ts) # (uint32) -> time.Time
+    return time.Unix(int64(ts) + EPOCH_STAMP, 0)
+  end
+
+  # Generates a new KSUID. In the strange case that random bytes
+  # can't be read, it will panic.
+  def New # () -> KSUID
+    ksuid, err = NewRandom()
+    if err
+      panic(fmt.Sprintf("Couldn't generate KSUID, inconceivable! error: %v", err))
+    end
+
+    return ksuid
+  end
+
+  # Generates a new KSUID
+  def NewRandom # () -> (ksuid KSUID, err error)
+    return NewRandomWithTime(time.Now())
+  end
+
+  def NewRandomWithTime(t) # (time.Time) -> (ksuid KSUID, err error)
+    # Go's default random number generators are not safe for concurrent use by
+    # multiple goroutines, the use of the rander and randBuffer are explicitly
+    # synchronized here.
+    randMutex.Lock()
+
+    _, err = io.ReadAtLeast(rander, randBuffer[], len(randBuffer))
+    copy(ksuid[TIMESTAMP_LENGTH_IN_BYTES...], randBuffer[])
+
+    randMutex.Unlock()
+
+    if err
+      # don't leak random bytes on error
+      ksuid = Nil
+
+      return
+    end
+
+    ts = timeToCorrectedUTCTimestamp(t)
+    binary.BigEndian.PutUint32(ksuid[...TIMESTAMP_LENGTH_IN_BYTES], ts)
+
+    return
+  end
+
+  # Constructs a KSUID from constituent parts
+  def FromParts(t, payload) # (time.Time, []byte) -> (KSUID, error)
+    if len(payload) != PAYLOAD_LENGTH_IN_BYTES
+      return Nil, errPayloadSize
+    end
+
+    var :ksuid, KSUID
+
+    ts = timeToCorrectedUTCTimestamp(t)
+    binary.BigEndian.PutUint32(ksuid[...TIMESTAMP_LENGTH_IN_BYTES], ts)
+
+    copy(ksuid[TIMESTAMP_LENGTH_IN_BYTES...], payload)
+
+    return ksuid, nil
+  end
+
+  # Constructs a KSUID from constituent parts.
+  # Same behavior as FromParts, but returns a Nil KSUID on error.
+  def FromPartsOrNil(t, payload) # (time.Time, []byte) -> KSUID
+    ksuid, err = FromParts(t, payload)
+    if err
+      return Nil
+    end
+
+    return ksuid
+  end
+
+  # Constructs a KSUID from a 20-byte binary representation
+  def FromBytes(b) # ([]byte) -> (KSUID, error)
+    var :ksuid, KSUID
+
+    if len(b) != BYTE_LENGTH
+      return Nil, errSize
+    end
+
+    copy(ksuid[], b)
+
+    return ksuid, nil
+  end
+
+  # Constructs a KSUID from a 20-byte binary representation.
+  # Same behavior as FromBytes, but returns a Nil KSUID on error.
+  def FromBytesOrNil(b) # ([]byte) -> KSUID
+    ksuid, err = FromBytes(b)
+    if err
+      return Nil
+    end
+
+    return ksuid
+  end
+
+  # Sets the global source of random bytes for KSUID generation. This
+  # should probably only be set once globally. While this is technically
+  # thread-safe as in it won't cause corruption, there's no guarantee
+  # on ordering.
+  def SetRand(r) # (io.Reader)
+    if r == nil
+      rander = rand.Reader
+
+      return
+    end
+
+    rander = r
+  end
+
+  # Implements comparison for KSUID type
+  def Compare(a, b) # (KSUID, KSUID) -> int
+    return bytes.Compare(a[], b[])
+  end
+
+  # Sorts the given slice of KSUIDs
+  def Sort(ids) # ([]KSUID)
+    quickSort(ids, 0, len(ids) - 1)
+  end
+
+  # IsSorted checks whether a slice of KSUIDs is sorted
+  def IsSorted(ids) # ([]KSUID) -> bool
+    if len(ids) != 0
+      min = ids[0]
+
+      ids[1...].each do |_, id|
+        if bytes.Compare(min[], id[]) > 0
+          return false
+        end
+
+        min = id
+      end
+    end
+
+    return true
+  end
+
+  def quickSort(a, lo, hi) # ([]KSUID, int, int)
+    if lo < hi
+      pivot = a[hi]
+      i = lo - 1
+
+      j, n = lo, hi
+
+      while j != n
+        if bytes.Compare(a[j][], pivot[]) < 0
+          i = i + 1
+          a[i], a[j] = a[j], a[i]
+        end
+
+        j = j + 1
+      end
+
+      i = i + 1
+
+      if bytes.Compare(a[hi][], a[i][]) < 0
+        a[i], a[hi] = a[hi], a[i]
+      end
+
+      quickSort(a, lo, i - 1)
+      quickSort(a, i + 1, hi)
+    end
+  end
+
+  var KSUID = Class.new(Array[byte, BYTE_LENGTH]) do
+    # Next returns the next KSUID after id.
+    def Next # () -> KSUID
+      zero = makeUint128(0, 0)
+
+      t = self.Timestamp()
+      u = uint128Payload(self)
+      v = add128(u, makeUint128(0, 1))
+
+      # overflow
+      if v == zero
+        t = t + 1
+      end
+
+      return v.ksuid(t)
+    end
+
+    # Prev returns the previoud KSUID before id.
+    def Prev # () -> KSUID
+      max = makeUint128(math.MaxUint64, math.MaxUint64)
+
+      t = self.Timestamp()
+      u = uint128Payload(self)
+      v = sub128(u, makeUint128(0, 1))
+
+      # overflow
+      if v == max
+        t = t - 1
+      end
+
+      return v.ksuid(t)
+    end
+  end
+end

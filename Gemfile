@@ -9,6 +9,7 @@ gem "thor"
 gem "thor-completion", "~> 0.0.5"
 gem "gem_kit"
 gem "rubocop"
+gem "rake"
 gem "ostruct"
 
 group :development do

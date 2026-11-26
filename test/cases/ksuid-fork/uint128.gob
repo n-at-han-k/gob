@@ -1,0 +1,91 @@
+require "encoding/binary"
+require "fmt"
+require "math/bits"
+
+module Ksuid
+  # uint128 represents an unsigned 128 bits little endian integer.
+  var uint128 = Class.new(Array[uint64, 2])
+
+  def uint128Payload(ksuid) # (KSUID) -> uint128
+    return makeUint128FromPayload(ksuid[TIMESTAMP_LENGTH_IN_BYTES...])
+  end
+
+  def makeUint128(high, low) # (uint64, uint64) -> uint128
+    return uint128.new(low, high)
+  end
+
+  def makeUint128FromPayload(payload) # ([]byte) -> uint128
+    return uint128.new(
+      binary.BigEndian.Uint64(payload[8...]), # low
+      binary.BigEndian.Uint64(payload[...8]) # high
+    )
+  end
+
+  var uint128 = Class.new(Array[uint64, 2]) do
+    def ksuid(timestamp) # (uint32) -> (out KSUID)
+      binary.BigEndian.PutUint32(out[...4], timestamp) # time
+      binary.BigEndian.PutUint64(out[4...12], self[1]) # high
+      binary.BigEndian.PutUint64(out[12...], self[0]) # low
+
+      return
+    end
+
+    def bytes # () -> (out [16]byte)
+      binary.BigEndian.PutUint64(out[...8], self[1])
+      binary.BigEndian.PutUint64(out[8...], self[0])
+
+      return
+    end
+
+    def String # () -> string
+      return fmt.Sprintf("0x%016X%016X", self[0], self[1])
+    end
+  end
+
+  def cmp128(x, y) # (uint128, uint128) -> int
+    if x[1] < y[1]
+      return -1
+    end
+
+    if x[1] > y[1]
+      return 1
+    end
+
+    if x[0] < y[0]
+      return -1
+    end
+
+    if x[0] > y[0]
+      return 1
+    end
+
+    return 0
+  end
+
+  def add128(x, y) # (uint128, uint128) -> (z uint128)
+    var :c, uint64
+
+    z[0], c = bits.Add64(x[0], y[0], 0)
+    z[1], _ = bits.Add64(x[1], y[1], c)
+
+    return
+  end
+
+  def sub128(x, y) # (uint128, uint128) -> (z uint128)
+    var :b, uint64
+
+    z[0], b = bits.Sub64(x[0], y[0], 0)
+    z[1], _ = bits.Sub64(x[1], y[1], b)
+
+    return
+  end
+
+  def incr128(x) # (uint128) -> (z uint128)
+    var :c, uint64
+
+    z[0], c = bits.Add64(x[0], 1, 0)
+    z[1] = x[1] + c
+
+    return
+  end
+end

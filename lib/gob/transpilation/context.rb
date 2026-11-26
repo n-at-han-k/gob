@@ -34,10 +34,12 @@ module Gob
 
       # A nested scope sees what was declared above it, and nothing it declares
       # escapes back out. `inherit: false` opens a fresh declaration scope.
-      def descend(body, inherit: true)
+      def descend(body, inherit: true, declared: [])
         child_state =
           if inherit
-            { **state, declared: state.fetch(:declared).dup }
+            { **state, declared: state.fetch(:declared).dup.concat(declared) }
+          else
+            { declared: declared.dup }
           end
 
         child_context = self.class.new(body, state: child_state)

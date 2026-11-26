@@ -43,6 +43,7 @@ GEM
     public_suffix (7.0.5)
     racc (1.8.1)
     rainbow (3.1.1)
+    rake (13.4.2)
     rbs (4.2.0)
       logger
       prism (>= 1.6.0)
@@ -95,6 +96,7 @@ DEPENDENCIES
   minitest
   minitest-reporters
   ostruct
+  rake
   rubocop
   rubocop-disable_syntax
   rubocop-nathank

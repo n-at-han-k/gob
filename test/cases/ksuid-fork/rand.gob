@@ -1,0 +1,55 @@
+require "crypto/rand", cryptoRand
+require "encoding/binary"
+require "io"
+require "math/rand"
+
+module Ksuid
+  # FastRander is an io.Reader that uses math/rand and is optimized for
+  # generating 16 bytes KSUID payloads. It is intended to be used as a
+  # performance improvements for programs that have no need for
+  # cryptographically secure KSUIDs and are generating a lot of them.
+  var FastRander = newRBG()
+
+  var randSourceReader = Struct.new(source: rand.Source64) do
+    def self.Read(b) # ([]byte) -> (int, error)
+      # optimized for generating 16 bytes payloads
+      binary.LittleEndian.PutUint64(b[...8], self.source.Uint64())
+      binary.LittleEndian.PutUint64(b[8...], self.source.Uint64())
+
+      return 16, nil
+    end
+  end
+
+  def newRBG # () -> io.Reader
+    r, err = newRandomBitsGenerator()
+    if err
+      panic(err)
+    end
+
+    return r
+  end
+
+  def newRandomBitsGenerator # () -> (r io.Reader, err error)
+    var :seed, int64
+
+    if (seed, err = readCryptoRandomSeed())
+      return
+    end
+
+    r = @randSourceReader.new(source: rand.NewSource(seed).(rand.Source64))
+
+    return
+  end
+
+  def readCryptoRandomSeed # () -> (seed int64, err error)
+    var :b, Array[byte, 8]
+
+    if (_, err = io.ReadFull(cryptoRand.Reader, b[]))
+      return
+    end
+
+    seed = int64(binary.LittleEndian.Uint64(b[]))
+
+    return
+  end
+end

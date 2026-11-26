@@ -42,6 +42,18 @@ module Gob
           )
         end
 
+        def TypeDefinition(name, type)
+          SyntaxTree::Go::GenDecl.new(
+            tok: :type,
+            specs: [
+              SyntaxTree::Go::TypeSpec.new(
+                name: Ident(name),
+                type: Statements(type)
+              )
+            ]
+          )
+        end
+
         # Title: string, # `json:"title"`
         # Title string `json:"title"`
         # ---
@@ -92,14 +104,18 @@ module Gob
               params: params,
               bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: statements ] ]
             ]
-              Function(
-                name: method,
-                params: params,
-                body: descend(statements).then { |children| children.tree },
-                receiver: SyntaxTree::Go::FieldList.new(
-                  list: [ SyntaxTree::Go::Field.new(names: [ Ident("self") ], type: target ? SyntaxTree::Go::StarExpr.new(x: Ident(name)) : Ident(name)) ]
+              ps = params.respond_to?(:contents) ? params.contents : params
+                param_names = Array(ps.respond_to?(:requireds) ? ps.requireds : []).map { |p| p.respond_to?(:value) ? p.value : nil }.compact
+              descend(statements, declared: ["self", *param_names]).then do |children|
+                Function(
+                  name: method,
+                  params: params,
+                  body: children.tree,
+                  receiver: SyntaxTree::Go::FieldList.new(
+                    list: [ SyntaxTree::Go::Field.new(names: [ Ident("self") ], type: target ? SyntaxTree::Go::StarExpr.new(x: Ident(name)) : Ident(name)) ]
+                  )
                 )
-              )
+              end
 
             else
               nil
@@ -262,6 +278,12 @@ module Gob
           case node
           in SyntaxTree::Paren[contents: SyntaxTree::Statements[body: [statement]]]
             Guard(statement)
+
+          # if avail = c - n && avail < nbytes
+          # if avail := c - n; avail < nbytes { ... }
+          # ---
+          in SyntaxTree::Assign[target: target, value: SyntaxTree::Binary[left: left, operator: :"&&", right: right], location: location]
+            Statements(SyntaxTree::Assign.new(target: target, value: left, location: location)).then { |init| [init, Truthy(LeftHand(right))] }
 
           in SyntaxTree::Assign | SyntaxTree::MAssign
             Statements(node).then { |init| [init, Truthy(init.lhs.last)] }
@@ -606,7 +628,7 @@ module Gob
           # STATUS_ACTIVE
           # statusActive
           # ---
-          in SyntaxTree::Const[value: name] if name == name.upcase
+          in SyntaxTree::Const[value: name] if name == name.upcase && name.include?("_")
             Constant(name)
 
           in { value: String => name }
@@ -680,11 +702,11 @@ module Gob
           in SyntaxTree::CallNode[
             receiver: nil,
             operator: nil,
-            message: SyntaxTree::Ident[value: message],
+            message: (SyntaxTree::Ident | SyntaxTree::Const) => message_node,
             arguments: SyntaxTree::ArgParen[arguments: arguments]
           ]
             SyntaxTree::Go::CallExpr.new(
-              fun: Ident(message),
+              fun: Ident(message_node.value),
               args: Array(arguments&.parts).map { |argument| Statements(argument) }
             )
 
@@ -771,8 +793,8 @@ module Gob
           in SyntaxTree::Field[parent: parent, operator: SyntaxTree::Period[value: "."], name: { value: name }]
             SyntaxTree::Go::SelectorExpr.new(x: LeftHand(parent), sel: Ident(name))
 
-          in SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
-            StringLiteral(text)
+          in SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: text]], quote: quote]
+            quote == "'" ? CharLiteral(text) : StringLiteral(text)
 
           in SyntaxTree::StringLiteral[parts: []]
             StringLiteral("")
@@ -1165,6 +1187,9 @@ module Gob
           ]
             Command(name, args)
 
+          in SyntaxTree::MRHS[parts: parts]
+            parts.map { |part| Statements(part) }
+
           in SyntaxTree::CallNode
             Call(node)
 
@@ -1318,12 +1343,13 @@ module Gob
             case node
             in SyntaxTree::ModuleDeclaration[
               constant: SyntaxTree::ConstRef[
-                constant: SyntaxTree::Const[value: "Main"]
+                constant: SyntaxTree::Const[value: name]
               ],
               bodystmt: SyntaxTree::BodyStmt[
                 statements: SyntaxTree::Statements[body: body]
               ]
             ]
+              ctx.state[:package] = name == "Main" ? "main" : name.downcase
               Hoist.new(body)
 
             # var colour = Struct.new(R: byte) do def M ... end end
@@ -1366,6 +1392,53 @@ module Gob
             ]
               TypeDecl(name, Fields(assocs))
 
+            # var KSUID = Class.new(Array[byte, BYTE_LENGTH]) do ... end
+            # type KSUID [byteLength]byte
+            # ---
+            in SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "var"],
+              arguments: SyntaxTree::Args[ parts: [ SyntaxTree::Assign[
+                target: SyntaxTree::VarField[ value: { value: name } ],
+                value: SyntaxTree::CallNode[
+                  receiver: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Class"] ],
+                  message: SyntaxTree::Ident[value: "new"],
+                  arguments: SyntaxTree::ArgParen[ arguments: SyntaxTree::Args[
+                    parts: [ type ]
+                  ] ]
+                ]
+              ] ] ],
+              block: SyntaxTree::BlockNode[
+                bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: methods ] ]
+              ]
+            ]
+              already_defined = ctx.tree.flatten.any? do |n|
+                n.is_a?(SyntaxTree::Go::GenDecl) && n.tok == :type && n.specs.any? { |s| s.respond_to?(:name) && s.name.respond_to?(:name) && s.name.name == name }
+              end
+
+              if already_defined
+                Methods(name, methods)
+              else
+                [ TypeDefinition(name, type), *Methods(name, methods) ]
+              end
+
+            # var CompressedSet = Class.new(Array[byte])
+            # type CompressedSet []byte
+            # ---
+            in SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "var"],
+              arguments: SyntaxTree::Args[ parts: [ SyntaxTree::Assign[
+                target: SyntaxTree::VarField[ value: { value: name } ],
+                value: SyntaxTree::CallNode[
+                  receiver: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Class"] ],
+                  message: SyntaxTree::Ident[value: "new"],
+                  arguments: SyntaxTree::ArgParen[ arguments: SyntaxTree::Args[
+                    parts: [ type ]
+                  ] ]
+                ]
+              ] ] ]
+            ]
+              TypeDefinition(name, type)
+
             # class Args
             # type Args struct { ... }
             # ---
@@ -1382,7 +1455,9 @@ module Gob
                 statements: SyntaxTree::Statements[body: body]
               ]
             ]
-              ctx.descend(body).then do |children|
+              ps = params.respond_to?(:contents) ? params.contents : params
+                param_names = Array(ps.respond_to?(:requireds) ? ps.requireds : []).map { |p| p.respond_to?(:value) ? p.value : nil }.compact
+              ctx.descend(body, declared: param_names).then do |children|
                 Function(
                   name: name,
                   params: params,
@@ -1463,6 +1538,20 @@ module Gob
             in SyntaxTree::MAssign[target: target, value: value]
               Assignment(ctx, target, value)
 
+            in SyntaxTree::OpAssign[target: target, operator: SyntaxTree::Op[value: op], value: value]
+              lhs = LeftHand(target)
+              rhs = RightHand(value)
+              if ["+=", "-="].include?(op) && rhs.is_a?(SyntaxTree::Go::BasicLit) && rhs.kind == :INT && rhs.value == "1"
+                SyntaxTree::Go::IncDecStmt.new(x: lhs, tok: op == "+=" ? :"++" : :"--", tok_pos: nil)
+              else
+                SyntaxTree::Go::AssignStmt.new(
+                  lhs:     Array(lhs),
+                  tok_pos: nil,
+                  tok:     op.to_sym,
+                  rhs:     Array(rhs)
+                )
+              end
+
             else
               Statements(node)
             end
@@ -1478,7 +1567,7 @@ module Gob
                 specs: ctx.tree.select { |node| node.is_a?(SyntaxTree::Go::ImportSpec) }
               ))
               ctx.tree.reject! { |node| node.is_a?(SyntaxTree::Go::ImportSpec) }
-              file = Package(name: "main", declarations: ctx.tree.dup)
+              file = Package(name: ctx.state[:package] || "main", declarations: ctx.tree.dup)
               ctx.tree.replace([file])
             end
           end
