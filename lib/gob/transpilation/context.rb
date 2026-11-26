@@ -61,11 +61,11 @@ module Gob
         before_callback&.call(self)
 
         Array(body).each do |node|
-          iterate_callback&.call(self, node).then do |result|
+          iterate_callback && instance_exec(self, node, &iterate_callback).then do |result|
             case result
             when Hoist
               result.nodes.each do |hoisted_node|
-                hoisted = iterate_callback&.call(self, hoisted_node)
+                hoisted = iterate_callback && instance_exec(self, hoisted_node, &iterate_callback)
 
                 if hoisted
                   @tree << hoisted

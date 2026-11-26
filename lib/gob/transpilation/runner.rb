@@ -78,30 +78,61 @@ module Gob
       end
 
       module LambdaNodes
-        # lambda { srv.ServeCodec(c) }
-        # func() { srv.ServeCodec(c) }
+        # lambda { |w, r| ... }
+        # func(w http.ResponseWriter, r *http.Request) { ... }
         # ---
-        def Lambda(ctx, block)
+        def Lambda(block)
           case block
-          in SyntaxTree::BlockNode[ bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: body ] ] ]
-            Lambda(ctx, body)
+          in SyntaxTree::BlockNode[
+            block_var: block_var,
+            bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: body ] ]
+          ]
+            FuncLit(block_var, body)
 
-          in SyntaxTree::BlockNode[ bodystmt: SyntaxTree::Statements[ body: body ] ]
-            Lambda(ctx, body)
-
-          in Array
-            SyntaxTree::Go::FuncLit.new(
-              type: SyntaxTree::Go::FuncType.new(
-                type_params: nil,
-                params: SyntaxTree::Go::FieldList.new(list: []),
-                results: SyntaxTree::Go::FieldList.new(list: [])
-              ),
-              body: ctx.descend(block).then { |children| Block(body: children.tree) }
-            )
+          in SyntaxTree::BlockNode[
+            block_var: block_var,
+            bodystmt: SyntaxTree::Statements[ body: body ]
+          ]
+            FuncLit(block_var, body)
 
           else
             nil
           end
+        end
+
+        # |tag| # string -> bool
+        # (tag string) bool
+        # ---
+        def FuncLit(block_var, body)
+          case block_var
+          in SyntaxTree::BlockVar[
+            params: SyntaxTree::Params[requireds: args],
+            comments: [SyntaxTree::Comment[value: types], *]
+          ]
+            input, output = parse_signature_comment(types).values_at(:params, :returns)
+
+          in SyntaxTree::BlockVar[ params: SyntaxTree::Params[requireds: args] ]
+            input, output = [], []
+
+          else
+            args, input, output = [], [], []
+
+          end
+
+          SyntaxTree::Go::FuncLit.new(
+            type: SyntaxTree::Go::FuncType.new(
+              type_params: nil,
+              params: SyntaxTree::Go::FieldList.new(
+                list: args.map { |arg|
+                  SyntaxTree::Go::Field.new(names: [ Ident(arg.value) ], type: Ident(input.shift))
+                }
+              ),
+              results: SyntaxTree::Go::FieldList.new(
+                list: output.map { |result| SyntaxTree::Go::Field.new(names: [ Ident(result) ]) }
+              )
+            ),
+            body: descend(body).then { |children| Block(body: children.tree) }
+          )
         end
       end
 
@@ -926,6 +957,15 @@ module Gob
           ]
             nil
 
+          # lambda { |w, r| ... }
+          # func(w http.ResponseWriter, r *http.Request) { ... }
+          # ---
+          in SyntaxTree::MethodAddBlock[
+            call: SyntaxTree::CallNode[ message: SyntaxTree::Ident[value: "lambda"] ],
+            block: block
+          ]
+            Lambda(block)
+
           # break
           # break
           # ---
@@ -1083,12 +1123,16 @@ module Gob
                     block: block
                   ],
                   operator: SyntaxTree::Period[value: "."],
-                  message: :call
+                  message: :call,
+                  arguments: SyntaxTree::ArgParen[ arguments: arguments ]
                 ]
               ] ]
             ]
               SyntaxTree::Go::GoStmt.new(
-                call: SyntaxTree::Go::CallExpr.new(fun: Lambda(ctx, block), args: [])
+                call: SyntaxTree::Go::CallExpr.new(
+                  fun:  Lambda(block),
+                  args: Array(arguments&.parts).map { |argument| Statements(argument) }
+                )
               )
 
             in SyntaxTree::CallNode

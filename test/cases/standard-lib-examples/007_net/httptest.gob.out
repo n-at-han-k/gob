@@ -7,7 +7,11 @@ import (
 )
 
 func runHTTPTest() {
-	handler := http.HandlerFunc(nil)
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Test", "yes")
+		w.WriteHeader(http.StatusTeapot)
+		fmt.Fprintln(w, "short and stout")
+	})
 	req := httptest.NewRequest(http.MethodGet, "/kettle", nil)
 	rec := httptest.NewRecorder()
 	handler.ServeHTTP(rec, req)

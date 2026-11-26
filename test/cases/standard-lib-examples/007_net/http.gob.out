@@ -9,7 +9,9 @@ import (
 )
 
 func runHTTP() {
-	srv := httptest.NewServer(http.HandlerFunc(nil))
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "hello %s, you asked for %s\n", r.RemoteAddr, r.URL.Path)
+	}))
 	defer srv.Close()
 	resp, err := http.Get(srv.URL + "/greet")
 	if err != nil {
