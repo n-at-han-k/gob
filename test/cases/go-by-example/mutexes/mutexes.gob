@@ -3,7 +3,7 @@ require "sync"
 
 module Main
   var container = Struct.new(mu: sync.Mutex, counters: Hash[string, int]) do
-    def self.inc(name) # (string)
+    def inc(name) # (string)
       self.mu.Lock()
       defer self.mu.Unlock()
       self.counters[name] = self.counters[name] + 1

@@ -43,7 +43,7 @@ module Ksuid
     return
   end
   var randSourceReader = Struct.new(source: rand.Source64) do
-    def self.Read(b) # ([]byte) -> (int, error)
+    def Read(b) # ([]byte) -> (int, error)
       # optimized for generating 16 bytes payloads
       binary.LittleEndian.PutUint64(b[...8], self.source.Uint64())
       binary.LittleEndian.PutUint64(b[8...], self.source.Uint64())

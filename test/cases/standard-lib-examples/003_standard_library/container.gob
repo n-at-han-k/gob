@@ -7,19 +7,19 @@ module Main
   var intHeapData = Struct.new(values: Array[int])
 
   var intHeap = Struct.new(data: @@intHeapData) do
-    def Len # -> int
+    protected def Len # -> int
       data = @@self.data
       values = data.values
       return len(values)
     end
 
-    def Less(i, j) # (int, int) -> bool
+    protected def Less(i, j) # (int, int) -> bool
       data = @@self.data
       values = data.values
       return values[i] < values[j]
     end
 
-    def Swap(i, j) # (int, int)
+    protected def Swap(i, j) # (int, int)
       data = @@self.data
       values = data.values
       left = values[i]
@@ -28,13 +28,13 @@ module Main
       values[j] = left
     end
 
-    def Push(x) # (any)
+    protected def Push(x) # (any)
       data = @@self.data
       values = data.values
       data.values = append(values, x.(int))
     end
 
-    def Pop # () -> any
+    protected def Pop # () -> any
       data = @@self.data
       old = data.values
       n = len(old)

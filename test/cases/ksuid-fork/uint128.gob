@@ -22,7 +22,7 @@ module Ksuid
   end
 
   var uint128 = Class.new(Array[uint64, 2]) do
-    def ksuid(timestamp) # (uint32) -> (out KSUID)
+    protected def ksuid(timestamp) # (uint32) -> (out KSUID)
       binary.BigEndian.PutUint32(out[...4], timestamp) # time
       binary.BigEndian.PutUint64(out[4...12], self[1]) # high
       binary.BigEndian.PutUint64(out[12...], self[0]) # low
@@ -30,14 +30,14 @@ module Ksuid
       return
     end
 
-    def bytes # () -> (out [16]byte)
+    protected def bytes # () -> (out [16]byte)
       binary.BigEndian.PutUint64(out[...8], self[1])
       binary.BigEndian.PutUint64(out[8...], self[0])
 
       return
     end
 
-    def String # () -> string
+    protected def String # () -> string
       return fmt.Sprintf("0x%016X%016X", self[0], self[1])
     end
   end

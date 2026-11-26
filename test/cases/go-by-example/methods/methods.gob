@@ -2,11 +2,11 @@ require "fmt"
 
 module Main
   var rect = Struct.new(width: int, height: int) do
-    def self.area # -> int
+    def area # -> int
       return self.width * self.height
     end
 
-    def perim # -> int
+    protected def perim # -> int
       return 2 * self.width + 2 * self.height
     end
   end

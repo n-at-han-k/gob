@@ -38,63 +38,63 @@ module Ksuid
   var KSUID = Class.new(Array[byte, BYTE_LENGTH]) do
     # Append appends the string representation of i to b, returning a slice to a
     # potentially larger memory area.
-    def Append(b) # ([]byte) -> []byte
+    protected def Append(b) # ([]byte) -> []byte
       return fastAppendEncodeBase62(b, self[])
     end
 
     # The timestamp portion of the ID as a Time object
-    def Time # () -> time.Time
+    protected def Time # () -> time.Time
       return correctedUTCTimestampToTime(self.Timestamp())
     end
 
     # The timestamp portion of the ID as a bare integer which is uncorrected
     # for KSUID's special epoch.
-    def Timestamp # () -> uint32
+    protected def Timestamp # () -> uint32
       return binary.BigEndian.Uint32(self[...TIMESTAMP_LENGTH_IN_BYTES])
     end
 
     # The 16-byte random payload without the timestamp
-    def Payload # () -> []byte
+    protected def Payload # () -> []byte
       return self[TIMESTAMP_LENGTH_IN_BYTES...]
     end
 
     # String-encoded representation that can be passed through Parse()
-    def String # () -> string
+    protected def String # () -> string
       return string(self.Append(make(Array[byte], 0, STRING_ENCODED_LENGTH)))
     end
 
     # Raw byte representation of KSUID
-    def Bytes # () -> []byte
+    protected def Bytes # () -> []byte
       # Safe because this is by-value
       return self[]
     end
 
     # IsNil returns true if this is a "nil" KSUID
-    def IsNil # () -> bool
+    protected def IsNil # () -> bool
       return self == Nil
     end
 
     # Get satisfies the flag.Getter interface, making it possible to use KSUIDs as
     # part of of the command line options of a program.
-    def Get # () -> interface{}
+    protected def Get # () -> interface{}
       return self
     end
 
     # Set satisfies the flag.Value interface, making it possible to use KSUIDs as
     # part of of the command line options of a program.
-    def self.Set(s) # (string) -> error
+    def Set(s) # (string) -> error
       return self.UnmarshalText(Array[byte].new(s))
     end
 
-    def MarshalText # () -> ([]byte, error)
+    protected def MarshalText # () -> ([]byte, error)
       return Array[byte].new(self.String()), nil
     end
 
-    def MarshalBinary # () -> ([]byte, error)
+    protected def MarshalBinary # () -> ([]byte, error)
       return self.Bytes(), nil
     end
 
-    def self.UnmarshalText(b) # ([]byte) -> error
+    def UnmarshalText(b) # ([]byte) -> error
       id, err = Parse(string(b))
       if err
         return err
@@ -105,7 +105,7 @@ module Ksuid
       return nil
     end
 
-    def self.UnmarshalBinary(b) # ([]byte) -> error
+    def UnmarshalBinary(b) # ([]byte) -> error
       id, err = FromBytes(b)
       if err
         return err
@@ -118,7 +118,7 @@ module Ksuid
 
     # Value converts the KSUID into a SQL driver value which can be used to
     # directly use the KSUID as parameter to a SQL query.
-    def Value # () -> (driver.Value, error)
+    protected def Value # () -> (driver.Value, error)
       if self.IsNil()
         return nil, nil
       end
@@ -129,7 +129,7 @@ module Ksuid
     # Scan implements the sql.Scanner interface. It supports converting from
     # string, []byte, or nil into a KSUID value. Attempting to convert from
     # another type will return an error.
-    def self.Scan(src) # (interface{}) -> error
+    def Scan(src) # (interface{}) -> error
       case v = src.(type)
       when nil
         return self.scan(nil)
@@ -142,7 +142,7 @@ module Ksuid
       end
     end
 
-    def self.scan(b) # ([]byte) -> error
+    def scan(b) # ([]byte) -> error
       case len(b)
       when 0
         @@self = Nil
@@ -371,7 +371,7 @@ module Ksuid
 
   var KSUID = Class.new(Array[byte, BYTE_LENGTH]) do
     # Next returns the next KSUID after id.
-    def Next # () -> KSUID
+    protected def Next # () -> KSUID
       zero = makeUint128(0, 0)
 
       t = self.Timestamp()
@@ -387,7 +387,7 @@ module Ksuid
     end
 
     # Prev returns the previoud KSUID before id.
-    def Prev # () -> KSUID
+    protected def Prev # () -> KSUID
       max = makeUint128(math.MaxUint64, math.MaxUint64)
 
       t = self.Timestamp()

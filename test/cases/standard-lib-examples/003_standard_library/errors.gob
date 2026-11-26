@@ -4,7 +4,7 @@ require "os"
 
 module Main
   var notFoundError = Struct.new(key: string) do
-    def Error # () -> string
+    protected def Error # () -> string
       return fmt.Sprintf("key %q not found", self.key)
     end
   end

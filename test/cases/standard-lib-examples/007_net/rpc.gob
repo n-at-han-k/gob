@@ -10,7 +10,7 @@ module Main
   end
 
   class Arith
-    def Multiply(args, reply) # (Args, *int) -> error
+    protected def Multiply(args, reply) # (Args, *int) -> error
       @@reply = args.A * args.B
       return nil
     end

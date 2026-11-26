@@ -7,11 +7,11 @@ module Main
     G: byte,
     B: byte
   ) do
-    def MarshalText # -> ([]byte, error)
+    protected def MarshalText # -> ([]byte, error)
       return fmt.Appendf(nil, "#%02x%02x%02x", self.R, self.G, self.B), nil
     end
 
-    def self.UnmarshalText(text) # ([]byte) -> error
+    def UnmarshalText(text) # ([]byte) -> error
       _, err = fmt.Sscanf(string(text), "#%02x%02x%02x", @self.R, @self.G, @self.B)
       return err
     end

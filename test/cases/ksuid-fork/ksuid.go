@@ -16,13 +16,19 @@ import (
 // significantly higher useful lifetime of around 136 years from March 2017.
 // This number (14e8) was picked to be easy to remember.
 const (
-	epochStamp             = 1400000000
+	epochStamp = 1400000000
+	// Timestamp is a uint32
 	timestampLengthInBytes = 4
-	payloadLengthInBytes   = 16
-	byteLength             = timestampLengthInBytes + payloadLengthInBytes
-	stringEncodedLength    = 27
-	minStringEncoded       = "000000000000000000000000000"
-	maxStringEncoded       = "aWgEPTl1tmebfsQzFP4bxwgy80V"
+	// Payload is 16-bytes
+	payloadLengthInBytes = 16
+	// KSUIDs are 20 bytes when binary encoded
+	byteLength = timestampLengthInBytes + payloadLengthInBytes
+	// The length of a KSUID when string (base62) encoded
+	stringEncodedLength = 27
+	// A string-encoded minimum value for a KSUID
+	minStringEncoded = "000000000000000000000000000"
+	// A string-encoded maximum value for a KSUID
+	maxStringEncoded = "aWgEPTl1tmebfsQzFP4bxwgy80V"
 )
 
 // KSUIDs are 20 bytes:
@@ -30,20 +36,6 @@ const (
 //	00-03 byte: uint32 BE UTC timestamp with custom epoch
 //	04-19 byte: random "payload"
 type KSUID [byteLength]byte
-
-var (
-	rander         = rand.Reader
-	randMutex      = sync.Mutex{}
-	randBuffer     = [payloadLengthInBytes]byte{}
-	errSize        = fmt.Errorf("Valid KSUIDs are %v bytes", byteLength)
-	errStrSize     = fmt.Errorf("Valid encoded KSUIDs are %v characters", stringEncodedLength)
-	errStrValue    = fmt.Errorf("Valid encoded KSUIDs are bounded by %s and %s", minStringEncoded, maxStringEncoded)
-	errPayloadSize = fmt.Errorf("Valid KSUID payloads are %v bytes", payloadLengthInBytes)
-	// Represents a completely empty (invalid) KSUID
-	Nil KSUID
-	// Represents the highest value a KSUID can have
-	Max = KSUID{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255}
-)
 
 // Append appends the string representation of i to b, returning a slice to a
 // potentially larger memory area.
@@ -159,6 +151,20 @@ func (self *KSUID) scan(b []byte) error {
 		return errSize
 	}
 }
+
+var (
+	rander         = rand.Reader
+	randMutex      = sync.Mutex{}
+	randBuffer     = [payloadLengthInBytes]byte{}
+	errSize        = fmt.Errorf("Valid KSUIDs are %v bytes", byteLength)
+	errStrSize     = fmt.Errorf("Valid encoded KSUIDs are %v characters", stringEncodedLength)
+	errStrValue    = fmt.Errorf("Valid encoded KSUIDs are bounded by %s and %s", minStringEncoded, maxStringEncoded)
+	errPayloadSize = fmt.Errorf("Valid KSUID payloads are %v bytes", payloadLengthInBytes)
+	// Represents a completely empty (invalid) KSUID
+	Nil KSUID
+	// Represents the highest value a KSUID can have
+	Max = KSUID{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255}
+)
 
 // Parse decodes a string-encoded representation of a KSUID object
 func Parse(s string) (KSUID, error) {
