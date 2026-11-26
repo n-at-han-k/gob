@@ -11,7 +11,7 @@ func runHTTPTrace() {
 	srv := httptest.NewServer(http.HandlerFunc(nil))
 	trace := &httptrace.ClientTrace{GetConn: nil, GotConn: nil, WroteHeaders: nil, GotFirstResponseByte: nil}
 	req, _ := http.NewRequest("GET", srv.URL, nil)
-	req := req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
+	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 	resp, _ := http.DefaultTransport.RoundTrip(req)
 	resp.Body.Close()
 	fmt.Println("status:", resp.Status)

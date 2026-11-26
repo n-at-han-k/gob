@@ -20,5 +20,5 @@ func runPProf() {
 	info, _ := f.Stat()
 	fmt.Printf("wrote heap profile: %s (%d bytes)\n", f.Name(), info.Size())
 	fmt.Println("view with: go tool pprof", f.Name())
-	_ := junk
+	_ = junk
 }

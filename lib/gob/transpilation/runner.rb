@@ -440,6 +440,24 @@ module Gob
 
         def RightHand(node) = Statements(node)
 
+        # city = "Wellington"
+        # city := "Wellington"
+        # ---
+        # x, y = 10, 20.5
+        # x, y = 10, 20.5
+        # ---
+        def Assignment(ctx, target, value)
+          lhs = Array(LeftHand(target))
+          names = lhs.grep(SyntaxTree::Go::Ident).map(&:name) - ["_"]
+
+          SyntaxTree::Go::AssignStmt.new(
+            lhs:     lhs,
+            tok_pos: nil,
+            tok:     ctx.declare(names).any? ? ":=" : "=",
+            rhs:     Array(RightHand(value))
+          )
+        end
+
         def Command(name, args)
           case [name, args]
           in ["require", [SyntaxTree::StringLiteral[parts: [SyntaxTree::TStringContent[value: path]]]]]
@@ -798,7 +816,7 @@ module Gob
                 statements: SyntaxTree::Statements[body: body]
               ]
             ]
-              ctx.descend(body).then do |children|
+              ctx.descend(body, inherit: false).then do |children|
                 Block(body: children.tree)
               end
 
@@ -818,6 +836,12 @@ module Gob
                 tok: :var,
                 specs: [ SyntaxTree::Go::ValueSpec.new( names: [LeftHand(target)], values: [RightHand(value)] ) ]
               )
+
+            in SyntaxTree::Assign[target: target, value: value]
+              Assignment(ctx, target, value)
+
+            in SyntaxTree::MAssign[target: target, value: value]
+              Assignment(ctx, target, value)
 
             else
               Statements(node)

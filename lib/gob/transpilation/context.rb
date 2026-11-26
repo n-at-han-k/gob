@@ -27,18 +27,32 @@ module Gob
 
       def initialize(body, state: nil)
         @body = body
-        @state = state
+        @state = state || { declared: [] }
         @children = []
         @tree = []
       end
 
-      def descend(body)
-        child_context = self.class.new(body, state: state)
+      # A nested scope sees what was declared above it, and nothing it declares
+      # escapes back out. `inherit: false` opens a fresh declaration scope.
+      def descend(body, inherit: true)
+        child_state =
+          if inherit
+            { **state, declared: state.fetch(:declared).dup }
+          end
+
+        child_context = self.class.new(body, state: child_state)
         child_context.inherit_callbacks_from(self)
 
         @children << child_context
 
         child_context
+      end
+
+      # Records `names` and answers with the ones that were not already in scope.
+      def declare(names)
+        state.fetch(:declared).then do |declared|
+          names.reject { |name| declared.include?(name) }.tap { |fresh| declared.concat(fresh) }
+        end
       end
 
       def match(&block)

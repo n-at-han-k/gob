@@ -18,7 +18,7 @@ func main() {
 	fmt.Println(city, country)
 	x, y, z := 1, 2.5, "three"
 	fmt.Println(x, y, z)
-	x, y := 10, 20.5
+	x, y = 10, 20.5
 	fmt.Println(x, y)
 	host := "localhost"
 	port := 8080
@@ -34,7 +34,7 @@ func main() {
 	}
 	fmt.Println(shadow)
 	swap1, swap2 := "first", "second"
-	swap1, swap2 := swap2, swap1
+	swap1, swap2 = swap2, swap1
 	fmt.Println(swap1, swap2)
 	_, kept := ignoreOne()
 	fmt.Println(kept)

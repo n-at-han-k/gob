@@ -19,7 +19,7 @@ func runRSA() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err := rsa.VerifyPSS(&priv.PublicKey, crypto.SHA256, nil, sig, nil)
+	err = rsa.VerifyPSS(&priv.PublicKey, crypto.SHA256, nil, sig, nil)
 	fmt.Printf("signature (%d bytes)\n", len(sig))
 	fmt.Println("verify err:", err)
 }

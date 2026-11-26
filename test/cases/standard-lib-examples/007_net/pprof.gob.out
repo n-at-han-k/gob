@@ -18,7 +18,7 @@ func runPProf() {
 	fmt.Println("status:", resp.Status)
 	snippet := string(body)
 	if len(snippet) > 400 {
-		snippet := snippet[nil]
+		snippet = snippet[nil]
 	}
 	fmt.Println(snippet)
 }

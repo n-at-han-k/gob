@@ -11,6 +11,6 @@ func runCGO() () {
 	got := 
 	fmt.Printf("handle: %d\n", uintptr(h))
 	fmt.Printf("value:  %v\n", got)
-	 := 99
+	 = 99
 	fmt.Printf("mutation visible on original: %v\n", nil == 99)
 }
