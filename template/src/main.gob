@@ -1,0 +1,5 @@
+require "fmt"
+
+def main
+  fmt.Println("Ey up gobbah! What's crackin?")
+end
