@@ -1,13 +1,22 @@
-FROM golang:1.22 as build
+FROM ruby:3.3-slim AS build
 
-WORKDIR /go/src/app
+COPY --from=golang:1.22 /usr/local/go /usr/local/go
+ENV PATH="/usr/local/go/bin:${PATH}"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    git \
+    ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY Gemfile Gemfile.lock ./
+RUN bundle install
+
 COPY . .
 
-RUN go mod download
-RUN go vet -v
-RUN go test -v
-
-RUN CGO_ENABLED=0 go build -o /go/bin/app
+RUN bundle exec gob build src/main.gob -o /go/bin/app
 
 FROM gcr.io/distroless/static-debian13
 
