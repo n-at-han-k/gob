@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-11-27
+
+### Fixed
+
+- a declaration written between two `const` or two `var` declarations was silently dropped, along with its methods. Grouping adjacent declarations into one parenthesised block took the whole span from the first such declaration in the file to the last and discarded everything in it that was not a declaration of that kind, so a `type` and its methods sitting between two groups of constants never reached the output. Only genuinely adjacent declarations are grouped now, and constants on either side of an intervening declaration stay in separate blocks
+
+## [1.5.0] - 2026-11-27
+
 ### Added
 
 - `gob fmt`, `gob vet` and `gob transpile` take a directory as well as a file, expanding it to every `.gob` file under it, so `gob vet src packages` checks a whole tree in one pass. With no path at all they read the current directory
@@ -19,7 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
-- a declaration written between two `const` or two `var` declarations was silently dropped, along with its methods. Grouping adjacent declarations into one parenthesised block took the whole span from the first such declaration in the file to the last and discarded everything in it that was not a declaration of that kind, so a `type` and its methods sitting between two groups of constants never reached the output. Only genuinely adjacent declarations are grouped now, and constants on either side of an intervening declaration stay in separate blocks
 - `Gob/CollectionLiteral` no longer reports the result list of a func type. `Proc[string, [int, error]]` is the documented spelling for `func(string) (int, error)`, but the array literal holding the results was read as an untyped collection, so the documented form could not vet clean
 
 ## [1.4.0] - 2026-11-27
@@ -136,7 +143,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - initial release
 
-[Unreleased]: https://github.com/n-at-han-k/gob/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/n-at-han-k/gob/compare/v1.5.1...HEAD
+[1.5.1]: https://github.com/n-at-han-k/gob/releases/tag/v1.5.1
+[1.5.0]: https://github.com/n-at-han-k/gob/releases/tag/v1.5.0
 [1.4.0]: https://github.com/n-at-han-k/gob/releases/tag/v1.4.0
 [1.3.0]: https://github.com/n-at-han-k/gob/releases/tag/v1.3.0
 [1.2.3]: https://github.com/n-at-han-k/gob/releases/tag/v1.2.3
