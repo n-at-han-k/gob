@@ -11,36 +11,38 @@ module Gob
     class Runner
       module DefinitionNodes
         def parse_signature_comment(text)
-          params, returns =
-            case text.split(/\s*->\s*/, 2)
-            in [/\A#\s*\z/, ret] unless ret.empty?
-              [[], ret]
-            in [/\A#\s*\(([^)]*)\)\z/, ret] unless ret.empty?
-              [$1, ret]
-            in [/\A#\s*(.+)\z/, ret] unless ret.empty?
-              [$1, ret]
-            in [/\A#\s*\(([^)]*)\)\s*\z/]
-              [$1, ""]
-            else
-              ["", ""]
+          body = text.to_s.strip.sub(/\A#\s*/, "")
+          parts = body.split(/\s*->\s*/, 2)
+          left = parts[0].to_s.strip
+          right = parts[1].to_s.strip
+
+          split_items = ->(v) {
+            v = v.strip
+            case v
+            in /\A\((?<inner>.*)\)\z/m then v = $~[:inner].strip
+            else nil
             end
 
-          parse_items = ->(value) {
-            value = value.to_s.strip.delete_prefix("(").delete_suffix(")").strip
-            value.empty? ? [] : value.split(/\s*,\s*/)
+            case v
+            in /\A\s*\z/ then []
+            else
+              v.scan(/func\([^()]*\)(?:\s+[^,]+)?|\[[^\[\]]*\][^,]*|[^,]+/).map(&:strip).reject(&:empty?)
+            end
           }
 
           {
-            params: parse_items.call(params),
-            returns: parse_items.call(returns).map do |item|
-              if (m = item.match(/\A([A-Za-z_]\w*)\s+(.+)\z/)) && !%w[chan func map interface struct].include?(m[1])
-                { name: m[1], type: m[2] }
+            params: split_items.call(left),
+            returns: split_items.call(right).map { |item|
+              case item
+              in /\A([A-Za-z_]\w*)\s+(.+)\z/ if !%w[chan func map interface struct].include?($1)
+                { name: $1, type: $2 }
               else
                 { name: nil, type: item }
               end
-            end
+            }
           }
         end
+
 
         # var colour = Struct.new(R: byte)
         # type colour struct { R byte }
@@ -1547,6 +1549,25 @@ module Gob
             ]
               [ TypeDecl(name, Fields(assocs)), *Methods(name, methods) ]
 
+            # var todosResource = Struct.new() do ... end
+            # type todosResource struct {}
+            # ---
+            in SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "var"],
+              arguments: SyntaxTree::Args[ parts: [ SyntaxTree::Assign[
+                target: SyntaxTree::VarField[ value: { value: name } ],
+                value: SyntaxTree::CallNode[
+                  receiver: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Struct"] ],
+                  message: SyntaxTree::Ident[value: "new"],
+                  arguments: SyntaxTree::ArgParen[ arguments: nil ]
+                ]
+              ] ] ],
+              block: SyntaxTree::BlockNode[
+                bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: methods ] ]
+              ]
+            ]
+              [ TypeDecl(name, []), *Methods(name, methods) ]
+
             # var person = Struct.new(Name: string, Age: int)
             # type person struct { Name string; Age int }
             # ---
@@ -1564,6 +1585,22 @@ module Gob
               ] ] ]
             ]
               TypeDecl(name, Fields(assocs))
+
+            # var todosResource = Struct.new()
+            # type todosResource struct {}
+            # ---
+            in SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "var"],
+              arguments: SyntaxTree::Args[ parts: [ SyntaxTree::Assign[
+                target: SyntaxTree::VarField[ value: { value: name } ],
+                value: SyntaxTree::CallNode[
+                  receiver: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Struct"] ],
+                  message: SyntaxTree::Ident[value: "new"],
+                  arguments: SyntaxTree::ArgParen[ arguments: nil ]
+                ]
+              ] ] ]
+            ]
+              TypeDecl(name, [])
 
             # var KSUID = Class.new(Array[byte, BYTE_LENGTH]) do ... end
             # type KSUID [byteLength]byte
