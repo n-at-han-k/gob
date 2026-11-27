@@ -939,19 +939,20 @@ module Gob
           ]
             case arguments
             in nil
-              SyntaxTree::VCall.new(value: message)
+              SyntaxTree::VCall.new(value: message, location: node.location)
             else
               SyntaxTree::CallNode.new(
                 receiver:  nil,
                 operator:  nil,
                 message:   message,
-                arguments: arguments
+                arguments: arguments,
+                location:  node.location
               )
             end
 
           in SyntaxTree::CallNode[receiver: receiver, operator: op, message: message, arguments: arguments]
             inner = ArrowReceive(receiver)
-            inner ? SyntaxTree::CallNode.new(receiver: inner, operator: op, message: message, arguments: arguments) : nil
+            inner ? SyntaxTree::CallNode.new(receiver: inner, operator: op, message: message, arguments: arguments, location: node.location) : nil
 
           else
             nil
