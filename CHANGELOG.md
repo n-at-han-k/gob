@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-11-26
+
+### Fixed
+
+- `Gob::Transpilation::Runner#parse_signature_comment` now parses signature comment shapes correctly, including func-typed params/returns and void `-> ()` returns
+
+## [1.2.0] - 2026-11-26
+
 ### Changed
 
 - methods now take a pointer receiver by default; `protected def` declares a value receiver instead. This replaces the `def self.Method` rule from 1.1.1
