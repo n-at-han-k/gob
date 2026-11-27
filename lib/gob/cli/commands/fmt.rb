@@ -7,21 +7,21 @@ module Gob
     module Commands
       class Fmt < Base
         default_command :fmt
-        desc "fmt FILE...", "Format Gob source"
-        method_option :write, aliases: "-w", type: :boolean, default: false, desc: "Write formatted source back to FILE"
+        desc "fmt [PATH...]", "Format Gob source in place"
 
-        def fmt(*files)
-          files_from(*files)
-
-          files.each do |file|
+        # fmt is the write command: it formats each file where it sits, the way
+        # `gofmt -w` and `go fmt` do. Reading stdin has nowhere to write back
+        # to, so that one case prints to stdout.
+        # ---
+        def fmt(*paths)
+          files_from(*paths).each do |file|
             source, path = read_source(file)
             formatted = Gob::Validation::Rules.autocorrect(source, path: path)
 
-            if options[:write]
-              raise Thor::Error, "Cannot use --write with stdin" if file == "-"
-              File.write(file, formatted)
-            else
+            if file == "-"
               $stdout.write(formatted)
+            else
+              File.write(file, formatted) unless formatted == source
             end
           end
         end

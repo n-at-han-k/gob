@@ -51,7 +51,7 @@ module Gob
       )
     end
 
-    desc "fmt FILE...", "Format Gob source"
+    desc "fmt [PATH...]", "Format Gob source in place"
     subcommand "fmt", Commands::Fmt
     desc "run FILE [ARGS...]", "Transpile and run a Gob program"
 
@@ -61,9 +61,9 @@ module Gob
     end
 
     map "run" => "_run"
-    desc "transpile FILE", "Transpile Gob source to Go"
+    desc "transpile [PATH...]", "Transpile Gob source to Go"
     subcommand "transpile", Commands::Transpile
-    desc "vet FILE...", "Validate Gob source"
+    desc "vet [PATH...]", "Validate Gob source"
     subcommand "vet", Commands::Vet
     desc "version", "Print Gob version"
     subcommand "version", Commands::Version

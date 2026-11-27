@@ -24,7 +24,7 @@ module Gob
           # Hash[string, int].new("one" => 1)
           # ---
           def rule(node)
-            return if typed? || nested?
+            return if typed? || nested? || type_argument?
 
             case node
             in SyntaxTree::ArrayLiteral[contents: SyntaxTree::Args[parts: parts]]
@@ -65,6 +65,18 @@ module Gob
               else
                 false
               end
+            end
+          end
+
+          # A literal in a type position is not a collection literal. It is
+          # the result list of a func type, as in `Proc[int, [bool, error]]`,
+          # where the brackets index a Gob type form rather than build a value.
+          # ---
+          def type_argument?
+            enclosing.any? do |ancestor|
+              ancestor in SyntaxTree::ARef[
+                collection: SyntaxTree::VarRef[value: SyntaxTree::Const]
+              ]
             end
           end
 

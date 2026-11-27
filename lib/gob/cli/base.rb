@@ -20,10 +20,22 @@ module Gob
           end
         end
 
+        # The .gob files named by `paths`, where a directory stands for every
+        # .gob file under it. With no paths at all, the current directory.
+        # ---
         def files_from(*paths)
-          raise Thor::Error, "No files provided" if paths.empty?
+          paths = ["."] if paths.empty?
 
-          paths
+          paths.flat_map { |path| expand_path(path) }.uniq
+        end
+
+        def expand_path(path)
+          return [path] unless File.directory?(path)
+
+          matches = Dir[File.join(path, "**/*.gob")].sort
+          raise Thor::Error, "No .gob files found in #{path}" if matches.empty?
+
+          matches
         end
 
         def validate_source!(source, path)

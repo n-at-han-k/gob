@@ -46,6 +46,16 @@ class ValidationRulesTest < Minitest::Test
     refute_includes offense_names(hash_source), "Gob/CollectionLiteral"
   end
 
+  def test_collection_literals_in_a_type_position_are_not_enforced
+    source = "x = Proc[string, [int, error]]\n"
+    assert_equal source, autocorrect(source)
+    refute_includes offense_names(source), "Gob/CollectionLiteral"
+
+    field_source = "class Table\n  attr_accessor :Get, Proc[int, [bool]]\nend\n"
+    assert_equal field_source, autocorrect(field_source)
+    refute_includes offense_names(field_source), "Gob/CollectionLiteral"
+  end
+
   def test_lambda_signature_is_required
     assert_includes offense_names("x = lambda { |value| value > 0 }\n"), "Gob/LambdaSignature"
     refute_includes offense_names("x = lambda { |value| # (int) -> bool\n  value > 0\n}\n"), "Gob/LambdaSignature"

@@ -323,5 +323,8 @@ x = a &! b   # bit clear (Go a &^ b)
 ## Style and validation
 
 - Prefer explicit Gob types and supported forms.
-- Run `gob fmt --write` and `gob vet` on `.gob` files.
+- Run `gob fmt` and `gob vet` on `.gob` files. `gob fmt` formats in
+  place, and every command takes a directory as well as a file, so
+  `gob vet src packages` checks a whole tree in one pass.
+- `gob transpile src -o ./build` mirrors a source tree into `build/`.
 - Use `test/cases/` as the reference for supported syntax and expected Go output.

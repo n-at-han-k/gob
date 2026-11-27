@@ -35,13 +35,13 @@ $ gob help
 Commands:
   gob build FILE                # Transpile and build a Gob program
   gob completion --shell=SHELL  # Generate shell completion script
-  gob fmt FILE...               # Format Gob source
+  gob fmt [PATH...]             # Format Gob source in place
   gob help [COMMAND]            # Describe available commands or one specific...
   gob run FILE [ARGS...]        # Transpile and run a Gob program
-  gob transpile FILE            # Transpile Gob source to Go
+  gob transpile [PATH...]       # Transpile Gob source to Go
   gob tree                      # Print a tree of all available commands
   gob version                   # Print Gob version
-  gob vet FILE...               # Validate Gob source
+  gob vet [PATH...]             # Validate Gob source
 ```
 
 <hr> 

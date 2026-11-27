@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- `gob fmt`, `gob vet` and `gob transpile` take a directory as well as a file, expanding it to every `.gob` file under it, so `gob vet src packages` checks a whole tree in one pass. With no path at all they read the current directory
+- `gob transpile` accepts several inputs and mirrors a source tree into an output directory: `gob transpile src -o ./build` writes `src/journal/table.gob` to `build/journal/table.go`. Without `--output` each file writes to its own `.go` sibling
+
+### Changed
+
+- `gob fmt` writes in place and no longer takes `--write`; formatting is what the command is for, the way `gofmt -w` and `go fmt` behave. Reading stdin still prints to stdout, and a file whose formatting is already correct is left untouched
+- `--output` names a directory when the input is a directory or more than one file, and a file when the input is a single file
+
+### Fixed
+
+- `Gob/CollectionLiteral` no longer reports the result list of a func type. `Proc[string, [int, error]]` is the documented spelling for `func(string) (int, error)`, but the array literal holding the results was read as an untyped collection, so the documented form could not vet clean
+
 ## [1.4.0] - 2026-11-27
 
 ### Added
