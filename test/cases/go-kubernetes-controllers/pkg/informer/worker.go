@@ -16,7 +16,17 @@ type EventWorker struct {
 func (self *EventWorker) Start(ctx context.Context) {
 	self.logger.Debug().Msg("starting event worker")
 	for {
-		select {}
+		select {
+		case event, ok := <-self.queue:
+			if !ok {
+				self.logger.Debug().Msg("event queue closed, stopping worker")
+				return
+			}
+			self.processEvent(event)
+		case <-ctx.Done():
+			self.logger.Debug().Msg("context cancelled, stopping worker")
+			return
+		}
 	}
 }
 

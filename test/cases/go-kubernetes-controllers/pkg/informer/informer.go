@@ -46,7 +46,7 @@ func (self *Informer) Start(ctx context.Context) error {
 		self.informer.Run(ctx.Done())
 	}()
 	// Wait for cache sync
-	if nil {
+	if !cache.WaitForCacheSync(ctx.Done(), self.informer.HasSynced) {
 		return errors.NewWatchError("failed to sync cache", nil)
 	}
 	self.logger.Info().Msg("informer started successfully")
@@ -124,7 +124,7 @@ func (self *Informer) GetDeployment(namespace string, name string) (*appsv1.Depl
 	if err != nil {
 		return nil, errors.NewCacheError("failed to get deployment from cache", err)
 	}
-	if nil {
+	if !exists {
 		return nil, errors.NewCacheError("deployment not found in cache", nil)
 	}
 	return obj.(appsv1.Deployment), nil

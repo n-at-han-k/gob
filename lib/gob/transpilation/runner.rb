@@ -618,6 +618,19 @@ module Gob
         # ---
         def Comm(node)
           case node
+          # when (msg = ch.<<)
+          # case msg := <-ch:
+          # ---
+          # A comm clause may be parenthesised, as an if condition may be. The
+          # parentheses are Gob syntax and must not reach the Go output.
+          in SyntaxTree::Paren[ contents: contents ]
+            Comm(
+              case contents
+              in SyntaxTree::Statements[ body: [ only ] ] then only
+              else contents
+              end
+            )
+
           # when ch << "ping"
           # case ch <- "ping":
           # ---
@@ -678,6 +691,37 @@ module Gob
 
         def Comms(ctx, node)
           case node
+          # when msg, ok = ch.<<
+          # case msg, ok := <-ch:
+          # ---
+          # Ruby reads the comma as a when-value separator, so an unparenthesised
+          # comma-ok receive arrives as several arguments: every target but the
+          # last, then the assignment that carries the last target and the
+          # receive. They are one comm clause and are put back together here.
+          in SyntaxTree::When[
+            arguments: SyntaxTree::Args[ parts: [
+              *targets,
+              SyntaxTree::Assign[ target: last_target, value: value ]
+            ] ],
+            statements: SyntaxTree::Statements[ body: body ],
+            consequent: consequent
+          ] if targets.any?
+            before = ctx.state.fetch(:declared).dup
+            comm_node = SyntaxTree::Go::AssignStmt.new(
+              lhs: (targets + [ last_target ]).map { |target| Statements(target) },
+              tok: :":=",
+              rhs: [ Statements(value) ]
+            )
+            declared = ctx.state.fetch(:declared) - before
+            ctx.state.fetch(:declared).replace(before)
+            [
+              SyntaxTree::Go::CommClause.new(
+                comm: comm_node,
+                body: ctx.descend(body, declared: declared).then { |children| children.tree }
+              ),
+              *Comms(ctx, consequent)
+            ]
+
           in SyntaxTree::When[
             arguments: SyntaxTree::Args[ parts: [ comm ] ],
             statements: SyntaxTree::Statements[ body: body ],
@@ -1174,6 +1218,15 @@ module Gob
 
           in SyntaxTree::XStringLiteral[parts: [SyntaxTree::TStringContent[value: text]]]
             RawStringLiteral(text)
+
+          # !ok
+          # !ok
+          # ---
+          # A unary expression is not a variable, so it has to be transpiled as
+          # the expression it is. Without this an "if !ok" predicate reaches
+          # Variable and comes back nil, emitting "if nil".
+          in SyntaxTree::Unary
+            Statements(node)
 
           else
             Variable(node)
