@@ -2018,6 +2018,15 @@ module Gob
                 )
               )
 
+            # go syncer.Run(ctx)
+            # go syncer.Run(ctx)
+            # ---
+            in SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "go"],
+              arguments: SyntaxTree::Args[ parts: [ call ] ]
+            ]
+              SyntaxTree::Go::GoStmt.new(call: Statements(call))
+
             # ch.<< "ping" / ch.<<(msg)
             # ch <- "ping"
             # ---

@@ -256,7 +256,9 @@ module Gob
         emit(node.name, out)
         emit(node.type.params, out) if node.type&.params
         case node.type&.results
-        in SyntaxTree::Go::FieldList[list: [SyntaxTree::Go::Field[names: [], type: rtype]]]
+        in SyntaxTree::Go::FieldList[list: []]
+          nil
+        in SyntaxTree::Go::FieldList[list: [SyntaxTree::Go::Field[names: names, type: rtype]]] if names.nil? || names.empty?
           out << " "
           emit(rtype, out)
         in SyntaxTree::Go::FieldList => results
@@ -275,7 +277,9 @@ module Gob
         out << "func"
         emit(node.params, out) if node.params
         case node.results
-        in SyntaxTree::Go::FieldList[list: [SyntaxTree::Go::Field[names: [], type: rtype]]]
+        in SyntaxTree::Go::FieldList[list: []]
+          nil
+        in SyntaxTree::Go::FieldList[list: [SyntaxTree::Go::Field[names: names, type: rtype]]] if names.nil? || names.empty?
           out << " "
           emit(rtype, out)
         in SyntaxTree::Go::FieldList => results
