@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- a declaration written between two `const` or two `var` declarations was silently dropped, along with its methods. Grouping adjacent declarations into one parenthesised block took the whole span from the first such declaration in the file to the last and discarded everything in it that was not a declaration of that kind, so a `type` and its methods sitting between two groups of constants never reached the output. Only genuinely adjacent declarations are grouped now, and constants on either side of an intervening declaration stay in separate blocks
 - `Gob/CollectionLiteral` no longer reports the result list of a func type. `Proc[string, [int, error]]` is the documented spelling for `func(string) (int, error)`, but the array literal holding the results was read as an untyped collection, so the documented form could not vet clean
 
 ## [1.4.0] - 2026-11-27

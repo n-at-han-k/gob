@@ -2111,32 +2111,51 @@ module Gob
               ))
               ctx.tree.reject! { |node| node.is_a?(SyntaxTree::Go::ImportSpec) }
 
+              # Adjacent declarations of the same kind become one parenthesised
+              # block. Only adjacent ones: a type or a func written between two
+              # `const` declarations keeps its place, and the constants on
+              # either side of it stay in separate blocks.
               [:const, :var].each do |tok|
-                decls = ctx.tree.select { |node| node.is_a?(SyntaxTree::Go::GenDecl) && node.tok == tok }
-                next if decls.length < 2
+                runs = ctx.tree.each_with_object([]) do |node, acc|
+                  joinable = (node in SyntaxTree::Go::GenDecl[tok: ^tok]) || (node in SyntaxTree::Go::Comment)
 
-                first_index = ctx.tree.index { |node| node.equal?(decls.first) }
-                last_index  = ctx.tree.rindex { |node| node.equal?(decls.last) }
-                range = ctx.tree[first_index..last_index]
-
-                grouped = SyntaxTree::Go::GenDecl.new(tok: tok, specs: range.flat_map { |node|
-                  case node
-                  # consecutive `#` lines are one block comment, so they wait in
-                  # state until the spec they were written against arrives
-                  in SyntaxTree::Go::Comment
-                    ctx.state.fetch(:comments) << node
-                    []
-
-                  in SyntaxTree::Go::GenDecl[tok: ^tok, specs: specs]
-                    [*ctx.state.fetch(:comments).slice!(0..), *specs]
-
+                  if acc.last.is_a?(Array) && joinable
+                    acc.last << node
+                  elsif node in SyntaxTree::Go::GenDecl[tok: ^tok]
+                    acc << [node]
                   else
-                    []
+                    acc << node
                   end
-                })
+                end
 
-                replaced = ctx.tree[0...first_index] + [grouped] + ctx.tree[(last_index + 1)..]
-                ctx.tree.replace(replaced)
+                ctx.tree.replace(runs.flat_map { |run|
+                  next [run] unless run.is_a?(Array)
+
+                  # comments the run trails off in were written against
+                  # whatever follows the run, so they stay outside the block
+                  trailing = []
+                  trailing.unshift(run.pop) while run.last in SyntaxTree::Go::Comment
+
+                  next [*run, *trailing] if run.count { |node| node in SyntaxTree::Go::GenDecl } < 2
+
+                  grouped = SyntaxTree::Go::GenDecl.new(tok: tok, specs: run.flat_map { |node|
+                    case node
+                    # consecutive `#` lines are one block comment, so they wait
+                    # in state until the spec they were written against arrives
+                    in SyntaxTree::Go::Comment
+                      ctx.state.fetch(:comments) << node
+                      []
+
+                    in SyntaxTree::Go::GenDecl[tok: ^tok, specs: specs]
+                      [*ctx.state.fetch(:comments).slice!(0..), *specs]
+
+                    else
+                      []
+                    end
+                  })
+
+                  [grouped, *trailing]
+                })
               end
 
               file = Package(name: ctx.state[:package] || "main", declarations: ctx.tree.dup)
