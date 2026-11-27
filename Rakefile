@@ -17,7 +17,7 @@ namespace :test do
 
   desc "Run syntax unit tests"
   task :syntax do
-    sh "bundle exec ruby -Ilib tests/syntax/run.rb"
+    sh "bundle exec ruby -Ilib test/syntax/run.rb"
   end
 end
 

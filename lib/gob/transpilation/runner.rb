@@ -73,6 +73,78 @@ module Gob
           )
         end
 
+        def InterfaceDecl(name, body)
+          SyntaxTree::Go::GenDecl.new(
+            tok: :type,
+            specs: [
+              SyntaxTree::Go::TypeSpec.new(
+                name: Ident(name),
+                type: SyntaxTree::Go::InterfaceType.new(
+                  methods: SyntaxTree::Go::FieldList.new(
+                    list: Array(body).filter_map { |node| InterfaceMethod(node) }
+                  )
+                )
+              )
+            ]
+          )
+        end
+
+        def InterfaceMethod(node)
+          case node
+          in SyntaxTree::DefNode[
+            name: { value: mname },
+            params: { contents: SyntaxTree::Params[requireds: args], comments: [SyntaxTree::Comment[value: types], *] }
+          ]
+            InterfaceMethodField(mname, args, parse_signature_comment(types))
+
+          in SyntaxTree::DefNode[
+            name: { value: mname },
+            params: { comments: [SyntaxTree::Comment[value: types], *] }
+          ]
+            InterfaceMethodField(mname, [], parse_signature_comment(types))
+
+          in SyntaxTree::DefNode[name: { value: mname }]
+            InterfaceMethodField(mname, [], { params: [], returns: [] })
+
+          else
+            nil
+          end
+        end
+
+        def InterfaceMethodField(mname, args, sig)
+          SyntaxTree::Go::Field.new(
+            names: [Ident(mname)],
+            type: SyntaxTree::Go::FuncType.new(
+              params: SyntaxTree::Go::FieldList.new(
+                list:
+                  case args
+                  in []
+                    sig[:params].map { |type|
+                      SyntaxTree::Go::Field.new(type: SyntaxTree::Go::Ident.new(name: type))
+                    }
+                  else
+                    args.zip(sig[:params]).map { |arg, type|
+                      SyntaxTree::Go::Field.new(
+                        names: [SyntaxTree::Go::Ident.new(name: arg.value)],
+                        type:  SyntaxTree::Go::Ident.new(name: type)
+                      )
+                    }
+                  end
+              ),
+              results: SyntaxTree::Go::FieldList.new(
+                list: sig[:returns].map { |ret|
+                  case ret
+                  in { name: String => rname, type: rtype }
+                    SyntaxTree::Go::Field.new(names: [Ident(rname)], type: Ident(rtype))
+                  in { name: nil, type: rtype }
+                    SyntaxTree::Go::Field.new(type: Ident(rtype))
+                  end
+                }
+              )
+            )
+          )
+        end
+
         # type :CompressedSet, Array[byte]
         # type CompressedSet []byte
         # ---
@@ -787,6 +859,9 @@ module Gob
           in SyntaxTree::Const[value: name] if state.fetch(:uppercase_constants, []).include?(name)
             Constant(name)
 
+          in SyntaxTree::Const[value: "Struct" | "Class"] | SyntaxTree::Ident[value: "struct"]
+            SyntaxTree::Go::StructType.new(fields: SyntaxTree::Go::FieldList.new(list: []))
+
           in { value: String => name }
             SyntaxTree::Go::Ident.new(name: name)
 
@@ -1180,6 +1255,21 @@ module Gob
               key:   Statements(key),
               value: Statements(value)
             )
+
+          # Struct / Class
+          # struct{}
+          # ---
+          in SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Struct" | "Class"]]
+            SyntaxTree::Go::StructType.new(fields: SyntaxTree::Go::FieldList.new(list: []))
+
+          # Struct[] / Class[]
+          # struct{}
+          # ---
+          in SyntaxTree::ARef[
+            collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[ value: "Struct" | "Class" ] ],
+            index: nil
+          ]
+            SyntaxTree::Go::StructType.new(fields: SyntaxTree::Go::FieldList.new(list: []))
 
           # Chan[int]
           # chan int
@@ -1630,14 +1720,23 @@ module Gob
           iterate do |ctx, node|
             case node
             in SyntaxTree::ModuleDeclaration[
-              constant: SyntaxTree::ConstRef[
-                constant: SyntaxTree::Const[value: name]
-              ],
-              bodystmt: SyntaxTree::BodyStmt[
-                statements: SyntaxTree::Statements[body: body]
-              ]
+              constant: SyntaxTree::ConstRef[constant: SyntaxTree::Const[value: "Main"]],
+              bodystmt: SyntaxTree::BodyStmt[statements: SyntaxTree::Statements[body: body]]
             ]
-              ctx.state[:package] = name == "Main" ? "main" : name.downcase
+              ctx.state[:package] = "main"
+              Hoist.new(body)
+
+            in SyntaxTree::ModuleDeclaration[
+              constant: SyntaxTree::ConstRef[constant: SyntaxTree::Const[value: name]],
+              bodystmt: SyntaxTree::BodyStmt[statements: SyntaxTree::Statements[body: body]]
+            ] if ctx.state[:package]
+              InterfaceDecl(name, body)
+
+            in SyntaxTree::ModuleDeclaration[
+              constant: SyntaxTree::ConstRef[constant: SyntaxTree::Const[value: name]],
+              bodystmt: SyntaxTree::BodyStmt[statements: SyntaxTree::Statements[body: body]]
+            ]
+              ctx.state[:package] = name.downcase
               Hoist.new(body)
 
             # type :uint128, Array[uint64, 2] do def M ... end end

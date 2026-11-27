@@ -10,7 +10,7 @@ class ProcTypeTest < SyntaxTest
         var :f, Proc[[bool]]
       end
     GOB
-    assert_includes(go, "var f func() (bool)")
+    assert_includes(go, "var f func() bool")
   end
 
   def test_proc_one_param_single_return
@@ -19,7 +19,7 @@ class ProcTypeTest < SyntaxTest
         var :f, Proc[int, [bool]]
       end
     GOB
-    assert_includes(go, "var f func(int) (bool)")
+    assert_includes(go, "var f func(int) bool")
   end
 
   def test_proc_two_params_single_return
@@ -28,7 +28,7 @@ class ProcTypeTest < SyntaxTest
         var :f, Proc[int, string, [bool]]
       end
     GOB
-    assert_includes(go, "var f func(int, string) (bool)")
+    assert_includes(go, "var f func(int, string) bool")
   end
 
   def test_proc_multiple_returns

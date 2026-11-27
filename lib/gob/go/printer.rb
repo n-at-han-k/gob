@@ -38,6 +38,8 @@ module Gob
           emit_value_spec(node, out)
         when SyntaxTree::Go::StructType
           emit_struct_type(node, out, indent: indent)
+        when SyntaxTree::Go::InterfaceType
+          emit_interface_type(node, out, indent: indent)
         when SyntaxTree::Go::BlockStmt
           emit_block_stmt(node, out, indent: indent)
         when SyntaxTree::Go::ExprStmt
@@ -210,6 +212,41 @@ module Gob
         out << tabs(indent) << "}"
       end
 
+      def emit_interface_type(node, out, indent: 0)
+        out << "interface {"
+        methods = node.methods&.list || []
+        if methods.empty?
+          out << "}"
+          return
+        end
+        out << "\n"
+        methods.each do |field|
+          out << tabs(indent + 1)
+          if field.names && !field.names.empty?
+            field.names.each_with_index { |n, i| out << ", " if i > 0; emit(n, out) }
+          end
+          case field.type
+          in SyntaxTree::Go::FuncType => type
+            emit(type.params, out) if type.params
+            case type.results
+            in SyntaxTree::Go::FieldList[list: [SyntaxTree::Go::Field[names: [], type: rtype]]]
+              out << " "
+              emit(rtype, out)
+            in SyntaxTree::Go::FieldList => results
+              out << " "
+              emit(results, out)
+            else
+              nil
+            end
+          else
+            out << " " if field.names && !field.names.empty?
+            emit(field.type, out) if field.type
+          end
+          out << "\n"
+        end
+        out << tabs(indent) << "}"
+      end
+
       def emit_func_decl(node, out, indent: 0)
         out << tabs(indent) << "func "
         if node.recv
@@ -218,9 +255,15 @@ module Gob
         end
         emit(node.name, out)
         emit(node.type.params, out) if node.type&.params
-        if node.type&.results
+        case node.type&.results
+        in SyntaxTree::Go::FieldList[list: [SyntaxTree::Go::Field[names: [], type: rtype]]]
           out << " "
-          emit(node.type.results, out)
+          emit(rtype, out)
+        in SyntaxTree::Go::FieldList => results
+          out << " "
+          emit(results, out)
+        else
+          nil
         end
         if node.body
           out << " "
@@ -231,9 +274,15 @@ module Gob
       def emit_func_type(node, out)
         out << "func"
         emit(node.params, out) if node.params
-        if node.results
+        case node.results
+        in SyntaxTree::Go::FieldList[list: [SyntaxTree::Go::Field[names: [], type: rtype]]]
           out << " "
-          emit(node.results, out)
+          emit(rtype, out)
+        in SyntaxTree::Go::FieldList => results
+          out << " "
+          emit(results, out)
+        else
+          nil
         end
       end
 

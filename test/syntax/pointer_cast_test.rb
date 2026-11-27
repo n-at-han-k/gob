@@ -28,4 +28,27 @@ class PointerCastTest < SyntaxTest
     GOB
     assert_includes(go, "(*foo.Bar)(p)")
   end
+
+  def test_pointer_cast_nil
+    go = transpile(<<~GOB)
+      module Main
+        class C; end
+        var :_, C, @@C.(nil)
+      end
+    GOB
+    assert_includes(go, "var _ C = (*C)(nil)")
+  end
+
+  def test_pointer_cast_unsafe_pointer
+    go = transpile(<<~GOB)
+      require "unsafe"
+
+      module Main
+        def f(p) # (*int) -> unsafe.Pointer
+          return unsafe.Pointer(p)
+        end
+      end
+    GOB
+    assert_includes(go, "unsafe.Pointer(p)")
+  end
 end

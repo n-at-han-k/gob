@@ -46,7 +46,7 @@ class ComplexTypeTest < SyntaxTest
         var :x, Hash[string, Proc[int, [bool]]]
       end
     GOB
-    assert_includes(go, "var x map[string]func(int) (bool)")
+    assert_includes(go, "var x map[string]func(int) bool")
   end
 
   def test_deeply_nested_hash_array
@@ -65,5 +65,41 @@ class ComplexTypeTest < SyntaxTest
       end
     GOB
     assert_includes(go, "var x [8][4]int")
+  end
+
+  def test_empty_struct_type
+    go = transpile(<<~GOB)
+      module Main
+        var :x, Struct[]
+      end
+    GOB
+    assert_includes(go, "var x struct {}")
+  end
+
+  def test_empty_class_type_alias
+    go = transpile(<<~GOB)
+      module Main
+        var :x, Class[]
+      end
+    GOB
+    assert_includes(go, "var x struct {}")
+  end
+
+  def test_bare_struct_type
+    go = transpile(<<~GOB)
+      module Main
+        var :x, Struct
+      end
+    GOB
+    assert_includes(go, "var x struct {}")
+  end
+
+  def test_class_new_array_of_struct
+    go = transpile(<<~GOB)
+      module Main
+        var armFits = Class.new(Array[struct, 1])
+      end
+    GOB
+    assert_includes(go, "type armFits [1]struct {}")
   end
 end
