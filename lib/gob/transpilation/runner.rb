@@ -155,42 +155,78 @@ module Gob
           )
         end
 
+        # A field list is read by taking its head apart and matching the tail,
+        # so every shape a field can take is one pattern in one case.
+        #
         # Title: string, # `json:"title"`
         # Title string `json:"title"`
         # ---
         def Fields(assocs)
-          Array(assocs).filter_map do |assoc|
-            case assoc
-            in SyntaxTree::Assoc[
+          case Array(assocs)
+          in []
+            []
+
+          # Title: string, # `json:"title"`
+          # Title string `json:"title"`
+          # ---
+          in [
+            SyntaxTree::Assoc[
               key: SyntaxTree::Label[value: label],
               value: type,
               comments: [SyntaxTree::Comment[value: tag], *]
-            ]
-              SyntaxTree::Go::Field.new(
-                names: [ Ident(label.delete_suffix(":")) ],
-                type:  Statements(type),
-                tag:   BasicLit(:STRING, tag.sub(/\A#\s*/, ""))
-              )
+            ],
+            *rest
+          ]
+            [ Field(label, type, tag: tag), *Fields(rest) ]
 
-            in SyntaxTree::Assoc[ key: SyntaxTree::Label[value: label], value: type ]
-              SyntaxTree::Go::Field.new(
-                names: [ Ident(label.delete_suffix(":")) ],
-                type:  Statements(type)
-              )
+          # Title: string
+          # Title string
+          # ---
+          in [SyntaxTree::Assoc[ key: SyntaxTree::Label[value: label], value: type ], *rest]
+            [ Field(label, type), *Fields(rest) ]
 
-            # attr_accessor :A, int
-            # A int
-            # ---
-            in SyntaxTree::Command[
+          # attr_accessor :A, int # `json:"a"`
+          # A int `json:"a"`
+          # ---
+          in [
+            SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "attr_accessor"],
+              arguments: SyntaxTree::Args[ parts: [ { value: { value: label } }, type ] ],
+              comments: [SyntaxTree::Comment[value: tag], *]
+            ],
+            *rest
+          ]
+            [ Field(label, type, tag: tag), *Fields(rest) ]
+
+          # attr_accessor :A, int
+          # A int
+          # ---
+          in [
+            SyntaxTree::Command[
               message: SyntaxTree::Ident[value: "attr_accessor"],
               arguments: SyntaxTree::Args[ parts: [ { value: { value: label } }, type ] ]
-            ]
-              SyntaxTree::Go::Field.new(names: [ Ident(label) ], type: Statements(type))
+            ],
+            *rest
+          ]
+            [ Field(label, type), *Fields(rest) ]
 
-            else
-              nil
-            end
+          # Whatever else shares the body with the fields belongs to another
+          # rule, so the tail carries on alone.
+          # ---
+          in [_, *rest]
+            Fields(rest)
           end
+        end
+
+        # A label wears its colon and a tag wears its comment hash; the field is
+        # the one place that knows to take them off.
+        # ---
+        def Field(label, type, tag: nil)
+          SyntaxTree::Go::Field.new(
+            names: [ Ident(label.delete_suffix(":")) ],
+            type:  Statements(type),
+            tag:   tag && BasicLit(:STRING, tag.sub(/\A#\s*/, ""))
+          )
         end
 
         # A method takes a pointer receiver, because a method that cannot modify

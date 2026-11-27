@@ -8,7 +8,7 @@ import (
 // ListOptions represents options for listing resources
 
 type ListOptions struct {
-	Namespace string
+	Namespace string        `json:"namespace"`
 	Timeout   time.Duration `json:"timeout"`
 }
 
@@ -36,7 +36,7 @@ func (self *ListOptions) SetDefaults() {
 // ClientConfig represents Kubernetes client configuration
 
 type ClientConfig struct {
-	KubeconfigPath string
+	KubeconfigPath string        `json:"kubeconfigPath"`
 	Timeout        time.Duration `json:"timeout"`
 }
 

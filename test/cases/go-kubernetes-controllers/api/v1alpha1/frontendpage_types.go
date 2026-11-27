@@ -8,7 +8,7 @@ import (
 // FrontendPageSpec defines the desired state of FrontendPage
 
 type FrontendPageSpec struct {
-	Title      string
+	Title      string      `json:"title"`
 	Template   string      `json:"template"`
 	Components []Component `json:"components"`
 	Theme      string      `json:"theme,omitempty"`
@@ -40,7 +40,7 @@ func (self *FrontendPageSpec) DeepCopyInto(out *FrontendPageSpec) {
 // Component defines a UI component on the page
 
 type Component struct {
-	Name   string
+	Name   string         `json:"name"`
 	Type   string         `json:"type"`
 	Config map[string]any `json:"config,omitempty"`
 }
@@ -69,7 +69,7 @@ func (self *Component) DeepCopyInto(out *Component) {
 // FrontendPageStatus defines the observed state of FrontendPage
 
 type FrontendPageStatus struct {
-	Phase          string
+	Phase          string       `json:"phase"`
 	Message        string       `json:"message,omitempty"`
 	URL            string       `json:"url,omitempty"`
 	ComponentCount int          `json:"componentCount,omitempty"`
@@ -96,7 +96,7 @@ func (self *FrontendPageStatus) DeepCopyInto(out *FrontendPageStatus) {
 // FrontendPage is the Schema for the frontendpages API
 
 type FrontendPage struct {
-	TypeMeta   metav1.TypeMeta
+	TypeMeta   metav1.TypeMeta    `json:",inline"`
 	ObjectMeta metav1.ObjectMeta  `json:"metadata,omitempty"`
 	Spec       FrontendPageSpec   `json:"spec,omitempty"`
 	Status     FrontendPageStatus `json:"status,omitempty"`
@@ -130,7 +130,7 @@ func (self *FrontendPage) DeepCopyObject() runtime.Object {
 // FrontendPageList contains a list of FrontendPage
 
 type FrontendPageList struct {
-	TypeMeta metav1.TypeMeta
+	TypeMeta metav1.TypeMeta `json:",inline"`
 	ListMeta metav1.ListMeta `json:"metadata,omitempty"`
 	Items    []FrontendPage  `json:"items"`
 }

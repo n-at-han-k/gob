@@ -8,7 +8,7 @@ import (
 // InformerConfig represents informer configuration
 
 type InformerConfig struct {
-	Namespace       string
+	Namespace       string        `json:"namespace"`
 	ResyncPeriod    time.Duration `json:"resyncPeriod"`
 	MaxCacheSize    int           `json:"maxCacheSize"`
 	MaxConnections  int           `json:"maxConnections"`
@@ -56,7 +56,7 @@ func (self *InformerConfig) SetDefaults() {
 // InformerHealth represents informer health status
 
 type InformerHealth struct {
-	IsHealthy bool
+	IsHealthy bool      `json:"isHealthy"`
 	LastSync  time.Time `json:"lastSync"`
 	Error     error     `json:"error,omitempty"`
 	CacheSize int       `json:"cacheSize"`
@@ -66,7 +66,7 @@ type InformerHealth struct {
 // Event represents a deployment event
 
 type Event struct {
-	Type      string
+	Type      string    `json:"type"`
 	Namespace string    `json:"namespace"`
 	Name      string    `json:"name"`
 	Timestamp time.Time `json:"timestamp"`

@@ -17,8 +17,7 @@ class StructClassModuleTest < SyntaxTest
     go = transpile(<<~GOB)
       module Main
         class Person
-          # `json:"name"`
-          attr_accessor :Name, string
+          attr_accessor :Name, string # `json:"name"`
         end
       end
     GOB
@@ -29,8 +28,7 @@ class StructClassModuleTest < SyntaxTest
     go = transpile(<<~GOB)
       module Main
         var Person = Struct.new(
-          # `json:"name"`
-          Name: string
+          Name: string, # `json:"name"`
         )
       end
     GOB
