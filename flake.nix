@@ -221,7 +221,14 @@
             # default 16MB stack, and spinel dies on SIGSEGV with no
             # diagnostic at all -- it looks like a compiler bug rather than a
             # resource limit, so it is worth being explicit about.
-            ulimit -s unlimited
+            #
+            # Darwin refuses `unlimited` outright ("cannot modify limit:
+            # Operation not permitted"), so fall back to the hard limit there,
+            # and never let a refusal fail the build under set -e.
+            ulimit -s unlimited 2>/dev/null \
+              || ulimit -s "$(ulimit -Hs)" 2>/dev/null \
+              || echo "warning: stack limit left at $(ulimit -s)KB"
+            echo "stack limit: $(ulimit -s)KB"
 
             # Patched roots first, so a patched gem's require_relative chain
             # stays inside the patched tree. bundler is skipped outright: it is

@@ -45,7 +45,12 @@ jobs:
           - { nix_system: x86_64-linux,   runner: ubuntu-24.04 }
           - { nix_system: aarch64-linux,  runner: ubuntu-24.04-arm }
           - { nix_system: aarch64-darwin, runner: macos-15 }
-          - { nix_system: x86_64-darwin,  runner: macos-15-intel }
+          # No x86_64-darwin lane. Nix itself has dropped it: the 2.36
+          # installer has no x86_64-darwin case at all (only aarch64-darwin)
+          # and the tarball 404s, so install-nix-action dies with "sorry,
+          # there is no binary distribution of Nix for your platform". nixpkgs
+          # 26.05 is the last release to support the platform anyway. An Intel
+          # mac can still install the gem (native.yml builds that lane).
     steps:
       - uses: actions/checkout@v7
         with:
@@ -60,6 +65,35 @@ jobs:
             experimental-features = nix-command flakes
             # spinel forks cc per compile; let it use the whole runner.
             max-jobs = auto
+
+      # Caches /nix/store through GitHub's own cache, so no Cachix account or
+      # token is needed. The key is the dependency closure, NOT the sources:
+      # that way a run whose lib/ changed still restores the spinel toolchain,
+      # the gem set and stdenv (minutes of downloads) and only re-does the
+      # part that actually changed.
+      #
+      # Worth being clear about what this does and does not buy: when the
+      # sources are untouched the built gob is already in the restored store
+      # and `nix build` returns at once, which is what makes re-dispatching
+      # this workflow cheap. It cannot shorten a real source change -- that
+      # cost is spinel's whole-program inference, and it is unavoidable.
+      - uses: nix-community/cache-nix-action@v7
+        with:
+          primary-key: nix-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('flake.lock', 'flake.nix', 'Gemfile.lock', 'gemset.nix') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-${{ runner.arch }}-
+          # Save even when the build fails, so a failed run still leaves the
+          # dependency closure behind for the next attempt. Debugging this
+          # workflow is otherwise a 30-minute round trip every time.
+          save: true
+          # GitHub allows 10GB of cache per repository, shared across keys.
+          gc-max-store-size-linux: 5G
+          gc-max-store-size-macos: 5G
+          # Keep one cache per key and drop older ones, rather than filling
+          # the repository quota with every dependency bump.
+          purge: true
+          purge-prefixes: nix-${{ runner.os }}-${{ runner.arch }}-
+          purge-created: 0
+          purge-primary-key: never
 
       - name: Build
         run: nix build .#gob -L
