@@ -12,10 +12,8 @@ func runED25519() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	msg := []byte("sign me")
+	msg := ([]byte)("sign me")
 	sig := ed25519.Sign(priv, msg)
-
 	fmt.Printf("public key (%d B): %x\n", len(pub), pub)
 	fmt.Printf("signature (%d B): %x\n", len(sig), sig)
 	fmt.Println("valid:", ed25519.Verify(pub, msg, sig))

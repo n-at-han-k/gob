@@ -7,14 +7,11 @@ import (
 )
 
 func runScanner() {
-	src := []byte(`x := 1 + 2 // trailing comment`)
-
+	src := ([]byte)(`x := 1 + 2 // trailing comment`)
 	fset := token.NewFileSet()
 	file := fset.AddFile("snippet.go", fset.Base(), len(src))
-
 	var s scanner.Scanner
 	s.Init(file, src, nil, scanner.ScanComments)
-
 	for {
 		pos, tok, lit := s.Scan()
 		if tok == token.EOF {

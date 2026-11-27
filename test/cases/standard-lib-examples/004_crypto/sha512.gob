@@ -3,8 +3,8 @@ require "fmt"
 
 module Main
   def runSHA512
-    fmt.Printf("Sum384:     %x\n", sha512.Sum384(Array[byte].new("hello")))
-    fmt.Printf("Sum512:     %x\n", sha512.Sum512(Array[byte].new("hello")))
-    fmt.Printf("Sum512_256: %x\n", sha512.Sum512_256(Array[byte].new("hello")))
+    fmt.Printf("Sum384:     %x\n", sha512.Sum384(Array[byte].("hello")))
+    fmt.Printf("Sum512:     %x\n", sha512.Sum512(Array[byte].("hello")))
+    fmt.Printf("Sum512_256: %x\n", sha512.Sum512_256(Array[byte].("hello")))
   end
 end

@@ -17,7 +17,7 @@ func runText() {
 		"Tasks": []string{"learn Go", "write examples", "ship it"},
 	})
 	tw := tabwriter.NewWriter(os.Stdout, 0, 0, 2, " "[0], 0)
-	_, err := tw.Write([]byte("Name\tAge\tRole\napple\t3\tfruit\nblue\t42\tcolour\n"))
+	_, err := tw.Write(([]byte)("Name\tAge\tRole\napple\t3\tfruit\nblue\t42\tcolour\n"))
 	if err != nil {
 		log.Fatal(err)
 	}

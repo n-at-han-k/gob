@@ -44,8 +44,8 @@ func tarDemo() {
 	var buf bytes.Buffer
 	tw := tar.NewWriter(&buf)
 	files := map[string][]byte{
-		"greeting.txt": []byte("hello from inside a tar"),
-		"nested/x.txt": []byte("another entry"),
+		"greeting.txt": ([]byte)("hello from inside a tar"),
+		"nested/x.txt": ([]byte)("another entry"),
 	}
 	for name, body := range files {
 		hdr := &tar.Header{

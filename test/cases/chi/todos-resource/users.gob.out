@@ -23,21 +23,21 @@ func (self usersResource) Routes() chi.Router {
 }
 
 func (self usersResource) List(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("users list of stuff.."))
+	w.Write(([]byte)("users list of stuff.."))
 }
 
 func (self usersResource) Create(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("users create"))
+	w.Write(([]byte)("users create"))
 }
 
 func (self usersResource) Get(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("user get"))
+	w.Write(([]byte)("user get"))
 }
 
 func (self usersResource) Update(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("user update"))
+	w.Write(([]byte)("user update"))
 }
 
 func (self usersResource) Delete(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("user delete"))
+	w.Write(([]byte)("user delete"))
 }

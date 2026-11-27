@@ -53,7 +53,7 @@ import (
 // hash output. This function is NOT suitable for hashing passwords.
 
 func Hash(tag string, data []byte) []byte {
-	h := hmac.New(sha512.New512_256, []byte(tag))
+	h := hmac.New(sha512.New512_256, ([]byte)(tag))
 	h.Write(data)
 	return h.Sum(nil)
 }

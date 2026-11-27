@@ -9,7 +9,7 @@ module Main
       fmt.Printf("%q letter=%v digit=%v space=%v\n", r, unicode.IsLetter(r), unicode.IsDigit(r), unicode.IsSpace(r))
     end
 
-    fmt.Println(string(unicode.ToUpper(Array[rune].new("ß")[0])))
+    fmt.Println(string(unicode.ToUpper(Array[rune].("ß")[0])))
     s = "héllo"
     fmt.Println("bytes:", len(s), "runes:", utf8.RuneCountInString(s))
   end

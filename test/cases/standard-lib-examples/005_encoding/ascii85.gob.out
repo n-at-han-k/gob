@@ -6,7 +6,7 @@ import (
 )
 
 func runAscii85() {
-	src := []byte("hello ascii85")
+	src := ([]byte)("hello ascii85")
 	dst := make([]byte, ascii85.MaxEncodedLen(len(src)))
 	n := ascii85.Encode(dst, src)
 	dst = dst[:n]

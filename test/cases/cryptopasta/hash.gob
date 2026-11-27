@@ -29,7 +29,7 @@ module Cryptopasta
   # as an HMAC "key" and ensures that different purposes will have different
   # hash output. This function is NOT suitable for hashing passwords.
   def Hash(tag, data) # (string, []byte) -> []byte
-    h = hmac.New(sha512.New512_256, Array[byte].new(tag))
+    h = hmac.New(sha512.New512_256, Array[byte].(tag))
     h.Write(data)
     return h.Sum(nil)
   end

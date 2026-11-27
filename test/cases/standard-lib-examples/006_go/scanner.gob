@@ -4,7 +4,7 @@ require "go/token"
 
 module Main
   def runScanner
-    src = Array[byte].new(`x := 1 + 2 // trailing comment`)
+    src = Array[byte].(`x := 1 + 2 // trailing comment`)
 
     fset = token.NewFileSet()
     file = fset.AddFile("snippet.go", fset.Base(), len(src))

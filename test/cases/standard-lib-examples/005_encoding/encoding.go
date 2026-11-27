@@ -24,10 +24,9 @@ func runEncoding() {
 	var m encoding.TextMarshaler = colour{255, 128, 0}
 	txt, _ := m.MarshalText()
 	fmt.Printf("marshalled: %s\n", txt)
-
 	var back colour
 	var u encoding.TextUnmarshaler
 	u = &back
-	_ = u.UnmarshalText([]byte("#0080ff"))
+	_ = u.UnmarshalText(([]byte)("#0080ff"))
 	fmt.Printf("parsed:     %+v\n", back)
 }

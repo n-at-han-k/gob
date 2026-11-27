@@ -3,9 +3,9 @@ require "fmt"
 
 module Main
   def runSubtle
-    a = Array[byte].new("expected-token")
-    b = Array[byte].new("expected-token")
-    c = Array[byte].new("wrong-token   ")
+    a = Array[byte].("expected-token")
+    b = Array[byte].("expected-token")
+    c = Array[byte].("wrong-token   ")
 
     fmt.Println("equal (constant time):", subtle.ConstantTimeCompare(a, b) == 1)
     fmt.Println("not equal:            ", subtle.ConstantTimeCompare(a, c) == 1)

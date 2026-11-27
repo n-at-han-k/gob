@@ -8,15 +8,15 @@ module Main
   def main
     r = chi.NewRouter()
     r.Get("/", lambda { |w, r| # (http.ResponseWriter, *http.Request)
-      w.Write(Array[byte].new("root."))
+      w.Write(Array[byte].("root."))
     })
 
     r.Route("/road", lambda { |r| # (chi.Router)
       r.Get("/left", lambda { |w, r| # (http.ResponseWriter, *http.Request)
-        w.Write(Array[byte].new("left road"))
+        w.Write(Array[byte].("left road"))
       })
       r.Post("/right", lambda { |w, r| # (http.ResponseWriter, *http.Request)
-        w.Write(Array[byte].new("right road"))
+        w.Write(Array[byte].("right road"))
       })
     })
 
@@ -36,6 +36,6 @@ module Main
 
   # Ping returns pong
   def Ping(w, r) # (http.ResponseWriter, *http.Request)
-    w.Write(Array[byte].new("pong"))
+    w.Write(Array[byte].("pong"))
   end
 end

@@ -76,11 +76,11 @@ func (self KSUID) Get() interface{} {
 }
 
 func (self *KSUID) Set(s string) error {
-	return self.UnmarshalText([]byte(s))
+	return self.UnmarshalText(([]byte)(s))
 }
 
 func (self KSUID) MarshalText() ([]byte, error) {
-	return []byte(self.String()), nil
+	return ([]byte)(self.String()), nil
 }
 
 func (self KSUID) MarshalBinary() ([]byte, error) {
@@ -119,7 +119,7 @@ func (self *KSUID) Scan(src interface{}) error {
 	case []byte:
 		return self.scan(v)
 	case string:
-		return self.scan([]byte(v))
+		return self.scan(([]byte)(v))
 	default:
 		return fmt.Errorf("Scan: unable to scan type %T into KSUID", v)
 	}

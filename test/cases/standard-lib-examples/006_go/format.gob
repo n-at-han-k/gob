@@ -4,7 +4,7 @@ require "log"
 
 module Main
   def runFormat
-    src = Array[byte].new(`package p
+    src = Array[byte].(`package p
 func   Add(a,b int)int{return a+b}
 `)
 

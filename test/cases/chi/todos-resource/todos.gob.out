@@ -24,25 +24,25 @@ func (self todosResource) Routes() chi.Router {
 }
 
 func (self todosResource) List(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("todos list of stuff.."))
+	w.Write(([]byte)("todos list of stuff.."))
 }
 
 func (self todosResource) Create(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("todos create"))
+	w.Write(([]byte)("todos create"))
 }
 
 func (self todosResource) Get(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("todo get"))
+	w.Write(([]byte)("todo get"))
 }
 
 func (self todosResource) Update(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("todo update"))
+	w.Write(([]byte)("todo update"))
 }
 
 func (self todosResource) Delete(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("todo delete"))
+	w.Write(([]byte)("todo delete"))
 }
 
 func (self todosResource) Sync(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("todo sync"))
+	w.Write(([]byte)("todo sync"))
 }

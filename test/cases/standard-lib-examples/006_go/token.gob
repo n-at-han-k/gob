@@ -10,7 +10,7 @@ module Main
 
     fset = token.NewFileSet()
     f = fset.AddFile("demo.go", fset.Base(), 100)
-    f.SetLinesForContent(Array[byte].new("line one\nline two\nline three"))
+    f.SetLinesForContent(Array[byte].("line one\nline two\nline three"))
     pos = f.Pos(10)
     fmt.Println("offset 10 is at", fset.Position(pos))
   end

@@ -9,7 +9,7 @@ module Main
       Headers: Hash[string, string].new(
         Comment:  "learning-go example"
       ),
-      Bytes: Array[byte].new("some binary payload")
+      Bytes: Array[byte].("some binary payload")
     )
     pem.Encode(os.Stdout, block)
 

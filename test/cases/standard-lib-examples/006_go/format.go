@@ -7,15 +7,13 @@ import (
 )
 
 func runFormat() {
-	src := []byte(`package p
+	src := ([]byte)(`package p
 func   Add(a,b int)int{return a+b}
 `)
-
 	pretty, err := format.Source(src)
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	fmt.Println("---before---")
 	fmt.Print(string(src))
 	fmt.Println("---after----")

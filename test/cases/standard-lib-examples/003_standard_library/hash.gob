@@ -11,7 +11,7 @@ module Main
   var pair = Struct.new(a: int, b: int)
 
   def runHash # ()
-    data = Array[byte].new("hello")
+    data = Array[byte].("hello")
 
     hashes = Array[hashEntry].new(
       hashEntry.new("adler32", adler32.New()),

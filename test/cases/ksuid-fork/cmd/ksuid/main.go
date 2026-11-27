@@ -5,19 +5,30 @@ import (
 	"encoding/hex"
 	"flag"
 	"fmt"
+	"github.com/segmentio/ksuid"
 	"io"
 	"os"
 	"strings"
 	"text/template"
 	"time"
-
-	"github.com/segmentio/ksuid"
 )
 
-var count int
-var format string
-var tpltxt string
-var verbose bool
+var (
+	count   int
+	format  string
+	tpltxt  string
+	verbose bool
+)
+
+// templateData is printTemplate's anonymous struct; Gob needs a named type.
+
+type templateData struct {
+	String    string
+	Raw       string
+	Time      time.Time
+	Timestamp uint32
+	Payload   string
+}
 
 func init() {
 	flag.IntVar(&count, "n", 1, "Number of KSUIDs to generate when called with no other arguments.")
@@ -29,7 +40,6 @@ func init() {
 func main() {
 	flag.Parse()
 	args := flag.Args()
-
 	var print func(ksuid.KSUID)
 	switch format {
 	case "string":
@@ -50,13 +60,13 @@ func main() {
 		fmt.Println("Bad formatting function:", format)
 		os.Exit(1)
 	}
-
 	if len(args) == 0 {
-		for i := 0; i < count; i++ {
+		i := 0
+		for i < count {
 			args = append(args, ksuid.New().String())
+			i = i + 1
 		}
 	}
-
 	var ids []ksuid.KSUID
 	for _, arg := range args {
 		id, err := ksuid.Parse(arg)
@@ -67,7 +77,6 @@ func main() {
 		}
 		ids = append(ids, id)
 	}
-
 	for _, id := range ids {
 		if verbose {
 			fmt.Printf("%s: ", id)
@@ -94,13 +103,7 @@ COMPONENTS:
     Payload: %v
 
 `
-	fmt.Printf(inspectFormat,
-		id.String(),
-		strings.ToUpper(hex.EncodeToString(id.Bytes())),
-		id.Time(),
-		id.Timestamp(),
-		strings.ToUpper(hex.EncodeToString(id.Payload())),
-	)
+	fmt.Printf(inspectFormat, id.String(), strings.ToUpper(hex.EncodeToString(id.Bytes())), id.Time(), id.Timestamp(), strings.ToUpper(hex.EncodeToString(id.Payload())))
 }
 
 func printTime(id ksuid.KSUID) {
@@ -122,13 +125,7 @@ func printRaw(id ksuid.KSUID) {
 func printTemplate(id ksuid.KSUID) {
 	b := &bytes.Buffer{}
 	t := template.Must(template.New("").Parse(tpltxt))
-	t.Execute(b, struct {
-		String    string
-		Raw       string
-		Time      time.Time
-		Timestamp uint32
-		Payload   string
-	}{
+	t.Execute(b, templateData{
 		String:    id.String(),
 		Raw:       strings.ToUpper(hex.EncodeToString(id.Bytes())),
 		Time:      id.Time(),

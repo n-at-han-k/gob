@@ -3,11 +3,11 @@ require "fmt"
 
 module Main
   def runSHA3
-    fmt.Printf("Sum256: %x\n", sha3.Sum256(Array[byte].new("hello")))
-    fmt.Printf("Sum512: %x\n", sha3.Sum512(Array[byte].new("hello")))
+    fmt.Printf("Sum256: %x\n", sha3.Sum256(Array[byte].("hello")))
+    fmt.Printf("Sum512: %x\n", sha3.Sum512(Array[byte].("hello")))
 
     shake = sha3.NewSHAKE128()
-    shake.Write(Array[byte].new("hello"))
+    shake.Write(Array[byte].("hello"))
     out = make(Array[byte], 42)
     shake.Read(out)
     fmt.Printf("shake128 (42 B): %x\n", out)

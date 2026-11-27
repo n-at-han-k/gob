@@ -6,17 +6,13 @@ import (
 )
 
 // CompressedSet is an immutable data type which stores a set of KSUIDs.
+
 type CompressedSet []byte
 
-// Iter returns an iterator that produces all KSUIDs in the set.
 func (self CompressedSet) Iter() CompressedSetIter {
-	return CompressedSetIter{
-		content: []byte(self),
-	}
+	return CompressedSetIter{content: ([]byte)(self)}
 }
 
-// String satisfies the fmt.Stringer interface, returns a human-readable string
-// representation of the set.
 func (self CompressedSet) String() string {
 	b := bytes.Buffer{}
 	b.WriteByte('[')
@@ -25,8 +21,6 @@ func (self CompressedSet) String() string {
 	return b.String()
 }
 
-// String satisfies the fmt.GoStringer interface, returns a Go representation of
-// the set.
 func (self CompressedSet) GoString() string {
 	b := bytes.Buffer{}
 	b.WriteString("ksuid.CompressedSet{")
@@ -37,8 +31,8 @@ func (self CompressedSet) GoString() string {
 
 func (self CompressedSet) writeTo(b *bytes.Buffer) {
 	a := [27]byte{}
-
-	for i, it := 0, self.Iter(); it.Next(); i++ {
+	i, it := 0, self.Iter()
+	for it.Next() {
 		if i != 0 {
 			b.WriteString(", ")
 		}
@@ -46,11 +40,14 @@ func (self CompressedSet) writeTo(b *bytes.Buffer) {
 		it.KSUID.Append(a[:0])
 		b.Write(a[:])
 		b.WriteByte('"')
+		i = i + 1
 	}
 }
 
 // Compress creates and returns a compressed set of KSUIDs from the list given
+
 // as arguments.
+
 func Compress(ids ...KSUID) CompressedSet {
 	c := 1 + byteLength + (len(ids) / 5)
 	b := make([]byte, 0, c)
@@ -58,71 +55,68 @@ func Compress(ids ...KSUID) CompressedSet {
 }
 
 // AppendCompressed uses the given byte slice as pre-allocated storage space to
+
 // build a KSUID set.
+
 //
+
 // Note that the set uses a compression technique to store the KSUIDs, so the
+
 // resuling length is not 20 x len(ids). The rule of thumb here is for the given
+
 // byte slice to reserve the amount of memory that the application would be OK
+
 // to waste.
+
 func AppendCompressed(set []byte, ids ...KSUID) CompressedSet {
 	if len(ids) != 0 {
 		if !IsSorted(ids) {
 			Sort(ids)
 		}
 		one := makeUint128(0, 1)
-
 		// The first KSUID is always written to the set, this is the starting
 		// point for all deltas.
-		set = append(set, byte(rawKSUID))
+		set = append(set, byte(rawKsuid))
 		set = append(set, ids[0][:]...)
-
 		timestamp := ids[0].Timestamp()
 		lastKSUID := ids[0]
 		lastValue := uint128Payload(ids[0])
-
-		for i := 1; i != len(ids); i++ {
+		i := 1
+		for i != len(ids) {
 			id := ids[i]
-
 			if id == lastKSUID {
+				i = i + 1
 				continue
 			}
-
 			t := id.Timestamp()
 			v := uint128Payload(id)
-
 			if t != timestamp {
 				d := t - timestamp
 				n := varintLength32(d)
-
 				set = append(set, timeDelta|byte(n))
 				set = appendVarint32(set, d, n)
 				set = append(set, id[timestampLengthInBytes:]...)
-
 				timestamp = t
 			} else {
 				d := sub128(v, lastValue)
-
 				if d != one {
 					n := varintLength128(d)
-
 					set = append(set, payloadDelta|byte(n))
 					set = appendVarint128(set, d, n)
 				} else {
 					l, c := rangeLength(ids[i+1:], t, id, v)
 					m := uint64(l + 1)
 					n := varintLength64(m)
-
 					set = append(set, payloadRange|byte(n))
 					set = appendVarint64(set, m, n)
-
-					i += c
+					i = i + c
 					id = ids[i]
 					v = uint128Payload(id)
 				}
 			}
-
 			lastKSUID = id
 			lastValue = v
+			i = i + 1
 		}
 	}
 	return CompressedSet(set)
@@ -130,31 +124,24 @@ func AppendCompressed(set []byte, ids ...KSUID) CompressedSet {
 
 func rangeLength(ids []KSUID, timestamp uint32, lastKSUID KSUID, lastValue uint128) (length int, count int) {
 	one := makeUint128(0, 1)
-
 	for i := range ids {
 		id := ids[i]
-
 		if id == lastKSUID {
 			continue
 		}
-
 		if id.Timestamp() != timestamp {
 			count = i
 			return
 		}
-
 		v := uint128Payload(id)
-
 		if sub128(v, lastValue) != one {
 			count = i
 			return
 		}
-
 		lastKSUID = id
 		lastValue = v
-		length++
+		length = length + 1
 	}
-
 	count = len(ids)
 	return
 }
@@ -202,71 +189,77 @@ func varintLength128(v uint128) int {
 }
 
 func varintLength64(v uint64) int {
-	switch {
-	case (v & 0xFFFFFFFFFFFFFF00) == 0:
+	if (v & 0xFFFFFFFFFFFFFF00) == 0 {
 		return 1
-	case (v & 0xFFFFFFFFFFFF0000) == 0:
+	} else if (v & 0xFFFFFFFFFFFF0000) == 0 {
 		return 2
-	case (v & 0xFFFFFFFFFF000000) == 0:
+	} else if (v & 0xFFFFFFFFFF000000) == 0 {
 		return 3
-	case (v & 0xFFFFFFFF00000000) == 0:
+	} else if (v & 0xFFFFFFFF00000000) == 0 {
 		return 4
-	case (v & 0xFFFFFF0000000000) == 0:
+	} else if (v & 0xFFFFFF0000000000) == 0 {
 		return 5
-	case (v & 0xFFFF000000000000) == 0:
+	} else if (v & 0xFFFF000000000000) == 0 {
 		return 6
-	case (v & 0xFF00000000000000) == 0:
+	} else if (v & 0xFF00000000000000) == 0 {
 		return 7
-	default:
+	} else {
 		return 8
 	}
 }
 
 func varintLength32(v uint32) int {
-	switch {
-	case (v & 0xFFFFFF00) == 0:
+	if (v & 0xFFFFFF00) == 0 {
 		return 1
-	case (v & 0xFFFF0000) == 0:
+	} else if (v & 0xFFFF0000) == 0 {
 		return 2
-	case (v & 0xFF000000) == 0:
+	} else if (v & 0xFF000000) == 0 {
 		return 3
-	default:
+	} else {
 		return 4
 	}
 }
 
-const rawKSUID = 0
-const timeDelta = (1 << 6)
-const payloadDelta = (1 << 7)
-const payloadRange = (1 << 6) | (1 << 7)
+const (
+	rawKsuid     = 0
+	timeDelta    = (1 << 6)
+	payloadDelta = (1 << 7)
+	payloadRange = (1 << 6) | (1 << 7)
+)
 
 // CompressedSetIter is an iterator type returned by Set.Iter to produce the
+
 // list of KSUIDs stored in a set.
+
 //
+
 // Here's is how the iterator type is commonly used:
+
 //
+
 //	for it := set.Iter(); it.Next(); {
+
 //		id := it.KSUID
+
 //		// ...
+
 //	}
+
 //
+
 // CompressedSetIter values are not safe to use concurrently from multiple
+
 // goroutines.
+
 type CompressedSetIter struct {
-	// KSUID is modified by calls to the Next method to hold the KSUID loaded
-	// by the iterator.
-	KSUID KSUID
-
-	content []byte
-	offset  int
-
+	KSUID     KSUID
+	content   []byte
+	offset    int
 	seqlength uint64
 	timestamp uint32
 	lastValue uint128
 }
 
-// Next moves the iterator forward, returning true if there a KSUID was found,
-// or false if the iterator as reached the end of the set it was created from.
 func (self *CompressedSetIter) Next() bool {
 	if self.seqlength != 0 {
 		value := incr128(self.lastValue)
@@ -275,67 +268,50 @@ func (self *CompressedSetIter) Next() bool {
 		self.lastValue = value
 		return true
 	}
-
 	if self.offset == len(self.content) {
 		return false
 	}
-
 	b := self.content[self.offset]
 	self.offset = self.offset + 1
-
-	const mask = rawKSUID | timeDelta | payloadDelta | payloadRange
+	const mask = rawKsuid | timeDelta | payloadDelta | payloadRange
 	tag := int(b) & mask
-	cnt := int(b) & ^mask
-
+	cnt := int(b) & (mask ^ -1)
 	switch tag {
-	case rawKSUID:
+	case rawKsuid:
 		off0 := self.offset
 		off1 := off0 + byteLength
-
 		copy(self.KSUID[:], self.content[off0:off1])
-
 		self.offset = off1
 		self.timestamp = self.KSUID.Timestamp()
 		self.lastValue = uint128Payload(self.KSUID)
-
 	case timeDelta:
 		off0 := self.offset
 		off1 := off0 + cnt
 		off2 := off1 + payloadLengthInBytes
-
 		self.timestamp = self.timestamp + varint32(self.content[off0:off1])
-
 		binary.BigEndian.PutUint32(self.KSUID[:timestampLengthInBytes], self.timestamp)
 		copy(self.KSUID[timestampLengthInBytes:], self.content[off1:off2])
-
 		self.offset = off2
 		self.lastValue = uint128Payload(self.KSUID)
-
 	case payloadDelta:
 		off0 := self.offset
 		off1 := off0 + cnt
-
 		delta := varint128(self.content[off0:off1])
 		value := add128(self.lastValue, delta)
-
 		self.KSUID = value.ksuid(self.timestamp)
 		self.offset = off1
 		self.lastValue = value
-
 	case payloadRange:
 		off0 := self.offset
 		off1 := off0 + cnt
-
 		value := incr128(self.lastValue)
 		self.KSUID = value.ksuid(self.timestamp)
 		self.seqlength = varint64(self.content[off0:off1])
 		self.offset = off1
 		self.seqlength = self.seqlength - 1
 		self.lastValue = value
-
 	default:
 		panic("KSUID set iterator is reading malformed data")
 	}
-
 	return true
 }

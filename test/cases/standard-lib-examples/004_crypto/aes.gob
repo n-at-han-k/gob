@@ -18,7 +18,7 @@ module Main
     nonce = make(Array[byte], gcm.NonceSize())
     rand.Read(nonce)
 
-    plaintext = Array[byte].new("secret message")
+    plaintext = Array[byte].("secret message")
     ct = gcm.Seal(nil, nonce, plaintext, nil)
     pt, err = gcm.Open(nil, nonce, ct, nil)
     if err

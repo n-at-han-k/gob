@@ -4,13 +4,13 @@ require "log"
 
 module Main
   def runDES
-    key = Array[byte].new("8bytekey")
+    key = Array[byte].("8bytekey")
     block, err = des.NewCipher(key)
     if err
       log.Fatal(err)
     end
 
-    plaintext = Array[byte].new("blockdat")
+    plaintext = Array[byte].("blockdat")
     ct = make(Array[byte], des.BlockSize)
     block.Encrypt(ct, plaintext)
 

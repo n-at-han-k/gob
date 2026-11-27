@@ -12,7 +12,7 @@ module Main
       log.Fatal(err)
     end
 
-    digest = sha256.Sum256(Array[byte].new("attack at dawn"))
+    digest = sha256.Sum256(Array[byte].("attack at dawn"))
     sig, _ = ecdsa.SignASN1(rand.Reader, priv, digest[])
     ok = ecdsa.VerifyASN1(@priv.PublicKey, digest[], sig)
 

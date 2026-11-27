@@ -30,10 +30,10 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("root."))
+		w.Write(([]byte)("root."))
 	})
 	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("pong"))
+		w.Write(([]byte)("pong"))
 	})
 	r.Get("/panic", func(w http.ResponseWriter, r *http.Request) {
 		panic("test")
@@ -52,7 +52,7 @@ func main() {
 			case <-time.After(processTime):
 				// The above channel simulates some hard work.
 			}
-			w.Write([]byte(fmt.Sprintf("Processed in %v seconds\n", processTime)))
+			w.Write(([]byte)(fmt.Sprintf("Processed in %v seconds\n", processTime)))
 		})
 	})
 	// Throttle very expensive handlers/operations.
@@ -67,15 +67,15 @@ func main() {
 				switch r.Context().Err() {
 				case context.DeadlineExceeded:
 					w.WriteHeader(504)
-					w.Write([]byte("Processing too slow\n"))
+					w.Write(([]byte)("Processing too slow\n"))
 				default:
-					w.Write([]byte("Canceled\n"))
+					w.Write(([]byte)("Canceled\n"))
 				}
 				return
 			case <-time.After(5 * time.Second):
 				// The above channel simulates some hard work.
 			}
-			w.Write([]byte("Processed\n"))
+			w.Write(([]byte)("Processed\n"))
 		})
 	})
 	http.ListenAndServe(":3333", r)

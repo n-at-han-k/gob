@@ -10,7 +10,7 @@ import (
 type CompressedSet []byte
 
 func (self CompressedSet) Iter() CompressedSetIter {
-	return CompressedSetIter{content: []byte(self)}
+	return CompressedSetIter{content: ([]byte)(self)}
 }
 
 func (self CompressedSet) String() string {

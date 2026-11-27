@@ -21,7 +21,7 @@ type pair struct {
 }
 
 func runHash() {
-	data := []byte("hello")
+	data := ([]byte)("hello")
 	hashes := []hashEntry{
 		hashEntry{"adler32", adler32.New()},
 		hashEntry{"crc32", crc32.NewIEEE()},

@@ -798,13 +798,39 @@ module Gob
           # h.Value().(Hash[string, int])
           # h.Value().(map[string]int)
           # ---
+          # @@T.(x) / Array[byte].(x)
+          # (*T)(x) / ([]byte)(x)
+          # ---
           in SyntaxTree::CallNode[
             receiver: receiver,
             operator: SyntaxTree::Period[value: "."],
             message: :call,
-            arguments: SyntaxTree::ArgParen[ arguments: SyntaxTree::Args[ parts: [ type ] ] ]
+            arguments: SyntaxTree::ArgParen[ arguments: SyntaxTree::Args[ parts: [ arg ] ] ]
           ]
-            SyntaxTree::Go::TypeAssertExpr.new(x: Statements(receiver), type: Statements(type))
+            type_receiver =
+              case receiver
+              in SyntaxTree::VarRef[value: SyntaxTree::IVar | SyntaxTree::CVar]
+                true
+              in SyntaxTree::ARef[collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Array" | "Hash" | "Chan"]]]
+                true
+              in SyntaxTree::CallNode[
+                receiver: SyntaxTree::VarRef[value: SyntaxTree::IVar | SyntaxTree::CVar],
+                operator: SyntaxTree::Period[value: "."],
+                message: SyntaxTree::Const | SyntaxTree::Ident
+              ]
+                true
+              else
+                false
+              end
+
+            if type_receiver
+              SyntaxTree::Go::CallExpr.new(
+                fun: SyntaxTree::Go::ParenExpr.new(x: Statements(receiver)),
+                args: [Statements(arg)]
+              )
+            else
+              SyntaxTree::Go::TypeAssertExpr.new(x: Statements(receiver), type: Statements(arg))
+            end
 
           # article.new(Title: "Learning Go")
           # article{Title: "Learning Go"}
@@ -1147,29 +1173,6 @@ module Gob
               results: nil
             )
 
-          # Array[byte].new("hello")
-          # []byte("hello")
-          # ---
-          # Array[byte].new(text)
-          # []byte(text)
-          # ---
-          in SyntaxTree::CallNode[
-            receiver: SyntaxTree::ARef[
-              collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Array"] ],
-              index: SyntaxTree::Args[
-                parts: [ SyntaxTree::VCall[value: SyntaxTree::Ident[value: "byte" | "rune"]] ]
-              ]
-            ] => receiver,
-            operator: SyntaxTree::Period[value: "."],
-            message: SyntaxTree::Ident[value: "new"],
-            arguments: SyntaxTree::ArgParen[
-              arguments: SyntaxTree::Args[ parts: [ value ] ]
-            ]
-          ]
-            SyntaxTree::Go::CallExpr.new(
-              fun:  Statements(receiver),
-              args: [ Statements(value) ]
-            )
 
           # @url.URL.new(Scheme: "https")
           # &url.URL{Scheme: "https"}

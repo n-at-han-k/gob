@@ -17,7 +17,7 @@ module Main
     defer os.RemoveAll("subdir")
 
     createEmptyFile = lambda { |name| # (string)
-      d = Array[byte].new("")
+      d = Array[byte].("")
       check(os.WriteFile(name, d, 0644))
     }
 

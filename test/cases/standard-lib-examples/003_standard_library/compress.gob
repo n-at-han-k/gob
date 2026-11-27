@@ -11,7 +11,7 @@ require "log"
 
 module Main
   def runCompress
-    sample = Array[byte].new("compress me compress me compress me compress me")
+    sample = Array[byte].("compress me compress me compress me compress me")
 
     gzipDemo(sample)
     flateDemo(sample)

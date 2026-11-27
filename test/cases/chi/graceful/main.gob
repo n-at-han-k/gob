@@ -48,7 +48,7 @@ module Main
     r.Use(middleware.Logger)
 
     r.Get("/", lambda { |w, r| # (http.ResponseWriter, *http.Request)
-      w.Write(Array[byte].new("sup"))
+      w.Write(Array[byte].("sup"))
     })
 
     r.Get("/slow", lambda { |w, r| # (http.ResponseWriter, *http.Request)
@@ -61,7 +61,7 @@ module Main
       # up to the developer, as some code blocks are preemptible, and others are not.
       time.Sleep(5 * time.Second)
 
-      w.Write(Array[byte].new(fmt.Sprintf("all done.\n")))
+      w.Write(Array[byte].(fmt.Sprintf("all done.\n")))
     })
 
     return r

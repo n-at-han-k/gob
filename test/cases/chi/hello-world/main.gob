@@ -11,7 +11,7 @@ module Main
     r.Use(middleware.Recoverer)
 
     r.Get("/", lambda { |w, r| # (http.ResponseWriter, *http.Request)
-      w.Write(Array[byte].new("hello world"))
+      w.Write(Array[byte].("hello world"))
     })
 
     http.ListenAndServe(":3333", r)

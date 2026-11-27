@@ -6,15 +6,13 @@ import (
 )
 
 func runBytes() {
-	a := []byte("hello world")
-	b := []byte("world")
-
+	a := ([]byte)("hello world")
+	b := ([]byte)("world")
 	fmt.Println("Contains:", bytes.Contains(a, b))
 	fmt.Println("Index:", bytes.Index(a, b))
 	fmt.Println("ToUpper:", string(bytes.ToUpper(a)))
-	fmt.Println("Split:", bytes.Split(a, []byte(" ")))
-	fmt.Println("Replace:", string(bytes.ReplaceAll(a, b, []byte("gopher"))))
-
+	fmt.Println("Split:", bytes.Split(a, ([]byte)(" ")))
+	fmt.Println("Replace:", string(bytes.ReplaceAll(a, b, ([]byte)("gopher"))))
 	var buf bytes.Buffer
 	buf.WriteString("one ")
 	buf.WriteString("two ")

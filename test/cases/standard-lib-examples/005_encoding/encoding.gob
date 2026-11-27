@@ -26,7 +26,7 @@ module Main
     var :back, colour
     var :u, encoding.TextUnmarshaler
     u = @back
-    _ = u.UnmarshalText(Array[byte].new("#0080ff"))
+    _ = u.UnmarshalText(Array[byte].("#0080ff"))
     fmt.Printf("parsed:     %+v\n", back)
   end
 end

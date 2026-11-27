@@ -7,7 +7,7 @@ module Main
 
     h = sha256.New()
 
-    h.Write(Array[byte].new("sha256 this string"))
+    h.Write(Array[byte].("sha256 this string"))
 
     bs = h.Sum(nil)
 

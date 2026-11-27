@@ -4,7 +4,7 @@ require "log"
 
 module Main
   def runHex
-    src = Array[byte].new("hello hex")
+    src = Array[byte].("hello hex")
 
     encoded = hex.EncodeToString(src)
     fmt.Println("encoded:", encoded)

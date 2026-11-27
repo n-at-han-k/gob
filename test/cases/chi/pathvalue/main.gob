@@ -18,6 +18,6 @@ module Main
     userID = r.PathValue("userID")
 
     # Respond with the extracted userID
-    w.Write(Array[byte].new(fmt.Sprintf("User ID: %s", userID)))
+    w.Write(Array[byte].(fmt.Sprintf("User ID: %s", userID)))
   end
 end

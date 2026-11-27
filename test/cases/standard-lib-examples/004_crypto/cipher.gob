@@ -12,7 +12,7 @@ module Main
     iv = make(Array[byte], block.BlockSize())
     rand.Read(iv)
 
-    plaintext = Array[byte].new("streaming plaintext")
+    plaintext = Array[byte].("streaming plaintext")
     ct = make(Array[byte], len(plaintext))
     cipher.NewCTR(block, iv).XORKeyStream(ct, plaintext)
 

@@ -7,13 +7,11 @@ import (
 )
 
 func runHMAC() {
-	key := []byte("shared secret")
-	msg := []byte("transfer $100")
-
+	key := ([]byte)("shared secret")
+	msg := ([]byte)("transfer $100")
 	mac := hmac.New(sha256.New, key)
 	mac.Write(msg)
 	tag := mac.Sum(nil)
-
 	check := hmac.New(sha256.New, key)
 	check.Write(msg)
 	fmt.Printf("tag: %x\n", tag)

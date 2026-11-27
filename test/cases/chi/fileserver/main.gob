@@ -28,7 +28,7 @@ module Main
 
     # Index handler
     r.Get("/", lambda { |w, r| # (http.ResponseWriter, *http.Request)
-      w.Write(Array[byte].new("hi"))
+      w.Write(Array[byte].("hi"))
     })
 
     # Create a route along /files that will serve contents from

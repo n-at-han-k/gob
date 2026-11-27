@@ -151,6 +151,18 @@ end
 
 A `case` with no expression and channel `when` clauses becomes a Go `select` (see Concurrency).
 
+## Literals
+
+```ruby
+s = "hello"
+r = '\n'
+b = '['
+```
+
+- Double-quoted strings transpile to Go interpreted string literals.
+- Single-quoted literals transpile to Go rune/char literals: `'a'` becomes `'a'`, `'\n'` becomes `'\n'`.
+- Single quotes are for runes. `gob fmt`/validation reports multi-character single-quoted text and suggests double quotes.
+
 ## Collections
 
 ```ruby
@@ -164,10 +176,10 @@ c = make(Hash[string, int])
 - `Hash[K, V].new(...)` creates a Go map literal.
 - `Array[T, N].new(...)` creates a Go fixed-size array literal.
 - `make(Array[T], n)` and `make(Hash[K, V])` map to Go `make`.
-- `Array[byte].new(x)` and `Array[rune].new(x)` are conversions: `[]byte(x)` and `[]rune(x)`.
-- `Proc` is the Go type `func()`.
+- `Proc` is the Go type `func()`. `Proc[T, U]` takes params; a final array literal gives return types, e.g. `Proc[int, [bool]]` -> `func(int) bool`, `Proc[int, [bool, error]]` -> `func(int) (bool, error)`.
 - `x[]` slices the whole value: `x[:]`. `x[...n]` becomes `x[:n]`.
-- `x.(Hash[K, V])` is a type assertion.
+- `Type.(x)` casts/converts when the receiver is a type-form (`Array[T]`, `Hash[K, V]`, `@@T`, `@@pkg.Type`), e.g. `Array[byte].(x)` -> `([]byte)(x)`, `@@byte.(p)` -> `(*byte)(p)`.
+- `x.(T)` is a type assertion when the receiver is a value.
 - Common Go builtins/helpers used in cases include `len`, `cap`, `append`, `copy`, `delete`, and `clear`.
 
 ## Structs and classes
@@ -238,6 +250,7 @@ v = @@p      # dereference
 
 - `@pkg.Type.new(Field: v)` becomes `&pkg.Type{Field: v}`.
 - `@@pkg.Type` in a type position is the pointer type `*pkg.Type`.
+- `@@T.(x)` casts to a pointer type: `(*T)(x)`.
 
 ## Errors
 

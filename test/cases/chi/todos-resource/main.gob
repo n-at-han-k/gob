@@ -17,7 +17,7 @@ module Main
     r.Use(middleware.Recoverer)
 
     r.Get("/", lambda { |w, r| # (http.ResponseWriter, *http.Request)
-      w.Write(Array[byte].new("."))
+      w.Write(Array[byte].("."))
     })
 
     r.Mount("/users", usersResource.new.Routes())

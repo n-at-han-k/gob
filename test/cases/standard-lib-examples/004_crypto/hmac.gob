@@ -4,8 +4,8 @@ require "fmt"
 
 module Main
   def runHMAC
-    key = Array[byte].new("shared secret")
-    msg = Array[byte].new("transfer $100")
+    key = Array[byte].("shared secret")
+    msg = Array[byte].("transfer $100")
 
     mac = hmac.New(sha256.New, key)
     mac.Write(msg)

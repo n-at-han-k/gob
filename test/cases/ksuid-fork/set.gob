@@ -6,7 +6,7 @@ module Ksuid
   type :CompressedSet, Array[byte] do
     # Iter returns an iterator that produces all KSUIDs in the set.
     protected def Iter # () -> CompressedSetIter
-      return CompressedSetIter.new(content: Array[byte].new(self))
+      return CompressedSetIter.new(content: Array[byte].(self))
     end
 
     # String satisfies the fmt.Stringer interface, returns a human-readable string

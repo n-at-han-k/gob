@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 
 - `Proc[...]` type declarations now support a final array literal for return types, e.g. `Proc[[bool]]`, `Proc[int, [bool]]`, `Proc[int, [bool, error]]`
+- Type-form `.call` casts: `@@T.(x)` and `Array[T].(x)` / `Hash[K,V].(x)` / `Chan[T].(x)` emit Go type conversions
+
+### Changed
+
+- `Array[byte].new(x)` / `Array[rune].new(x)` are no longer special-cased as conversions; use `Array[byte].(x)` / `Array[rune].(x)` for `[]byte(x)` / `[]rune(x)`
 
 ## [1.2.1] - 2026-11-26
 

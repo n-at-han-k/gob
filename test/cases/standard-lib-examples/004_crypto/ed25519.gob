@@ -10,7 +10,7 @@ module Main
       log.Fatal(err)
     end
 
-    msg = Array[byte].new("sign me")
+    msg = Array[byte].("sign me")
     sig = ed25519.Sign(priv, msg)
 
     fmt.Printf("public key (%d B): %x\n", len(pub), pub)

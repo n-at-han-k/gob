@@ -44,7 +44,7 @@ func main() {
 	r.Use(middleware.Logger)
 	// Index handler
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("hi"))
+		w.Write(([]byte)("hi"))
 	})
 	// Create a route along /files that will serve contents from
 	// the ./data/ folder.

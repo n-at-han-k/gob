@@ -83,11 +83,11 @@ module Ksuid
     # Set satisfies the flag.Value interface, making it possible to use KSUIDs as
     # part of of the command line options of a program.
     def Set(s) # (string) -> error
-      return self.UnmarshalText(Array[byte].new(s))
+      return self.UnmarshalText(Array[byte].(s))
     end
 
     protected def MarshalText # () -> ([]byte, error)
-      return Array[byte].new(self.String()), nil
+      return Array[byte].(self.String()), nil
     end
 
     protected def MarshalBinary # () -> ([]byte, error)
@@ -136,7 +136,7 @@ module Ksuid
       when Array[byte]
         return self.scan(v)
       when string
-        return self.scan(Array[byte].new(v))
+        return self.scan(Array[byte].(v))
       else
         return fmt.Errorf("Scan: unable to scan type %T into KSUID", v)
       end

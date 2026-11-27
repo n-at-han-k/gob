@@ -13,7 +13,7 @@ func runCipher() {
 	block, _ := aes.NewCipher(key)
 	iv := make([]byte, block.BlockSize())
 	rand.Read(iv)
-	plaintext := []byte("streaming plaintext")
+	plaintext := ([]byte)("streaming plaintext")
 	ct := make([]byte, len(plaintext))
 	cipher.NewCTR(block, iv).XORKeyStream(ct, plaintext)
 	pt := make([]byte, len(ct))

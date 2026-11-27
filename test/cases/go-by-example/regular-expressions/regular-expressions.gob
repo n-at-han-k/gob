@@ -26,14 +26,14 @@ module Main
 
     fmt.Println(r.FindAllString("peach punch pinch", 2))
 
-    fmt.Println(r.Match(Array[byte].new("peach")))
+    fmt.Println(r.Match(Array[byte].("peach")))
 
     r = regexp.MustCompile("p([a-z]+)ch")
     fmt.Println("regexp:", r)
 
     fmt.Println(r.ReplaceAllString("a peach", "<fruit>"))
 
-    in_ = Array[byte].new("a peach")
+    in_ = Array[byte].("a peach")
     out = r.ReplaceAllFunc(in_, bytes.ToUpper)
     fmt.Println(string(out))
   end

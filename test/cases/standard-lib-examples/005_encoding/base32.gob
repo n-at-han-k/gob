@@ -4,7 +4,7 @@ require "log"
 
 module Main
   def runBase32
-    src = Array[byte].new("hello base32")
+    src = Array[byte].("hello base32")
 
     encoded = base32.StdEncoding.EncodeToString(src)
     fmt.Println("std:  ", encoded)

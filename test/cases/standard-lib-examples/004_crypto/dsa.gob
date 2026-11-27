@@ -16,7 +16,7 @@ module Main
       log.Fatal(err)
     end
 
-    digest = sha256.Sum256(Array[byte].new("hello"))
+    digest = sha256.Sum256(Array[byte].("hello"))
     r, s, err = dsa.Sign(rand.Reader, priv, digest[])
     if err
       log.Fatal(err)

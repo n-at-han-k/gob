@@ -18,5 +18,5 @@ func main() {
 func pathValueHandler(w http.ResponseWriter, r *http.Request) {
 	userID := r.PathValue("userID")
 	// Respond with the extracted userID
-	w.Write([]byte(fmt.Sprintf("User ID: %s", userID)))
+	w.Write(([]byte)(fmt.Sprintf("User ID: %s", userID)))
 }

@@ -13,13 +13,11 @@ func runDSA() {
 	if err := dsa.GenerateParameters(&params, rand.Reader, dsa.L1024N160); err != nil {
 		log.Fatal(err)
 	}
-
 	priv := &dsa.PrivateKey{PublicKey: dsa.PublicKey{Parameters: params}}
 	if err := dsa.GenerateKey(priv, rand.Reader); err != nil {
 		log.Fatal(err)
 	}
-
-	digest := sha256.Sum256([]byte("hello"))
+	digest := sha256.Sum256(([]byte)("hello"))
 	r, s, err := dsa.Sign(rand.Reader, priv, digest[:])
 	if err != nil {
 		log.Fatal(err)

@@ -3,14 +3,14 @@ require "fmt"
 
 module Main
   def runBytes
-    a = Array[byte].new("hello world")
-    b = Array[byte].new("world")
+    a = Array[byte].("hello world")
+    b = Array[byte].("world")
 
     fmt.Println("Contains:", bytes.Contains(a, b))
     fmt.Println("Index:", bytes.Index(a, b))
     fmt.Println("ToUpper:", string(bytes.ToUpper(a)))
-    fmt.Println("Split:", bytes.Split(a, Array[byte].new(" ")))
-    fmt.Println("Replace:", string(bytes.ReplaceAll(a, b, Array[byte].new("gopher"))))
+    fmt.Println("Split:", bytes.Split(a, Array[byte].(" ")))
+    fmt.Println("Replace:", string(bytes.ReplaceAll(a, b, Array[byte].("gopher"))))
 
     var :buf, bytes.Buffer
     buf.WriteString("one ")

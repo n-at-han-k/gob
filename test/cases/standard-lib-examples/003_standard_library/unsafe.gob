@@ -9,7 +9,7 @@ module Main
     fmt.Println("Sizeof header:  ", unsafe.Sizeof(header.new()))
     fmt.Println("Alignof header: ", unsafe.Alignof(header.new()))
     fmt.Println("Offsetof Len:   ", unsafe.Offsetof(header.new().Len))
-    b = Array[byte].new("hello")
+    b = Array[byte].("hello")
     s = unsafe.String(@b[0], len(b))
     fmt.Println("string view:", s)
     bytes = unsafe.Slice(unsafe.StringData("world"), 5)

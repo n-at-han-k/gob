@@ -14,11 +14,9 @@ func runECDSA() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	digest := sha256.Sum256([]byte("attack at dawn"))
+	digest := sha256.Sum256(([]byte)("attack at dawn"))
 	sig, _ := ecdsa.SignASN1(rand.Reader, priv, digest[:])
 	ok := ecdsa.VerifyASN1(&priv.PublicKey, digest[:], sig)
-
 	fmt.Printf("signature (%d B): %x\n", len(sig), sig)
 	fmt.Println("valid:", ok)
 }

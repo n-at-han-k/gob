@@ -3,7 +3,7 @@ require "fmt"
 
 module Main
   def runAscii85
-    src = Array[byte].new("hello ascii85")
+    src = Array[byte].("hello ascii85")
     dst = make(Array[byte], ascii85.MaxEncodedLen(len(src)))
     n = ascii85.Encode(dst, src)
     dst = dst[...n]

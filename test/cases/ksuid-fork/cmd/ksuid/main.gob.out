@@ -132,6 +132,6 @@ func printTemplate(id ksuid.KSUID) {
 		Timestamp: id.Timestamp(),
 		Payload:   strings.ToUpper(hex.EncodeToString(id.Payload())),
 	})
-	b.WriteByte(10)
+	b.WriteByte('\n')
 	io.Copy(os.Stdout, b)
 }

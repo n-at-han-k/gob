@@ -4,16 +4,16 @@ require "log"
 
 module Main
   def runRC4
-    c, err = rc4.NewCipher(Array[byte].new("weakkey"))
+    c, err = rc4.NewCipher(Array[byte].("weakkey"))
     if err
       log.Fatal(err)
     end
 
-    pt = Array[byte].new("legacy data")
+    pt = Array[byte].("legacy data")
     ct = make(Array[byte], len(pt))
     c.XORKeyStream(ct, pt)
 
-    c2, _ = rc4.NewCipher(Array[byte].new("weakkey"))
+    c2, _ = rc4.NewCipher(Array[byte].("weakkey"))
     out = make(Array[byte], len(ct))
     c2.XORKeyStream(out, ct)
 

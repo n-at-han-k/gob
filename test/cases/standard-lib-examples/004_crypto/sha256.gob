@@ -3,12 +3,12 @@ require "fmt"
 
 module Main
   def runSHA256
-    fmt.Printf("Sum256:   %x\n", sha256.Sum256(Array[byte].new("hello")))
-    fmt.Printf("Sum224:   %x\n", sha256.Sum224(Array[byte].new("hello")))
+    fmt.Printf("Sum256:   %x\n", sha256.Sum256(Array[byte].("hello")))
+    fmt.Printf("Sum224:   %x\n", sha256.Sum224(Array[byte].("hello")))
 
     h = sha256.New()
-    h.Write(Array[byte].new("hel"))
-    h.Write(Array[byte].new("lo"))
+    h.Write(Array[byte].("hel"))
+    h.Write(Array[byte].("lo"))
     fmt.Printf("streamed: %x\n", h.Sum(nil))
   end
 end

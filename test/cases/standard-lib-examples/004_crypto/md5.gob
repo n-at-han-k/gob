@@ -3,12 +3,12 @@ require "fmt"
 
 module Main
   def runMD5
-    sum = md5.Sum(Array[byte].new("hello"))
+    sum = md5.Sum(Array[byte].("hello"))
     fmt.Printf("md5: %x\n", sum)
 
     h = md5.New()
-    h.Write(Array[byte].new("hel"))
-    h.Write(Array[byte].new("lo"))
+    h.Write(Array[byte].("hel"))
+    h.Write(Array[byte].("lo"))
     fmt.Printf("streamed: %x\n", h.Sum(nil))
   end
 end

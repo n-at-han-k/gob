@@ -25,27 +25,27 @@ module Main
     end
 
     protected def List(w, r) # (http.ResponseWriter, *http.Request)
-      w.Write(Array[byte].new("todos list of stuff.."))
+      w.Write(Array[byte].("todos list of stuff.."))
     end
 
     protected def Create(w, r) # (http.ResponseWriter, *http.Request)
-      w.Write(Array[byte].new("todos create"))
+      w.Write(Array[byte].("todos create"))
     end
 
     protected def Get(w, r) # (http.ResponseWriter, *http.Request)
-      w.Write(Array[byte].new("todo get"))
+      w.Write(Array[byte].("todo get"))
     end
 
     protected def Update(w, r) # (http.ResponseWriter, *http.Request)
-      w.Write(Array[byte].new("todo update"))
+      w.Write(Array[byte].("todo update"))
     end
 
     protected def Delete(w, r) # (http.ResponseWriter, *http.Request)
-      w.Write(Array[byte].new("todo delete"))
+      w.Write(Array[byte].("todo delete"))
     end
 
     protected def Sync(w, r) # (http.ResponseWriter, *http.Request)
-      w.Write(Array[byte].new("todo sync"))
+      w.Write(Array[byte].("todo sync"))
     end
   end
 end

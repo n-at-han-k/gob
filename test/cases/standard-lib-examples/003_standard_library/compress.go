@@ -14,7 +14,7 @@ import (
 )
 
 func runCompress() {
-	sample := []byte("compress me compress me compress me compress me")
+	sample := ([]byte)("compress me compress me compress me compress me")
 	gzipDemo(sample)
 	flateDemo(sample)
 	zlibDemo(sample)

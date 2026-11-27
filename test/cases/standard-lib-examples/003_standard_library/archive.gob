@@ -43,8 +43,8 @@ module Main
     var :buf, bytes.Buffer
     tw = tar.NewWriter(@buf)
     files = Hash[string, Array[byte]].new(
-      "greeting.txt" => Array[byte].new("hello from inside a tar"),
-      "nested/x.txt" => Array[byte].new("another entry")
+      "greeting.txt" => Array[byte].("hello from inside a tar"),
+      "nested/x.txt" => Array[byte].("another entry")
     )
     files.each do |name, body|
       hdr = @tar.Header.new(
