@@ -29,14 +29,14 @@ module Gob
   ____
 
   # Parse `source` and transpile it into a SyntaxTree::Go tree.
-  def self.transpile(source, path: nil, check: true)
+  def self.transpile(source, path: nil, check: false)
     Validation::Rules.check!(source, path: path) if check
     Transpilation::Context.global_for(path) if path
     Transpilation::Runner.new.call(RubyParser.parse(source))
   end
 
   # Transpile `source` and emit it as Go source text.
-  def self.transpile_to_go(source, path: nil, check: true)
+  def self.transpile_to_go(source, path: nil, check: false)
     Go::Printer.print(transpile(source, path: path, check: check))
   end
 end

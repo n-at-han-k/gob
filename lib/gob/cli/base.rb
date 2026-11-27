@@ -38,21 +38,7 @@ module Gob
           matches
         end
 
-        def validate_source!(source, path)
-          offenses = Gob::Validation::Rules.validate(source, path: path)
-          return if offenses.empty?
-
-          Gob::CLI::Errors.render_offenses(offenses, path: path)
-          exit 1
-        end
-
         def transpile_source(source, path)
-          Gob::Reporter.step("fmt #{path}")
-          source = Gob::Validation::Rules.autocorrect(source, path: path)
-
-          Gob::Reporter.step("vet #{path}")
-          validate_source!(source, path)
-
           Gob::Reporter.step("transpile #{path}")
           go_source = Gob.transpile_to_go(source, path: path, check: false)
 
