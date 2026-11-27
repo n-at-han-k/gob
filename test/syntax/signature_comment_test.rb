@@ -65,6 +65,51 @@ class SignatureCommentTest < SyntaxTest
     )
   end
 
+  # A comma inside a nested type must not be read as a parameter separator.
+  # The outer-parens form used to split `func(string, webdav.FileInfo)` into
+  # `func(string` and `webdav.FileInfo)`, emitting Go with an unmatched paren.
+  def test_func_param_with_multiple_args_inside_outer_parens
+    assert_equal(
+      { params: ["context.Context", "string", "func(string, webdav.FileInfo)"], returns: [{ name: nil, type: "error" }] },
+      parse("# (context.Context, string, func(string, webdav.FileInfo)) -> error")
+    )
+  end
+
+  def test_func_param_with_multiple_args_not_last_inside_outer_parens
+    assert_equal(
+      { params: ["func(int, string)", "error"], returns: [{ name: nil, type: "error" }] },
+      parse("# (func(int, string), error) -> error")
+    )
+  end
+
+  def test_nested_func_param_inside_outer_parens
+    assert_equal(
+      { params: ["func(func(int, int) int)"], returns: [{ name: nil, type: "error" }] },
+      parse("# (func(func(int, int) int)) -> error")
+    )
+  end
+
+  def test_generic_brackets_with_multiple_type_args_param
+    assert_equal(
+      { params: ["iter.Seq2[int, string]"], returns: [{ name: nil, type: "error" }] },
+      parse("# (iter.Seq2[int, string]) -> error")
+    )
+  end
+
+  def test_generic_brackets_with_multiple_type_args_return
+    assert_equal(
+      { params: [], returns: [{ name: nil, type: "iter.Seq2[string, int]" }, { name: nil, type: "error" }] },
+      parse("# () -> (iter.Seq2[string, int], error)")
+    )
+  end
+
+  def test_map_param_with_func_value_containing_comma
+    assert_equal(
+      { params: ["map[string]func(int, int)"], returns: [{ name: nil, type: "error" }] },
+      parse("# (map[string]func(int, int)) -> error")
+    )
+  end
+
   def test_variadic_param
     assert_equal(
       { params: ["[]byte", "...KSUID"], returns: [{ name: nil, type: "CompressedSet" }] },

@@ -10,6 +10,17 @@ module Gob
   module Transpilation
     class Runner
       module DefinitionNodes
+        # A bracketed group, nesting recursively. A comma inside a group
+        # belongs to the type, so it is never an item separator.
+        GROUP = /(?<group>
+          \( (?: [^()\[\]{}] | \g<group> )* \)
+        | \[ (?: [^()\[\]{}] | \g<group> )* \]
+        | \{ (?: [^()\[\]{}] | \g<group> )* \}
+        )/x
+
+        # One item of a signature list: anything up to a top-level comma.
+        ITEM = /(?<item> (?: [^,()\[\]{}] | #{GROUP} )+ )/x
+
         def parse_signature_comment(text)
           body = text.to_s.strip.sub(/\A#\s*/, "")
           parts = body.split(/\s*->\s*/, 2)
@@ -17,16 +28,15 @@ module Gob
           right = parts[1].to_s.strip
 
           split_items = ->(v) {
-            v = v.strip
-            case v
-            in /\A\((?<inner>.*)\)\z/m then v = $~[:inner].strip
-            else nil
-            end
-
-            case v
-            in /\A\s*\z/ then []
-            else
-              v.scan(/func\([^()]*\)(?:\s+[^,]+)?|\[[^\[\]]*\][^,]*|[^,]+/).map(&:strip).reject(&:empty?)
+            case v.strip
+            in /\A\s*\z/
+              []
+            in /\A\((?<inner>.*)\)\z/m
+              split_items.call($~[:inner])
+            in /\A#{ITEM}\s*,\s*(?<rest>.*)\z/m
+              [$~[:item].strip, *split_items.call($~[:rest])]
+            in /\A#{ITEM}\z/
+              [$~[:item].strip]
             end
           }
 
