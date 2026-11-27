@@ -95,6 +95,78 @@ class ChannelAndBitwiseTest < SyntaxTest
     assert_includes(go, "case ch <- msg:")
   end
 
+  def test_select_send_binary_in_when
+    go = transpile(<<~GOB)
+      require "fmt"
+
+      module Main
+        def f(events, event) # (Chan[string], string)
+          case
+          when events << event
+            fmt.Println("sent")
+          when ctx.Done().<<
+            fmt.Println("done")
+          end
+        end
+      end
+    GOB
+    assert_includes(go, "select {")
+    assert_includes(go, "case events <- event:")
+    assert_includes(go, "case <-ctx.Done():")
+  end
+
+  def test_select_receive_bare_in_when
+    go = transpile(<<~GOB)
+      require "fmt"
+
+      module Main
+        def f(ch) # (Chan[string])
+          case
+          when ch.<<
+            fmt.Println("got")
+          end
+        end
+      end
+    GOB
+    assert_includes(go, "case <-ch:")
+  end
+
+  def test_select_send_binary_in_when_arrow
+    go = transpile(<<~GOB)
+      require "fmt"
+
+      module Main
+        def f(events, event) # (Chan[string], string)
+          case
+          when events.←.event
+            fmt.Println("sent")
+          when ←.ctx.Done()
+            fmt.Println("done")
+          end
+        end
+      end
+    GOB
+    assert_includes(go, "select {")
+    assert_includes(go, "case events <- event:")
+    assert_includes(go, "case <-ctx.Done():")
+  end
+
+  def test_select_receive_bare_in_when_arrow
+    go = transpile(<<~GOB)
+      require "fmt"
+
+      module Main
+        def f(ch) # (Chan[string])
+          case
+          when ←.ch
+            fmt.Println("got")
+          end
+        end
+      end
+    GOB
+    assert_includes(go, "case <-ch:")
+  end
+
   def test_bitwise_not
     go = transpile(<<~GOB)
       module Main
