@@ -1,21 +1,6 @@
 name: Release binary
 
-# Builds gob ahead-of-time with spinel and attaches standalone binaries to a
-# release -- no Ruby on the target machine, and no Nix store either.
-#
-# Deliberately thin. Everything that decides *how* gob is built lives in
-# flake.nix: the spinel toolchain, the patched gem sources, the -I feature
-# roots that stand in for RubyGems, the raised stack limit and the static
-# link. This file runs `nix build` per platform and uploads what falls out, so
-# the build is identical to the one a developer gets locally.
-#
-# Contrast with native.yml, which builds the *gem* (CRuby plus c-shared Go
-# libraries). This is the other distribution: one file, nothing to install.
-
 on:
-  push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
   workflow_dispatch:
     inputs:
       tag:
@@ -144,40 +129,4 @@ jobs:
           path: ${{ steps.stage.outputs.asset }}
           if-no-files-found: error
 
-  release:
-    needs: build
-    # Only publish when there is a real tag to publish to. A bare
-    # workflow_dispatch from a branch leaves github.ref_name as the branch
-    # name, which would otherwise cut a release tagged "main"; that run still
-    # builds and uploads artifacts, which is what a test dispatch wants.
-    if: ${{ inputs.tag != '' || startsWith(github.ref, 'refs/tags/') }}
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/download-artifact@v8
-        with:
-          path: dist
-          merge-multiple: true
-
-      - name: Publish
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          cd dist
-          ls -l
-          tag="${{ inputs.tag || github.ref_name }}"
-
-          {
-            echo "Standalone \`gob\` binaries, compiled ahead of time by spinel."
-            echo
-            echo "No Ruby runtime required. Linux builds are statically linked;"
-            echo "macOS builds link only libSystem."
-            echo
-            echo '```'
-            sha256sum gob-*
-            echo '```'
-          } > notes.md
-
-          gh release view "$tag" >/dev/null 2>&1 \
-            || gh release create "$tag" --title "$tag" --notes-file notes.md
-          gh release upload "$tag" gob-* --clobber
+ 
