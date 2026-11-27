@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "../../ruby_parser"
+
 module Gob
   module Validation
     module Rules
@@ -14,7 +16,7 @@ module Gob
         # A rule matches the source the same way the transpiler does, so that
         # what is legal here is exactly what the transpiler knows how to read.
         def on_new_investigation
-          walk(SyntaxTree.parse(processed_source.raw_source))
+          walk(Gob::RubyParser.parse(processed_source.raw_source))
         rescue SyntaxTree::Parser::ParseError
           nil
         end
@@ -65,13 +67,24 @@ module Gob
             )
           end
 
+          # The first character of the line a node sits on. A node knows the
+          # column it starts at, which is the distance from there.
+          def start_of_line(location)
+            location.start_char - location.start_column
+          end
+
+          # A body is indented past the line its opener sits on, not past the
+          # opener itself -- `xs.each do` opens a scope from column 4, not 11.
+          def indentation(location)
+            processed_source.raw_source[start_of_line(location)..].match(/\A[ \t]*/)[0].length
+          end
+
           # The whole line a node sits on, newline included.
           def line(location)
             raw = processed_source.raw_source
-            opening = raw.rindex("\n", location.start_char - 1).then { |index| index ? index + 1 : 0 }
             closing = raw.index("\n", location.end_char).then { |index| index ? index + 1 : raw.length }
 
-            Parser::Source::Range.new(processed_source.buffer, opening, closing)
+            Parser::Source::Range.new(processed_source.buffer, start_of_line(location), closing)
           end
 
           # The position just before the newline that ends a node's first line.

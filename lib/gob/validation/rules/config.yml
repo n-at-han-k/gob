@@ -9,9 +9,6 @@ Gob/BlockDelimiters:
 Gob/DeferStatement:
   Enabled: true
 
-Gob/ErrorCheck:
-  Enabled: true
-
 Gob/Indentation:
   Enabled: true
 
@@ -25,15 +22,6 @@ Gob/SignatureComment:
   Enabled: true
 
 Gob/TrailingWhitespace:
-  Enabled: true
-
-Gob/VariableDeclaration:
-  Enabled: true
-
-Gob/PointerType:
-  Enabled: true
-
-Gob/OperatorAssignment:
   Enabled: true
 
 Gob/ZeroBasedRangeLoop:
@@ -51,9 +39,6 @@ Gob/GoCall:
 Gob/RedundantLambdaParentheses:
   Enabled: true
 
-Gob/ThisReceiver:
-  Enabled: true
-
 Gob/ArrayLength:
   Enabled: true
 
@@ -69,8 +54,3 @@ Gob/InvokedLambda:
 Gob/AttributeType:
   Enabled: true
 
-Gob/SelectBlock:
-  Enabled: true
-
-Gob/StructTagPosition:
-  Enabled: true

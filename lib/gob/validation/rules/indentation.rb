@@ -85,15 +85,6 @@ module Gob
             raw[opening...start].match?(/\A[ \t]*\z/)
           end
 
-          # A body is indented past the line its opener sits on, not past the
-          # opener itself -- `xs.each do` opens a scope from column 4, not 11.
-          def indentation(location)
-            raw = processed_source.raw_source
-            opening = raw.rindex("\n", location.start_char - 1).then { |index| index ? index + 1 : 0 }
-
-            raw[opening..].match(/\A[ \t]*/)[0].length
-          end
-
           def leading(location)
             leading_at(location.start_char)
           end

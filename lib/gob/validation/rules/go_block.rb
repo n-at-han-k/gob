@@ -33,7 +33,7 @@ module Gob
               add_offense(range(block.location), message: MSG) do |corrector|
                 corrector.replace(range(message.location), "go lambda")
                 corrector.replace(range(opening.location), "{")
-                corrector.replace(closing(block), invoked?(block) ? "}" : "}.()")
+                corrector.replace(closing(block), invoked? ? "}" : "}.()")
               end
 
             else
@@ -49,8 +49,11 @@ module Gob
             )
           end
 
-          def invoked?(block)
-            processed_source.raw_source[block.location.end_char, 3] == ".()"
+          # `go do ... end.()` is already invoked, and the call that invokes it
+          # is the node holding this one.
+          # ---
+          def invoked?
+            @ancestors[-2] in SyntaxTree::CallNode[message: :call]
           end
       end
     end

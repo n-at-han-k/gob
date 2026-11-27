@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-27
+
+### Added
+
+- Interfaces: a `module` nested inside the package module emits a Go interface, one method per `def`, with parameter and result types read from the signature comment — `def Stat(filePath) # (string) -> (FileStat, error)` becomes `Stat(filePath string) (FileStat, error)`. `include Greeter` in a class body names the interface and emits nothing, Go satisfying it implicitly
+- Empty struct type: `Struct`, `Class`, `Struct[]`, `Class[]`, and `struct` in a type position emit Go `struct{}`, so `var :x, Struct[]` gives `var x struct{}` and `Class.new(Array[struct, 1])` gives `type armFits [1]struct{}`
+- Struct tags on `attr_accessor` fields: ``attr_accessor :Name, string # `json:"name"` `` emits ``Name string `json:"name"` ``. The tag must sit on the same line as the field; one on the line above is still ignored there
+- `Gob::RubyParser`, a `SyntaxTree::Parser` subclass that homes a comment on the innermost node at the edge of an argument list rather than on the list itself. `Gob.transpile`, `Gob.transpile_to_go`, `Gob::Transpilation::Context` and `Gob::Validation::Rules` all parse through `Gob::RubyParser.parse` instead of `SyntaxTree.parse`
+- a standalone `gob` binary, compiled ahead of time by spinel and needing no Ruby on the target machine; built by the flake's `packages.gob` and attached to each release
+
+### Changed
+
+- the first `module` in a file names the package; every `module` after it declares an interface rather than renaming the package
+- a single unnamed result is no longer parenthesized: `func f() error` and `func(int) bool` rather than `func f() (error)` and `func(int) (bool)`. Named results and multiple results keep their parentheses
+- `gob fmt` no longer moves an inline struct tag onto the line above its field, and `Gob::Validation::Rules::StructTagPosition` no longer reports one; both placements now emit the tag
+
+### Fixed
+
+- the struct tag on the last field of a multi-line `Struct.new(...)` was homed on the argument list rather than on the field, and was dropped from the emitted struct
+
 ## [1.3.0] - 2026-11-27
 
 ### Added
@@ -101,7 +121,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - initial release
 
-[Unreleased]: https://github.com/n-at-han-k/gob/compare/v1.1.4...HEAD
+[Unreleased]: https://github.com/n-at-han-k/gob/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/n-at-han-k/gob/releases/tag/v1.4.0
+[1.3.0]: https://github.com/n-at-han-k/gob/releases/tag/v1.3.0
+[1.2.3]: https://github.com/n-at-han-k/gob/releases/tag/v1.2.3
+[1.2.1]: https://github.com/n-at-han-k/gob/releases/tag/v1.2.1
+[1.2.0]: https://github.com/n-at-han-k/gob/releases/tag/v1.2.0
 [1.1.4]: https://github.com/n-at-han-k/gob/releases/tag/v1.1.4
 [1.1.3]: https://github.com/n-at-han-k/gob/releases/tag/v1.1.3
 [1.1.2]: https://github.com/n-at-han-k/gob/releases/tag/v1.1.2

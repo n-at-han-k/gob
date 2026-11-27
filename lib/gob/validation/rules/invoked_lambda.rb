@@ -32,15 +32,10 @@ module Gob
             end
           end
 
+          # Only `go` may invoke a lambda where it stands.
+          # ---
           def goroutine_argument?
-            @ancestors&.any? do |ancestor|
-              case ancestor
-              in SyntaxTree::Command[message: SyntaxTree::Ident[value: "go"]]
-                true
-              else
-                false
-              end
-            end
+            @ancestors.any? { |ancestor| ancestor in SyntaxTree::Command[message: SyntaxTree::Ident[value: "go"]] }
           end
       end
     end

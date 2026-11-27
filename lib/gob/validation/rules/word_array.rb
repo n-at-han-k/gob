@@ -15,16 +15,27 @@ module Gob
           def rule(node)
             case node
             in SyntaxTree::QWords[elements: elements]
-              values = elements.filter_map do |element|
-                source(element.location).inspect if element.is_a?(SyntaxTree::TStringContent)
-              end
-
               add_offense(range(node.location), message: MSG) do |corrector|
-                corrector.replace(range(node.location), "Array[string].new(#{values.join(", ")})")
+                corrector.replace(range(node.location), "Array[string].new(#{words(elements).join(", ")})")
               end
 
             else
               nil
+            end
+          end
+
+          # The words a %w literal holds, written as Go string literals.
+          # ---
+          def words(elements)
+            case elements
+            in []
+              []
+
+            in [SyntaxTree::TStringContent[value: word], *rest]
+              [ word.inspect, *words(rest) ]
+
+            in [_, *rest]
+              words(rest)
             end
           end
       end

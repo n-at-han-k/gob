@@ -3,6 +3,7 @@
 require "syntax_tree"
 require "syntax_tree/go"
 
+require_relative "gob/ruby_parser"
 require_relative "gob/version"
 require_relative "gob/reporter"
 require_relative "gob/transpilation/context"
@@ -31,7 +32,7 @@ module Gob
   def self.transpile(source, path: nil, check: true)
     Validation::Rules.check!(source, path: path) if check
     Transpilation::Context.global_for(path) if path
-    Transpilation::Runner.new.call(SyntaxTree.parse(source))
+    Transpilation::Runner.new.call(RubyParser.parse(source))
   end
 
   # Transpile `source` and emit it as Go source text.

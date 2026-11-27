@@ -86,7 +86,7 @@ else
 end
 ```
 
-`if err` and `if (name = expr)` follow Go-style condition/error-check patterns as shown in golden cases.
+`if err`, `if err != nil`, and `if (name = expr)` follow Go-style condition/error-check patterns as shown in golden cases. A bare `if err` is read as `if err != nil`.
 
 Loops and control statements:
 
@@ -197,7 +197,9 @@ end
 ```
 
 - `Struct.new(...)` declares a Go struct type.
-- Struct field tags are written as a comment on the field. `gob fmt` moves a trailing tag onto the line above:
+- Struct field tags are written as a comment on the field, either beside it or
+  on the line above. Either way the tag stays with the field it was written for,
+  including the first and the last field:
 
   ```ruby
   var article = Struct.new(
@@ -207,7 +209,13 @@ end
   )
   ```
 
-  A tag on the last field of a struct is currently dropped, so give it a field after it.
+  A class field carries its tag the same way:
+
+  ```ruby
+  class Article
+    attr_accessor :Title, string # `json:"title"`
+  end
+  ```
 
 - Plain `def` inside the block declares a pointer receiver, because most methods need to modify the receiver.
 - `protected def` declares a value receiver. The method gets a copy, so the instance is protected from modification.

@@ -19,7 +19,17 @@ namespace :test do
   task :syntax do
     sh "bundle exec ruby -Ilib test/syntax/run.rb"
   end
+
+  desc "Run the cops over test/cases, which is already in house style"
+  task :format do
+    sh "bundle exec ruby -Ilib -Itest test/format_check_test.rb"
+  end
+
+  desc "Run the cop unit tests"
+  task :rules do
+    sh "bundle exec ruby -Ilib -Itest test/validation_rules_test.rb"
+  end
 end
 
 desc "test"
-task :test => ["test:transpilation", "test:syntax"]
+task :test => ["test:transpilation", "test:syntax", "test:rules", "test:format"]

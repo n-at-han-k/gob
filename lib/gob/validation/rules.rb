@@ -9,54 +9,40 @@ module Gob
       require_relative "rules/cop"
       require_relative "rules/block_delimiters"
       require_relative "rules/defer_statement"
-      require_relative "rules/error_check"
       require_relative "rules/indentation"
       require_relative "rules/multiline"
       require_relative "rules/quote_marks"
       require_relative "rules/signature_comment"
       require_relative "rules/trailing_whitespace"
-      require_relative "rules/variable_declaration"
-      require_relative "rules/pointer_type"
-      require_relative "rules/operator_assignment"
       require_relative "rules/zero_based_range_loop"
       require_relative "rules/word_array"
       require_relative "rules/go_block"
       require_relative "rules/go_call"
       require_relative "rules/redundant_lambda_parentheses"
-      require_relative "rules/this_receiver"
       require_relative "rules/array_length"
       require_relative "rules/collection_literal"
       require_relative "rules/lambda_signature"
       require_relative "rules/invoked_lambda"
       require_relative "rules/attribute_type"
-      require_relative "rules/select_block"
-      require_relative "rules/struct_tag_position"
 
       COPS = [
         BlockDelimiters,
         DeferStatement,
-        ErrorCheck,
         Indentation,
         Multiline,
         QuoteMarks,
         SignatureComment,
         TrailingWhitespace,
-        VariableDeclaration,
-        PointerType,
-        OperatorAssignment,
         ZeroBasedRangeLoop,
         WordArray,
         GoBlock,
         GoCall,
         RedundantLambdaParentheses,
-        ThisReceiver,
         ArrayLength,
         CollectionLiteral,
         LambdaSignature,
         InvokedLambda,
         AttributeType,
-        SelectBlock,
-        StructTagPosition
       ].freeze
 
       CONFIG_PATH = File.expand_path("rules/config.yml", __dir__)
@@ -75,66 +61,38 @@ module Gob
         @registry ||= RuboCop::Cop::Registry.new(COPS)
       end
 
-      PASSES = 10
+      # RuboCop's own inspection loop: it merges the cops' correctors, applies
+      # them, and is run again while the source keeps changing, because fixing
+      # one layout rule can expose the next.
+      PASSES = RuboCop::Runner::MAX_ITERATIONS
 
       # Layout is corrected before anything reads the source, so that what the
-      # transpiler sees is always in house style. Corrections are applied in
-      # passes, since fixing one layout rule can expose the next.
+      # transpiler sees is always in house style. In stdin mode RuboCop hands
+      # the corrected source back through the options it was given.
       def autocorrect(source, path: nil)
         temp_path = path || "gob_check.rb"
         config = config_store.for(temp_path)
+        options = { autocorrect: true, stdin: source }
+        team = RuboCop::Cop::Team.mobilize(registry, config, options)
 
         PASSES.times do
-          corrector = merge(correctors(source, temp_path, config))
-          break if corrector.nil?
-
-          corrected = corrector.process
-          break if corrected == source
-
-          source = corrected
+          team.investigate(processed_source(options[:stdin], config, temp_path))
+          break unless team.updated_source_file?
         end
 
-        source
-      end
-
-      def correctors(source, path, config)
-        processed_source = RuboCop::ProcessedSource.new(source, config.target_ruby_version, path)
-        team = RuboCop::Cop::Team.mobilize(registry, config, { autocorrect: true, stdin: true })
-
-        team.investigate(processed_source).correctors.compact.reject(&:empty?)
-      end
-
-      # Two rules may reach for the same characters; the first one wins this
-      # pass and the other is picked up by the next.
-      def merge(correctors)
-        return nil if correctors.empty?
-
-        correctors.drop(1).each_with_object(correctors.first) do |corrector, head|
-          begin
-            head.merge!(corrector)
-          rescue Parser::ClobberingError
-            nil
-          end
-        end
+        options[:stdin]
       end
 
       def validate(source, path: nil)
         temp_path = path || "gob_check.rb"
         config = config_store.for(temp_path)
-        processed_source = RuboCop::ProcessedSource.new(source, config.target_ruby_version, temp_path)
-        team = RuboCop::Cop::Team.mobilize(registry, config, { auto_correct: false, stdin: true })
+        team = RuboCop::Cop::Team.mobilize(registry, config, { autocorrect: false, stdin: true })
 
-        if team.respond_to?(:investigate)
-          result = team.investigate(processed_source)
-        else
-          result = team.inspect_file(processed_source)
-        end
+        team.investigate(processed_source(source, config, temp_path)).offenses
+      end
 
-        if result.is_a?(Array)
-          result
-        else
-          result.offenses
-        end
+      def processed_source(source, config, path)
+        RuboCop::ProcessedSource.new(source, config.target_ruby_version, path)
       end
 
       def validate_files(entries, formatter:)

@@ -28,8 +28,7 @@ module Gob
           end
 
           def lambda_call?(call)
-            case call
-            in SyntaxTree::CallNode[
+            call in SyntaxTree::CallNode[
               receiver: SyntaxTree::MethodAddBlock[
                 call: SyntaxTree::CallNode[
                   receiver: nil,
@@ -40,21 +39,14 @@ module Gob
               operator: SyntaxTree::Period[value: "."],
               message: :call
             ]
-              true
-            else
-              false
-            end
           end
 
+          # The column a node starts at is the indentation it was written with.
+          # ---
           def replacement(node, call)
-            indent = indentation(node.location)
-            "go lambda {\n#{" " * (indent + 2)}#{source(call.location)}\n#{" " * indent}}.()"
-          end
+            node.location => { start_column: indent }
 
-          def indentation(location)
-            raw = processed_source.raw_source
-            opening = raw.rindex("\n", location.start_char - 1).then { |index| index ? index + 1 : 0 }
-            raw[opening..].match(/\A[ \t]*/)[0].length
+            "go lambda {\n#{" " * (indent + 2)}#{source(call.location)}\n#{" " * indent}}.()"
           end
       end
     end

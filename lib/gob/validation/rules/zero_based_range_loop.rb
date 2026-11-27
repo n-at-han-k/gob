@@ -18,44 +18,45 @@ module Gob
             in SyntaxTree::MethodAddBlock[
               call: SyntaxTree::CallNode[
                 receiver: SyntaxTree::Paren[
-                  contents: SyntaxTree::Statements[body: [range]]
+                  contents: SyntaxTree::Statements[body: [SyntaxTree::RangeNode[
+                    left: SyntaxTree::Int[value: "0"],
+                    operator: { value: "..." },
+                    right: count
+                  ]]]
                 ],
                 operator: SyntaxTree::Period[value: "."],
                 message: SyntaxTree::Ident[value: "each"]
-              ],
+              ] => call,
               block: SyntaxTree::BlockNode[
                 block_var: SyntaxTree::BlockVar[
-                  params: SyntaxTree::Params[requireds: [index]]
+                  params: SyntaxTree::Params[requireds: [_]]
                 ]
               ]
-            ] if counting_range?(range)
-              count = source(range.right.location)
-              add_offense(range(node.location), message: format(MSG, count: count)) do |corrector|
-                corrector.replace(range(node.call.location), "#{count}.times")
+            ]
+              add_offense(range(node.location), message: format(MSG, count: source(count.location))) do |corrector|
+                corrector.replace(range(call.location), "#{source(count.location)}.times")
               end
 
+            # A range that starts anywhere else counts from the wrong place, and
+            # there is no Gob spelling for it.
+            # ---
             in SyntaxTree::MethodAddBlock[
               call: SyntaxTree::CallNode[
                 receiver: SyntaxTree::Paren[
-                  contents: SyntaxTree::Statements[body: [range]]
+                  contents: SyntaxTree::Statements[body: [SyntaxTree::RangeNode[
+                    operator: { value: "..." },
+                    right: count
+                  ] => range]]
                 ],
                 operator: SyntaxTree::Period[value: "."],
                 message: SyntaxTree::Ident[value: "each"]
               ]
-            ] if exclusive_range?(range)
-              add_offense(range(range.location), message: MSG_UNSUPPORTED)
+            ]
+              add_offense(range(range.location), message: format(MSG_UNSUPPORTED, count: source(count.location)))
 
             else
               nil
             end
-          end
-
-          def counting_range?(range)
-            exclusive_range?(range) && range.left.is_a?(SyntaxTree::Int) && range.left.value == "0"
-          end
-
-          def exclusive_range?(range)
-            range.is_a?(SyntaxTree::RangeNode) && range.operator.value == "..."
           end
       end
     end

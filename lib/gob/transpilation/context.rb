@@ -6,6 +6,8 @@
 # Distributed under terms of the MIT license.
 #
 
+require_relative "../ruby_parser"
+
 module Gob
   module Transpilation
     Hoist = Struct.new(:nodes)
@@ -24,7 +26,7 @@ module Gob
           dir = File.dirname(path)
           self.global = {
             uppercase_constants: Dir.glob(File.join(dir, "*.gob")).flat_map { |file|
-              SyntaxTree.parse(File.read(file)).statements.body.flat_map { |node|
+              Gob::RubyParser.parse(File.read(file)).statements.body.flat_map { |node|
                 case node
                 in SyntaxTree::ModuleDeclaration[bodystmt: SyntaxTree::BodyStmt[statements: SyntaxTree::Statements[body: body]]]
                   body

@@ -10,6 +10,12 @@ module Gob
         ARRAY_UNKNOWN_MSG = "Write an explicitly typed `Array[Type].new(...)`"
         HASH_UNKNOWN_MSG = "Write an explicitly typed `Hash[Key, Value].new(...)`"
 
+        NUMERIC = %w[
+          int int8 int16 int32 int64
+          uint uint8 uint16 uint32 uint64 uintptr
+          float32 float64 string bool byte rune
+        ].freeze
+
         private
 
           # [1, 2, 3]
@@ -18,106 +24,146 @@ module Gob
           # Hash[string, int].new("one" => 1)
           # ---
           def rule(node)
-            return if inside_typed_collection_new?(node)
-            return if @ancestors&.[](0...-1)&.any? do |ancestor|
-              ancestor.is_a?(SyntaxTree::ArrayLiteral) || ancestor.is_a?(SyntaxTree::HashLiteral)
-            end
+            return if typed? || nested?
 
             case node
             in SyntaxTree::ArrayLiteral[contents: SyntaxTree::Args[parts: parts]]
               literal(node, "Array", common_type(parts.map { |part| type_of(part) }), ARRAY_MSG, ARRAY_UNKNOWN_MSG)
 
             in SyntaxTree::HashLiteral[assocs: assocs]
-              keys = assocs.map { |assoc| type_of(assoc.key) }
-              values = assocs.map { |assoc| type_of(assoc.value) }
-              key_type = common_type(keys)
-              value_type = common_type(values)
-              literal(node, "Hash", key_type && value_type && [key_type, value_type], HASH_MSG, HASH_UNKNOWN_MSG)
+              key = common_type(assocs.map { |assoc| type_of(assoc.key) })
+              value = common_type(assocs.map { |assoc| type_of(assoc.value) })
+
+              literal(node, "Hash", key && value && [key, value], HASH_MSG, HASH_UNKNOWN_MSG)
 
             else
               nil
             end
           end
 
-          def inside_typed_collection_new?(_node)
-            ancestors = @ancestors&.[](0...-1) || []
+          # The nodes this one sits inside.
+          # ---
+          def enclosing
+            @ancestors[0...-1]
+          end
 
-            ancestors.any? do |ancestor|
-              next false unless ancestor.is_a?(SyntaxTree::CallNode)
-
+          # A literal inside a constructor is already typed, whether the type
+          # is written on the collection itself, as in `Array[int].new(...)`,
+          # or carried by the field it is given to, as in
+          # `metav1.ObjectMeta.new(Labels: {"app" => "test"})`.
+          # ---
+          def typed?
+            enclosing.any? do |ancestor|
               case ancestor
               in SyntaxTree::CallNode[
-                receiver: SyntaxTree::ARef[collection: SyntaxTree::VarRef[value: SyntaxTree::Const[value: "Array" | "Hash"]]],
                 operator: SyntaxTree::Period[value: "."],
                 message: SyntaxTree::Ident[value: "new"],
-                arguments: arguments
+                arguments: SyntaxTree::Node => arguments
               ]
-                !arguments.nil? && ancestors.include?(arguments)
+                enclosing.include?(arguments)
+
               else
                 false
               end
             end
           end
 
+          # An inner literal is reported through the outer one, which carries
+          # the element type for both.
+          # ---
+          def nested?
+            enclosing.any? { |ancestor| ancestor in SyntaxTree::ArrayLiteral | SyntaxTree::HashLiteral }
+          end
+
           def literal(node, constructor, type, message, unknown_message)
-            if type
+            case type
+            in nil
+              add_offense(range(node.location), message: unknown_message)
+
+            in type
               replacement = "#{constructor}[#{Array(type).join(", ")}].new(#{contents(node)})"
+
               add_offense(range(node.location), message: format(message, type: Array(type).join(", "), key: type[0], value: type[1])) do |corrector|
                 corrector.replace(range(node.location), replacement)
               end
-            else
-              add_offense(range(node.location), message: unknown_message)
             end
           end
 
+          # What the literal holds, without the brackets around it.
+          # ---
           def contents(node)
-            source(node.location)[1...-1].strip
+            case node
+            in SyntaxTree::ArrayLiteral[contents: SyntaxTree::Args[parts: parts]]
+              parts.map { |part| source(part.location) }.join(", ")
+
+            in SyntaxTree::HashLiteral[assocs: assocs]
+              assocs.map { |assoc| source(assoc.location) }.join(", ")
+            end
           end
 
+          # One type for the whole literal, or none when the elements disagree.
+          # ---
           def common_type(types)
-            return nil if types.empty? || types.any?(&:nil?)
+            case types
+            in [] | [*, nil, *]
+              nil
 
-            types.uniq.length == 1 ? types.first : nil
+            in [type, *rest]
+              rest.all?(type) ? type : nil
+            end
           end
 
           def type_of(node)
             case node
             in SyntaxTree::Int
               "int"
+
             in SyntaxTree::FloatLiteral
               "float64"
-            in SyntaxTree::StringLiteral
+
+            in SyntaxTree::StringLiteral | SyntaxTree::XStringLiteral
               "string"
-            in SyntaxTree::XStringLiteral
-              "string"
+
             in SyntaxTree::VarRef[value: SyntaxTree::Kw[value: "true" | "false"]]
               "bool"
+
             in SyntaxTree::VarRef[value: SyntaxTree::Kw[value: "nil"]]
               nil
+
             in SyntaxTree::Unary[operator: "-", statement: SyntaxTree::Int]
               "int"
+
             in SyntaxTree::Unary[operator: "-", statement: SyntaxTree::FloatLiteral]
               "float64"
+
             in SyntaxTree::ArrayLiteral[contents: SyntaxTree::Args[parts: parts]]
-              element = common_type(parts.map { |part| type_of(part) })
-              element && "Array[#{element}]"
+              common_type(parts.map { |part| type_of(part) }).then { |element| element && "Array[#{element}]" }
+
             in SyntaxTree::HashLiteral[assocs: assocs]
               key = common_type(assocs.map { |assoc| type_of(assoc.key) })
               value = common_type(assocs.map { |assoc| type_of(assoc.value) })
+
               key && value && "Hash[#{key}, #{value}]"
+
+            # person.new(...) is a value of the type that made it.
+            # ---
             in SyntaxTree::CallNode[
               receiver: receiver,
               operator: SyntaxTree::Period[value: "."],
               message: SyntaxTree::Ident[value: "new"]
             ]
               source(receiver.location)
+
+            # int(x) is a conversion, so the value is that Go type.
+            # ---
             in SyntaxTree::CallNode[
               receiver: nil,
               operator: nil,
-              message: { value: name },
+              message: { value: String => name },
               arguments: SyntaxTree::ArgParen[arguments: SyntaxTree::Args[parts: [_]]]
-            ] if %w[int int8 int16 int32 int64 uint uint8 uint16 uint32 uint64 uintptr float32 float64 string bool byte rune].include?(name)
+            ] if NUMERIC.include?(name)
               name
+
             else
               nil
             end

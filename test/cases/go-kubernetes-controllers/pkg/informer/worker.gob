@@ -16,13 +16,13 @@ module Informer
 
       loop do
         case
-        when event, ok = ~self.queue
+        when event, ok = self.queue.<<
           if !ok
             self.logger.Debug().Msg("event queue closed, stopping worker")
             return
           end
           self.processEvent(event)
-        when ~ctx.Done()
+        when ctx.Done().<<
           self.logger.Debug().Msg("context cancelled, stopping worker")
           return
         end

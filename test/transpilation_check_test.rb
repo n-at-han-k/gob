@@ -7,6 +7,7 @@ require "syntax_tree/go"
 require "go_formatter"
 require "minitest/autorun"
 require "minitest/reporters"
+require_relative "../lib/gob/ruby_parser"
 require_relative "../lib/gob/transpilation/context"
 require_relative "../lib/gob/transpilation/runner"
 require_relative "../lib/gob/go/printer"
@@ -53,7 +54,7 @@ class TranspilationCheckTest < Minitest::Test
     test_name = "test_#{index.to_s.rjust(4, "0")}_#{gob.tr("/.", "__")}"
 
     define_method(test_name) do
-      tree = SyntaxTree.parse(File.read(gob))
+      tree = Gob::RubyParser.parse(File.read(gob))
       Gob::Transpilation::Context.global_for(gob)
 
       generated_go =

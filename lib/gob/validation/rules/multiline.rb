@@ -30,7 +30,7 @@ module Gob
           end
 
           def crowded(node, body)
-            statements = body.reject { |statement| statement.is_a?(SyntaxTree::VoidStmt) }
+            statements = body.reject { |statement| statement in SyntaxTree::VoidStmt }
             return if statements.empty?
             return unless statements.any? { |statement| statement.location.start_line == node.location.start_line }
 
@@ -51,13 +51,6 @@ module Gob
                 )
               end
             end
-          end
-
-          def indentation(location)
-            raw = processed_source.raw_source
-            opening = raw.rindex("\n", location.start_char - 1).then { |index| index ? index + 1 : 0 }
-
-            raw[opening..].match(/\A[ \t]*/)[0].length
           end
 
           # The run of spaces a statement was crowded onto its opener's line by.

@@ -135,7 +135,7 @@ module Main
 end
 ```
 
-`Struct.new(...)` declares a Go struct type. `class` with `attr_accessor` is another struct form used in golden cases. `Class.new(Type)` declares a named type over an underlying type, such as `type KSUID [byteLength]byte`. Struct field tags can be written as comments before fields.
+`Struct.new(...)` declares a Go struct type. `class` with `attr_accessor` is another struct form used in golden cases. `Class.new(Type)` declares a named type over an underlying type, such as `type KSUID [byteLength]byte`. Struct field tags can be written as comments beside or before fields.
 
 `@value` takes an address; `@@value` dereferences.
 

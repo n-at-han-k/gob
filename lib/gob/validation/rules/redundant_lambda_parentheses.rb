@@ -28,18 +28,13 @@ module Gob
           end
 
           def lambda?(node)
-            case node
-            in SyntaxTree::MethodAddBlock[
+            node in SyntaxTree::MethodAddBlock[
               call: SyntaxTree::CallNode[
                 receiver: nil,
                 operator: nil,
                 message: SyntaxTree::Ident[value: "lambda"]
               ]
             ]
-              true
-            else
-              false
-            end
           end
       end
     end
