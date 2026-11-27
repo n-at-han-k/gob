@@ -1117,11 +1117,19 @@ module Gob
             collection: SyntaxTree::VarRef[ value: SyntaxTree::Const[ value: "Proc" ] ],
             index: SyntaxTree::Args[ parts: parts ]
           ]
+            return_parts =
+              case parts.last
+              in SyntaxTree::ArrayLiteral[contents: SyntaxTree::Args[parts: rets]]
+                rets
+              else
+                nil
+              end
+            param_parts = return_parts ? parts[0...-1] : parts
             SyntaxTree::Go::FuncType.new(
               params: SyntaxTree::Go::FieldList.new(
-                list: parts.map { |part| SyntaxTree::Go::Field.new(type: Statements(part)) }
+                list: param_parts.map { |part| SyntaxTree::Go::Field.new(type: Statements(part)) }
               ),
-              results: nil
+              results: return_parts ? SyntaxTree::Go::FieldList.new(list: return_parts.map { |r| SyntaxTree::Go::Field.new(type: Statements(r)) }) : nil
             )
 
           # Proc

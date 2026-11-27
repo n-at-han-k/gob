@@ -15,12 +15,6 @@ module K8s
     clientset: @@kubernetes.Clientset,
     logger: zerolog.Logger,
     restConfig: @@rest.Config,
-  )
-
-  var Client = Struct.new(
-    clientset: @@kubernetes.Clientset,
-    logger: zerolog.Logger,
-    restConfig: @@rest.Config,
   ) do
     # ListDeployments lists deployments in the specified namespace with context and timeout
     def ListDeployments(ctx, options) # (context.Context, *types.ListOptions) -> (*appsv1.DeploymentList, error)

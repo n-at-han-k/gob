@@ -1,0 +1,181 @@
+require "k8s.io/apimachinery/pkg/apis/meta/v1", metav1
+require "k8s.io/apimachinery/pkg/runtime"
+
+module V1alpha1
+  # FrontendPageSpec defines the desired state of FrontendPage
+  var FrontendPageSpec = Struct.new(
+    # `json:"title"`
+    Title: string,
+    # `json:"template"`
+    Template: string,
+    # `json:"components"`
+    Components: Array[Component],
+    # `json:"theme,omitempty"`
+    Theme: string,
+  ) do
+    def DeepCopy # -> *FrontendPageSpec
+      if self == nil
+        return nil
+      end
+      out = FrontendPageSpec.new()
+      self.DeepCopyInto(@out)
+      return @out
+    end
+
+    def DeepCopyInto(out) # (*FrontendPageSpec)
+      @@out = @@self
+      if self.Components != nil
+        inComponents = self.Components
+        outComponents = make(Array[Component], len(inComponents))
+        i = 0
+        while i < len(inComponents)
+          inComponents[i].DeepCopyInto(@outComponents[i])
+          i += 1
+        end
+        out.Components = outComponents
+      end
+    end
+  end
+
+  # Component defines a UI component on the page
+  var Component = Struct.new(
+    # `json:"name"`
+    Name: string,
+    # `json:"type"`
+    Type: string,
+    # `json:"config,omitempty"`
+    Config: Hash[string, any],
+  ) do
+    def DeepCopy # -> *Component
+      if self == nil
+        return nil
+      end
+      out = Component.new()
+      self.DeepCopyInto(@out)
+      return @out
+    end
+
+    def DeepCopyInto(out) # (*Component)
+      @@out = @@self
+      if self.Config != nil
+        inConfig = self.Config
+        outConfig = make(Hash[string, any], len(inConfig))
+        inConfig.each do |key, val|
+          outConfig[key] = val
+        end
+        out.Config = outConfig
+      end
+    end
+  end
+
+  # FrontendPageStatus defines the observed state of FrontendPage
+  var FrontendPageStatus = Struct.new(
+    # `json:"phase"`
+    Phase: string,
+    # `json:"message,omitempty"`
+    Message: string,
+    # `json:"url,omitempty"`
+    URL: string,
+    # `json:"componentCount,omitempty"`
+    ComponentCount: int,
+    # `json:"lastUpdated,omitempty"`
+    LastUpdated: @@metav1.Time,
+  ) do
+    def DeepCopy # -> *FrontendPageStatus
+      if self == nil
+        return nil
+      end
+      out = FrontendPageStatus.new()
+      self.DeepCopyInto(@out)
+      return @out
+    end
+
+    def DeepCopyInto(out) # (*FrontendPageStatus)
+      @@out = @@self
+      if self.LastUpdated != nil
+        inLastUpdated = self.LastUpdated
+        out.LastUpdated = inLastUpdated.DeepCopy()
+      end
+    end
+  end
+
+  # FrontendPage is the Schema for the frontendpages API
+  var FrontendPage = Struct.new(
+    # `json:",inline"`
+    TypeMeta: metav1.TypeMeta,
+    # `json:"metadata,omitempty"`
+    ObjectMeta: metav1.ObjectMeta,
+    # `json:"spec,omitempty"`
+    Spec: FrontendPageSpec,
+    # `json:"status,omitempty"`
+    Status: FrontendPageStatus,
+  ) do
+    def DeepCopy # -> *FrontendPage
+      if self == nil
+        return nil
+      end
+      out = FrontendPage.new()
+      self.DeepCopyInto(@out)
+      return @out
+    end
+
+    def DeepCopyInto(out) # (*FrontendPage)
+      @@out = @@self
+      out.TypeMeta = self.TypeMeta
+      self.ObjectMeta.DeepCopyInto(@out.ObjectMeta)
+      self.Spec.DeepCopyInto(@out.Spec)
+      self.Status.DeepCopyInto(@out.Status)
+    end
+
+    def DeepCopyObject # -> runtime.Object
+      c = self.DeepCopy()
+      if c != nil
+        return c
+      end
+      return nil
+    end
+  end
+
+  # FrontendPageList contains a list of FrontendPage
+  var FrontendPageList = Struct.new(
+    # `json:",inline"`
+    TypeMeta: metav1.TypeMeta,
+    # `json:"metadata,omitempty"`
+    ListMeta: metav1.ListMeta,
+    # `json:"items"`
+    Items: Array[FrontendPage],
+  ) do
+    def DeepCopy # -> *FrontendPageList
+      if self == nil
+        return nil
+      end
+      out = FrontendPageList.new()
+      self.DeepCopyInto(@out)
+      return @out
+    end
+
+    def DeepCopyInto(out) # (*FrontendPageList)
+      @@out = @@self
+      out.TypeMeta = self.TypeMeta
+      self.ListMeta.DeepCopyInto(@out.ListMeta)
+      if self.Items != nil
+        inItems = self.Items
+        outItems = make(Array[FrontendPage], len(inItems))
+        i = 0
+        while i < len(inItems)
+          inItems[i].DeepCopyInto(@outItems[i])
+          i += 1
+        end
+        out.Items = outItems
+      end
+    end
+
+    def DeepCopyObject # -> runtime.Object
+      c = self.DeepCopy()
+      if c != nil
+        return c
+      end
+      return nil
+    end
+  end
+end

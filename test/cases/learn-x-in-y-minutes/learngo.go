@@ -308,10 +308,10 @@ type pair struct {
 }
 
 // Define a method on type pair. Pair now implements Stringer because Pair has defined all the methods in the interface.
-func (p pair) String() string { // p is called the "receiver"
+func (self pair) String() string { // p is called the "receiver"
 	// Sprintf is another public function in package fmt.
-	// Dot syntax references fields of p.
-	return fmt.Sprintf("(%d, %d)", p.x, p.y)
+	// Dot syntax references fields of self.
+	return fmt.Sprintf("(%d, %d)", self.x, self.y)
 }
 
 func learnInterfaces() {
@@ -417,7 +417,7 @@ func learnWebProgramming() {
 }
 
 // Make pair an http.Handler by implementing its only method, ServeHTTP.
-func (p pair) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (self pair) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Serve data with a method of http.ResponseWriter.
 	w.Write([]byte("You learned Go in Y minutes!"))
 }

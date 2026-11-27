@@ -271,7 +271,7 @@ func (self *CompressedSetIter) Next() bool {
 	if self.seqlength != 0 {
 		value := incr128(self.lastValue)
 		self.KSUID = value.ksuid(self.timestamp)
-		self.seqlength--
+		self.seqlength = self.seqlength - 1
 		self.lastValue = value
 		return true
 	}
@@ -281,7 +281,7 @@ func (self *CompressedSetIter) Next() bool {
 	}
 
 	b := self.content[self.offset]
-	self.offset++
+	self.offset = self.offset + 1
 
 	const mask = rawKSUID | timeDelta | payloadDelta | payloadRange
 	tag := int(b) & mask
@@ -303,7 +303,7 @@ func (self *CompressedSetIter) Next() bool {
 		off1 := off0 + cnt
 		off2 := off1 + payloadLengthInBytes
 
-		self.timestamp += varint32(self.content[off0:off1])
+		self.timestamp = self.timestamp + varint32(self.content[off0:off1])
 
 		binary.BigEndian.PutUint32(self.KSUID[:timestampLengthInBytes], self.timestamp)
 		copy(self.KSUID[timestampLengthInBytes:], self.content[off1:off2])
@@ -330,7 +330,7 @@ func (self *CompressedSetIter) Next() bool {
 		self.KSUID = value.ksuid(self.timestamp)
 		self.seqlength = varint64(self.content[off0:off1])
 		self.offset = off1
-		self.seqlength--
+		self.seqlength = self.seqlength - 1
 		self.lastValue = value
 
 	default:

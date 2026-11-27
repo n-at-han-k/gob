@@ -12,8 +12,8 @@ type base struct {
 	num int
 }
 
-func (b base) describe() string {
-	return fmt.Sprintf("base with num=%v", b.num)
+func (self base) describe() string {
+	return fmt.Sprintf("base with num=%v", self.num)
 }
 
 // A `container` _embeds_ a `base`. An embedding looks

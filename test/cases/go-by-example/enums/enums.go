@@ -39,8 +39,8 @@ var stateName = map[ServerState]string{
 	StateRetrying:  "retrying",
 }
 
-func (ss ServerState) String() string {
-	return stateName[ss]
+func (self ServerState) String() string {
+	return stateName[self]
 }
 
 func main() {

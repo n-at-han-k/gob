@@ -1,0 +1,110 @@
+# cryptopasta - basic cryptography examples
+#
+# Written in 2015 by George Tankersley <george.tankersley@gmail.com>
+#
+# To the extent possible under law, the author(s) have dedicated all copyright
+# and related and neighboring rights to this software to the public domain
+# worldwide. This software is distributed without any warranty.
+#
+# You should have received a copy of the CC0 Public Domain Dedication along
+# with this software. If not, see // <http://creativecommons.org/publicdomain/zero/1.0/>.
+
+# Provides encoding and decoding routines for various cryptographic structures.
+require "crypto/ecdsa"
+require "crypto/x509"
+require "encoding/base64"
+require "encoding/pem"
+require "errors"
+require "fmt"
+
+module Cryptopasta
+  # DecodePublicKey decodes a PEM-encoded ECDSA public key.
+  def DecodePublicKey(encodedKey) # ([]byte) -> (*ecdsa.PublicKey, error)
+    block, _ = pem.Decode(encodedKey)
+    if block == nil || block.Type != "PUBLIC KEY"
+      return nil, fmt.Errorf("marshal: could not decode PEM block type %s", block.Type)
+    end
+
+    pub, err = x509.ParsePKIXPublicKey(block.Bytes)
+    if err != nil
+      return nil, err
+    end
+
+    ecdsaPub, ok = pub.(@@ecdsa.PublicKey)
+    if ok == false
+      return nil, errors.New("marshal: data was not an ECDSA public key")
+    end
+
+    return ecdsaPub, nil
+  end
+
+  # EncodePublicKey encodes an ECDSA public key to PEM format.
+  def EncodePublicKey(key) # (*ecdsa.PublicKey) -> ([]byte, error)
+    derBytes, err = x509.MarshalPKIXPublicKey(key)
+    if err != nil
+      return nil, err
+    end
+
+    block = @pem.Block.new(
+      Type: "PUBLIC KEY",
+      Bytes: derBytes,
+    )
+
+    return pem.EncodeToMemory(block), nil
+  end
+
+  # DecodePrivateKey decodes a PEM-encoded ECDSA private key.
+  def DecodePrivateKey(encodedKey) # ([]byte) -> (*ecdsa.PrivateKey, error)
+    var :skippedTypes, Array[string]
+    var :block, @@pem.Block
+
+    loop do
+      block, encodedKey = pem.Decode(encodedKey)
+
+      if block == nil
+        return nil, fmt.Errorf("failed to find EC PRIVATE KEY in PEM data after skipping types %v", skippedTypes)
+      end
+
+      if block.Type == "EC PRIVATE KEY"
+        break
+      else
+        skippedTypes = append(skippedTypes, block.Type)
+        next
+      end
+    end
+
+    privKey, err = x509.ParseECPrivateKey(block.Bytes)
+    if err != nil
+      return nil, err
+    end
+
+    return privKey, nil
+  end
+
+  # EncodePrivateKey encodes an ECDSA private key to PEM format.
+  def EncodePrivateKey(key) # (*ecdsa.PrivateKey) -> ([]byte, error)
+    derKey, err = x509.MarshalECPrivateKey(key)
+    if err != nil
+      return nil, err
+    end
+
+    keyBlock = @pem.Block.new(
+      Type: "EC PRIVATE KEY",
+      Bytes: derKey,
+    )
+
+    return pem.EncodeToMemory(keyBlock), nil
+  end
+
+  # Encodes an ECDSA signature according to
+  # https://tools.ietf.org/html/rfc7515#appendix-A.3.1
+  def EncodeSignatureJWT(sig) # ([]byte) -> string
+    return base64.RawURLEncoding.EncodeToString(sig)
+  end
+
+  # Decodes an ECDSA signature according to
+  # https://tools.ietf.org/html/rfc7515#appendix-A.3.1
+  def DecodeSignatureJWT(b64sig) # (string) -> ([]byte, error)
+    return base64.RawURLEncoding.DecodeString(b64sig)
+  end
+end

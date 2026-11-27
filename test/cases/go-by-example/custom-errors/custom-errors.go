@@ -18,8 +18,8 @@ type argError struct {
 
 // Adding this `Error` method makes `argError` implement
 // the `error` interface.
-func (e *argError) Error() string {
-	return fmt.Sprintf("%d - %s", e.arg, e.message)
+func (self *argError) Error() string {
+	return fmt.Sprintf("%d - %s", self.arg, self.message)
 }
 
 func f(arg int) (int, error) {

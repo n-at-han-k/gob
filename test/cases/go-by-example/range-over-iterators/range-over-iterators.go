@@ -25,26 +25,26 @@ type element[T any] struct {
 	val  T
 }
 
-func (lst *List[T]) Push(v T) {
-	if lst.tail == nil {
-		lst.head = &element[T]{val: v}
-		lst.tail = lst.head
+func (self *List[T]) Push(v T) {
+	if self.tail == nil {
+		self.head = &element[T]{val: v}
+		self.tail = self.head
 	} else {
-		lst.tail.next = &element[T]{val: v}
-		lst.tail = lst.tail.next
+		self.tail.next = &element[T]{val: v}
+		self.tail = self.tail.next
 	}
 }
 
 // All returns an _iterator_, which in Go is a function
 // with a [special signature](https://pkg.go.dev/iter#Seq).
-func (lst *List[T]) All() iter.Seq[T] {
+func (self *List[T]) All() iter.Seq[T] {
 	return func(yield func(T) bool) {
 		// The iterator function takes another function as
 		// a parameter, called `yield` by convention (but
 		// the name can be arbitrary). It will call `yield` for
 		// every element we want to iterate over, and note `yield`'s
 		// return value for a potential early termination.
-		for e := lst.head; e != nil; e = e.next {
+		for e := self.head; e != nil; e = e.next {
 			if !yield(e.val) {
 				return
 			}

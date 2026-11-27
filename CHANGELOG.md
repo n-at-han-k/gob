@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.3] - 2026-11-27
+
+### Added
+
+- `Proc[...]` type declarations now support a final array literal for return types, e.g. `Proc[[bool]]`, `Proc[int, [bool]]`, `Proc[int, [bool, error]]`
+
 ## [1.2.1] - 2026-11-26
 
 ### Fixed

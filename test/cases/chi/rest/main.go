@@ -297,12 +297,12 @@ func NewUserPayloadResponse(user *User) *UserPayload {
 
 // Bind on UserPayload will run after the unmarshalling is complete, its
 // a good time to focus some post-processing after a decoding.
-func (u *UserPayload) Bind(r *http.Request) error {
+func (self *UserPayload) Bind(r *http.Request) error {
 	return nil
 }
 
-func (u *UserPayload) Render(w http.ResponseWriter, r *http.Request) error {
-	u.Role = "collaborator"
+func (self *UserPayload) Render(w http.ResponseWriter, r *http.Request) error {
+	self.Role = "collaborator"
 	return nil
 }
 
@@ -323,20 +323,20 @@ type ArticleRequest struct {
 	ProtectedID string `json:"id"` // override 'id' json to have more control
 }
 
-func (a *ArticleRequest) Bind(r *http.Request) error {
-	// a.Article is nil if no Article fields are sent in the request. Return an
+func (self *ArticleRequest) Bind(r *http.Request) error {
+	// self.Article is nil if no Article fields are sent in the request. Return an
 	// error to avoid a nil pointer dereference.
-	if a.Article == nil {
+	if self.Article == nil {
 		return errors.New("missing required Article fields.")
 	}
 
-	// a.User is nil if no Userpayload fields are sent in the request. In this app
+	// self.User is nil if no Userpayload fields are sent in the request. In this app
 	// this won't cause a panic, but checks in this Bind method may be required if
-	// a.User or further nested fields like a.User.Name are accessed elsewhere.
+	// self.User or further nested fields like self.User.Name are accessed elsewhere.
 
 	// just a post-process after a decode..
-	a.ProtectedID = ""                                 // unset the protected ID
-	a.Article.Title = strings.ToLower(a.Article.Title) // as an example, we down-case
+	self.ProtectedID = ""                                 // unset the protected ID
+	self.Article.Title = strings.ToLower(self.Article.Title) // as an example, we down-case
 	return nil
 }
 
@@ -368,9 +368,9 @@ func NewArticleResponse(article *Article) *ArticleResponse {
 	return resp
 }
 
-func (rd *ArticleResponse) Render(w http.ResponseWriter, r *http.Request) error {
+func (self *ArticleResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	// Pre-processing before a response is marshalled and sent across the wire
-	rd.Elapsed = 10
+	self.Elapsed = 10
 	return nil
 }
 
@@ -406,8 +406,8 @@ type ErrResponse struct {
 	ErrorText  string `json:"error,omitempty"` // application-level error message, for debugging
 }
 
-func (e *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {
-	render.Status(r, e.HTTPStatusCode)
+func (self *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	render.Status(r, self.HTTPStatusCode)
 	return nil
 }
 

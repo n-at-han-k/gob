@@ -60,7 +60,7 @@ module Informer
       self.logger.Info().Msg("stopping informer")
       self.cancel()
       close(self.eventQueue)
-      done = make(Chan[struct{}])
+      done = make(Chan[bool])
       go lambda {
         self.wg.Wait()
         close(done)
@@ -84,8 +84,8 @@ module Informer
     end
 
     # handleAdd handles deployment add events
-    def handleAdd(obj) # (interface{}) 
-      deployment = obj.(@@appsv1.Deployment)
+    def handleAdd(obj) # (interface{})
+      deployment = obj.(appsv1.Deployment)
       event = types.Event.new(
         Type: "add",
         Namespace: deployment.Namespace,
@@ -98,16 +98,12 @@ module Informer
         Str("namespace", deployment.Namespace).
         Str("name", deployment.Name).
         Msg("deployment added")
-      case
-      when self.eventQueue << event
-      else
-        self.logger.Warn().Msg("event queue full, dropping add event")
-      end
+      self.eventQueue << event
     end
 
     # handleUpdate handles deployment update events
     def handleUpdate(oldObj, newObj) # (interface{}, interface{})
-      newDeployment = newObj.(@@appsv1.Deployment)
+      newDeployment = newObj.(appsv1.Deployment)
       event = types.Event.new(
         Type: "update",
         Namespace: newDeployment.Namespace,
@@ -120,16 +116,12 @@ module Informer
         Str("namespace", newDeployment.Namespace).
         Str("name", newDeployment.Name).
         Msg("deployment updated")
-      case
-      when self.eventQueue << event
-      else
-        self.logger.Warn().Msg("event queue full, dropping update event")
-      end
+      self.eventQueue << event
     end
 
     # handleDelete handles deployment delete events
     def handleDelete(obj) # (interface{})
-      deployment = obj.(@@appsv1.Deployment)
+      deployment = obj.(appsv1.Deployment)
       event = types.Event.new(
         Type: "delete",
         Namespace: deployment.Namespace,
@@ -142,11 +134,7 @@ module Informer
         Str("namespace", deployment.Namespace).
         Str("name", deployment.Name).
         Msg("deployment deleted")
-      case
-      when self.eventQueue << event
-      else
-        self.logger.Warn().Msg("event queue full, dropping delete event")
-      end
+      self.eventQueue << event
     end
 
     # GetDeployment retrieves a deployment from cache
@@ -159,15 +147,17 @@ module Informer
       if !exists
         return nil, errors.NewCacheError("deployment not found in cache", nil)
       end
-      return obj.(@@appsv1.Deployment), nil
+      return obj.(appsv1.Deployment), nil
     end
 
     # ListDeployments lists all deployments in cache
     def ListDeployments # -> ([]*appsv1.Deployment, error)
       objs = self.indexer.List()
       deployments = make(Array[@@appsv1.Deployment], len(objs))
-      objs.each_with_index do |i, obj|
-        deployments[i] = obj.(@@appsv1.Deployment)
+      i = 0
+      while i < len(objs)
+        deployments[i] = objs[i].(appsv1.Deployment)
+        i += 1
       end
       return deployments, nil
     end

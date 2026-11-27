@@ -17,12 +17,6 @@ module K8s
     clientset: @@kubernetes.Clientset,
     logger: zerolog.Logger,
     restConfig: @@rest.Config,
-  )
-
-  var Client = Struct.new(
-    clientset: @@kubernetes.Clientset,
-    logger: zerolog.Logger,
-    restConfig: @@rest.Config,
   ) do
     # ListFrontendPages lists frontend pages in the specified namespace
     # (follows exact same pattern as ListDeployments)

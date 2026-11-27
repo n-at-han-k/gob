@@ -37,22 +37,22 @@ type element[T any] struct {
 // We can define methods on generic types just like we
 // do on regular types, but we have to keep the type
 // parameters in place. The type is `List[T]`, not `List`.
-func (lst *List[T]) Push(v T) {
-	if lst.tail == nil {
-		lst.head = &element[T]{val: v}
-		lst.tail = lst.head
+func (self *List[T]) Push(v T) {
+	if self.tail == nil {
+		self.head = &element[T]{val: v}
+		self.tail = self.head
 	} else {
-		lst.tail.next = &element[T]{val: v}
-		lst.tail = lst.tail.next
+		self.tail.next = &element[T]{val: v}
+		self.tail = self.tail.next
 	}
 }
 
 // AllElements returns all the List elements as a slice.
 // In the next example we'll see a more idiomatic way
 // of iterating over all elements of custom types.
-func (lst *List[T]) AllElements() []T {
+func (self *List[T]) AllElements() []T {
 	var elems []T
-	for e := lst.head; e != nil; e = e.next {
+	for e := self.head; e != nil; e = e.next {
 		elems = append(elems, e.val)
 	}
 	return elems

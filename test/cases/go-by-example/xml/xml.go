@@ -22,9 +22,9 @@ type Plant struct {
 	Origin  []string `xml:"origin"`
 }
 
-func (p Plant) String() string {
+func (self Plant) String() string {
 	return fmt.Sprintf("Plant id=%v, name=%v, origin=%v",
-		p.Id, p.Name, p.Origin)
+		self.Id, self.Name, self.Origin)
 }
 
 func main() {

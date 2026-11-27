@@ -1,0 +1,37 @@
+require "context"
+require "testing"
+require "time"
+
+require "github.com/rs/zerolog"
+require "github.com/thegostev/go-kubernetes-controllers/internal/types"
+
+module Informer
+  def TestEventWorkerProcessesEvents(t) # (*testing.T)
+    queue = make(Chan[types.Event], 1)
+    logger = zerolog.Nop()
+    worker = NewEventWorker(queue, logger)
+
+    ctx, cancel = context.WithCancel(context.Background())
+    defer cancel()
+
+    # Start worker in background
+    done = make(Chan[bool])
+    go lambda {
+      worker.Start(ctx)
+      close(done)
+    }.()
+
+    event = types.Event.new(
+      Type: "add",
+      Namespace: "default",
+      Name: "test-deployment",
+      Timestamp: time.Now(),
+    )
+
+    queue << event
+    # Give the worker a moment to process
+    time.Sleep(100 * time.Millisecond)
+    cancel()
+    ~done
+  end
+end

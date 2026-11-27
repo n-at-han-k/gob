@@ -26,19 +26,19 @@ type circle struct {
 // To implement an interface in Go, we just need to
 // implement all the methods in the interface. Here we
 // implement `geometry` on `rect`s.
-func (r rect) area() float64 {
-	return r.width * r.height
+func (self rect) area() float64 {
+	return self.width * self.height
 }
-func (r rect) perim() float64 {
-	return 2*r.width + 2*r.height
+func (self rect) perim() float64 {
+	return 2*self.width + 2*self.height
 }
 
 // The implementation for `circle`s.
-func (c circle) area() float64 {
-	return math.Pi * c.radius * c.radius
+func (self circle) area() float64 {
+	return math.Pi * self.radius * self.radius
 }
-func (c circle) perim() float64 {
-	return 2 * math.Pi * c.radius
+func (self circle) perim() float64 {
+	return 2 * math.Pi * self.radius
 }
 
 // If a variable has an interface type, then we can call
