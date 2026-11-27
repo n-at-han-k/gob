@@ -41,7 +41,7 @@ module K8s
 
       # Check if context is already cancelled
       case
-      when ~ctx.Done()
+      when ctx.Done().<<
         return nil, ctx.Err()
       else
       end
@@ -80,7 +80,7 @@ module K8s
 
       # Check if context is cancelled
       case
-      when ~ctx.Done()
+      when ctx.Done().<<
         return nil, ctx.Err()
       else
       end

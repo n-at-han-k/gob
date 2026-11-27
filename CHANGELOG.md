@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-27
+
+### Added
+
+- Unary bitwise NOT: `~x` emits Go `^x`
+- Bit clear operator: `a &! b` emits Go `a &^ b`
+- Channel receive syntax: `ch.<<` emits Go `<-ch`; `v, ok = ch.<<` emits `v, ok := <-ch`
+- Channel send syntax: `ch.<< v` / `ch.<<(v)` emit Go `ch <- v`
+- Channel arrow syntax: `←ch` receives and `ch ← v` sends
+
+### Changed
+
+- Channel receive now uses `ch.<<` instead of `~ch`
+- `~` is no longer channel receive; it is now unary bitwise NOT (`^` in Go)
+- `ch << v` remains supported as a channel send
+
 ## [1.2.3] - 2026-11-27
 
 ### Added

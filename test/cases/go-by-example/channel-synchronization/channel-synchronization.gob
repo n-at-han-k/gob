@@ -16,6 +16,6 @@ module Main
       worker(done)
     }.()
 
-    ~done
+    done.<<
   end
 end

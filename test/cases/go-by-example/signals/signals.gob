@@ -9,7 +9,7 @@ module Main
     defer stop()
 
     fmt.Println("awaiting signal")
-    ~ctx.Done()
+    ctx.Done().<<
 
     fmt.Println()
     fmt.Println(context.Cause(ctx))

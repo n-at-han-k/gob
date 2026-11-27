@@ -7,7 +7,7 @@ module Main
     messages << "buffered"
     messages << "channel"
 
-    fmt.Println(~messages)
-    fmt.Println(~messages)
+    fmt.Println(messages.<<)
+    fmt.Println(messages.<<)
   end
 end

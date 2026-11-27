@@ -6,7 +6,7 @@ module Main
   end
 
   def pong(pings, pongs) # (<-chan string, chan<- string)
-    msg = ~pings
+    msg = pings.<<
     pongs << msg
   end
 
@@ -15,6 +15,6 @@ module Main
     pongs = make(Chan[string], 1)
     ping(pings, "passed message")
     pong(pings, pongs)
-    fmt.Println(~pongs)
+    fmt.Println(pongs.<<)
   end
 end

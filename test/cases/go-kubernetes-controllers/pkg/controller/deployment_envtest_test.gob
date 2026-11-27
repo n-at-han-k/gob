@@ -117,11 +117,11 @@ module Controller
     timeout = time.After(5 * time.Second)
     loop do
       case
-      when got = ~ch
+      when got = ch.<<
         if got == want
           return nil
         end
-      when ~timeout
+      when timeout.<<
         return context.DeadlineExceeded
       end
     end

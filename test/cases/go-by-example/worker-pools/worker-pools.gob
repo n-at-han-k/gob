@@ -33,7 +33,7 @@ module Main
 
     a = 1
     while a <= numJobs
-      ~results
+      results.<<
       a = a + 1
     end
   end

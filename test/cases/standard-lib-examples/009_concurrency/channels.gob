@@ -9,7 +9,7 @@ module Main
       ch << "ping"
     }.()
 
-    msg = ~ch
+    msg = ch.<<
     fmt.Println("received:", msg)
 
     var :wg, sync.WaitGroup

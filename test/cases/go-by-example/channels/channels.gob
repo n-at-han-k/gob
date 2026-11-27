@@ -8,7 +8,7 @@ module Main
       messages << "ping"
     }.()
 
-    msg = ~messages
+    msg = messages.<<
     fmt.Println(msg)
   end
 end

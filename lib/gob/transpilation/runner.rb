@@ -516,6 +516,49 @@ module Gob
           in SyntaxTree::Binary[ left: left, operator: :<<, right: right ]
             SyntaxTree::Go::SendStmt.new(chan: Statements(left), value: Statements(right))
 
+          # when ch.<<(msg)
+          # case ch <- msg:
+          # ---
+          in SyntaxTree::CallNode[
+            receiver: recv,
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Op[value: "<<"],
+            arguments: SyntaxTree::ArgParen[arguments: SyntaxTree::Args[parts: [arg]]]
+          ]
+            SyntaxTree::Go::SendStmt.new(chan: Statements(recv), value: Statements(arg))
+
+          # when ch.<< msg
+          # case ch <- msg:
+          # ---
+          in SyntaxTree::CommandCall[
+            receiver: recv,
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Op[value: "<<"],
+            arguments: SyntaxTree::Args[parts: [arg]]
+          ]
+            SyntaxTree::Go::SendStmt.new(chan: Statements(recv), value: Statements(arg))
+
+          # when ←ch
+          # case <-ch:
+          # ---
+          in SyntaxTree::Command[
+            message: SyntaxTree::Ident[value: "←"],
+            arguments: SyntaxTree::Args[parts: [ch]]
+          ]
+            SyntaxTree::Go::ExprStmt.new(x: Receive(Statements(ch)))
+
+          # when ch ← v
+          # case ch <- v:
+          # ---
+          in SyntaxTree::Command[
+            message: SyntaxTree::Ident[value: name],
+            arguments: SyntaxTree::Args[parts: [SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "←"],
+              arguments: SyntaxTree::Args[parts: [val]]
+            ]]]
+          ]
+            SyntaxTree::Go::SendStmt.new(chan: Ident(name), value: Statements(val))
+
           in SyntaxTree::Assign | SyntaxTree::MAssign
             Statements(node)
 
@@ -872,6 +915,17 @@ module Gob
               ellipsis: ellipsis
             )
 
+          # ch.<<
+          # <-ch
+          # ---
+          in SyntaxTree::CallNode[
+            receiver: receiver,
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Op[value: "<<"],
+            arguments: nil
+          ]
+            Receive(Statements(receiver))
+
           in SyntaxTree::CallNode[
             receiver: receiver,
             operator: SyntaxTree::Period[value: "."],
@@ -941,6 +995,12 @@ module Gob
           in SyntaxTree::FloatLiteral[value: text]
             FloatLiteral(text)
 
+          # a &! b
+          # a &^ b
+          # ---
+          in SyntaxTree::Binary[left: left, operator: :&, right: SyntaxTree::Unary[operator: "!", statement: rhs]] => binary
+            Binary(Statements(left), :"&^", Statements(rhs), location: binary.location)
+
           in SyntaxTree::Binary[left: left, operator: operator, right: right] => binary
             Binary(Statements(left), operator, Statements(right), location: binary.location)
 
@@ -948,6 +1008,12 @@ module Gob
 
           in SyntaxTree::VarField[value: value]
             LeftHand(value)
+
+          # ←ch
+          # <-ch
+          # ---
+          in SyntaxTree::VCall[value: SyntaxTree::Ident[value: name]] if name.start_with?("←")
+            Receive(Ident(name.delete_prefix("←")))
 
           in SyntaxTree::VCall[value: value]
             LeftHand(value)
@@ -1357,11 +1423,67 @@ module Gob
           in SyntaxTree::Paren[contents: SyntaxTree::Statements[body: [statement]]]
             SyntaxTree::Go::ParenExpr.new(x: Statements(statement))
 
+          # ←ch
+          # <-ch
+          # ---
+          in SyntaxTree::Command[
+            message: SyntaxTree::Ident[value: "←"],
+            arguments: SyntaxTree::Args[parts: [ch]]
+          ]
+            Receive(Statements(ch))
+
+          # ch ← v
+          # ch <- v
+          # ---
+          in SyntaxTree::Command[
+            message: SyntaxTree::Ident[value: name],
+            arguments: SyntaxTree::Args[parts: [SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "←"],
+              arguments: SyntaxTree::Args[parts: [val]]
+            ]]]
+          ]
+            SyntaxTree::Go::SendStmt.new(chan: Ident(name), value: Statements(val))
+
+          # a &! b
+          # a &^ b
+          # ---
+          in SyntaxTree::Command[
+            message: SyntaxTree::Ident[value: name],
+            arguments: SyntaxTree::Args[parts: [SyntaxTree::ArgBlock[value: SyntaxTree::Unary[operator: "!", statement: rhs]]]]
+          ]
+            Binary(Ident(name), :"&^", Statements(rhs))
+
           in SyntaxTree::Command[
             message: SyntaxTree::Ident[value: name],
             arguments: SyntaxTree::Args[parts: args]
           ]
             Command(name, args)
+
+          # ch.<< v
+          # ch <- v
+          # ---
+          in SyntaxTree::CommandCall[
+            receiver: recv,
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Op[value: "<<"],
+            arguments: SyntaxTree::Args[parts: [arg]]
+          ]
+            SyntaxTree::Go::SendStmt.new(chan: Statements(recv), value: Statements(arg))
+
+          # foo.bar &! b
+          # foo.bar &^ b
+          # ---
+          in SyntaxTree::CommandCall[
+            receiver: recv,
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Ident[value: name],
+            arguments: SyntaxTree::Args[parts: [SyntaxTree::ArgBlock[value: SyntaxTree::Unary[operator: "!", statement: rhs]]]]
+          ]
+            Binary(
+              SyntaxTree::Go::SelectorExpr.new(x: Statements(recv), sel: Ident(name)),
+              :"&^",
+              Statements(rhs)
+            )
 
           in SyntaxTree::MRHS[parts: parts]
             parts.map { |part| Statements(part) }
@@ -1461,11 +1583,11 @@ module Gob
           in SyntaxTree::ReturnNode
             SyntaxTree::Go::ReturnStmt.new(results: [])
 
-          # ~time.After(50 * time.Millisecond)
-          # <-time.After(50 * time.Millisecond)
+          # ~x
+          # ^x
           # ---
           in SyntaxTree::Unary[ operator: "~", statement: statement ]
-            Receive(Statements(statement))
+            SyntaxTree::Go::UnaryExpr.new(op: :"^", x: Statements(statement))
 
           # -12345
           # -12345
@@ -1760,6 +1882,28 @@ module Gob
                   args: Array(arguments&.parts).map { |argument| Statements(argument) }
                 )
               )
+
+            # ch.<< "ping" / ch.<<(msg)
+            # ch <- "ping"
+            # ---
+            in SyntaxTree::CallNode[
+              receiver: recv,
+              operator: SyntaxTree::Period[value: "."],
+              message: SyntaxTree::Op[value: "<<"],
+              arguments: SyntaxTree::ArgParen[arguments: SyntaxTree::Args[parts: [arg]]]
+            ]
+              SyntaxTree::Go::SendStmt.new(chan: Statements(recv), value: Statements(arg))
+
+            # ch.<< msg
+            # ch <- msg
+            # ---
+            in SyntaxTree::CommandCall[
+              receiver: recv,
+              operator: SyntaxTree::Period[value: "."],
+              message: SyntaxTree::Op[value: "<<"],
+              arguments: SyntaxTree::Args[parts: [arg]]
+            ]
+              SyntaxTree::Go::SendStmt.new(chan: Statements(recv), value: Statements(arg))
 
             # ch << "ping"
             # ch <- "ping"

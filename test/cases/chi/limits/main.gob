@@ -46,10 +46,10 @@ module Main
         processTime = time.Duration(rand.Intn(4)+1) * time.Second
 
         case
-        when ~r.Context().Done()
+        when r.Context().Done().<<
           return
 
-        when ~time.After(processTime)
+        when time.After(processTime).<<
           # The above channel simulates some hard work.
         end
 
@@ -67,7 +67,7 @@ module Main
 
       r.Get("/throttled", lambda { |w, r| # (http.ResponseWriter, *http.Request)
         case
-        when ~r.Context().Done()
+        when r.Context().Done().<<
           case r.Context().Err()
           when context.DeadlineExceeded
             w.WriteHeader(504)
@@ -77,7 +77,7 @@ module Main
           end
           return
 
-        when ~time.After(5 * time.Second)
+        when time.After(5 * time.Second).<<
           # The above channel simulates some hard work.
         end
 

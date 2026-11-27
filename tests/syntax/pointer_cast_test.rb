@@ -1,14 +1,8 @@
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
+require_relative "support/syntax_test"
 
-require "gob"
-require "minitest/autorun"
-
-class PointerCastTest < Minitest::Test
-  def transpile(src)
-    Gob.transpile_to_go(src, path: "test.gob", check: false)
-  end
+class PointerCastTest < SyntaxTest
 
   def test_pointer_cast_simple
     go = transpile(<<~GOB)

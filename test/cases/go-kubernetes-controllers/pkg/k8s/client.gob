@@ -29,7 +29,7 @@ module K8s
 
       # Check if context is cancelled
       case
-      when ~ctx.Done()
+      when ctx.Done().<<
         return ctx.Err()
       else
       end

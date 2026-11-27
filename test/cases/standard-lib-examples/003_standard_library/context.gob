@@ -7,9 +7,9 @@ module Main
 
   def work(ctx) # (context.Context) -> error
     case
-    when ~time.After(200 * time.Millisecond)
+    when time.After(200 * time.Millisecond).<<
       return nil
-    when ~ctx.Done()
+    when ctx.Done().<<
       return ctx.Err()
     end
   end

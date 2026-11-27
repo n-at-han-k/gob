@@ -18,9 +18,9 @@ module Main
 
     2.times do
       case
-      when msg1 = ~c1
+      when msg1 = c1.<<
         fmt.Println("received", msg1)
-      when msg2 = ~c2
+      when msg2 = c2.<<
         fmt.Println("received", msg2)
       end
     end

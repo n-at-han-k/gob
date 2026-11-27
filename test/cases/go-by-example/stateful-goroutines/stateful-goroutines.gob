@@ -18,9 +18,9 @@ module Main
       var state = make(Hash[int, int])
       loop do
         case
-        when read = ~reads
+        when read = reads.<<
           read.resp << state[read.key]
-        when write = ~writes
+        when write = writes.<<
           state[write.key] = write.val
           write.resp << true
         end
@@ -32,7 +32,7 @@ module Main
         loop do
           read = readOp.new(key: rand.Intn(5), resp: make(Chan[int]))
           reads << read
-          ~read.resp
+          read.resp.<<
           readOps.Add(1)
           time.Sleep(time.Millisecond)
         end
@@ -44,7 +44,7 @@ module Main
         loop do
           write = writeOp.new(key: rand.Intn(5), val: rand.Intn(100), resp: make(Chan[bool]))
           writes << write
-          ~write.resp
+          write.resp.<<
           writeOps.Add(1)
           time.Sleep(time.Millisecond)
         end

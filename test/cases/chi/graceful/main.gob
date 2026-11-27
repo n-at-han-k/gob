@@ -28,7 +28,7 @@ module Main
     }.()
 
     # Listen for the interrupt signal
-    ~ctx.Done()
+    ctx.Done().<<
 
     # Create shutdown context with 30-second timeout
     shutdownCtx, cancel = context.WithTimeout(context.Background(), 30*time.Second)

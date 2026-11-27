@@ -14,7 +14,7 @@ module Main
     limiter = time.Tick(200 * time.Millisecond)
 
     requests.each do |req|
-      ~limiter
+      limiter.<<
       fmt.Println("request", req, time.Now())
     end
 
@@ -38,7 +38,7 @@ module Main
     end
     close(burstyRequests)
     burstyRequests.each do |req|
-      ~burstyLimiter
+      burstyLimiter.<<
       fmt.Println("request", req, time.Now())
     end
   end

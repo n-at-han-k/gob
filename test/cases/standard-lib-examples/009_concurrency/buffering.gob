@@ -10,6 +10,6 @@ module Main
 
     fmt.Println("len:", len(ch), "cap:", cap(ch))
 
-    fmt.Println("drained:", ~ch, ~ch, ~ch)
+    fmt.Println("drained:", ch.<<, ch.<<, ch.<<)
   end
 end

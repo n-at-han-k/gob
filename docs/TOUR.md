@@ -195,16 +195,16 @@ module Main
     messages = make(Chan[string])
 
     go lambda {
-      messages << "ping"
+      messages.<< "ping"
     }.()
 
-    msg = ~messages
+    msg = messages.<<
     fmt.Println(msg)
   end
 end
 ```
 
-`go` starts a goroutine. `Chan[T]`/`make(Chan[T])` create channels; `make(Chan[T], n)` creates a buffered channel. `<<` sends, `~channel` receives, `value, ok = ~channel` tests open status, and `close(ch)` closes a channel. `case/when` over channel receives maps to Go `select`.
+`go` starts a goroutine. `Chan[T]`/`make(Chan[T])` create channels; `make(Chan[T], n)` creates a buffered channel. `ch.<< value` or `ch.<<(value)` sends (`ch << value` also works), `ch.<<` receives, `value, ok = ch.<<` tests open status, and `close(ch)` closes a channel. `case/when` over channel operations maps to Go `select`.
 
 ## Next steps
 

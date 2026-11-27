@@ -6,7 +6,7 @@ module Main
     signals = make(Chan[bool])
 
     case
-    when msg = ~messages
+    when msg = messages.<<
       fmt.Println("received message", msg)
     else
       fmt.Println("no message received")
@@ -21,9 +21,9 @@ module Main
     end
 
     case
-    when msg = ~messages
+    when msg = messages.<<
       fmt.Println("received message", msg)
-    when sig = ~signals
+    when sig = signals.<<
       fmt.Println("received signal", sig)
     else
       fmt.Println("no activity")

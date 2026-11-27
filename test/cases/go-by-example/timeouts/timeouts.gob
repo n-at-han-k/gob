@@ -10,9 +10,9 @@ module Main
     }.()
 
     case
-    when res = ~c1
+    when res = c1.<<
       fmt.Println(res)
-    when ~time.After(1 * time.Second)
+    when time.After(1 * time.Second).<<
       fmt.Println("timeout 1")
     end
 
@@ -23,9 +23,9 @@ module Main
     }.()
 
     case
-    when res = ~c2
+    when res = c2.<<
       fmt.Println(res)
-    when ~time.After(3 * time.Second)
+    when time.After(3 * time.Second).<<
       fmt.Println("timeout 2")
     end
   end

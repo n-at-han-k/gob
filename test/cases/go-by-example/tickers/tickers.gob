@@ -9,9 +9,9 @@ module Main
     go lambda {
       loop do
         case
-        when ~done
+        when done.<<
           return
-        when t = ~ticker.C
+        when t = ticker.C.<<
           fmt.Println("Tick at", t)
         end
       end

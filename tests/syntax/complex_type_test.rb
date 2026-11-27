@@ -1,14 +1,8 @@
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
+require_relative "support/syntax_test"
 
-require "gob"
-require "minitest/autorun"
-
-class ComplexTypeTest < Minitest::Test
-  def transpile(src)
-    Gob.transpile_to_go(src, path: "test.gob", check: false)
-  end
+class ComplexTypeTest < SyntaxTest
 
   def test_nested_array
     go = transpile(<<~GOB)

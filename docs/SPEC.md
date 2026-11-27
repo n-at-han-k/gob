@@ -270,30 +270,47 @@ end
 messages = make(Chan[string])
 jobs = make(Chan[int], 5)
 
-go lambda { messages << "ping" }.()
+go lambda { messages.<< "ping" }.()
 
-msg = ~messages
-j, more = ~jobs
+msg = messages.<<
+j, more = jobs.<<
 close(jobs)
 ```
 
 - `go` starts a goroutine.
 - `Chan[T]` is the Gob channel type form; direction types use Go-style forms in signatures, such as `<-chan int` and `chan<- int`.
 - `make(Chan[T])` or `make(Chan[T], n)` creates an unbuffered or buffered channel.
-- `ch << value` sends.
-- `~ch` receives; `value, ok = ~ch` checks whether the channel is still open.
+- `ch.<< value`, `ch.<<(value)`, or `ch ← value` sends (`ch << value` is also supported).
+- `ch.<<` or `←ch` receives; `value, ok = ch.<<` checks whether the channel is still open.
 - `close(ch)` closes a channel.
 
-`case/when` with channel receives maps to Go `select`:
+`case/when` with channel operations maps to Go `select`:
 
 ```ruby
 case
-when msg = ~c1
+when msg = c1.<<
   fmt.Println(msg)
-when ~time.After(time.Second)
+when ch.<<(msg)
+  fmt.Println("sent")
+when time.After(time.Second).<<
   fmt.Println("timeout")
 end
 ```
+
+## Bitwise operators
+
+```ruby
+x = a & b    # AND
+x = a | b    # OR
+x = a ^ b    # XOR
+x = a << 1   # left shift
+x = a >> 1   # right shift
+x = ~a       # bitwise NOT (Go ^a)
+x = a &! b   # bit clear (Go a &^ b)
+```
+
+- `~x` is unary bitwise NOT and emits Go `^x`.
+- `a &! b` is bit clear and emits Go `a &^ b`.
 
 ## Style and validation
 

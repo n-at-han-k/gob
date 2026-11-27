@@ -102,11 +102,11 @@ module Informer
 
     # Wait for informer to stop
     case
-    when err = ~errChan
+    when err = errChan.<<
       if err != nil
         t.Logf("informer stopped with error: %v", err)
       end
-    when ~time.After(5 * time.Second)
+    when time.After(5 * time.Second).<<
       t.Log("informer stop timeout")
     end
   end

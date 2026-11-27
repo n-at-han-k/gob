@@ -9,9 +9,9 @@ module Main
     defer fmt.Println("server: hello handler ended")
 
     case
-    when ~time.After(10 * time.Second)
+    when time.After(10 * time.Second).<<
       fmt.Fprintf(w, "hello\n")
-    when ~ctx.Done()
+    when ctx.Done().<<
       err = ctx.Err()
       fmt.Println("server:", err)
       internalError = http.StatusInternalServerError

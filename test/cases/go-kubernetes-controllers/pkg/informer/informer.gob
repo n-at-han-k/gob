@@ -66,10 +66,10 @@ module Informer
         close(done)
       }.()
       case
-      when ~done
+      when done.<<
         self.logger.Info().Msg("informer stopped successfully")
         return nil
-      when ~ctx.Done()
+      when ctx.Done().<<
         return errors.NewWatchError("timeout waiting for informer to stop", ctx.Err())
       end
     end

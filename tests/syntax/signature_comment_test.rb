@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
-
+require_relative "support/syntax_test"
 require "gob/transpilation/runner"
-require "minitest/autorun"
 
-class SignatureCommentTest < Minitest::Test
+class SignatureCommentTest < SyntaxTest
   def parse(text)
     obj = Object.new
     obj.extend(Gob::Transpilation::Runner::DefinitionNodes)

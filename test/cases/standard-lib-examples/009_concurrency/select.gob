@@ -18,11 +18,11 @@ module Main
 
     2.times do
       case
-      when msg = ~fast
+      when msg = fast.<<
         fmt.Println("got:", msg)
-      when msg = ~slow
+      when msg = slow.<<
         fmt.Println("got:", msg)
-      when ~time.After(50 * time.Millisecond)
+      when time.After(50 * time.Millisecond).<<
         fmt.Println("timed out waiting")
       end
     end
@@ -30,7 +30,7 @@ module Main
     idle = make(Chan[int], 1)
 
     case
-    when n = ~idle
+    when n = idle.<<
       fmt.Println("drained:", n)
     else
       fmt.Println("nothing ready")

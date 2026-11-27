@@ -32,6 +32,6 @@ module Informer
     # Give the worker a moment to process
     time.Sleep(100 * time.Millisecond)
     cancel()
-    ~done
+    done.<<
   end
 end
