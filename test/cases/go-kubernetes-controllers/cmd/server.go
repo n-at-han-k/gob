@@ -12,31 +12,32 @@ import (
 var (
 	disableLeaderElection bool
 	metricsPort           int
+	serverCmd             = &cobra.Command{
+		Use:   "server",
+		Short: "Start the controller manager",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
+			mgr, err := ctrl.NewManager(k8s.NewConfigOrDie(), manager.Options{
+				Scheme:                     k8s.NewScheme(),
+				LeaderElection:             !disableLeaderElection,
+				LeaderElectionID:           "go-k8s-ctrl-leader-election",
+				LeaderElectionResourceLock: "leases",
+			})
+			if err != nil {
+				return err
+			}
+			err = controller.SetupDeploymentController(mgr)
+			if err != nil {
+				return err
+			}
+			err = controller.SetupFrontendPageController(mgr)
+			if err != nil {
+				return err
+			}
+			return mgr.Start(ctrl.SetupSignalHandler())
+		},
+	}
 )
-
-var serverCmd = &cobra.Command{
-	Use:   "server",
-	Short: "Start the controller manager",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
-		mgr, err := ctrl.NewManager(k8s.NewConfigOrDie(), manager.Options{
-			Scheme:                     k8s.NewScheme(),
-			LeaderElection:             !disableLeaderElection,
-			LeaderElectionID:           "go-k8s-ctrl-leader-election",
-			LeaderElectionResourceLock: "leases",
-		})
-		if err != nil {
-			return err
-		}
-		if err := controller.SetupDeploymentController(mgr); err != nil {
-			return err
-		}
-		if err := controller.SetupFrontendPageController(mgr); err != nil {
-			return err
-		}
-		return mgr.Start(ctrl.SetupSignalHandler())
-	},
-}
 
 func init() {
 	rootCmd.AddCommand(serverCmd)

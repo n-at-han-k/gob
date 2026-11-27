@@ -1,14 +1,14 @@
 package types
 
 import (
-	"time"
-
 	"github.com/thegostev/go-kubernetes-controllers/pkg/errors"
+	"time"
 )
 
 // InformerConfig represents informer configuration
+
 type InformerConfig struct {
-	Namespace       string        `json:"namespace"`
+	Namespace       string
 	ResyncPeriod    time.Duration `json:"resyncPeriod"`
 	MaxCacheSize    int           `json:"maxCacheSize"`
 	MaxConnections  int           `json:"maxConnections"`
@@ -16,53 +16,47 @@ type InformerConfig struct {
 	Workers         int           `json:"workers"`
 }
 
-// Validate validates InformerConfig
-func (c *InformerConfig) Validate() error {
-	if c.ResyncPeriod < time.Second || c.ResyncPeriod > 30*time.Minute {
+func (self *InformerConfig) Validate() error {
+	if self.ResyncPeriod < time.Second || self.ResyncPeriod > 30*time.Minute {
 		return errors.NewValidationError("resyncPeriod", "must be between 1s and 30m")
 	}
-
-	if c.MaxCacheSize <= 0 {
+	if self.MaxCacheSize <= 0 {
 		return errors.NewValidationError("maxCacheSize", "must be positive")
 	}
-
-	if c.MaxConnections <= 0 {
+	if self.MaxConnections <= 0 {
 		return errors.NewValidationError("maxConnections", "must be positive")
 	}
-
-	if c.EventBufferSize <= 0 {
+	if self.EventBufferSize <= 0 {
 		return errors.NewValidationError("eventBufferSize", "must be positive")
 	}
-
-	if c.Workers <= 0 {
+	if self.Workers <= 0 {
 		return errors.NewValidationError("workers", "must be positive")
 	}
-
 	return nil
 }
 
-// SetDefaults sets default values for InformerConfig
-func (c *InformerConfig) SetDefaults() {
-	if c.ResyncPeriod == 0 {
-		c.ResyncPeriod = 10 * time.Minute
+func (self *InformerConfig) SetDefaults() {
+	if self.ResyncPeriod == 0 {
+		self.ResyncPeriod = 10 * time.Minute
 	}
-	if c.MaxCacheSize == 0 {
-		c.MaxCacheSize = 1000
+	if self.MaxCacheSize == 0 {
+		self.MaxCacheSize = 1000
 	}
-	if c.MaxConnections == 0 {
-		c.MaxConnections = 10
+	if self.MaxConnections == 0 {
+		self.MaxConnections = 10
 	}
-	if c.EventBufferSize == 0 {
-		c.EventBufferSize = 100
+	if self.EventBufferSize == 0 {
+		self.EventBufferSize = 100
 	}
-	if c.Workers == 0 {
-		c.Workers = 2
+	if self.Workers == 0 {
+		self.Workers = 2
 	}
 }
 
 // InformerHealth represents informer health status
+
 type InformerHealth struct {
-	IsHealthy bool      `json:"isHealthy"`
+	IsHealthy bool
 	LastSync  time.Time `json:"lastSync"`
 	Error     error     `json:"error,omitempty"`
 	CacheSize int       `json:"cacheSize"`
@@ -70,10 +64,11 @@ type InformerHealth struct {
 }
 
 // Event represents a deployment event
+
 type Event struct {
-	Type      string      `json:"type"` // "add", "update", "delete"
-	Namespace string      `json:"namespace"`
-	Name      string      `json:"name"`
-	Timestamp time.Time   `json:"timestamp"`
-	Object    interface{} `json:"object,omitempty"`
+	Type      string
+	Namespace string    `json:"namespace"`
+	Name      string    `json:"name"`
+	Timestamp time.Time `json:"timestamp"`
+	Object    any       `json:"object,omitempty"`
 }

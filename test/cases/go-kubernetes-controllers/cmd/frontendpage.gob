@@ -1,0 +1,97 @@
+require "context"
+require "fmt"
+
+require "github.com/rs/zerolog/log"
+require "github.com/spf13/cobra"
+
+require "github.com/thegostev/go-kubernetes-controllers/api/v1alpha1"
+require "github.com/thegostev/go-kubernetes-controllers/internal/types"
+require "github.com/thegostev/go-kubernetes-controllers/pkg/k8s"
+
+module Cmd
+  var :frontendPageNamespace, string
+
+  var frontendPageCmd = @cobra.Command.new(
+    Use: "frontendpage",
+    Short: "Manage FrontendPage resources",
+    Long: "List and manage FrontendPage custom resources",
+  )
+
+  var listFrontendPageCmd = @cobra.Command.new(
+    Use: "list",
+    Short: "List FrontendPage resources",
+    RunE: lambda { |cmd, args| # (*cobra.Command, []string) -> error
+      return listFrontendPages()
+    },
+  )
+
+  def listFrontendPages # -> error
+    logger = log.With().Str("component", "frontendpage-list").Logger()
+
+    # Create client configuration (following existing pattern)
+    clientConfig = @types.ClientConfig.new(
+      KubeconfigPath: kubeconfig,
+      Timeout: timeout,
+    )
+
+    # Initialize Kubernetes client
+    client, err = k8s.NewClient(clientConfig)
+    if err != nil
+      logger.Error().Err(err).Msg("failed to create kubernetes client")
+      return fmt.Errorf("failed to create kubernetes client: %w", err)
+    end
+
+    # Create list options (following existing pattern)
+    listOptions = @types.ListOptions.new(
+      Namespace: frontendPageNamespace,
+      Timeout: timeout,
+    )
+
+    # Create context
+    ctx = context.Background()
+
+    # List frontend pages
+    frontendPages, err = client.ListFrontendPages(ctx, listOptions)
+    if err != nil
+      logger.Error().Err(err).Msg("failed to list frontend pages")
+      return fmt.Errorf("failed to list frontend pages: %w", err)
+    end
+
+    # Display results (following existing pattern)
+    err = displayFrontendPages(frontendPages, frontendPageNamespace)
+    if err != nil
+      logger.Error().Err(err).Msg("failed to display frontend pages")
+      return fmt.Errorf("failed to display frontend pages: %w", err)
+    end
+
+    return nil
+  end
+
+  def displayFrontendPages(frontendPages, namespace) # (*v1alpha1.FrontendPageList, string) -> error
+    # Simple display (following existing pattern)
+    fmt.Printf("FrontendPages in namespace '%s':\n", frontendPageNamespace)
+    fmt.Printf("Found %d FrontendPage(s)\n\n", len(frontendPages.Items))
+
+    frontendPages.Items.each do |_, page|
+      fmt.Printf("Name: %s\n", page.Name)
+      fmt.Printf("  Namespace: %s\n", page.Namespace)
+      fmt.Printf("  Title: %s\n", page.Spec.Title)
+      fmt.Printf("  Template: %s\n", page.Spec.Template)
+      fmt.Printf("  Components: %d\n", len(page.Spec.Components))
+      fmt.Printf("  Phase: %s\n", page.Status.Phase)
+      if page.Status.URL != ""
+        fmt.Printf("  URL: %s\n", page.Status.URL)
+      end
+      fmt.Println()
+    end
+
+    return nil
+  end
+
+  def init
+    rootCmd.AddCommand(frontendPageCmd)
+    frontendPageCmd.AddCommand(listFrontendPageCmd)
+
+    listFrontendPageCmd.Flags().StringVar(@frontendPageNamespace, "namespace", "", "Namespace to list frontend pages from (default: default)")
+  end
+end

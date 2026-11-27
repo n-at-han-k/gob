@@ -1,0 +1,63 @@
+require "time"
+
+require "github.com/thegostev/go-kubernetes-controllers/pkg/errors"
+
+module Types
+  # ListOptions represents options for listing resources
+  var ListOptions = Struct.new(
+    # `json:"namespace"`
+    Namespace: string,
+    # `json:"timeout"`
+    Timeout: time.Duration,
+  ) do
+    # Validate validates ListOptions
+    def Validate # -> error
+      # Validate namespace
+      if self.Namespace == ""
+        return errors.NewValidationError("namespace", "cannot be empty")
+      end
+
+      # Validate timeout
+      if self.Timeout < time.Second || self.Timeout > 5*time.Minute
+        return errors.NewValidationError("timeout", "must be between 1s and 5m")
+      end
+
+      return nil
+    end
+
+    # SetDefaults sets default values for ListOptions
+    def SetDefaults
+      if self.Namespace == ""
+        self.Namespace = "default"
+      end
+      if self.Timeout == 0
+        self.Timeout = 30 * time.Second
+      end
+    end
+  end
+
+  # ClientConfig represents Kubernetes client configuration
+  var ClientConfig = Struct.new(
+    # `json:"kubeconfigPath"`
+    KubeconfigPath: string,
+    # `json:"timeout"`
+    Timeout: time.Duration,
+  ) do
+    # Validate validates ClientConfig
+    def Validate # -> error
+      # Validate timeout
+      if self.Timeout < time.Second || self.Timeout > 5*time.Minute
+        return errors.NewValidationError("timeout", "must be between 1s and 5m")
+      end
+
+      return nil
+    end
+
+    # SetDefaults sets default values for ClientConfig
+    def SetDefaults
+      if self.Timeout == 0
+        self.Timeout = 30 * time.Second
+      end
+    end
+  end
+end

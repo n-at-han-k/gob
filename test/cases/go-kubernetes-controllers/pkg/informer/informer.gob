@@ -1,0 +1,242 @@
+require "context"
+require "sync"
+require "time"
+
+require "github.com/rs/zerolog"
+require "github.com/rs/zerolog/log"
+require "k8s.io/api/apps/v1", appsv1
+require "k8s.io/client-go/informers"
+require "k8s.io/client-go/kubernetes"
+require "k8s.io/client-go/tools/cache"
+
+require "github.com/thegostev/go-kubernetes-controllers/internal/types"
+require "github.com/thegostev/go-kubernetes-controllers/pkg/errors"
+
+module Informer
+  # Informer represents a Kubernetes deployment informer
+  var Informer = Struct.new(
+    clientset: @@kubernetes.Clientset,
+    config: @@types.InformerConfig,
+    logger: zerolog.Logger,
+    indexer: cache.Indexer,
+    informer: cache.SharedIndexInformer,
+    eventQueue: Chan[types.Event],
+    health: @@types.InformerHealth,
+    mu: sync.RWMutex,
+    ctx: context.Context,
+    cancel: context.CancelFunc,
+    workers: Array[@@EventWorker],
+    wg: sync.WaitGroup,
+  ) do
+    # Start starts the informer
+    def Start(ctx) # (context.Context) -> error
+      self.logger.Info().Msg("starting informer")
+
+      # Start event workers
+      self.workers.each do |_, worker|
+        self.wg.Add(1)
+        go lambda {
+          defer self.wg.Done()
+          worker.Start(ctx)
+        }.()
+      end
+
+      # Start informer
+      go lambda {
+        self.informer.Run(ctx.Done())
+      }.()
+
+      # Wait for cache sync
+      if !cache.WaitForCacheSync(ctx.Done(), self.informer.HasSynced)
+        return errors.NewWatchError("failed to sync cache", nil)
+      end
+
+      self.logger.Info().Msg("informer started successfully")
+      return nil
+    end
+
+    # Stop stops the informer
+    def Stop(ctx) # (context.Context) -> error
+      self.logger.Info().Msg("stopping informer")
+      self.cancel()
+      close(self.eventQueue)
+      done = make(Chan[struct{}])
+      go lambda {
+        self.wg.Wait()
+        close(done)
+      }.()
+      case
+      when ~done
+        self.logger.Info().Msg("informer stopped successfully")
+        return nil
+      when ~ctx.Done()
+        return errors.NewWatchError("timeout waiting for informer to stop", ctx.Err())
+      end
+    end
+
+    # Health returns the informer health status
+    def Health # -> types.InformerHealth
+      self.mu.RLock()
+      defer self.mu.RUnlock()
+      health = @@self.health
+      health.CacheSize = len(self.indexer.ListKeys())
+      return health
+    end
+
+    # handleAdd handles deployment add events
+    def handleAdd(obj) # (interface{}) 
+      deployment = obj.(@@appsv1.Deployment)
+      event = types.Event.new(
+        Type: "add",
+        Namespace: deployment.Namespace,
+        Name: deployment.Name,
+        Timestamp: time.Now(),
+        Object: deployment,
+      )
+      self.logger.Debug().
+        Str("type", "add").
+        Str("namespace", deployment.Namespace).
+        Str("name", deployment.Name).
+        Msg("deployment added")
+      case
+      when self.eventQueue << event
+      else
+        self.logger.Warn().Msg("event queue full, dropping add event")
+      end
+    end
+
+    # handleUpdate handles deployment update events
+    def handleUpdate(oldObj, newObj) # (interface{}, interface{})
+      newDeployment = newObj.(@@appsv1.Deployment)
+      event = types.Event.new(
+        Type: "update",
+        Namespace: newDeployment.Namespace,
+        Name: newDeployment.Name,
+        Timestamp: time.Now(),
+        Object: newDeployment,
+      )
+      self.logger.Debug().
+        Str("type", "update").
+        Str("namespace", newDeployment.Namespace).
+        Str("name", newDeployment.Name).
+        Msg("deployment updated")
+      case
+      when self.eventQueue << event
+      else
+        self.logger.Warn().Msg("event queue full, dropping update event")
+      end
+    end
+
+    # handleDelete handles deployment delete events
+    def handleDelete(obj) # (interface{})
+      deployment = obj.(@@appsv1.Deployment)
+      event = types.Event.new(
+        Type: "delete",
+        Namespace: deployment.Namespace,
+        Name: deployment.Name,
+        Timestamp: time.Now(),
+        Object: deployment,
+      )
+      self.logger.Debug().
+        Str("type", "delete").
+        Str("namespace", deployment.Namespace).
+        Str("name", deployment.Name).
+        Msg("deployment deleted")
+      case
+      when self.eventQueue << event
+      else
+        self.logger.Warn().Msg("event queue full, dropping delete event")
+      end
+    end
+
+    # GetDeployment retrieves a deployment from cache
+    def GetDeployment(namespace, name) # (string, string) -> (*appsv1.Deployment, error)
+      key = namespace + "/" + name
+      obj, exists, err = self.indexer.GetByKey(key)
+      if err != nil
+        return nil, errors.NewCacheError("failed to get deployment from cache", err)
+      end
+      if !exists
+        return nil, errors.NewCacheError("deployment not found in cache", nil)
+      end
+      return obj.(@@appsv1.Deployment), nil
+    end
+
+    # ListDeployments lists all deployments in cache
+    def ListDeployments # -> ([]*appsv1.Deployment, error)
+      objs = self.indexer.List()
+      deployments = make(Array[@@appsv1.Deployment], len(objs))
+      objs.each_with_index do |i, obj|
+        deployments[i] = obj.(@@appsv1.Deployment)
+      end
+      return deployments, nil
+    end
+  end
+
+  # NewInformer creates a new deployment informer
+  def NewInformer(clientset, config) # (*kubernetes.Clientset, *types.InformerConfig) -> (*Informer, error)
+    logger = log.With().Str("component", "informer").Logger()
+
+    err = config.Validate()
+    if err != nil
+      logger.Error().Err(err).Msg("invalid informer configuration")
+      return nil, errors.NewConfigError("invalid informer configuration", err)
+    end
+    config.SetDefaults()
+
+    ctx, cancel = context.WithCancel(context.Background())
+    eventQueue = make(Chan[types.Event], config.EventBufferSize)
+    health = @types.InformerHealth.new(
+      IsHealthy: true,
+      LastSync: time.Now(),
+      Workers: config.Workers,
+    )
+
+    # Use the shared informer factory for deployments
+    factory = informers.NewSharedInformerFactoryWithOptions(
+      clientset,
+      config.ResyncPeriod,
+      informers.WithNamespace(config.Namespace),
+    )
+    deploymentInformer = factory.Apps().V1().Deployments().Informer()
+
+    informer = @Informer.new(
+      clientset: clientset,
+      config: config,
+      logger: logger,
+      informer: deploymentInformer,
+      indexer: deploymentInformer.GetIndexer(),
+      eventQueue: eventQueue,
+      health: health,
+      ctx: ctx,
+      cancel: cancel,
+    )
+
+    # Register event handlers
+    _, err = deploymentInformer.AddEventHandler(cache.ResourceEventHandlerFuncs.new(
+      AddFunc: informer.handleAdd,
+      UpdateFunc: informer.handleUpdate,
+      DeleteFunc: informer.handleDelete,
+    ))
+    if err != nil
+      logger.Error().Err(err).Msg("failed to add event handlers")
+      return nil, errors.NewConfigError("failed to add event handlers", err)
+    end
+
+    # Create event workers
+    informer.workers = make(Array[@@EventWorker], config.Workers)
+    j = 0
+    while j < config.Workers
+      informer.workers[j] = NewEventWorker(eventQueue, logger)
+      j += 1
+    end
+
+    logger.Info().
+      Str("namespace", config.Namespace).
+      Dur("resyncPeriod", config.ResyncPeriod).
+      Int("workers", config.Workers).
+      Msg("informer initialized successfully")
+
+    return informer, nil
+  end
+end

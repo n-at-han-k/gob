@@ -1,0 +1,7 @@
+require "github.com/thegostev/go-kubernetes-controllers/cmd"
+
+module Main
+  def main
+    cmd.Execute()
+  end
+end

@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/client-go/util/workqueue"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -16,17 +15,20 @@ import (
 )
 
 // DeploymentReconciler logs reconcile requests for Deployments
+
 // (no business logic, just logs for demonstration)
+
 type DeploymentReconciler struct {
-	client.Client
+	Client client.Client
 }
 
-func (r *DeploymentReconciler) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
+func (self *DeploymentReconciler) Reconcile(ctx context.Context, req reconcile.Request) (reconcile.Result, error) {
 	log.FromContext(ctx).Info("Reconciling Deployment", "namespace", req.Namespace, "name", req.Name)
 	return reconcile.Result{}, nil
 }
 
 // DeploymentEventHandler logs all Deployment events
+
 var DeploymentEventHandler = handler.Funcs{
 	CreateFunc: func(ctx context.Context, e event.CreateEvent, q workqueue.RateLimitingInterface) {
 		log.FromContext(ctx).Info("Deployment created", "name", e.Object.GetName(), "namespace", e.Object.GetNamespace())
@@ -47,6 +49,7 @@ var DeploymentEventHandler = handler.Funcs{
 }
 
 // SetupDeploymentController registers the controller-runtime controller for Deployments
+
 func SetupDeploymentController(mgr manager.Manager) error {
 	reconciler := &DeploymentReconciler{Client: mgr.GetClient()}
 	c, err := crcontroller.New("deployment-logger", mgr, crcontroller.Options{
@@ -55,8 +58,5 @@ func SetupDeploymentController(mgr manager.Manager) error {
 	if err != nil {
 		return err
 	}
-	return c.Watch(
-		source.Kind(mgr.GetCache(), &appsv1.Deployment{}),
-		&DeploymentEventHandler,
-	)
+	return c.Watch(source.Kind(mgr.GetCache(), &appsv1.Deployment{}), &DeploymentEventHandler)
 }

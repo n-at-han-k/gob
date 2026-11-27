@@ -1,0 +1,50 @@
+require "context"
+
+require "github.com/rs/zerolog"
+
+require "github.com/thegostev/go-kubernetes-controllers/internal/types"
+
+module Informer
+  # EventWorker processes events asynchronously
+  var EventWorker = Struct.new(
+    queue: Chan[types.Event],
+    logger: zerolog.Logger,
+  ) do
+    # Start starts the event worker
+    def Start(ctx) # (context.Context)
+      self.logger.Debug().Msg("starting event worker")
+
+      loop do
+        case
+        when event, ok = ~self.queue
+          if !ok
+            self.logger.Debug().Msg("event queue closed, stopping worker")
+            return
+          end
+          self.processEvent(event)
+        when ~ctx.Done()
+          self.logger.Debug().Msg("context cancelled, stopping worker")
+          return
+        end
+      end
+    end
+
+    # processEvent processes a single event
+    def processEvent(event) # (types.Event)
+      self.logger.Info().
+        Str("type", event.Type).
+        Str("namespace", event.Namespace).
+        Str("name", event.Name).
+        Time("timestamp", event.Timestamp).
+        Msg("processing deployment event")
+
+      # In a real implementation, you would do more processing here
+      # For now, we just log the event
+    end
+  end
+
+  # NewEventWorker creates a new event worker
+  def NewEventWorker(queue, logger) # (chan types.Event, zerolog.Logger) -> *EventWorker
+    return @EventWorker.new(queue: queue, logger: logger)
+  end
+end

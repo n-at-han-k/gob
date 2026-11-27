@@ -1,0 +1,93 @@
+require "time"
+
+require "github.com/thegostev/go-kubernetes-controllers/pkg/errors"
+
+module Types
+  # InformerConfig represents informer configuration
+  var InformerConfig = Struct.new(
+    # `json:"namespace"`
+    Namespace: string,
+    # `json:"resyncPeriod"`
+    ResyncPeriod: time.Duration,
+    # `json:"maxCacheSize"`
+    MaxCacheSize: int,
+    # `json:"maxConnections"`
+    MaxConnections: int,
+    # `json:"eventBufferSize"`
+    EventBufferSize: int,
+    # `json:"workers"`
+    Workers: int,
+  ) do
+    # Validate validates InformerConfig
+    def Validate # -> error
+      if self.ResyncPeriod < time.Second || self.ResyncPeriod > 30*time.Minute
+        return errors.NewValidationError("resyncPeriod", "must be between 1s and 30m")
+      end
+
+      if self.MaxCacheSize <= 0
+        return errors.NewValidationError("maxCacheSize", "must be positive")
+      end
+
+      if self.MaxConnections <= 0
+        return errors.NewValidationError("maxConnections", "must be positive")
+      end
+
+      if self.EventBufferSize <= 0
+        return errors.NewValidationError("eventBufferSize", "must be positive")
+      end
+
+      if self.Workers <= 0
+        return errors.NewValidationError("workers", "must be positive")
+      end
+
+      return nil
+    end
+
+    # SetDefaults sets default values for InformerConfig
+    def SetDefaults
+      if self.ResyncPeriod == 0
+        self.ResyncPeriod = 10 * time.Minute
+      end
+      if self.MaxCacheSize == 0
+        self.MaxCacheSize = 1000
+      end
+      if self.MaxConnections == 0
+        self.MaxConnections = 10
+      end
+      if self.EventBufferSize == 0
+        self.EventBufferSize = 100
+      end
+      if self.Workers == 0
+        self.Workers = 2
+      end
+    end
+  end
+
+  # InformerHealth represents informer health status
+  var InformerHealth = Struct.new(
+    # `json:"isHealthy"`
+    IsHealthy: bool,
+    # `json:"lastSync"`
+    LastSync: time.Time,
+    # `json:"error,omitempty"`
+    Error: error,
+    # `json:"cacheSize"`
+    CacheSize: int,
+    # `json:"workers"`
+    Workers: int,
+  )
+
+  # Event represents a deployment event
+  var Event = Struct.new(
+    # `json:"type"`
+    Type: string,
+    # `json:"namespace"`
+    Namespace: string,
+    # `json:"name"`
+    Name: string,
+    # `json:"timestamp"`
+    Timestamp: time.Time,
+    # `json:"object,omitempty"`
+    Object: any,
+  )
+end

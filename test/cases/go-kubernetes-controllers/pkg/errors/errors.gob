@@ -1,0 +1,103 @@
+require "fmt"
+
+module Errors
+  # ConfigError represents configuration-related errors
+  var ConfigError = Struct.new(
+    Message: string,
+    Err: error,
+  ) do
+    def Error # -> string
+      if self.Err != nil
+        return fmt.Sprintf("configuration error: %s: %v", self.Message, self.Err)
+      end
+      return fmt.Sprintf("configuration error: %s", self.Message)
+    end
+  end
+
+  # ConnectionError represents cluster connection errors
+  var ConnectionError = Struct.new(
+    Message: string,
+    Err: error,
+  ) do
+    def Error # -> string
+      if self.Err != nil
+        return fmt.Sprintf("connection error: %s: %v", self.Message, self.Err)
+      end
+      return fmt.Sprintf("connection error: %s", self.Message)
+    end
+  end
+
+  # ValidationError represents input validation errors
+  var ValidationError = Struct.new(
+    Field: string,
+    Message: string,
+  ) do
+    def Error # -> string
+      return fmt.Sprintf("validation error for field '%s': %s", self.Field, self.Message)
+    end
+  end
+
+  # WatchError represents watch stream failures
+  var WatchError = Struct.new(
+    Message: string,
+    Err: error,
+  ) do
+    def Error # -> string
+      if self.Err != nil
+        return fmt.Sprintf("watch error: %s: %v", self.Message, self.Err)
+      end
+      return fmt.Sprintf("watch error: %s", self.Message)
+    end
+  end
+
+  # CacheError represents cache corruption or storage issues
+  var CacheError = Struct.new(
+    Message: string,
+    Err: error,
+  ) do
+    def Error # -> string
+      if self.Err != nil
+        return fmt.Sprintf("cache error: %s: %v", self.Message, self.Err)
+      end
+      return fmt.Sprintf("cache error: %s", self.Message)
+    end
+  end
+
+  # ResyncError represents resync operation failures
+  var ResyncError = Struct.new(
+    Message: string,
+    Err: error,
+  ) do
+    def Error # -> string
+      if self.Err != nil
+        return fmt.Sprintf("resync error: %s: %v", self.Message, self.Err)
+      end
+      return fmt.Sprintf("resync error: %s", self.Message)
+    end
+  end
+
+  # Helper functions to create errors
+  def NewConfigError(message, err) # (string, error) -> *ConfigError
+    return @ConfigError.new(Message: message, Err: err)
+  end
+
+  def NewConnectionError(message, err) # (string, error) -> *ConnectionError
+    return @ConnectionError.new(Message: message, Err: err)
+  end
+
+  def NewValidationError(field, message) # (string, string) -> *ValidationError
+    return @ValidationError.new(Field: field, Message: message)
+  end
+
+  def NewWatchError(message, err) # (string, error) -> *WatchError
+    return @WatchError.new(Message: message, Err: err)
+  end
+
+  def NewCacheError(message, err) # (string, error) -> *CacheError
+    return @CacheError.new(Message: message, Err: err)
+  end
+
+  def NewResyncError(message, err) # (string, error) -> *ResyncError
+    return @ResyncError.new(Message: message, Err: err)
+  end
+end

@@ -1,0 +1,60 @@
+require "context"
+
+require "k8s.io/api/apps/v1", appsv1
+require "k8s.io/client-go/util/workqueue"
+require "sigs.k8s.io/controller-runtime/pkg/client"
+require "sigs.k8s.io/controller-runtime/pkg/controller", crcontroller
+require "sigs.k8s.io/controller-runtime/pkg/event"
+require "sigs.k8s.io/controller-runtime/pkg/handler"
+require "sigs.k8s.io/controller-runtime/pkg/log"
+require "sigs.k8s.io/controller-runtime/pkg/manager"
+require "sigs.k8s.io/controller-runtime/pkg/reconcile"
+require "sigs.k8s.io/controller-runtime/pkg/source"
+
+module Controller
+  # DeploymentReconciler logs reconcile requests for Deployments
+  # (no business logic, just logs for demonstration)
+  var DeploymentReconciler = Struct.new(
+    Client: client.Client,
+  ) do
+    def Reconcile(ctx, req) # (context.Context, reconcile.Request) -> (reconcile.Result, error)
+      log.FromContext(ctx).Info("Reconciling Deployment", "namespace", req.Namespace, "name", req.Name)
+      return reconcile.Result.new(), nil
+    end
+  end
+
+  # DeploymentEventHandler logs all Deployment events
+  var DeploymentEventHandler = handler.Funcs.new(
+    CreateFunc: lambda { |ctx, e, q| # (context.Context, event.CreateEvent, workqueue.RateLimitingInterface)
+      log.FromContext(ctx).Info("Deployment created", "name", e.Object.GetName(), "namespace", e.Object.GetNamespace())
+      q.Add(reconcile.Request.new(NamespacedName: client.ObjectKeyFromObject(e.Object)))
+    },
+    UpdateFunc: lambda { |ctx, e, q| # (context.Context, event.UpdateEvent, workqueue.RateLimitingInterface)
+      log.FromContext(ctx).Info("Deployment updated", "name", e.ObjectNew.GetName(), "namespace", e.ObjectNew.GetNamespace())
+      q.Add(reconcile.Request.new(NamespacedName: client.ObjectKeyFromObject(e.ObjectNew)))
+    },
+    DeleteFunc: lambda { |ctx, e, q| # (context.Context, event.DeleteEvent, workqueue.RateLimitingInterface)
+      log.FromContext(ctx).Info("Deployment deleted", "name", e.Object.GetName(), "namespace", e.Object.GetNamespace())
+      q.Add(reconcile.Request.new(NamespacedName: client.ObjectKeyFromObject(e.Object)))
+    },
+    GenericFunc: lambda { |ctx, e, q| # (context.Context, event.GenericEvent, workqueue.RateLimitingInterface)
+      log.FromContext(ctx).Info("Generic event", "name", e.Object.GetName(), "namespace", e.Object.GetNamespace())
+      q.Add(reconcile.Request.new(NamespacedName: client.ObjectKeyFromObject(e.Object)))
+    },
+  )
+
+  # SetupDeploymentController registers the controller-runtime controller for Deployments
+  def SetupDeploymentController(mgr) # (manager.Manager) -> error
+    reconciler = @DeploymentReconciler.new(Client: mgr.GetClient())
+    c, err = crcontroller.New("deployment-logger", mgr, crcontroller.Options.new(
+      Reconciler: reconciler,
+    ))
+    if err != nil
+      return err
+    end
+    return c.Watch(
+      source.Kind(mgr.GetCache(), @appsv1.Deployment.new()),
+      @DeploymentEventHandler,
+    )
+  end
+end

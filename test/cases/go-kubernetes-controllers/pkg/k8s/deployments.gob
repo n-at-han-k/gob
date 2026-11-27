@@ -1,0 +1,112 @@
+require "context"
+
+require "github.com/rs/zerolog"
+require "github.com/rs/zerolog/log"
+require "k8s.io/api/apps/v1", appsv1
+require "k8s.io/apimachinery/pkg/apis/meta/v1", metav1
+require "k8s.io/client-go/kubernetes"
+require "k8s.io/client-go/rest"
+
+require "github.com/thegostev/go-kubernetes-controllers/internal/types"
+require "github.com/thegostev/go-kubernetes-controllers/pkg/errors"
+
+module K8s
+  var Client = Struct.new(
+    clientset: @@kubernetes.Clientset,
+    logger: zerolog.Logger,
+    restConfig: @@rest.Config,
+  )
+
+  var Client = Struct.new(
+    clientset: @@kubernetes.Clientset,
+    logger: zerolog.Logger,
+    restConfig: @@rest.Config,
+  ) do
+    # ListDeployments lists deployments in the specified namespace with context and timeout
+    def ListDeployments(ctx, options) # (context.Context, *types.ListOptions) -> (*appsv1.DeploymentList, error)
+      logger = self.logger.With().Str("operation", "list-deployments").Logger()
+
+      # Validate options
+      err = options.Validate()
+      if err != nil
+        logger.Error().Err(err).Msg("invalid list options")
+        return nil, errors.NewValidationError("list options", err.Error())
+      end
+
+      # Set defaults
+      options.SetDefaults()
+
+      logger.Debug().
+        Str("namespace", options.Namespace).
+        Dur("timeout", options.Timeout).
+        Msg("listing deployments")
+
+      # Create context with timeout
+      ctx, cancel = context.WithTimeout(ctx, options.Timeout)
+      defer cancel()
+
+      # Check if context is already cancelled
+      case
+      when ~ctx.Done()
+        return nil, ctx.Err()
+      else
+      end
+
+      # List deployments
+      deployments, err = self.clientset.AppsV1().Deployments(options.Namespace).List(ctx, metav1.ListOptions.new())
+      if err != nil
+        logger.Error().Err(err).Str("namespace", options.Namespace).Msg("failed to list deployments")
+        return nil, errors.NewConnectionError("failed to list deployments", err)
+      end
+
+      logger.Info().
+        Str("namespace", options.Namespace).
+        Int("count", len(deployments.Items)).
+        Msg("deployments listed successfully")
+
+      return deployments, nil
+    end
+
+    # GetDeployment gets a specific deployment by name
+    def GetDeployment(ctx, namespace, name) # (context.Context, string, string) -> (*appsv1.Deployment, error)
+      logger = self.logger.With().Str("operation", "get-deployment").Logger()
+
+      # Basic validation
+      if namespace == ""
+        return nil, errors.NewValidationError("namespace", "cannot be empty")
+      end
+      if name == ""
+        return nil, errors.NewValidationError("name", "cannot be empty")
+      end
+
+      logger.Debug().
+        Str("namespace", namespace).
+        Str("name", name).
+        Msg("getting deployment")
+
+      # Check if context is cancelled
+      case
+      when ~ctx.Done()
+        return nil, ctx.Err()
+      else
+      end
+
+      # Get deployment
+      deployment, err = self.clientset.AppsV1().Deployments(namespace).Get(ctx, name, metav1.GetOptions.new())
+      if err != nil
+        logger.Error().Err(err).
+          Str("namespace", namespace).
+          Str("name", name).
+          Msg("failed to get deployment")
+        return nil, errors.NewConnectionError("failed to get deployment", err)
+      end
+
+      logger.Debug().
+        Str("namespace", namespace).
+        Str("name", name).
+        Msg("deployment retrieved successfully")
+
+      return deployment, nil
+    end
+  end
+end

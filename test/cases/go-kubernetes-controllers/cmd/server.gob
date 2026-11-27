@@ -1,0 +1,43 @@
+require "github.com/spf13/cobra"
+require "github.com/thegostev/go-kubernetes-controllers/pkg/controller"
+require "github.com/thegostev/go-kubernetes-controllers/pkg/k8s"
+require "sigs.k8s.io/controller-runtime", ctrl
+require "sigs.k8s.io/controller-runtime/pkg/log/zap"
+require "sigs.k8s.io/controller-runtime/pkg/manager"
+
+module Cmd
+  var :disableLeaderElection, bool
+  var :metricsPort, int
+
+  var serverCmd = @cobra.Command.new(
+    Use: "server",
+    Short: "Start the controller manager",
+    RunE: lambda { |cmd, args| # (*cobra.Command, []string) -> error
+      ctrl.SetLogger(zap.New(zap.UseDevMode(true)))
+      mgr, err = ctrl.NewManager(k8s.NewConfigOrDie(), manager.Options.new(
+        Scheme: k8s.NewScheme(),
+        LeaderElection: !disableLeaderElection,
+        LeaderElectionID: "go-k8s-ctrl-leader-election",
+        LeaderElectionResourceLock: "leases",
+      ))
+      if err != nil
+        return err
+      end
+      err = controller.SetupDeploymentController(mgr)
+      if err != nil
+        return err
+      end
+      err = controller.SetupFrontendPageController(mgr)
+      if err != nil
+        return err
+      end
+      return mgr.Start(ctrl.SetupSignalHandler())
+    },
+  )
+
+  def init
+    rootCmd.AddCommand(serverCmd)
+    serverCmd.Flags().BoolVar(@disableLeaderElection, "disable-leader-election", false, "Disable leader election for controller manager")
+    serverCmd.Flags().IntVar(@metricsPort, "metrics-port", 8081, "The port the metric endpoint binds to")
+  end
+end

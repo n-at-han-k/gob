@@ -1,0 +1,103 @@
+require "context"
+require "path/filepath"
+
+require "github.com/rs/zerolog"
+require "github.com/rs/zerolog/log"
+require "k8s.io/client-go/kubernetes"
+require "k8s.io/client-go/rest"
+require "k8s.io/client-go/tools/clientcmd"
+require "k8s.io/client-go/util/homedir"
+
+require "github.com/thegostev/go-kubernetes-controllers/internal/types"
+require "github.com/thegostev/go-kubernetes-controllers/pkg/errors"
+
+module K8s
+  # Client represents a Kubernetes client
+  var Client = Struct.new(
+    clientset: @@kubernetes.Clientset,
+    logger: zerolog.Logger,
+    restConfig: @@rest.Config,
+  ) do
+    # GetClientset returns the underlying kubernetes clientset
+    def GetClientset # -> *kubernetes.Clientset
+      return self.clientset
+    end
+
+    # HealthCheck performs a basic health check
+    def HealthCheck(ctx) # (context.Context) -> error
+      self.logger.Debug().Msg("performing health check")
+
+      # Check if context is cancelled
+      case
+      when ~ctx.Done()
+        return ctx.Err()
+      else
+      end
+
+      # Get server version as health check
+      _, err = self.clientset.Discovery().ServerVersion()
+      if err != nil
+        self.logger.Error().Err(err).Msg("health check failed")
+        return errors.NewConnectionError("health check failed", err)
+      end
+
+      self.logger.Debug().Msg("health check successful")
+      return nil
+    end
+  end
+
+  # NewClient creates a new Kubernetes client
+  def NewClient(config) # (*types.ClientConfig) -> (*Client, error)
+    logger = log.With().Str("component", "k8s-client").Logger()
+
+    # Validate configuration
+    err = config.Validate()
+    if err != nil
+      logger.Error().Err(err).Msg("invalid client configuration")
+      return nil, errors.NewConfigError("invalid client configuration", err)
+    end
+
+    # Set defaults
+    config.SetDefaults()
+
+    # Determine kubeconfig path
+    kubeconfigPath = config.KubeconfigPath
+    if kubeconfigPath == ""
+      kubeconfigPath = filepath.Join(homedir.HomeDir(), ".kube", "config")
+    end
+
+    logger.Debug().Str("kubeconfig", kubeconfigPath).Msg("loading kubeconfig")
+
+    # Load kubeconfig
+    clientConfig, err = clientcmd.BuildConfigFromFlags("", kubeconfigPath)
+    if err != nil
+      logger.Error().Err(err).Str("kubeconfig", kubeconfigPath).Msg("failed to load kubeconfig")
+      return nil, errors.NewConfigError("failed to load kubeconfig", err)
+    end
+
+    # Create clientset
+    clientset, err = kubernetes.NewForConfig(clientConfig)
+    if err != nil
+      logger.Error().Err(err).Msg("failed to create kubernetes clientset")
+      return nil, errors.NewConfigError("failed to create kubernetes clientset", err)
+    end
+
+    logger.Info().Msg("kubernetes client initialized successfully")
+
+    return @Client.new(
+      clientset: clientset,
+      logger: logger,
+      restConfig: clientConfig,
+    ), nil
+  end
+
+  def NewConfigOrDie # -> *rest.Config
+    # Use the default kubeconfig path
+    kubeconfigPath = filepath.Join(homedir.HomeDir(), ".kube", "config")
+    config, err = clientcmd.BuildConfigFromFlags("", kubeconfigPath)
+    if err != nil
+      panic(err)
+    end
+    return config
+  end
+end

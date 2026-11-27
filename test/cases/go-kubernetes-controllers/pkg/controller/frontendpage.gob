@@ -1,0 +1,113 @@
+require "context"
+require "fmt"
+require "time"
+
+require "k8s.io/apimachinery/pkg/apis/meta/v1", metav1
+require "k8s.io/client-go/util/workqueue"
+require "sigs.k8s.io/controller-runtime/pkg/client"
+require "sigs.k8s.io/controller-runtime/pkg/controller", crcontroller
+require "sigs.k8s.io/controller-runtime/pkg/event"
+require "sigs.k8s.io/controller-runtime/pkg/handler"
+require "sigs.k8s.io/controller-runtime/pkg/log"
+require "sigs.k8s.io/controller-runtime/pkg/manager"
+require "sigs.k8s.io/controller-runtime/pkg/reconcile"
+require "sigs.k8s.io/controller-runtime/pkg/source"
+
+require "github.com/thegostev/go-kubernetes-controllers/api/v1alpha1"
+
+module Controller
+  # FrontendPageReconciler logs reconcile requests for FrontendPages
+  # (follows same pattern as DeploymentReconciler)
+  var FrontendPageReconciler = Struct.new(
+    Client: client.Client,
+  ) do
+    def Reconcile(ctx, req) # (context.Context, reconcile.Request) -> (reconcile.Result, error)
+      logger = log.FromContext(ctx)
+      logger.Info("Reconciling FrontendPage", "namespace", req.Namespace, "name", req.Name)
+
+      # Fetch the FrontendPage instance
+      frontendPage = @v1alpha1.FrontendPage.new()
+      err = self.Get(ctx, req.NamespacedName, frontendPage)
+      if err != nil
+        if client.IgnoreNotFound(err) != nil
+          logger.Error(err, "failed to get FrontendPage")
+          return reconcile.Result.new(), err
+        end
+        # Resource not found, likely deleted
+        logger.Info("FrontendPage not found, likely deleted")
+        return reconcile.Result.new(), nil
+      end
+
+      # Simple reconciliation logic (following existing pattern)
+      err = self.reconcileFrontendPage(ctx, frontendPage)
+      if err != nil
+        logger.Error(err, "failed to reconcile FrontendPage")
+        return reconcile.Result.new(), err
+      end
+
+      return reconcile.Result.new(), nil
+    end
+
+    # reconcileFrontendPage performs the actual reconciliation
+    def reconcileFrontendPage(ctx, frontendPage) # (context.Context, *v1alpha1.FrontendPage) -> error
+      logger = log.FromContext(ctx)
+
+      # Update status to show reconciliation
+      frontendPage.Status.Phase = "Ready"
+      frontendPage.Status.Message = "Frontend page is ready"
+      frontendPage.Status.ComponentCount = len(frontendPage.Spec.Components)
+      frontendPage.Status.URL = fmt.Sprintf("http://localhost:8080/pages/%s/%s", frontendPage.Namespace, frontendPage.Name)
+      frontendPage.Status.LastUpdated = @metav1.Time.new(Time: time.Now())
+
+      err = self.Status().Update(ctx, frontendPage)
+      if err != nil
+        logger.Error(err, "failed to update FrontendPage status")
+        return err
+      end
+
+      logger.Info("FrontendPage reconciled successfully",
+        "namespace", frontendPage.Namespace,
+        "name", frontendPage.Name,
+        "components", len(frontendPage.Spec.Components))
+
+      return nil
+    end
+  end
+
+  # FrontendPageEventHandler logs all FrontendPage events
+  # (follows exact same pattern as DeploymentEventHandler)
+  var FrontendPageEventHandler = handler.Funcs.new(
+    CreateFunc: lambda { |ctx, e, q| # (context.Context, event.CreateEvent, workqueue.RateLimitingInterface)
+      log.FromContext(ctx).Info("FrontendPage created", "name", e.Object.GetName(), "namespace", e.Object.GetNamespace())
+      q.Add(reconcile.Request.new(NamespacedName: client.ObjectKeyFromObject(e.Object)))
+    },
+    UpdateFunc: lambda { |ctx, e, q| # (context.Context, event.UpdateEvent, workqueue.RateLimitingInterface)
+      log.FromContext(ctx).Info("FrontendPage updated", "name", e.ObjectNew.GetName(), "namespace", e.ObjectNew.GetNamespace())
+      q.Add(reconcile.Request.new(NamespacedName: client.ObjectKeyFromObject(e.ObjectNew)))
+    },
+    DeleteFunc: lambda { |ctx, e, q| # (context.Context, event.DeleteEvent, workqueue.RateLimitingInterface)
+      log.FromContext(ctx).Info("FrontendPage deleted", "name", e.Object.GetName(), "namespace", e.Object.GetNamespace())
+      q.Add(reconcile.Request.new(NamespacedName: client.ObjectKeyFromObject(e.Object)))
+    },
+    GenericFunc: lambda { |ctx, e, q| # (context.Context, event.GenericEvent, workqueue.RateLimitingInterface)
+      log.FromContext(ctx).Info("Generic FrontendPage event", "name", e.Object.GetName(), "namespace", e.Object.GetNamespace())
+      q.Add(reconcile.Request.new(NamespacedName: client.ObjectKeyFromObject(e.Object)))
+    },
+  )
+
+  # SetupFrontendPageController registers the controller-runtime controller for FrontendPages
+  # (follows exact same pattern as SetupDeploymentController)
+  def SetupFrontendPageController(mgr) # (manager.Manager) -> error
+    reconciler = @FrontendPageReconciler.new(Client: mgr.GetClient())
+    c, err = crcontroller.New("frontendpage-logger", mgr, crcontroller.Options.new(
+      Reconciler: reconciler,
+    ))
+    if err != nil
+      return err
+    end
+    return c.Watch(
+      source.Kind(mgr.GetCache(), @v1alpha1.FrontendPage.new()),
+      @FrontendPageEventHandler,
+    )
+  end
+end

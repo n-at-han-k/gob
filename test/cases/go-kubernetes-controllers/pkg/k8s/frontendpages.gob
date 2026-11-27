@@ -1,0 +1,147 @@
+require "context"
+
+require "github.com/rs/zerolog"
+require "github.com/rs/zerolog/log"
+require "k8s.io/apimachinery/pkg/apis/meta/v1", metav1
+require "k8s.io/apimachinery/pkg/runtime"
+require "k8s.io/client-go/dynamic"
+require "k8s.io/client-go/kubernetes"
+require "k8s.io/client-go/rest"
+
+require "github.com/thegostev/go-kubernetes-controllers/api/v1alpha1"
+require "github.com/thegostev/go-kubernetes-controllers/internal/types"
+require "github.com/thegostev/go-kubernetes-controllers/pkg/errors"
+
+module K8s
+  var Client = Struct.new(
+    clientset: @@kubernetes.Clientset,
+    logger: zerolog.Logger,
+    restConfig: @@rest.Config,
+  )
+
+  var Client = Struct.new(
+    clientset: @@kubernetes.Clientset,
+    logger: zerolog.Logger,
+    restConfig: @@rest.Config,
+  ) do
+    # ListFrontendPages lists frontend pages in the specified namespace
+    # (follows exact same pattern as ListDeployments)
+    def ListFrontendPages(ctx, options) # (context.Context, *types.ListOptions) -> (*v1alpha1.FrontendPageList, error)
+      logger = self.logger.With().Str("operation", "list-frontendpages").Logger()
+
+      # Validate options
+      err = options.Validate()
+      if err != nil
+        logger.Error().Err(err).Msg("invalid list options")
+        return nil, errors.NewValidationError("list options", err.Error())
+      end
+
+      # Set defaults
+      options.SetDefaults()
+
+      logger.Debug().
+        Str("namespace", options.Namespace).
+        Dur("timeout", options.Timeout).
+        Msg("listing frontend pages")
+
+      # Create context with timeout
+      ctx, cancel = context.WithTimeout(ctx, options.Timeout)
+      defer cancel()
+
+      # Check if context is already cancelled
+      case
+      when ~ctx.Done()
+        return nil, ctx.Err()
+      else
+      end
+
+      # Use dynamic client for CRD
+      dynamicClient, err = dynamic.NewForConfig(self.restConfig)
+      if err != nil
+        logger.Error().Err(err).Msg("failed to create dynamic client")
+        return nil, errors.NewConnectionError("failed to create dynamic client", err)
+      end
+
+      # List frontend pages
+      frontendPageGVR = v1alpha1.GroupVersion.WithResource("frontendpages")
+      unstructuredList, err = dynamicClient.Resource(frontendPageGVR).Namespace(options.Namespace).List(ctx, metav1.ListOptions.new())
+      if err != nil
+        logger.Error().Err(err).Str("namespace", options.Namespace).Msg("failed to list frontend pages")
+        return nil, errors.NewConnectionError("failed to list frontend pages", err)
+      end
+
+      # Convert to typed list
+      frontendPageList = @v1alpha1.FrontendPageList.new()
+      err = runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredList.Object, frontendPageList)
+      if err != nil
+        logger.Error().Err(err).Msg("failed to convert unstructured list")
+        return nil, errors.NewConnectionError("failed to convert unstructured list", err)
+      end
+
+      logger.Info().
+        Str("namespace", options.Namespace).
+        Int("count", len(frontendPageList.Items)).
+        Msg("frontend pages listed successfully")
+
+      return frontendPageList, nil
+    end
+
+    # GetFrontendPage gets a specific frontend page by name
+    def GetFrontendPage(ctx, namespace, name) # (context.Context, string, string) -> (*v1alpha1.FrontendPage, error)
+      logger = self.logger.With().Str("operation", "get-frontendpage").Logger()
+
+      # Basic validation
+      if namespace == ""
+        return nil, errors.NewValidationError("namespace", "cannot be empty")
+      end
+      if name == ""
+        return nil, errors.NewValidationError("name", "cannot be empty")
+      end
+
+      logger.Debug().
+        Str("namespace", namespace).
+        Str("name", name).
+        Msg("getting frontend page")
+
+      # Check if context is already cancelled
+      case
+      when ~ctx.Done()
+        return nil, ctx.Err()
+      else
+      end
+
+      # Use dynamic client for CRD
+      dynamicClient, err = dynamic.NewForConfig(self.restConfig)
+      if err != nil
+        logger.Error().Err(err).Msg("failed to create dynamic client")
+        return nil, errors.NewConnectionError("failed to create dynamic client", err)
+      end
+
+      # Get frontend page
+      frontendPageGVR = v1alpha1.GroupVersion.WithResource("frontendpages")
+      unstructuredObj, err = dynamicClient.Resource(frontendPageGVR).Namespace(namespace).Get(ctx, name, metav1.GetOptions.new())
+      if err != nil
+        logger.Error().Err(err).
+          Str("namespace", namespace).
+          Str("name", name).
+          Msg("failed to get frontend page")
+        return nil, errors.NewConnectionError("failed to get frontend page", err)
+      end
+
+      # Convert to typed object
+      frontendPage = @v1alpha1.FrontendPage.new()
+      err = runtime.DefaultUnstructuredConverter.FromUnstructured(unstructuredObj.Object, frontendPage)
+      if err != nil
+        logger.Error().Err(err).Msg("failed to convert unstructured object")
+        return nil, errors.NewConnectionError("failed to convert unstructured object", err)
+      end
+
+      logger.Debug().
+        Str("namespace", namespace).
+        Str("name", name).
+        Msg("frontend page retrieved successfully")
+
+      return frontendPage, nil
+    end
+  end
+end

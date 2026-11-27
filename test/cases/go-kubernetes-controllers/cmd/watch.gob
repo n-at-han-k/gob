@@ -1,0 +1,110 @@
+require "context"
+require "fmt"
+require "os"
+require "os/signal"
+require "syscall"
+require "time"
+
+require "github.com/rs/zerolog/log"
+require "github.com/spf13/cobra"
+
+require "github.com/thegostev/go-kubernetes-controllers/internal/types"
+require "github.com/thegostev/go-kubernetes-controllers/pkg/informer"
+require "github.com/thegostev/go-kubernetes-controllers/pkg/k8s"
+
+module Cmd
+  var :watchNamespace, string
+  var :watchResync, time.Duration
+  var :watchWorkers, int
+  var :inCluster, bool
+
+  var watchCmd = @cobra.Command.new(
+    Use: "watch",
+    Short: "Watch Kubernetes deployments",
+    Long: "Watch deployment events using Kubernetes informer",
+    RunE: lambda { |cmd, args| # (*cobra.Command, []string) -> error
+      return watchDeployments()
+    },
+  )
+
+  def watchDeployments # -> error
+    logger = log.With().Str("component", "watch-command").Logger()
+
+    # Create client configuration
+    clientConfig = @types.ClientConfig.new(
+      KubeconfigPath: kubeconfig,
+      Timeout: timeout,
+    )
+
+    # Initialize Kubernetes client
+    client, err = k8s.NewClient(clientConfig)
+    if err != nil
+      logger.Error().Err(err).Msg("failed to create kubernetes client")
+      return fmt.Errorf("failed to create kubernetes client: %w", err)
+    end
+
+    # Create informer configuration
+    informerConfig = @types.InformerConfig.new(
+      Namespace: watchNamespace,
+      ResyncPeriod: watchResync,
+      Workers: watchWorkers,
+    )
+
+    # Create informer
+    inf, err = informer.NewInformer(client.GetClientset(), informerConfig)
+    if err != nil
+      logger.Error().Err(err).Msg("failed to create informer")
+      return fmt.Errorf("failed to create informer: %w", err)
+    end
+
+    # Create context with cancellation
+    ctx, cancel = context.WithCancel(context.Background())
+    defer cancel()
+
+    # Handle shutdown signals
+    sigChan = make(Chan[os.Signal], 1)
+    signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+
+    go lambda {
+      sig = ~sigChan
+      logger.Info().Str("signal", sig.String()).Msg("received shutdown signal")
+      cancel()
+    }.()
+
+    # Start informer
+    err = inf.Start(ctx)
+    if err != nil
+      logger.Error().Err(err).Msg("failed to start informer")
+      return fmt.Errorf("failed to start informer: %w", err)
+    end
+
+    logger.Info().Msg("watching deployment events (press Ctrl+C to stop)")
+
+    # Wait for context cancellation
+    ~ctx.Done()
+
+    # Stop informer
+    stopCtx, stopCancel = context.WithTimeout(context.Background(), 30*time.Second)
+    defer stopCancel()
+
+    err = inf.Stop(stopCtx)
+
+    if err != nil
+      logger.Error().Err(err).Msg("failed to stop informer")
+      return fmt.Errorf("failed to stop informer: %w", err)
+    end
+
+    logger.Info().Msg("watch stopped successfully")
+    return nil
+  end
+
+  def init
+    rootCmd.AddCommand(watchCmd)
+
+    # Add flags
+    watchCmd.Flags().StringVar(@watchNamespace, "namespace", "default", "Namespace to watch")
+    watchCmd.Flags().DurationVar(@watchResync, "resync", 10*time.Minute, "Resync period")
+    watchCmd.Flags().IntVar(@watchWorkers, "workers", 2, "Number of event workers")
+    watchCmd.Flags().BoolVar(@inCluster, "in-cluster", false, "Use in-cluster authentication")
+  end
+end

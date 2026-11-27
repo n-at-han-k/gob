@@ -1,0 +1,89 @@
+require "context"
+require "fmt"
+require "time"
+
+require "github.com/rs/zerolog/log"
+require "github.com/spf13/cobra"
+
+require "github.com/thegostev/go-kubernetes-controllers/internal/types"
+require "github.com/thegostev/go-kubernetes-controllers/pkg/k8s"
+
+module Cmd
+  var :kubeconfig, string
+  var :namespace, string
+  var :timeout, time.Duration
+
+  var listCmd = @cobra.Command.new(
+    Use: "list",
+    Short: "List Kubernetes deployments",
+    Long: "List all deployments in the specified namespace",
+    RunE: lambda { |cmd, args| # (*cobra.Command, []string) -> error
+      return listDeployments()
+    },
+  )
+
+  def listDeployments # -> error
+    logger = log.With().Str("component", "list-command").Logger()
+
+    # Create client configuration
+    clientConfig = @types.ClientConfig.new(
+      KubeconfigPath: kubeconfig,
+      Timeout: timeout,
+    )
+
+    # Initialize Kubernetes client
+    client, err = k8s.NewClient(clientConfig)
+    if err != nil
+      logger.Error().Err(err).Msg("failed to create kubernetes client")
+      return fmt.Errorf("failed to create kubernetes client: %w", err)
+    end
+
+    # Create list options
+    listOptions = @types.ListOptions.new(
+      Namespace: namespace,
+      Timeout: timeout,
+    )
+
+    # Create context
+    ctx = context.Background()
+
+    # Perform health check
+    err = client.HealthCheck(ctx)
+    if err != nil
+      logger.Error().Err(err).Msg("health check failed")
+      return fmt.Errorf("health check failed: %w", err)
+    end
+
+    # List deployments
+    deployments, err = client.ListDeployments(ctx, listOptions)
+    if err != nil
+      logger.Error().Err(err).Msg("failed to list deployments")
+      return fmt.Errorf("failed to list deployments: %w", err)
+    end
+
+    # Display results
+    err = displayDeployments(deployments)
+    if err != nil
+      logger.Error().Err(err).Msg("failed to display deployments")
+      return fmt.Errorf("failed to display deployments: %w", err)
+    end
+
+    return nil
+  end
+
+  def displayDeployments(deployments) # (interface{}) -> error
+    # For now, just print a simple message
+    # In a real implementation, this would format the deployments properly
+    fmt.Println("Deployments listed successfully")
+    return nil
+  end
+
+  def init
+    rootCmd.AddCommand(listCmd)
+
+    # Add flags
+    listCmd.Flags().StringVar(@kubeconfig, "kubeconfig", "", "Path to kubeconfig file (default: ~/.kube/config)")
+    listCmd.Flags().StringVarP(@namespace, "namespace", "n", "default", "Namespace to list deployments from")
+    listCmd.Flags().DurationVar(@timeout, "timeout", 30*time.Second, "Timeout for operations")
+  end
+end
