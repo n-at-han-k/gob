@@ -1,0 +1,31 @@
+require "fmt"
+
+module Main
+  CREATE_TABLE = "CREATE TABLE t(id INTEGER PRIMARY KEY);"
+
+  var Kind = Class.new(uint8) do
+    protected def String # () -> string
+      case self
+      when KindFile
+        return "file"
+      when KindDirectory
+        return "directory"
+      end
+
+      return "unknown"
+    end
+  end
+
+  const :KindFile, 0
+  const :KindDirectory, 1
+
+  var tableName = "t"
+
+  var Store = Struct.new(name: string)
+
+  var storeCount = 0
+
+  def main
+    fmt.Println(CREATE_TABLE, KindFile.String(), tableName, storeCount)
+  end
+end
