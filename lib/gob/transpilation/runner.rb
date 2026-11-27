@@ -671,7 +671,8 @@ module Gob
             Statements(node)
 
           else
-            SyntaxTree::Go::ExprStmt.new(x: Statements(node))
+            stmt = Statements(node)
+            stmt.is_a?(SyntaxTree::Go::SendStmt) ? stmt : SyntaxTree::Go::ExprStmt.new(x: stmt)
           end
         end
 
@@ -924,6 +925,38 @@ module Gob
         def FloatLiteral(value)     = BasicLit(:FLOAT, value)
 
         def Receive(x)              = SyntaxTree::Go::UnaryExpr.new(op: :"<-", x: x)
+
+        # ←.ch / ←.ctx.Done()
+        # <-ch / <-ctx.Done()
+        # ---
+        def ArrowReceive(node)
+          case node
+          in SyntaxTree::CallNode[
+            receiver: SyntaxTree::VCall[value: SyntaxTree::Ident[value: "←"]],
+            operator: SyntaxTree::Period[value: "."],
+            message: message,
+            arguments: arguments
+          ]
+            case arguments
+            in nil
+              SyntaxTree::VCall.new(value: message)
+            else
+              SyntaxTree::CallNode.new(
+                receiver:  nil,
+                operator:  nil,
+                message:   message,
+                arguments: arguments
+              )
+            end
+
+          in SyntaxTree::CallNode[receiver: receiver, operator: op, message: message, arguments: arguments]
+            inner = ArrowReceive(receiver)
+            inner ? SyntaxTree::CallNode.new(receiver: inner, operator: op, message: message, arguments: arguments) : nil
+
+          else
+            nil
+          end
+        end
 
         def Binary(left, operator, right, location: SyntaxTree::Location.default)
           SyntaxTree::Go::BinaryExpr.new(x: left, op: operator, y: right, location: location)
@@ -1570,6 +1603,28 @@ module Gob
           ]
             SyntaxTree::Go::SendStmt.new(chan: Ident(name), value: Statements(val))
 
+          # events.←.event
+          # events <- event
+          # ---
+          in SyntaxTree::CallNode[
+            receiver: SyntaxTree::CallNode[
+              receiver: chan,
+              operator: SyntaxTree::Period[value: "."],
+              message: SyntaxTree::Ident[value: "←"],
+              arguments: nil
+            ],
+            operator: SyntaxTree::Period[value: "."],
+            message: SyntaxTree::Ident[value: val],
+            arguments: nil
+          ]
+            SyntaxTree::Go::SendStmt.new(chan: Statements(chan), value: Ident(val))
+
+          # ←.ch / ←.ctx.Done()
+          # <-ch / <-ctx.Done()
+          # ---
+          in SyntaxTree::CallNode => node if (ch = ArrowReceive(node))
+            Receive(Statements(ch))
+
           # a &! b
           # a &^ b
           # ---
@@ -2056,7 +2111,8 @@ module Gob
               SyntaxTree::Go::SendStmt.new(chan: Statements(left), value: Statements(right))
 
             in SyntaxTree::CallNode
-              SyntaxTree::Go::ExprStmt.new(x: Statements(node))
+              stmt = Statements(node)
+              stmt.is_a?(SyntaxTree::Go::SendStmt) ? stmt : SyntaxTree::Go::ExprStmt.new(x: stmt)
 
             in SyntaxTree::Comment[value: value]
               SyntaxTree::Go::Comment.new(text: value.sub(/\A#/, "//"))
