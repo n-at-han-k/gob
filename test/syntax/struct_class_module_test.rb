@@ -119,4 +119,29 @@ class StructClassModuleTest < SyntaxTest
     assert_includes(go, "func (self *Hello) Greet(name string) string {")
     assert_includes(go, "func (self *Hello) Name() string {")
   end
+
+  def test_class_embeds_type_with_attr_accessor
+    go = transpile(<<~GOB)
+      module Vfs
+        class Node
+          attr_accessor fs.Inode
+          attr_accessor :Root, string
+        end
+      end
+    GOB
+    assert_includes(go, "type Node struct {")
+    assert_includes(go, "fs.Inode")
+    assert_includes(go, "Root string")
+  end
+
+  def test_struct_new_embeds_positional_type
+    go = transpile(<<~GOB)
+      module Main
+        var container = Struct.new(base, str: string)
+      end
+    GOB
+    assert_includes(go, "type container struct {")
+    assert_includes(go, "base")
+    assert_includes(go, "str string")
+  end
 end

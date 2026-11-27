@@ -210,12 +210,36 @@ module Gob
           ]
             [ Field(label, type), *Fields(rest) ]
 
+          # attr_accessor fs.Inode
+          # fs.Inode
+          # ---
+          in [
+            SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "attr_accessor"],
+              arguments: SyntaxTree::Args[ parts: [ type ] ]
+            ],
+            *rest
+          ] if !type.is_a?(SyntaxTree::SymbolLiteral)
+            [ EmbeddedField(type), *Fields(rest) ]
+
           # Whatever else shares the body with the fields belongs to another
           # rule, so the tail carries on alone.
           # ---
           in [_, *rest]
             Fields(rest)
           end
+        end
+
+        # Embedded struct fields have no name, only the type.
+        # ---
+        def EmbeddedFields(nodes)
+          Array(nodes).map { |node| EmbeddedField(node) }
+        end
+
+        def EmbeddedField(node)
+          SyntaxTree::Go::Field.new(
+            type: Statements(node)
+          )
         end
 
         # A label wears its colon and a tag wears its comment hash; the field is
@@ -1922,7 +1946,7 @@ module Gob
                   receiver: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Struct"] ],
                   message: SyntaxTree::Ident[value: "new"],
                   arguments: SyntaxTree::ArgParen[ arguments: SyntaxTree::Args[
-                    parts: [ SyntaxTree::BareAssocHash[ assocs: assocs ] ]
+                    parts: [ *leading, SyntaxTree::BareAssocHash[ assocs: assocs ] ]
                   ] ]
                 ]
               ] ] ],
@@ -1930,7 +1954,28 @@ module Gob
                 bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: methods ] ]
               ]
             ]
-              [ TypeDecl(name, Fields(assocs)), *Methods(name, methods) ]
+              [ TypeDecl(name, EmbeddedFields(leading) + Fields(assocs)), *Methods(name, methods) ]
+
+            # var container = Struct.new(base) do ... end
+            # type container struct { base }
+            # ---
+            in SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "var"],
+              arguments: SyntaxTree::Args[ parts: [ SyntaxTree::Assign[
+                target: SyntaxTree::VarField[ value: { value: name } ],
+                value: SyntaxTree::CallNode[
+                  receiver: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Struct"] ],
+                  message: SyntaxTree::Ident[value: "new"],
+                  arguments: SyntaxTree::ArgParen[ arguments: SyntaxTree::Args[
+                    parts: [ *embedded ]
+                  ] ]
+                ]
+              ] ] ],
+              block: SyntaxTree::BlockNode[
+                bodystmt: SyntaxTree::BodyStmt[ statements: SyntaxTree::Statements[ body: methods ] ]
+              ]
+            ] unless embedded.any? { |p| p.is_a?(SyntaxTree::BareAssocHash) }
+              [ TypeDecl(name, EmbeddedFields(embedded)), *Methods(name, methods) ]
 
             # var todosResource = Struct.new() do ... end
             # type todosResource struct {}
@@ -1954,6 +1999,9 @@ module Gob
             # var person = Struct.new(Name: string, Age: int)
             # type person struct { Name string; Age int }
             # ---
+            # var container = Struct.new(base, str: string)
+            # type container struct { base; str string }
+            # ---
             in SyntaxTree::Command[
               message: SyntaxTree::Ident[value: "var"],
               arguments: SyntaxTree::Args[ parts: [ SyntaxTree::Assign[
@@ -1962,12 +2010,30 @@ module Gob
                   receiver: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Struct"] ],
                   message: SyntaxTree::Ident[value: "new"],
                   arguments: SyntaxTree::ArgParen[ arguments: SyntaxTree::Args[
-                    parts: [ SyntaxTree::BareAssocHash[ assocs: assocs ] ]
+                    parts: [ *leading, SyntaxTree::BareAssocHash[ assocs: assocs ] ]
                   ] ]
                 ]
               ] ] ]
             ]
-              TypeDecl(name, Fields(assocs))
+              TypeDecl(name, EmbeddedFields(leading) + Fields(assocs))
+
+            # var container = Struct.new(base)
+            # type container struct { base }
+            # ---
+            in SyntaxTree::Command[
+              message: SyntaxTree::Ident[value: "var"],
+              arguments: SyntaxTree::Args[ parts: [ SyntaxTree::Assign[
+                target: SyntaxTree::VarField[ value: { value: name } ],
+                value: SyntaxTree::CallNode[
+                  receiver: SyntaxTree::VarRef[ value: SyntaxTree::Const[value: "Struct"] ],
+                  message: SyntaxTree::Ident[value: "new"],
+                  arguments: SyntaxTree::ArgParen[ arguments: SyntaxTree::Args[
+                    parts: [ *embedded ]
+                  ] ]
+                ]
+              ] ] ]
+            ] unless embedded.any? { |p| p.is_a?(SyntaxTree::BareAssocHash) }
+              TypeDecl(name, EmbeddedFields(embedded))
 
             # var todosResource = Struct.new()
             # type todosResource struct {}
