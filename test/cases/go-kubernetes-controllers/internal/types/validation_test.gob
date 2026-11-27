@@ -1,0 +1,61 @@
+require "testing"
+require "time"
+
+module Types
+  var listOptionsTestCase = Struct.new(
+    name: string,
+    options: ListOptions,
+    wantErr: bool,
+  )
+
+  def TestListOptionsValidate(t) # (*testing.T)
+    tests = Array[listOptionsTestCase].new(
+      listOptionsTestCase.new(
+        name: "valid options",
+        options: ListOptions.new(
+          Namespace: "default",
+          Timeout: 30 * time.Second,
+        ),
+        wantErr: false,
+      ),
+      listOptionsTestCase.new(
+        name: "empty namespace",
+        options: ListOptions.new(
+          Namespace: "",
+          Timeout: 30 * time.Second,
+        ),
+        wantErr: true,
+      ),
+      listOptionsTestCase.new(
+        name: "invalid timeout",
+        options: ListOptions.new(
+          Namespace: "default",
+          Timeout: 6 * time.Minute,
+        ),
+        wantErr: true,
+      ),
+    )
+
+    tests.each do |_, tt|
+      t.Run(tt.name, lambda { |t| # (*testing.T)
+        err = tt.options.Validate()
+        if (err != nil) != tt.wantErr
+          t.Errorf("ListOptions.Validate() error = %v, wantErr %v", err, tt.wantErr)
+        end
+      })
+    end
+  end
+
+  def TestListOptionsSetDefaults(t) # (*testing.T)
+    options = @ListOptions.new()
+    options.SetDefaults()
+
+    if options.Namespace != "default"
+      t.Errorf("expected namespace to be 'default', got '%s'", options.Namespace)
+    end
+
+    if options.Timeout != 30 * time.Second
+      t.Errorf("expected timeout to be 30s, got %v", options.Timeout)
+    end
+  end
+end

@@ -1046,6 +1046,12 @@ module Gob
           in ["var", [SyntaxTree::SymbolLiteral[value: { value: variable }], type, value]]
             Declaration(:var, variable, type, value)
 
+          # const :greeting, string, "hi"
+          # const greeting string = "hi"
+          # ---
+          in ["const", [SyntaxTree::SymbolLiteral[value: { value: variable }], type, value]]
+            Declaration(:const, variable, type, value)
+
           # const :greeting, "hi"
           # const greeting = "hi"
           # ---

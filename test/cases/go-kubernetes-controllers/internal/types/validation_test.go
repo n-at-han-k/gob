@@ -5,13 +5,15 @@ import (
 	"time"
 )
 
+type listOptionsTestCase struct {
+	name    string
+	options ListOptions
+	wantErr bool
+}
+
 func TestListOptionsValidate(t *testing.T) {
-	tests := []struct {
-		name    string
-		options ListOptions
-		wantErr bool
-	}{
-		{
+	tests := []listOptionsTestCase{
+		listOptionsTestCase{
 			name: "valid options",
 			options: ListOptions{
 				Namespace: "default",
@@ -19,7 +21,7 @@ func TestListOptionsValidate(t *testing.T) {
 			},
 			wantErr: false,
 		},
-		{
+		listOptionsTestCase{
 			name: "empty namespace",
 			options: ListOptions{
 				Namespace: "",
@@ -27,7 +29,7 @@ func TestListOptionsValidate(t *testing.T) {
 			},
 			wantErr: true,
 		},
-		{
+		listOptionsTestCase{
 			name: "invalid timeout",
 			options: ListOptions{
 				Namespace: "default",
@@ -36,7 +38,6 @@ func TestListOptionsValidate(t *testing.T) {
 			wantErr: true,
 		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.options.Validate()
@@ -50,11 +51,9 @@ func TestListOptionsValidate(t *testing.T) {
 func TestListOptionsSetDefaults(t *testing.T) {
 	options := &ListOptions{}
 	options.SetDefaults()
-
 	if options.Namespace != "default" {
 		t.Errorf("expected namespace to be 'default', got '%s'", options.Namespace)
 	}
-
 	if options.Timeout != 30*time.Second {
 		t.Errorf("expected timeout to be 30s, got %v", options.Timeout)
 	}

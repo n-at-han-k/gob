@@ -1,0 +1,133 @@
+require "context"
+require "testing"
+require "time"
+
+require "k8s.io/api/apps/v1", appsv1
+require "k8s.io/api/core/v1", corev1
+require "k8s.io/apimachinery/pkg/apis/meta/v1", metav1
+require "k8s.io/apimachinery/pkg/runtime"
+require "k8s.io/client-go/kubernetes/scheme"
+require "k8s.io/client-go/util/workqueue"
+require "sigs.k8s.io/controller-runtime", ctrl
+require "sigs.k8s.io/controller-runtime/pkg/controller"
+require "sigs.k8s.io/controller-runtime/pkg/envtest"
+require "sigs.k8s.io/controller-runtime/pkg/event"
+require "sigs.k8s.io/controller-runtime/pkg/handler"
+require "sigs.k8s.io/controller-runtime/pkg/source"
+
+module Controller
+  def TestDeploymentEventLogging(t) # (*testing.T)
+    testEnv = @envtest.Environment.new()
+    cfg, err = testEnv.Start()
+    if err != nil
+      t.Fatalf("failed to start envtest: %v", err)
+    end
+    defer testEnv.Stop()
+
+    s = runtime.NewScheme()
+    _ = scheme.AddToScheme(s)
+    _ = appsv1.AddToScheme(s)
+    _ = corev1.AddToScheme(s)
+
+    mgr, err = ctrl.NewManager(cfg, ctrl.Options.new(Scheme: s))
+    if err != nil
+      t.Fatalf("failed to create manager: %v", err)
+    end
+
+    eventCh = make(Chan[string], 10)
+    h = handler.Funcs.new(
+      CreateFunc: lambda { |ctx, e, q| # (context.Context, event.CreateEvent, workqueue.RateLimitingInterface)
+        eventCh << "created"
+      },
+      UpdateFunc: lambda { |ctx, e, q| # (context.Context, event.UpdateEvent, workqueue.RateLimitingInterface)
+        eventCh << "updated"
+      },
+      DeleteFunc: lambda { |ctx, e, q| # (context.Context, event.DeleteEvent, workqueue.RateLimitingInterface)
+        eventCh << "deleted"
+      },
+      GenericFunc: lambda { |ctx, e, q| # (context.Context, event.GenericEvent, workqueue.RateLimitingInterface)
+        eventCh << "generic"
+      },
+    )
+
+    c, err = controller.New("deployment-event-test", mgr, controller.Options.new(
+      Reconciler: @DeploymentReconciler.new(Client: mgr.GetClient()),
+    ))
+    if err != nil
+      t.Fatalf("failed to build controller: %v", err)
+    end
+    err = c.Watch(source.Kind(mgr.GetCache(), @appsv1.Deployment.new()), h)
+    if err != nil
+      t.Fatalf("failed to set up watch: %v", err)
+    end
+
+    ctx, cancel = context.WithCancel(context.Background())
+    defer cancel()
+    go lambda {
+      _ = mgr.Start(ctx)
+    }.()
+
+    k8sClient = mgr.GetClient()
+    ns = "default"
+    deploy = @appsv1.Deployment.new(
+      ObjectMeta: metav1.ObjectMeta.new(Name: "test-deploy", Namespace: ns),
+      Spec: appsv1.DeploymentSpec.new(
+        Replicas: int32Ptr(1),
+        Selector: @metav1.LabelSelector.new(MatchLabels: {"app" => "test"}),
+        Template: corev1.PodTemplateSpec.new(
+          ObjectMeta: metav1.ObjectMeta.new(Labels: {"app" => "test"}),
+          Spec: corev1.PodSpec.new(Containers: Array[corev1.Container].new(corev1.Container.new(Name: "nginx", Image: "nginx"))),
+        ),
+      ),
+    )
+    err = k8sClient.Create(ctx, deploy)
+    if err != nil
+      t.Fatalf("failed to create deployment: %v", err)
+    end
+
+    # Wait for create event
+    err = waitForEvent(eventCh, "created")
+    if err != nil
+      t.Fatalf("create event not logged: %v", err)
+    end
+
+    # Update deployment
+    deploy.Spec.Replicas = int32Ptr(2)
+    err = k8sClient.Update(ctx, deploy)
+    if err != nil
+      t.Fatalf("failed to update deployment: %v", err)
+    end
+    err = waitForEvent(eventCh, "updated")
+    if err != nil
+      t.Fatalf("update event not logged: %v", err)
+    end
+
+    # Delete deployment
+    err = k8sClient.Delete(ctx, deploy)
+    if err != nil
+      t.Fatalf("failed to delete deployment: %v", err)
+    end
+    err = waitForEvent(eventCh, "deleted")
+    if err != nil
+      t.Fatalf("delete event not logged: %v", err)
+    end
+  end
+
+  def waitForEvent(ch, want) # (<-chan string, string) -> error
+    timeout = time.After(5 * time.Second)
+    loop do
+      case
+      when got = ~ch
+        if got == want
+          return nil
+        end
+      when ~timeout
+        return context.DeadlineExceeded
+      end
+    end
+  end
+
+  def int32Ptr(i) # (int32) -> *int32
+    return @i
+  end
+end
