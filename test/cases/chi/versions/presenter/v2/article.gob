@@ -1,0 +1,24 @@
+require "fmt"
+require "net/http"
+
+require "github.com/go-chi/chi/v5/_examples/versions/data"
+
+module V2
+  # Article presented in API version 2.
+  var Article = Struct.new(
+    Article: @@data.Article,
+    # `json:"self_url" xml:"self_url"`
+    SelfURL: string,
+    # `json:"url,omitempty" xml:"url,omitempty"`
+    URL: any,
+  ) do
+    def Render(w, r) # (http.ResponseWriter, *http.Request) -> error
+      self.SelfURL = fmt.Sprintf("http://localhost:3333/v2?id=%v", self.ID)
+      return nil
+    end
+  end
+
+  def NewArticleResponse(article) # (*data.Article) -> *Article
+    return @Article.new(Article: article)
+  end
+end

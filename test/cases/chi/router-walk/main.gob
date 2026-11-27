@@ -1,0 +1,41 @@
+require "fmt"
+require "net/http"
+require "strings"
+
+require "github.com/go-chi/chi/v5"
+
+module Main
+  def main
+    r = chi.NewRouter()
+    r.Get("/", lambda { |w, r| # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("root."))
+    })
+
+    r.Route("/road", lambda { |r| # (chi.Router)
+      r.Get("/left", lambda { |w, r| # (http.ResponseWriter, *http.Request)
+        w.Write(Array[byte].new("left road"))
+      })
+      r.Post("/right", lambda { |w, r| # (http.ResponseWriter, *http.Request)
+        w.Write(Array[byte].new("right road"))
+      })
+    })
+
+    r.Put("/ping", Ping)
+
+    walkFunc = lambda { |method, route, handler| # (string, string, http.Handler) -> error
+      route = strings.ReplaceAll(route, "/*/", "/")
+      fmt.Printf("%s %s\n", method, route)
+      return nil
+    }
+
+    err = chi.Walk(r, walkFunc)
+    if err != nil
+      fmt.Printf("Logging err: %s\n", err.Error())
+    end
+  end
+
+  # Ping returns pong
+  def Ping(w, r) # (http.ResponseWriter, *http.Request)
+    w.Write(Array[byte].new("pong"))
+  end
+end

@@ -1,0 +1,31 @@
+require "net/http"
+
+require "github.com/go-chi/chi/v5"
+require "github.com/go-chi/chi/v5/middleware"
+
+module Main
+  def init
+    chi.RegisterMethod("LINK")
+    chi.RegisterMethod("UNLINK")
+    chi.RegisterMethod("WOOHOO")
+  end
+
+  def main
+    r = chi.NewRouter()
+    r.Use(middleware.RequestID)
+    r.Use(middleware.Logger)
+    r.Get("/", lambda { |w, r| # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("hello world"))
+    })
+    r.MethodFunc("LINK", "/link", lambda { |w, r| # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("custom link method"))
+    })
+    r.MethodFunc("WOOHOO", "/woo", lambda { |w, r| # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("custom woohoo method"))
+    })
+    r.HandleFunc("/everything", lambda { |w, r| # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("capturing all standard http methods, as well as LINK, UNLINK and WOOHOO"))
+    })
+    http.ListenAndServe(":3333", r)
+  end
+end

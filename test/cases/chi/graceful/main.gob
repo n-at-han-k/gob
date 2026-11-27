@@ -1,0 +1,69 @@
+require "context"
+require "errors"
+require "fmt"
+require "log"
+require "net/http"
+require "os/signal"
+require "syscall"
+require "time"
+
+require "github.com/go-chi/chi/v5"
+require "github.com/go-chi/chi/v5/middleware"
+
+module Main
+  def main
+    # The HTTP Server
+    server = @http.Server.new(Addr: "0.0.0.0:3333", Handler: service())
+
+    # Create context that listens for the interrupt signal
+    ctx, stop = signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+    defer stop()
+
+    # Run server in the background
+    go lambda {
+      err = server.ListenAndServe()
+      if err != nil && !errors.Is(err, http.ErrServerClosed)
+        log.Fatal(err)
+      end
+    }.()
+
+    # Listen for the interrupt signal
+    ~ctx.Done()
+
+    # Create shutdown context with 30-second timeout
+    shutdownCtx, cancel = context.WithTimeout(context.Background(), 30*time.Second)
+    defer cancel()
+
+    # Trigger graceful shutdown
+    err = server.Shutdown(shutdownCtx)
+    if err != nil
+      log.Fatal(err)
+    end
+  end
+
+  def service # -> http.Handler
+    r = chi.NewRouter()
+
+    r.Use(middleware.RequestID)
+    r.Use(middleware.Logger)
+
+    r.Get("/", lambda { |w, r| # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("sup"))
+    })
+
+    r.Get("/slow", lambda { |w, r| # (http.ResponseWriter, *http.Request)
+      # Simulates some hard work.
+      #
+      # We want this handler to complete successfully during a shutdown signal,
+      # so consider the work here as some background routine to fetch a long-running
+      # search query to find as many results as possible, but, instead we cut it short
+      # and respond with what we have so far. How a shutdown is handled is entirely
+      # up to the developer, as some code blocks are preemptible, and others are not.
+      time.Sleep(5 * time.Second)
+
+      w.Write(Array[byte].new(fmt.Sprintf("all done.\n")))
+    })
+
+    return r
+  end
+end

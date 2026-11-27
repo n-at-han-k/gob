@@ -1,0 +1,28 @@
+# This example demonstrates a project structure that defines a subrouter and its
+# handlers on a struct, and mounting them as subrouters to a parent router.
+# See also _examples/rest for an in-depth example of a REST service, and apply
+# those same patterns to this structure.
+require "net/http"
+
+require "github.com/go-chi/chi/v5"
+require "github.com/go-chi/chi/v5/middleware"
+
+module Main
+  def main
+    r = chi.NewRouter()
+
+    r.Use(middleware.RequestID)
+    r.Use(middleware.RealIP)
+    r.Use(middleware.Logger)
+    r.Use(middleware.Recoverer)
+
+    r.Get("/", lambda { |w, r| # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("."))
+    })
+
+    r.Mount("/users", usersResource.new.Routes())
+    r.Mount("/todos", todosResource.new.Routes())
+
+    http.ListenAndServe(":3333", r)
+  end
+end

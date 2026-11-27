@@ -1,0 +1,46 @@
+require "net/http"
+
+require "github.com/go-chi/chi/v5"
+
+module Main
+  var usersResource = Struct.new() do
+    # Routes creates a REST router for the todos resource
+    protected def Routes # -> chi.Router
+      r = chi.NewRouter()
+      # r.Use() // some middleware..
+
+      r.Get("/", self.List)    # GET /users - read a list of users
+      r.Post("/", self.Create) # POST /users - create a new user and persist it
+      r.Put("/", self.Delete)
+
+      r.Route("/{id}", lambda { |r| # (chi.Router)
+        # r.Use(rs.TodoCtx) // lets have a users map, and lets actually load/manipulate
+        r.Get("/", self.Get)       # GET /users/{id} - read a single user by :id
+        r.Put("/", self.Update)    # PUT /users/{id} - update a single user by :id
+        r.Delete("/", self.Delete) # DELETE /users/{id} - delete a single user by :id
+      })
+
+      return r
+    end
+
+    protected def List(w, r) # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("users list of stuff.."))
+    end
+
+    protected def Create(w, r) # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("users create"))
+    end
+
+    protected def Get(w, r) # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("user get"))
+    end
+
+    protected def Update(w, r) # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("user update"))
+    end
+
+    protected def Delete(w, r) # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("user delete"))
+    end
+  end
+end

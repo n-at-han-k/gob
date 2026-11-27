@@ -1,0 +1,23 @@
+require "fmt"
+require "net/http"
+
+require "github.com/go-chi/chi/v5"
+
+module Main
+  def main
+    r = chi.NewRouter()
+
+    # Registering a handler that retrieves a path parameter using PathValue
+    r.Get("/users/{userID}", pathValueHandler)
+
+    http.ListenAndServe(":3333", r)
+  end
+
+  # pathValueHandler retrieves a URL parameter using PathValue and writes it to the response.
+  def pathValueHandler(w, r) # (http.ResponseWriter, *http.Request)
+    userID = r.PathValue("userID")
+
+    # Respond with the extracted userID
+    w.Write(Array[byte].new(fmt.Sprintf("User ID: %s", userID)))
+  end
+end

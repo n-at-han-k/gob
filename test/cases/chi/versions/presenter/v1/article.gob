@@ -1,0 +1,20 @@
+require "net/http"
+
+require "github.com/go-chi/chi/v5/_examples/versions/data"
+
+module V1
+  # Article presented in API version 1.
+  var Article = Struct.new(
+    Article: @@data.Article,
+    # `json:"data" xml:"data"`
+    Data: Hash[string, bool],
+  ) do
+    def Render(w, r) # (http.ResponseWriter, *http.Request) -> error
+      return nil
+    end
+  end
+
+  def NewArticleResponse(article) # (*data.Article) -> *Article
+    return @Article.new(Article: article)
+  end
+end

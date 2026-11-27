@@ -1,0 +1,37 @@
+require "fmt"
+require "math/rand"
+require "net/http"
+
+require "github.com/go-chi/chi/v5/_examples/versions/data"
+
+module V3
+  # Article presented in API version 2.
+  var Article = Struct.new(
+    Article: @@data.Article, # `json:",inline" xml:",inline"`
+    # `json:"url" xml:"url"`
+    URL: string,
+    # `json:"views_count" xml:"views_count"`
+    ViewsCount: int64,
+    # `json:"api_version" xml:"api_version"`
+    APIVersion: string,
+    # `json:"custom_data,omitempty" xml:"custom_data,omitempty"`
+    CustomDataForAuthUsers: any,
+  ) do
+    def Render(w, r) # (http.ResponseWriter, *http.Request) -> error
+      self.ViewsCount = rand.Int63n(100000)
+      self.URL = fmt.Sprintf("http://localhost:3333/v3/?id=%v", self.ID)
+
+      # Only show to auth'd user.
+      _, ok = r.Context().Value("auth").(bool)
+      if ok
+        self.CustomDataForAuthUsers = self.Article.CustomDataForAuthUsers
+      end
+
+      return nil
+    end
+  end
+
+  def NewArticleResponse(article) # (*data.Article) -> *Article
+    return @Article.new(Article: article)
+  end
+end

@@ -1,0 +1,12 @@
+module Data
+  # Article is runtime object, that's not meant to be sent via REST.
+  var Article = Struct.new(
+    ID: int, # `db:"id" json:"id" xml:"id"`
+    # `db:"title" json:"title" xml:"title"`
+    Title: string,
+    # `db:"data,stringarray" json:"data" xml:"data"`
+    Data: Array[string],
+    # `db:"custom_data" json:"-" xml:"-"`
+    CustomDataForAuthUsers: string,
+  )
+end

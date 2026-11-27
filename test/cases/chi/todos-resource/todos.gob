@@ -1,0 +1,51 @@
+require "net/http"
+
+require "github.com/go-chi/chi/v5"
+
+module Main
+  var todosResource = Struct.new() do
+    # Routes creates a REST router for the todos resource
+    protected def Routes # -> chi.Router
+      r = chi.NewRouter()
+      # r.Use() // some middleware..
+
+      r.Get("/", self.List)    # GET /todos - read a list of todos
+      r.Post("/", self.Create) # POST /todos - create a new todo and persist it
+      r.Put("/", self.Delete)
+
+      r.Route("/{id}", lambda { |r| # (chi.Router)
+        # r.Use(rs.TodoCtx) // lets have a todos map, and lets actually load/manipulate
+        r.Get("/", self.Get)       # GET /todos/{id} - read a single todo by :id
+        r.Put("/", self.Update)    # PUT /todos/{id} - update a single todo by :id
+        r.Delete("/", self.Delete) # DELETE /todos/{id} - delete a single todo by :id
+        r.Get("/sync", self.Sync)
+      })
+
+      return r
+    end
+
+    protected def List(w, r) # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("todos list of stuff.."))
+    end
+
+    protected def Create(w, r) # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("todos create"))
+    end
+
+    protected def Get(w, r) # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("todo get"))
+    end
+
+    protected def Update(w, r) # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("todo update"))
+    end
+
+    protected def Delete(w, r) # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("todo delete"))
+    end
+
+    protected def Sync(w, r) # (http.ResponseWriter, *http.Request)
+      w.Write(Array[byte].new("todo sync"))
+    end
+  end
+end

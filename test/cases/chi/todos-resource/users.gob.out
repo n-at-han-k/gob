@@ -1,0 +1,43 @@
+package main
+
+import (
+	"github.com/go-chi/chi/v5"
+	"net/http"
+)
+
+type usersResource struct{}
+
+func (self usersResource) Routes() chi.Router {
+	r := chi.NewRouter()
+	// r.Use() // some middleware..
+	r.Get("/", self.List)
+	r.Post("/", self.Create)
+	r.Put("/", self.Delete)
+	r.Route("/{id}", func(r chi.Router) {
+		// r.Use(rs.TodoCtx) // lets have a users map, and lets actually load/manipulate
+		r.Get("/", self.Get)
+		r.Put("/", self.Update)
+		r.Delete("/", self.Delete)
+	})
+	return r
+}
+
+func (self usersResource) List(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("users list of stuff.."))
+}
+
+func (self usersResource) Create(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("users create"))
+}
+
+func (self usersResource) Get(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("user get"))
+}
+
+func (self usersResource) Update(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("user update"))
+}
+
+func (self usersResource) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("user delete"))
+}

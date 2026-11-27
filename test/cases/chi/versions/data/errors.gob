@@ -1,0 +1,24 @@
+require "errors"
+require "net/http"
+
+require "github.com/go-chi/render"
+
+module Data
+  var ErrUnauthorized = errors.New("Unauthorized")
+  var ErrForbidden = errors.New("Forbidden")
+  var ErrNotFound = errors.New("Resource not found")
+
+  def PresentError(r, err) # (*http.Request, error) -> (*http.Request, interface{})
+    case err
+    when ErrUnauthorized
+      render.Status(r, 401)
+    when ErrForbidden
+      render.Status(r, 403)
+    when ErrNotFound
+      render.Status(r, 404)
+    else
+      render.Status(r, 500)
+    end
+    return r, Hash[string, string].new("error" => err.Error())
+  end
+end
